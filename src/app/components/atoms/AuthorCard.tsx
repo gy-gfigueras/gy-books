@@ -27,7 +27,7 @@ export default function AuthorCard({ author }: { author: Author }) {
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'row',
+          flexDirection: { xs: 'column', md: 'row' },
           gap: '1rem',
           width: '100%',
           height: '100%',
@@ -35,17 +35,42 @@ export default function AuthorCard({ author }: { author: Author }) {
         }}
       >
         <Box
-          component="img"
-          src={author.image?.url}
-          alt={author.name}
           sx={{
-            minWidth: '50px',
-            minHeight: '100%',
-            width: '160px',
-            height: 'auto',
-            borderRadius: '16px',
+            width: { xs: '100%', md: '200px' },
+            height: { xs: '200px', md: '100%' },
+            position: 'relative',
+            borderRadius: { xs: '20px', md: '16px' },
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: { xs: 'row', md: 'column' },
+            alignItems: 'center',
+            gap: { xs: '1rem', md: '0' },
+            justifyContent: 'start',
           }}
-        />
+        >
+          <Box
+            component="img"
+            src={author.image?.url}
+            alt={author.name}
+            sx={{
+              width: { xs: '100px', md: '100%' },
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '16px',
+            }}
+          />
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: '800',
+              fontFamily: inter.style.fontFamily,
+              display: { xs: 'block', md: 'none' },
+              fontSize: { xs: '20px', md: '30px' },
+            }}
+          >
+            {author.name}
+          </Typography>
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -58,7 +83,11 @@ export default function AuthorCard({ author }: { author: Author }) {
         >
           <Typography
             variant="h5"
-            sx={{ fontWeight: '800', fontFamily: inter.style.fontFamily }}
+            sx={{
+              fontWeight: '800',
+              fontFamily: inter.style.fontFamily,
+              display: { xs: 'none', md: 'block' },
+            }}
           >
             {author.name}
           </Typography>

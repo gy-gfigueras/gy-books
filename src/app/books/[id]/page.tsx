@@ -7,6 +7,7 @@ import { useBook } from '@/hooks/useBook';
 import { inter } from '@/utils/fonts/fonts';
 import AuthorCard from '@/app/components/atoms/AuthorCard';
 import { Author } from '@/domain/book.model';
+import { BookRating } from '@/app/components/atoms/BookRating';
 
 export default function BookDetails() {
   const params = useParams();
@@ -76,11 +77,12 @@ export default function BookDetails() {
           }}
         >
           <Typography
-            variant="h3"
+            variant="h4"
             sx={{
               fontFamily: inter.style.fontFamily,
               fontWeight: '800',
               marginBottom: '1rem',
+              textAlign: { xs: 'center', md: 'left' },
             }}
           >
             {book?.title}
@@ -92,6 +94,7 @@ export default function BookDetails() {
                 color: '#FFFFFF45',
                 fontStyle: 'italic',
                 marginBottom: '1rem',
+                textAlign: { xs: 'center', md: 'left' },
               }}
             >
               ({book.series.name})
@@ -102,18 +105,22 @@ export default function BookDetails() {
           variant="h6"
           sx={{
             color: '#FFFFFF31',
-            marginBottom: '2rem',
+            marginBottom: '1rem',
             textAlign: { xs: 'center', md: 'left' },
             fontWeight: '800',
+            marginTop: '-1rem',
           }}
         >
           {book?.author.name}
         </Typography>
+        <BookRating bookId={book?.id || ''} />
         <Typography
           variant="body1"
           sx={{
             lineHeight: 1.6,
             marginBottom: '2rem',
+            marginTop: '2rem',
+            fontFamily: inter.style.fontFamily,
           }}
           dangerouslySetInnerHTML={{ __html: book?.description ?? '' }}
         />

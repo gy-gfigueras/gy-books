@@ -52,7 +52,6 @@ export async function GET(
     }
 
     const data = await response.json();
-    console.log('API Route - Datos recibidos:', data);
 
     if (data.errors) {
       console.error('API Route - Errores GraphQL:', data.errors);

@@ -1,0 +1,126 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Box, Skeleton } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+
+interface RatingStarsProps {
+  rating: number;
+  onRatingChange?: (rating: number) => void;
+  size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
+  isLoading?: boolean;
+}
+
+const RatingStars: React.FC<RatingStarsProps> = ({
+  rating,
+  onRatingChange,
+  size = 'medium',
+  disabled = false,
+  isLoading = false,
+}) => {
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+
+  const handleMouseEnter = (value: number) => {
+    if (!disabled && onRatingChange) {
+      setHoverRating(value);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!disabled && onRatingChange) {
+      setHoverRating(null);
+    }
+  };
+
+  const handleClick = (value: number) => {
+    if (!disabled && onRatingChange) {
+      onRatingChange(value);
+    }
+  };
+
+  const getStarSize = () => {
+    switch (size) {
+      case 'small':
+        return { width: 20, height: 20 };
+      case 'large':
+        return { width: 32, height: 32 };
+      default:
+        return { width: 24, height: 24 };
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', gap: 0.5 }}>
+        {[...Array(5)].map((_, index) => (
+          <Skeleton
+            key={index}
+            variant="rounded"
+            {...getStarSize()}
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '4px',
+            }}
+          />
+        ))}
+      </Box>
+    );
+  }
+
+  const displayRating = hoverRating !== null ? hoverRating : rating;
+  const starSize = getStarSize();
+
+  return (
+    <Box sx={{ display: 'flex', gap: 0.5 }}>
+      {[1, 2, 3, 4, 5].map((value) => {
+        const isHalfStar =
+          displayRating >= value - 0.5 && displayRating < value;
+        const isFullStar = displayRating >= value;
+
+        return (
+          <Box
+            key={value}
+            onMouseEnter={() => handleMouseEnter(value)}
+            onMouseLeave={handleMouseLeave}
+            onClick={() => handleClick(value)}
+            sx={{
+              cursor: disabled ? 'default' : 'pointer',
+              transition: 'transform 0.2s',
+              '&:hover': {
+                transform: disabled ? 'none' : 'scale(1.2)',
+              },
+            }}
+          >
+            {isHalfStar ? (
+              <StarHalfIcon
+                sx={{
+                  ...starSize,
+                  color: disabled ? 'grey.400' : 'primary.main',
+                }}
+              />
+            ) : isFullStar ? (
+              <StarIcon
+                sx={{
+                  ...starSize,
+                  color: disabled ? 'grey.400' : 'primary.main',
+                }}
+              />
+            ) : (
+              <StarBorderIcon
+                sx={{
+                  ...starSize,
+                  color: disabled ? 'grey.400' : 'grey.400',
+                }}
+              />
+            )}
+          </Box>
+        );
+      })}
+    </Box>
+  );
+};
+
+export default RatingStars;
