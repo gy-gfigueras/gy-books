@@ -1,5 +1,6 @@
 // src/app/api/books/[id]/route.ts
 import { NextResponse } from 'next/server';
+import { GET_BOOK_BY_ID_QUERY } from '@/utils/constants/Query';
 
 export async function GET(
   request: Request,
@@ -28,43 +29,18 @@ export async function GET(
     const { id } = params;
     console.log('API Route - Book ID:', id);
 
-    const query = `
-      query GetBookById {
-        books_by_pk(id: ${id}) {
-          id
-          title
-          description
-          release_date
-          image {
-            url
-          }
-          contributions(limit: 1) {
-            author {
-              id
-              name
-              image {
-                url
-              }
-              bio
-            }
-          }
-          book_series {
-            series {
-              id
-              name
-            }
-          }
-        }
-      }
-    `;
-
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `${apiKey}`,
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({
+        query: GET_BOOK_BY_ID_QUERY,
+        variables: {
+          id: parseInt(id),
+        },
+      }),
     });
 
     if (!response.ok) {

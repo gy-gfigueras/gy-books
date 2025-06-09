@@ -21,10 +21,8 @@ import { getTheme } from '@/styles/theme';
 import Profile from './components/organisms/Profile';
 import { ETheme } from '@/utils/constants/theme.enum';
 import { useState } from 'react';
-import PersonIcon from '@mui/icons-material/Person';
-import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
-import HomeIcon from '@mui/icons-material/Home';
+import { getMenuItems } from '@/utils/constants/MenuItems';
+import { User } from '@/domain/user.model';
 
 export default function ClientLayout({
   children,
@@ -40,36 +38,7 @@ export default function ClientLayout({
     setDrawerOpen(!drawerOpen);
   };
 
-  const menuItems = user
-    ? [
-        {
-          text: 'Perfil',
-          icon: <PersonIcon />,
-          action: () => (window.location.href = '/profile'),
-        },
-        {
-          text: 'Inicio',
-          icon: <HomeIcon />,
-          action: () => (window.location.href = '/'),
-        },
-        {
-          text: 'Cerrar Sesión',
-          icon: <LogoutIcon />,
-          action: () => (window.location.href = '/api/auth/logout'),
-        },
-      ]
-    : [
-        {
-          text: 'Inicio',
-          icon: <HomeIcon />,
-          action: () => (window.location.href = '/'),
-        },
-        {
-          text: 'Iniciar Sesión',
-          icon: <LoginIcon />,
-          action: () => (window.location.href = '/api/auth/login'),
-        },
-      ];
+  const menuItems = getMenuItems(user as User | null);
 
   const renderProfileOrLogin = () => {
     if (isLoading) {

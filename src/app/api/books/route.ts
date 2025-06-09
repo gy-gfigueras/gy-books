@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { mapHardcoverToBook } from '@/mapper/books.mapper';
 import { NextRequest, NextResponse } from 'next/server';
+import { SEARCH_BOOKS_QUERY } from '@/utils/constants/Query';
 
 export async function GET(req: NextRequest) {
   console.log('API Route - Request received');
@@ -17,19 +18,6 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-
-  const query = `
-    query SearchBooks($query: String!) {
-      search(query: $query) {
-        error
-        page
-        per_page
-        query
-        query_type
-        results
-      }
-    }
-  `;
 
   try {
     const apiUrl = process.env.HARDCOVER_API_URL;
@@ -56,7 +44,7 @@ export async function GET(req: NextRequest) {
       },
       method: 'POST',
       body: JSON.stringify({
-        query: query,
+        query: SEARCH_BOOKS_QUERY,
         variables: {
           query: queryParam,
         },
