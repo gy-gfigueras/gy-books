@@ -45,6 +45,7 @@ export async function GET(
               image {
                 url
               }
+              bio
             }
           }
           book_series {

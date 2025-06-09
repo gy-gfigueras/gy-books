@@ -60,6 +60,11 @@ export default function ClientLayout({
       ]
     : [
         {
+          text: 'Inicio',
+          icon: <HomeIcon />,
+          action: () => (window.location.href = '/'),
+        },
+        {
           text: 'Iniciar Sesión',
           icon: <LoginIcon />,
           action: () => (window.location.href = '/api/auth/login'),
@@ -166,7 +171,9 @@ export default function ClientLayout({
                 sx={{
                   width: '48px',
                   height: '48px',
+                  cursor: 'pointer',
                 }}
+                onClick={() => (window.location.href = '/')}
                 src="/gy-logo.png"
                 alt="logo"
               />

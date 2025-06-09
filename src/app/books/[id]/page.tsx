@@ -3,13 +3,10 @@
 import React from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { useParams } from 'next/navigation';
-import { Inter } from 'next/font/google';
 import { useBook } from '@/hooks/useBook';
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '700', '800'],
-});
+import { inter } from '@/utils/fonts/fonts';
+import AuthorCard from '@/app/components/atoms/AuthorCard';
+import { Author } from '@/domain/book.model';
 
 export default function BookDetails() {
   const params = useParams();
@@ -120,6 +117,9 @@ export default function BookDetails() {
           }}
           dangerouslySetInnerHTML={{ __html: book?.description ?? '' }}
         />
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <AuthorCard author={book?.author as Author} />
+        </Box>
       </Box>
     </Box>
   );
