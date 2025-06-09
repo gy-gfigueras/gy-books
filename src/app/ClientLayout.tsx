@@ -24,6 +24,7 @@ import { useState } from 'react';
 import { getMenuItems } from '@/utils/constants/MenuItems';
 import { User } from '@/domain/user.model';
 import { useRouter } from 'next/navigation';
+import { inter } from './components/atoms/BookCard';
 
 export default function ClientLayout({
   children,
@@ -204,6 +205,7 @@ export default function ClientLayout({
                       toggleDrawer();
                     }}
                     sx={{
+                      color: item.color,
                       cursor: 'pointer',
                       '&:hover': {
                         backgroundColor: 'rgba(255,255,255,0.1)',
@@ -212,10 +214,18 @@ export default function ClientLayout({
                       mb: 1,
                     }}
                   >
-                    <ListItemIcon sx={{ color: 'white', minWidth: '40px' }}>
+                    <ListItemIcon
+                      sx={{ color: item.color || 'white', minWidth: '40px' }}
+                    >
                       {item.icon}
                     </ListItemIcon>
-                    <ListItemText primary={item.text} />
+                    <ListItemText
+                      primary={item.text}
+                      sx={{
+                        fontWeight: 'bold',
+                        fontFamily: inter.style.fontFamily,
+                      }}
+                    />
                   </ListItem>
                 ))}
               </List>

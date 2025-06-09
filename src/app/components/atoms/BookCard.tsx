@@ -25,10 +25,19 @@ export function BookCard({ book }: { book: Book }) {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
-        backgroundColor: '#232323',
+        backgroundColor: 'rgba(35, 35, 35, 0.7)',
+        backdropFilter: 'blur(10px)',
         borderRadius: '32px',
         padding: '16px',
         overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-5px)',
+          backgroundColor: 'rgba(35, 35, 35, 0.8)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+        },
       }}
     >
       <Box
@@ -36,6 +45,8 @@ export function BookCard({ book }: { book: Book }) {
           width: '180px',
           height: '100%',
           borderRadius: '16px',
+          overflow: 'hidden',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         }}
       >
         <Box
@@ -45,6 +56,10 @@ export function BookCard({ book }: { book: Book }) {
             height: { xs: '100%', md: '100%' },
             objectFit: 'cover',
             borderRadius: '16px',
+            transition: 'transform 0.3s ease',
+            '&:hover': {
+              transform: 'scale(1.05)',
+            },
           }}
           src={book.cover.url}
           alt={book.title}
@@ -159,6 +174,11 @@ export function BookCard({ book }: { book: Book }) {
             justifyContent: 'start',
             gap: '5px',
             bottom: '0',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              color: '#FFFFFF',
+              transform: 'translateX(5px)',
+            },
           }}
         >
           Leer Más{' '}

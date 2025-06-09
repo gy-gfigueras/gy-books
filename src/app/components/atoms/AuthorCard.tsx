@@ -19,9 +19,17 @@ export default function AuthorCard({ author }: { author: Author }) {
         gap: '1rem',
         width: '100%',
         height: '250px',
-        backgroundColor: '#2a2a2a',
+        backgroundColor: 'rgba(42, 42, 42, 0.7)',
+        backdropFilter: 'blur(10px)',
         padding: '16px',
         borderRadius: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          backgroundColor: 'rgba(42, 42, 42, 0.8)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+        },
       }}
     >
       <Box
@@ -46,6 +54,7 @@ export default function AuthorCard({ author }: { author: Author }) {
             alignItems: 'center',
             gap: { xs: '1rem', md: '0' },
             justifyContent: 'start',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
           }}
         >
           <Box
@@ -57,6 +66,10 @@ export default function AuthorCard({ author }: { author: Author }) {
               height: '100%',
               objectFit: 'cover',
               borderRadius: '16px',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.05)',
+              },
             }}
           />
           <Typography
@@ -121,6 +134,11 @@ export default function AuthorCard({ author }: { author: Author }) {
               justifyContent: 'start',
               gap: '5px',
               bottom: '0',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                color: '#FFFFFF',
+                transform: 'translateX(5px)',
+              },
             }}
           >
             Leer Más{' '}

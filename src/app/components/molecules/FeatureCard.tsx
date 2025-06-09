@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Chip, Typography } from '@mui/material';
 import { SvgIconComponent } from '@mui/icons-material';
 
 interface FeatureCardProps {
@@ -20,17 +20,20 @@ export const FeatureCard = ({
   return (
     <Box
       sx={{
-        backgroundColor: '#232323',
+        backgroundColor: 'rgba(35, 35, 35, 0.7)',
+        backdropFilter: 'blur(10px)',
         padding: '2.5rem',
         borderRadius: '24px',
         height: '100%',
         transition: 'all 0.3s ease',
-        border: '1px solid rgba(147, 51, 234, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
         '&:hover': {
           transform: 'translateY(-5px)',
-          border: '1px solid rgba(147, 51, 234, 0.2)',
-          boxShadow: '0 8px 32px rgba(147, 51, 234, 0.1)',
+          backgroundColor: 'rgba(35, 35, 35, 0.8)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
         },
+        zIndex: 40,
       }}
     >
       <Box
@@ -45,6 +48,11 @@ export const FeatureCard = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              backgroundColor: 'rgba(147, 51, 234, 0.2)',
+              transform: 'scale(1.1)',
+            },
           }}
         >
           <Box sx={{ color: '#9333ea', fontSize: 32 }}>{icon}</Box>
@@ -64,13 +72,32 @@ export const FeatureCard = ({
       >
         {description}
       </Typography>
-      <Box sx={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+      <Box sx={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         {features.map((feature, index) => (
           <Typography
             key={index}
-            sx={{ color: '#FFFFFF60', fontSize: '0.9rem' }}
+            sx={{
+              color: '#FFFFFF60',
+              fontSize: '0.9rem',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                color: '#FFFFFF',
+                transform: 'translateX(5px)',
+              },
+            }}
           >
-            • {feature}
+            <Chip
+              label={feature}
+              sx={{
+                backgroundColor: 'transparent',
+                border: '1px solid #8C54FF',
+                color: '#FFFFFF',
+                fontSize: '0.8rem',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '16px',
+                fontWeight: 'bold',
+              }}
+            />
           </Typography>
         ))}
       </Box>

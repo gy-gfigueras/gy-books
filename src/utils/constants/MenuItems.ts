@@ -25,6 +25,7 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
       },
       {
         text: 'Cerrar Sesión',
+        color: 'red',
         icon: React.createElement(MenuIcons.Logout),
         route: '/api/auth/logout',
       },

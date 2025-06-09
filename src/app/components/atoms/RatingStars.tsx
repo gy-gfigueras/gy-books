@@ -23,9 +23,12 @@ const RatingStars: React.FC<RatingStarsProps> = ({
 }) => {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
-  const handleMouseEnter = (value: number) => {
+  const handleMouseEnter = (value: number, event: React.MouseEvent) => {
     if (!disabled && onRatingChange) {
-      setHoverRating(value);
+      const starElement = event.currentTarget as HTMLElement;
+      const rect = starElement.getBoundingClientRect();
+      const isLeftHalf = event.clientX - rect.left < rect.width / 2;
+      setHoverRating(isLeftHalf ? value - 0.5 : value);
     }
   };
 
@@ -35,9 +38,12 @@ const RatingStars: React.FC<RatingStarsProps> = ({
     }
   };
 
-  const handleClick = (value: number) => {
+  const handleClick = (value: number, event: React.MouseEvent) => {
     if (!disabled && onRatingChange) {
-      onRatingChange(value);
+      const starElement = event.currentTarget as HTMLElement;
+      const rect = starElement.getBoundingClientRect();
+      const isLeftHalf = event.clientX - rect.left < rect.width / 2;
+      onRatingChange(isLeftHalf ? value - 0.5 : value);
     }
   };
 
@@ -83,15 +89,11 @@ const RatingStars: React.FC<RatingStarsProps> = ({
         return (
           <Box
             key={value}
-            onMouseEnter={() => handleMouseEnter(value)}
+            onMouseEnter={(e) => handleMouseEnter(value, e)}
             onMouseLeave={handleMouseLeave}
-            onClick={() => handleClick(value)}
+            onClick={(e) => handleClick(value, e)}
             sx={{
               cursor: disabled ? 'default' : 'pointer',
-              transition: 'transform 0.2s',
-              '&:hover': {
-                transform: disabled ? 'none' : 'scale(1.2)',
-              },
             }}
           >
             {isHalfStar ? (
