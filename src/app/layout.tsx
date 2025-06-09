@@ -3,7 +3,7 @@ import ClientLayout from './ClientLayout';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'GY Books',
+  title: 'WingWords',
   description: 'Tu biblioteca personal de libros',
   keywords: ['libros', 'biblioteca', 'lectura', 'gycoding'],
   authors: [{ name: 'GY Coding' }],
