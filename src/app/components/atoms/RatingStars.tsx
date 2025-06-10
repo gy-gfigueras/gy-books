@@ -19,7 +19,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({
   onRatingChange,
   size = 'medium',
   disabled = false,
-  isLoading = false,
+  isLoading,
 }) => {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 

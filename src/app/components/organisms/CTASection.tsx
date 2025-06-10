@@ -3,11 +3,11 @@
 import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/hooks/useUser';
+import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 
 export const CTASection = () => {
   const router = useRouter();
-  const { data: user } = useUser();
+  const { user } = useGyCodingUser();
 
   return (
     <Container
@@ -56,7 +56,9 @@ export const CTASection = () => {
       <Button
         variant="outlined"
         size="large"
-        onClick={() => router.push(user ? '/friends' : '/api/auth/login')}
+        onClick={() =>
+          router.push(user ? '/friends' : '/api/auth/login?prompt=login')
+        }
         sx={{
           borderColor: '#9333ea',
           color: 'white',

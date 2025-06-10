@@ -13,11 +13,12 @@ interface BookRatingProps {
 }
 
 export const BookRating = ({ bookId }: BookRatingProps) => {
-  const { user, isLoading } = useUser();
-  const { data: initialRating } = useRating(bookId);
+  const { user, isLoading: isUserLoading } = useUser();
+  const { data: initialRating, isLoading: isRatingLoading } = useRating(bookId);
   const [rating, setRating] = useState<Rating | undefined>(
     initialRating || undefined
   );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -46,28 +47,22 @@ export const BookRating = ({ bookId }: BookRatingProps) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <RatingStars rating={0} onRatingChange={() => {}} disabled={true} />
-      </Box>
-    );
-  }
+  const isLoading = isUserLoading || isRatingLoading;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+        alignItems: { xs: 'center', sm: 'flex-start' },
+      }}
+    >
       <RatingStars
         rating={rating?.rating || 0}
         onRatingChange={handleRatingChange}
         disabled={!user || isSubmitting}
+        isLoading={isLoading}
       />
       {!user && (
         <Typography variant="caption" sx={{ color: '#666' }}>

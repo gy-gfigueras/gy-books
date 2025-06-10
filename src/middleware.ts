@@ -15,6 +15,7 @@ export default function middleware(req: NextRequest) {
     if (!hasSession) {
       const url = new URL('/api/auth/login', req.url);
       url.searchParams.set('returnTo', pathname);
+      url.searchParams.set('prompt', 'login');
       return NextResponse.redirect(url);
     }
 

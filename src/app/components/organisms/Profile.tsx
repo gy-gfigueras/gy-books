@@ -170,7 +170,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                       }}
-                      href={'/api/auth/logout'}
+                      href={'/api/auth/logout?federated=true'}
                     >
                       Cerrar Sesión
                       <Image

@@ -74,7 +74,7 @@ export const FeatureCard = ({
       </Typography>
       <Box sx={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         {features.map((feature, index) => (
-          <Typography
+          <Box
             key={index}
             sx={{
               color: '#FFFFFF60',
@@ -98,7 +98,7 @@ export const FeatureCard = ({
                 fontWeight: 'bold',
               }}
             />
-          </Typography>
+          </Box>
         ))}
       </Box>
     </Box>
