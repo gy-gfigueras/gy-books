@@ -8,7 +8,6 @@ import {
   Avatar,
   Paper,
   Divider,
-  IconButton,
   Skeleton,
 } from '@mui/material';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
@@ -59,23 +58,23 @@ const ProfileSkeleton = () => (
                   border: '4px solid rgba(147, 51, 234, 0.3)',
                 }}
               />
-              <Skeleton
-                variant="circular"
-                width={32}
-                height={32}
-                sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  bgcolor: '#9333ea',
-                }}
-              />
             </Box>
             <Skeleton
               variant="text"
               width={160}
               height={32}
               sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
+            />
+            {/* Skeleton para la sección de GY Accounts */}
+            <Skeleton
+              variant="rounded"
+              width="100%"
+              height={80}
+              sx={{
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                mt: 2,
+              }}
             />
           </Box>
         </Box>
@@ -200,25 +199,6 @@ export default function ProfilePage() {
                     boxShadow: '0 0 20px rgba(147, 51, 234, 0.2)',
                   }}
                 />
-                <IconButton
-                  onClick={() =>
-                    window.open('https://accounts.gycoding.com', '_blank')
-                  }
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                    backgroundColor: '#9333ea',
-                    color: 'white',
-                    width: 32,
-                    height: 32,
-                    '&:hover': {
-                      backgroundColor: '#a855f7',
-                    },
-                  }}
-                >
-                  <EditIcon sx={{ fontSize: 20 }} />
-                </IconButton>
               </Box>
               <Typography
                 variant="h4"
@@ -231,6 +211,56 @@ export default function ProfilePage() {
               >
                 {user.username}
               </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  mt: 2,
+                  borderRadius: '16px',
+                  background: 'rgba(42, 42, 42, 0.7)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  width: '100%',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    borderColor: 'rgba(147, 51, 234, 0.3)',
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    cursor: 'pointer',
+                  }}
+                  onClick={() =>
+                    window.open('https://accounts.gycoding.com', '_blank')
+                  }
+                >
+                  <EditIcon
+                    sx={{
+                      color: '#9333ea',
+                      fontSize: 24,
+                    }}
+                  />
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: 'white',
+                        fontFamily: inter.style.fontFamily,
+                        fontSize: '1rem',
+                      }}
+                    >
+                      Ir a GY Accounts
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#FFFFFF80' }}>
+                      Accede a tu cuenta para gestionar tu perfil y
+                      configuración
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
             </Box>
           </Box>
 
