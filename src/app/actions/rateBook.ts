@@ -5,12 +5,16 @@ import { Rating } from '@/domain/rating.model';
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 
-export default async function rateBook(formData: FormData): Promise<Rating> {
+export default async function rateBook(
+  formData: FormData,
+  updating: boolean
+): Promise<Rating> {
   try {
     const bookId = formData.get('bookId') as string;
     const rating = formData.get('rating') as string;
     const startDate = formData.get('startDate') as string;
     const endDate = formData.get('endDate') as string;
+    console.log('updating', updating);
 
     if (!bookId || !rating) {
       throw new Error('Book ID and rating are required');
@@ -37,7 +41,7 @@ export default async function rateBook(formData: FormData): Promise<Rating> {
     const response = await fetch(
       `${protocol}://${host}/api/auth/rating/${bookId}`,
       {
-        method: 'POST',
+        method: updating ? 'PATCH' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           Cookie: cookieHeader,

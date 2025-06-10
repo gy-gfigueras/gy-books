@@ -29,16 +29,22 @@ export const BookRating = ({ bookId }: BookRatingProps) => {
 
   const handleRatingChange = async (newRating: number) => {
     if (!user || isSubmitting) return;
-
     setIsSubmitting(true);
+    let updating;
+
+    if (newRating !== initialRating?.rating) {
+      updating = true;
+    } else {
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('bookId', bookId);
       formData.append('rating', newRating.toString());
       formData.append('startDate', '');
       formData.append('endDate', '');
-
-      const newRatingData = await rateBook(formData);
+      const newRatingData = await rateBook(formData, updating);
       setRating(newRatingData);
     } catch (error) {
       console.error('Error submitting rating:', error);
