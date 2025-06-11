@@ -30,13 +30,13 @@ export const BookRating = ({ bookId }: BookRatingProps) => {
   const handleRatingChange = async (newRating: number) => {
     if (!user || isSubmitting) return;
     setIsSubmitting(true);
-    let updating;
 
-    if (newRating !== initialRating?.rating) {
-      updating = true;
-    } else {
+    if (initialRating?.rating === newRating) {
+      setIsSubmitting(false);
       return;
     }
+
+    const updating = !!initialRating;
 
     try {
       const formData = new FormData();

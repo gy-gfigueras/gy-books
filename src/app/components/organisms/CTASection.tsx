@@ -56,9 +56,7 @@ export const CTASection = () => {
       <Button
         variant="outlined"
         size="large"
-        onClick={() =>
-          router.push(user ? '/friends' : '/api/auth/login?prompt=login')
-        }
+        onClick={() => router.push(user ? '/friends' : '/api/auth/login')}
         sx={{
           borderColor: '#9333ea',
           color: 'white',

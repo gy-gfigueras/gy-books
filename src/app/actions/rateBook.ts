@@ -38,6 +38,11 @@ export default async function rateBook(
     const cookieStore = cookies();
     const cookieHeader = cookieStore.toString();
 
+    console.log('updating', updating);
+    console.log('protocol', updating ? 'PATCH' : 'POST');
+    console.log('host', host);
+    console.log('cookieHeader', cookieHeader);
+
     const response = await fetch(
       `${protocol}://${host}/api/auth/rating/${bookId}`,
       {
