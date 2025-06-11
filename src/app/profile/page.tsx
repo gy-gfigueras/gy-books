@@ -18,6 +18,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import HistoryIcon from '@mui/icons-material/History';
 import StarIcon from '@mui/icons-material/Star';
 import { inter } from '@/utils/fonts/fonts';
+import Link from 'next/link';
 
 const ProfileSkeleton = () => (
   <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
@@ -303,35 +304,41 @@ export default function ProfilePage() {
                     },
                   }}
                 >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                    }}
-                  >
-                    <BookIcon
+                  <Link href="/profile/library">
+                    <Box
                       sx={{
-                        color: '#9333ea',
-                        fontSize: 32,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
                       }}
-                    />
-                    <Box>
-                      <Typography
-                        variant="h6"
+                    >
+                      <BookIcon
                         sx={{
-                          color: 'white',
-                          fontFamily: inter.style.fontFamily,
-                          fontSize: '1rem',
+                          color: '#9333ea',
+                          fontSize: 32,
                         }}
-                      >
-                        Mis Libros
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#FFFFFF80' }}>
-                        Próximamente
-                      </Typography>
+                      />
+
+                      <Box>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            color: 'white',
+                            fontFamily: inter.style.fontFamily,
+                            fontSize: '1rem',
+                          }}
+                        >
+                          Mis Libros
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: '#FFFFFF80', textDecoration: 'none' }}
+                        >
+                          Próximamente
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
+                  </Link>
                 </Paper>
                 <Paper
                   elevation={0}

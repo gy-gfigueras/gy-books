@@ -4,6 +4,7 @@ import React from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import { Inter } from 'next/font/google';
+import RatingStars from './RatingStars';
 
 export const inter = Inter({
   subsets: ['latin'],
@@ -135,6 +136,14 @@ export function BookCard({ book }: { book: Book }) {
         >
           {book.author.name}
         </Typography>
+
+        {book.rating && (
+          <RatingStars
+            sx={{ marginTop: '5px' }}
+            rating={book.rating}
+            size="small"
+          />
+        )}
         <Typography
           sx={{
             display: { xs: 'none', md: '-webkit-box' },

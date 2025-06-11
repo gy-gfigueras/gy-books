@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Skeleton } from '@mui/material';
+import { Box, Skeleton, SxProps } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -12,6 +12,7 @@ interface RatingStarsProps {
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   isLoading?: boolean;
+  sx?: SxProps;
 }
 
 const RatingStars: React.FC<RatingStarsProps> = ({
@@ -20,6 +21,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({
   size = 'medium',
   disabled = false,
   isLoading,
+  sx,
 }) => {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
@@ -80,7 +82,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({
   const starSize = getStarSize();
 
   return (
-    <Box sx={{ display: 'flex', gap: 0.5 }}>
+    <Box sx={{ display: 'flex', gap: 0.5, ...sx }}>
       {[1, 2, 3, 4, 5].map((value) => {
         const isHalfStar =
           displayRating >= value - 0.5 && displayRating < value;

@@ -30,6 +30,7 @@ interface HardcoverBook {
     };
   }>;
   description: string;
+  rating?: number;
 }
 
 export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
@@ -42,6 +43,7 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
     title: hardcoverBook.title,
     hasImage: !!hardcoverBook.image,
     imageUrl: hardcoverBook.image?.url,
+    rating: hardcoverBook.rating,
   });
 
   const mainAuthor = hardcoverBook.contributions?.[0]?.author;
@@ -69,6 +71,7 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
         bio: '',
       },
       description: hardcoverBook.description || '',
+      rating: hardcoverBook.rating || 0,
     };
   }
 

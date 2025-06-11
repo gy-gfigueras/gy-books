@@ -27,4 +27,5 @@ export default interface Book {
   pageCount: number;
   author: Author;
   description: string;
+  rating?: number;
 }

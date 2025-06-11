@@ -9,7 +9,6 @@ import { Rating } from '@/domain/rating.model';
 async function handler(request: Request) {
   const url = new URL(request.url);
   const id = url.pathname.split('/').pop();
-
   if (!id) {
     return NextResponse.json({ error: 'Book ID is required' }, { status: 400 });
   }
@@ -38,6 +37,7 @@ async function handler(request: Request) {
       Authorization: `Bearer ${accessToken}`,
     };
 
+    console.log(`Bearer ${accessToken}`);
     console.log('Request details:', {
       method: request.method,
       apiUrl,
