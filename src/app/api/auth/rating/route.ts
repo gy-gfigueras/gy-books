@@ -95,7 +95,6 @@ export const GET = withApiAuthRequired(async () => {
         console.error(`Error processing book ${rating.bookId}:`, error);
       }
     }
-    console.log(library);
 
     // Calcular estadísticas
     library.stats = {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Chip, Rating } from '@mui/material';
+import { Box, Typography, Chip, Rating, Skeleton } from '@mui/material';
 import Book from '@/domain/book.model';
 import { useRouter } from 'next/navigation';
 import { inter } from '@/utils/fonts/fonts';
@@ -10,6 +10,110 @@ interface BookCardCompactProps {
   library?: Library;
   onClick?: () => void;
 }
+
+export const BookCardCompactSkeleton = () => {
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        backgroundColor: '#232323',
+        borderRadius: '16px',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Skeleton de la imagen */}
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          paddingTop: '150%', // Aspect ratio 2:3
+          overflow: 'hidden',
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            bgcolor: 'rgba(255, 255, 255, 0.1)',
+          }}
+          animation="wave"
+        />
+      </Box>
+
+      {/* Skeleton del contenido */}
+      <Box
+        sx={{
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+        }}
+      >
+        {/* Skeleton del título */}
+        <Skeleton
+          variant="text"
+          width="80%"
+          height={24}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
+        />
+
+        {/* Skeleton del rating */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Skeleton
+            variant="text"
+            width={100}
+            height={20}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
+          />
+        </Box>
+
+        {/* Skeleton de las estadísticas */}
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', gap: '4px', mt: 0.5 }}
+        >
+          <Skeleton
+            variant="text"
+            width={120}
+            height={16}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
+          />
+          <Skeleton
+            variant="text"
+            width={100}
+            height={16}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
+          />
+        </Box>
+
+        {/* Skeleton del autor */}
+        <Skeleton
+          variant="text"
+          width="60%"
+          height={20}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
+        />
+
+        {/* Skeleton del chip de serie */}
+        <Skeleton
+          variant="rectangular"
+          width={80}
+          height={24}
+          sx={{
+            borderRadius: '12px',
+            bgcolor: 'rgba(255, 255, 255, 0.1)',
+          }}
+        />
+      </Box>
+    </Box>
+  );
+};
 
 export const BookCardCompact = ({
   book,

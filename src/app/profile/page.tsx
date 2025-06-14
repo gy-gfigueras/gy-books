@@ -310,12 +310,14 @@ export default function ProfilePage() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 2,
+                        textDecoration: 'none',
                       }}
                     >
                       <BookIcon
                         sx={{
                           color: '#9333ea',
                           fontSize: 32,
+                          textDecoration: 'none',
                         }}
                       />
 
@@ -326,6 +328,7 @@ export default function ProfilePage() {
                             color: 'white',
                             fontFamily: inter.style.fontFamily,
                             fontSize: '1rem',
+                            textDecoration: 'none',
                           }}
                         >
                           Mis Libros
