@@ -1,4 +1,5 @@
 import Book from '../domain/book.model';
+import { EStatus } from '@/utils/constants/EStatus';
 
 const DEFAULT_COVER_IMAGE =
   'https://raw.githubusercontent.com/GY-CODING/img-repo/refs/heads/main/gy-books/none.png';
@@ -72,6 +73,7 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
       },
       description: hardcoverBook.description || '',
       rating: hardcoverBook.rating || 0,
+      status: EStatus.WANT_TO_READ,
     };
   }
 
@@ -106,5 +108,7 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
       bio: mainAuthor.bio || '',
     },
     description: hardcoverBook.description || '',
+    rating: hardcoverBook.rating || 0,
+    status: EStatus.WANT_TO_READ,
   };
 }

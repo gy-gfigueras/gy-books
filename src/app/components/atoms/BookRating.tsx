@@ -273,16 +273,28 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                   background: '#232323',
                   borderRadius: 2,
                   input: { color: '#fff' },
-                  svg: { color: 'white' },
                   '& .MuiSvgIcon-root': {
-                    color: 'white',
+                    color: '#bdbdbd',
                   },
                   '& fieldset': {
-                    borderColor: 'white',
+                    borderColor: '#bdbdbd',
                   },
-                  '&::-webkit-calendar-picker-indicator': {
-                    filter:
-                      'invert(1) brightness(50%) sepia(100%) saturate(10000%) hue-rotate(180deg)',
+                  '& label': {
+                    color: '#bdbdbd',
+                  },
+                  '& label.Mui-focused': {
+                    color: '#8C54FF',
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#bdbdbd',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#8C54FF',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#8C54FF',
+                    },
                   },
                 }}
               />
@@ -297,12 +309,28 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                   background: '#232323',
                   borderRadius: 2,
                   input: { color: '#fff' },
-                  svg: { color: 'white' },
                   '& .MuiSvgIcon-root': {
-                    color: 'white',
+                    color: '#bdbdbd',
                   },
                   '& fieldset': {
-                    borderColor: 'white',
+                    borderColor: '#bdbdbd',
+                  },
+                  '& label': {
+                    color: '#bdbdbd',
+                  },
+                  '& label.Mui-focused': {
+                    color: '#8C54FF',
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#bdbdbd',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#8C54FF',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#8C54FF',
+                    },
                   },
                 }}
               />
@@ -405,6 +433,29 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                     background: '#232323',
                     borderRadius: 2,
                     input: { color: '#fff' },
+                    '& .MuiSvgIcon-root': {
+                      color: '#bdbdbd',
+                    },
+                    '& fieldset': {
+                      borderColor: '#bdbdbd',
+                    },
+                    '& label': {
+                      color: '#bdbdbd',
+                    },
+                    '& label.Mui-focused': {
+                      color: '#8C54FF',
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: '#bdbdbd',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#8C54FF',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#8C54FF',
+                      },
+                    },
                   }}
                 />
                 <TextField
@@ -418,6 +469,29 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                     background: '#232323',
                     borderRadius: 2,
                     input: { color: '#fff' },
+                    '& .MuiSvgIcon-root': {
+                      color: '#bdbdbd',
+                    },
+                    '& fieldset': {
+                      borderColor: '#bdbdbd',
+                    },
+                    '& label': {
+                      color: '#bdbdbd',
+                    },
+                    '& label.Mui-focused': {
+                      color: '#8C54FF',
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: '#bdbdbd',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#8C54FF',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#8C54FF',
+                      },
+                    },
                   }}
                 />
               </Box>

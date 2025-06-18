@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Book, { Author, AuthorImage, Cover, Series } from '@/domain/book.model';
+import { EStatus } from '@/utils/constants/EStatus';
 
 export function mapHardcoverToBook(data: any): Book {
   const seriesEntry = data.book_series?.[0]?.series;
@@ -37,6 +38,7 @@ export function mapHardcoverToBook(data: any): Book {
     cover,
     author,
     series,
+    status: EStatus.WANT_TO_READ,
   };
 
   return book;
