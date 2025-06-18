@@ -9,6 +9,7 @@ interface BookCardCompactProps {
   book: Book;
   library?: Library;
   onClick?: () => void;
+  small?: boolean;
 }
 
 export const BookCardCompactSkeleton = () => {
@@ -117,8 +118,8 @@ export const BookCardCompactSkeleton = () => {
 
 export const BookCardCompact = ({
   book,
-  library,
   onClick,
+  small = false,
 }: BookCardCompactProps) => {
   const router = useRouter();
 
@@ -139,7 +140,9 @@ export const BookCardCompact = ({
         handleClick();
       }}
       sx={{
-        width: '100%',
+        width: small ? '140px' : '220px',
+        minWidth: small ? '140px' : '220px',
+        maxWidth: small ? '140px' : '220px',
         textDecoration: 'none',
         display: 'flex',
         flexDirection: 'column',
@@ -160,8 +163,8 @@ export const BookCardCompact = ({
       <Box
         sx={{
           position: 'relative',
-          width: '100%',
-          paddingTop: '150%', // Aspect ratio 2:3
+          width: small ? '140px' : '220px',
+          height: small ? '210px' : '330px',
           overflow: 'hidden',
         }}
       >
@@ -170,13 +173,11 @@ export const BookCardCompact = ({
           src={book.cover.url || '/placeholder-book.jpg'}
           alt={book.title}
           sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
             transition: 'transform 0.3s ease',
+            display: 'block',
             '&:hover': {
               transform: 'scale(1.05)',
             },
@@ -211,7 +212,16 @@ export const BookCardCompact = ({
           >
             {book.title}
           </Typography>
-
+          <Typography
+            sx={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: '0.875rem',
+              fontFamily: inter.style.fontFamily,
+              fontWeight: '500',
+            }}
+          >
+            {book.author.name}
+          </Typography>
           {book.rating !== undefined && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Rating
@@ -228,68 +238,11 @@ export const BookCardCompact = ({
                   },
                 }}
               />
-              <Typography
-                sx={{
-                  color: 'primary.main',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  fontFamily: inter.style.fontFamily,
-                }}
-              >
-                {book.rating}
-              </Typography>
-            </Box>
-          )}
-
-          {library && (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                mt: 0.5,
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontSize: '0.75rem',
-                fontFamily: inter.style.fontFamily,
-              }}
-            >
-              <Typography>
-                {library.stats.totalBooks} libros en total
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Rating
-                  value={library.stats.averageRating}
-                  precision={0.5}
-                  readOnly
-                  size="small"
-                  sx={{
-                    '& .MuiRating-iconFilled': {
-                      color: 'primary.main',
-                    },
-                    '& .MuiRating-iconEmpty': {
-                      color: 'rgba(255, 255, 255, 0.2)',
-                    },
-                  }}
-                />
-                <Typography>
-                  Media: {library.stats.averageRating.toFixed(1)}
-                </Typography>
-              </Box>
             </Box>
           )}
         </Box>
 
         {/* Autor */}
-        <Typography
-          sx={{
-            color: 'rgba(255, 255, 255, 0.7)',
-            fontSize: '0.875rem',
-            fontFamily: inter.style.fontFamily,
-            fontWeight: '500',
-          }}
-        >
-          {book.author.name}
-        </Typography>
 
         {/* Series */}
         {book.series && (

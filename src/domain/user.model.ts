@@ -4,6 +4,7 @@ export interface User {
   picture: string;
   apiKey: string;
   phoneNumber: string | null;
+  bio: string | null;
 }
 
 export interface UserUpdateData {

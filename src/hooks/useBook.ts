@@ -4,10 +4,15 @@ import { getUser } from '../service/user.service';
 import Book from '@/domain/book.model';
 import getBookById from '@/service/book.service';
 
+import bookStatus from '@/domain/bookStatus';
+import getBookStatus from '@/app/actions/getBookStatus';
+
 interface useBookProps {
   data: Book | undefined;
   isLoading: boolean;
   error: Error | null;
+  bookStatus: bookStatus | null;
+  isBookStatusLoading: boolean;
 }
 
 export function useBook(id: string): useBookProps {
@@ -20,9 +25,20 @@ export function useBook(id: string): useBookProps {
     }
   );
 
+  const {
+    data: bookStatusData,
+    isLoading: isBookStatusLoading,
+    error: bookStatusError,
+  } = useSWR(id ? `bookStatus-${id}` : null, () => getBookStatus(id), {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+  });
+
   return {
     data,
     isLoading,
     error,
+    bookStatus: bookStatusData || null,
+    isBookStatusLoading,
   };
 }

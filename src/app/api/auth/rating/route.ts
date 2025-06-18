@@ -11,7 +11,7 @@ export const GET = withApiAuthRequired(async () => {
   try {
     const session = await getSession();
     const userId = session?.user.sub;
-    const accessToken = session?.accessToken;
+    const idToken = session?.idToken;
     const apiUrlHardcover = process.env.HARDCOVER_API_URL;
     const apiKey = process.env.HARDCOVER_API_TOKEN;
 
@@ -21,14 +21,14 @@ export const GET = withApiAuthRequired(async () => {
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
 
-    if (!baseUrl || !accessToken) {
+    if (!baseUrl || !idToken) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
     const apiUrl = `${baseUrl}/books/ratings`;
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${idToken}`,
     };
 
     const response = await fetch(apiUrl, { headers });

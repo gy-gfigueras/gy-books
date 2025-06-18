@@ -7,152 +7,219 @@ import {
   Typography,
   Avatar,
   Paper,
-  Divider,
-  Skeleton,
+  Button,
+  Tab,
+  Tabs,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  Select,
+  MenuItem,
+  useMediaQuery,
 } from '@mui/material';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import EditIcon from '@mui/icons-material/Edit';
-import BookIcon from '@mui/icons-material/Book';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import GroupIcon from '@mui/icons-material/Group';
-import HistoryIcon from '@mui/icons-material/History';
-import StarIcon from '@mui/icons-material/Star';
 import { inter } from '@/utils/fonts/fonts';
 import Link from 'next/link';
-
-const ProfileSkeleton = () => (
-  <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
-    <Paper
-      elevation={0}
-      sx={{
-        p: { xs: 2, md: 4 },
-        borderRadius: '24px',
-        background: 'rgba(35, 35, 35, 0.7)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: 4,
-        }}
-      >
-        {/* Sección de Perfil */}
-        <Box sx={{ flex: { md: '0 0 33.333%' } }}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2,
-            }}
-          >
-            <Box sx={{ position: 'relative' }}>
-              <Skeleton
-                variant="circular"
-                width={120}
-                height={120}
-                sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
-                  border: '4px solid rgba(147, 51, 234, 0.3)',
-                }}
-              />
-            </Box>
-            <Skeleton
-              variant="text"
-              width={160}
-              height={32}
-              sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
-            />
-            {/* Skeleton para la sección de GY Accounts */}
-            <Skeleton
-              variant="rounded"
-              width="100%"
-              height={80}
-              sx={{
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                mt: 2,
-              }}
-            />
-          </Box>
-        </Box>
-
-        {/* Sección de Biblioteca */}
-        <Box sx={{ flex: { md: '0 0 66.666%', padding: '20px' } }}>
-          <Box sx={{ mb: 4 }}>
-            <Skeleton
-              variant="text"
-              width={120}
-              height={32}
-              sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', mb: 2 }}
-            />
-            <Divider sx={{ mb: 3, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-                gap: 2,
-              }}
-            >
-              {[1, 2, 3, 4].map((item) => (
-                <Skeleton
-                  key={item}
-                  variant="rounded"
-                  height={80}
-                  sx={{
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: '16px',
-                  }}
-                />
-              ))}
-            </Box>
-          </Box>
-
-          {/* Sección de Comunidad */}
-          <Box>
-            <Skeleton
-              variant="text"
-              width={120}
-              height={32}
-              sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', mb: 2 }}
-            />
-            <Divider sx={{ mb: 3, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-                gap: 2,
-              }}
-            >
-              <Skeleton
-                variant="rounded"
-                height={80}
-                sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '16px',
-                }}
-              />
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    </Paper>
-  </Container>
-);
+import { useLibrary } from '@/hooks/useLibrary';
+import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
+import { EStatus } from '@/utils/constants/EStatus';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import LaunchIcon from '@mui/icons-material/Launch';
+import { useTheme } from '@mui/material/styles';
 
 export default function ProfilePage() {
   const { user, isLoading } = useGyCodingUser();
+  const { data: library } = useLibrary();
+  const [tab, setTab] = React.useState(0);
+  const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(null);
+  const { user: userData } = useUser();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const statusOptions = [
+    { label: 'Currently reading', value: EStatus.READING },
+    { label: 'Read', value: EStatus.READ },
+    { label: 'Want to read', value: EStatus.WANT_TO_READ },
+  ];
+
+  const filteredBooks = React.useMemo(() => {
+    if (!library?.books) return [];
+    if (!statusFilter) return library.books;
+    return library.books.filter((book) => book.status === statusFilter);
+  }, [library, statusFilter]);
 
   if (isLoading) {
-    return <ProfileSkeleton />;
+    return (
+      <Container
+        maxWidth="xl"
+        sx={{
+          mt: 6,
+          mb: 8,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          minHeight: '70vh',
+        }}
+      >
+        <Box
+          sx={{
+            width: { xs: '100%', md: '90%' },
+            maxWidth: 1200,
+            mx: 'auto',
+            p: { xs: 3, md: 6 },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              gap: 6,
+              minHeight: 20,
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 160,
+                height: 160,
+                bgcolor: '#232323',
+                border: '3px solid #FFFFFF',
+                ml: 2,
+                mb: { xs: 2, md: 0 },
+              }}
+            />
+            <Box
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                gap: 2,
+              }}
+            >
+              <Typography
+                variant="h3"
+                sx={{
+                  color: '#FFFFFF',
+                  fontWeight: 'bold',
+                  fontFamily: inter.style.fontFamily,
+                  mb: 0,
+                }}
+              >
+                {'Username'}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ color: '#FFFFFFB3', fontSize: 18, mb: 1 }}
+              >
+                {'username@gmail.com'}
+              </Typography>
+              <Box sx={{ width: 400, maxWidth: '100%' }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    border: '2px solid #FFFFFF',
+                    borderRadius: '12px',
+                    background: 'transparent',
+                    p: 1.5,
+                    mb: 1,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#FFFFFF',
+                      fontFamily: inter.style.fontFamily,
+                      fontWeight: 'bold',
+                      mb: 0.5,
+                    }}
+                  >
+                    Biography
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#FFFFFFB3',
+                      fontFamily: inter.style.fontFamily,
+                      minHeight: 32,
+                    }}
+                  >
+                    Aquí irá la biografía del usuario.
+                  </Typography>
+                </Paper>
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{ color: '#FFFFFF', fontWeight: 'bold', mt: 1 }}
+              >
+                12 friends
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                alignItems: 'flex-end',
+                ml: 'auto',
+                mt: { xs: 2, md: 0 },
+              }}
+            >
+              <Button
+                variant="outlined"
+                component={Link}
+                href="https://accounts.gycoding.com"
+                target="_blank"
+                sx={{
+                  borderColor: '#FFFFFF',
+                  color: '#FFFFFF',
+                  fontWeight: 'bold',
+                  borderRadius: '8px',
+                  minWidth: 140,
+                  mb: 1,
+                  px: 2,
+                  py: 0.5,
+                  fontSize: 16,
+                  textTransform: 'none',
+                  '&:hover': { borderColor: '#c4b5fd', color: '#c4b5fd' },
+                }}
+                endIcon={<LaunchIcon />}
+              >
+                Edit Account
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: '#FFFFFF',
+                  color: '#FFFFFF',
+                  fontWeight: 'bold',
+                  borderRadius: '8px',
+                  minWidth: 140,
+                  px: 2,
+                  py: 0.5,
+                  fontSize: 16,
+                  textTransform: 'none',
+                  '&:hover': { borderColor: '#c4b5fd', color: '#c4b5fd' },
+                }}
+                endIcon={<EditIcon />}
+              >
+                Edit Profile
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Container>
+    );
   }
 
   if (!user) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 6 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Typography>No hay usuario logueado</Typography>
         </Box>
@@ -161,396 +228,494 @@ export default function ProfilePage() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
-      <Paper
-        elevation={0}
+    <Container
+      maxWidth="xl"
+      sx={{
+        mt: 6,
+        mb: 8,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        minHeight: '70vh',
+        background: 'transparent',
+        borderRadius: 0,
+        boxShadow: 'none',
+      }}
+    >
+      <Box
         sx={{
-          p: { xs: 2, md: 4 },
-          borderRadius: '24px',
-          background: 'rgba(35, 35, 35, 0.7)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          width: { xs: '100%', md: '90%' },
+          maxWidth: 1200,
+          mx: 'auto',
+          p: { xs: 3, md: 0 },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
         }}
       >
         <Box
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
-            gap: 4,
+            alignItems: { xs: 'center', md: 'flex-start' },
+            justifyContent: { xs: 'center', md: 'center' },
+            gap: { xs: 3, md: 6 },
+            minHeight: { xs: 0, md: 200 },
+            width: '100%',
           }}
         >
-          {/* Sección de Perfil */}
-          <Box sx={{ flex: { md: '0 0 33.333%' } }}>
-            <Box
+          <Avatar
+            src={user.picture}
+            alt={user.username}
+            sx={{
+              width: { xs: 100, sm: 120, md: 160 },
+              height: { xs: 100, sm: 120, md: 160 },
+              bgcolor: '#232323',
+              border: '3px solid #8C54FF',
+              ml: { xs: 0, md: 2 },
+              mb: { xs: 2, md: 0 },
+              alignSelf: { xs: 'center', md: 'flex-start' },
+            }}
+          />
+          <Box
+            sx={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+              gap: 2,
+              width: { xs: '100%', md: 'auto' },
+              alignItems: { xs: 'center', md: 'flex-start' },
+              textAlign: { xs: 'center', md: 'left' },
+            }}
+          >
+            <Typography
+              variant="h3"
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
+                color: '#fff',
+                fontWeight: 'bold',
+                fontFamily: inter.style.fontFamily,
+                mb: 0,
+                fontSize: { xs: 28, sm: 32, md: 36 },
               }}
             >
-              <Box sx={{ position: 'relative' }}>
-                <Avatar
-                  src={user.picture}
-                  alt={user.username}
-                  sx={{
-                    width: 120,
-                    height: 120,
-                    border: '4px solid rgba(147, 51, 234, 0.3)',
-                    boxShadow: '0 0 20px rgba(147, 51, 234, 0.2)',
-                  }}
-                />
-              </Box>
-              <Typography
-                variant="h4"
-                sx={{
-                  color: 'white',
-                  fontWeight: 'bold',
-                  fontFamily: inter.style.fontFamily,
-                  fontSize: '1.5rem',
-                }}
-              >
-                {user.username}
-              </Typography>
+              {user.username}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: '#fff',
+                fontSize: { xs: 15, sm: 16, md: 18 },
+                mb: 1,
+              }}
+            >
+              {userData?.email}
+            </Typography>
+            <Box
+              sx={{ width: { xs: '100%', sm: 340, md: 400 }, maxWidth: '100%' }}
+            >
               <Paper
                 elevation={0}
                 sx={{
-                  p: 2,
-                  mt: 2,
-                  borderRadius: '16px',
-                  background: 'rgba(42, 42, 42, 0.7)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  width: '100%',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    borderColor: 'rgba(147, 51, 234, 0.3)',
+                  border: '2px solid #FFFFFF30',
+                  borderRadius: '12px',
+                  background: 'rgba(35, 35, 35, 0.85)',
+                  p: 1.5,
+                  mb: 1,
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#fff',
+                    fontFamily: inter.style.fontFamily,
+                    minHeight: 32,
+                  }}
+                >
+                  {user.bio || 'Aquí irá la biografía del usuario.'}
+                </Typography>
+              </Paper>
+            </Box>
+            <Typography
+              variant="body2"
+              sx={{
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                mt: 1,
+                fontSize: { xs: 14, sm: 15, md: 16 },
+              }}
+            >
+              12 friends
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'row', md: 'column' },
+              gap: { xs: 2, md: 1 },
+              alignItems: { xs: 'center', md: 'flex-end' },
+              justifyContent: { xs: 'center', md: 'flex-end' },
+              ml: { xs: 0, md: 'auto' },
+              mt: { xs: 2, md: 0 },
+              width: { xs: '100%', md: 'auto' },
+            }}
+          >
+            <Button
+              variant="outlined"
+              component={Link}
+              href="https://accounts.gycoding.com"
+              target="_blank"
+              sx={{
+                borderColor: '#FFFFFF',
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                borderRadius: '8px',
+                minWidth: { xs: 0, md: 140 },
+                width: { xs: '50%', md: 'auto' },
+                mb: { xs: 0, md: 1 },
+                px: 2,
+                py: 0.5,
+                fontSize: { xs: 15, md: 16 },
+                textTransform: 'none',
+                background: 'transparent',
+                '&:hover': {
+                  borderColor: '#c4b5fd',
+                  color: '#fff',
+                  background: '#8C54FF',
+                },
+              }}
+              endIcon={<LaunchIcon />}
+            >
+              Edit Account
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                borderColor: '#FFFFFF',
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                borderRadius: '8px',
+                minWidth: { xs: 0, md: 140 },
+                width: { xs: '50%', md: 'auto' },
+                px: 2,
+                py: 0.5,
+                fontSize: { xs: 15, md: 16 },
+                textTransform: 'none',
+                background: 'transparent',
+                '&:hover': {
+                  borderColor: '#c4b5fd',
+                  color: '#fff',
+                  background: '#8C54FF',
+                },
+              }}
+              endIcon={<EditIcon />}
+            >
+              Edit Profile
+            </Button>
+          </Box>
+        </Box>
+        <Box sx={{ mt: 6 }}>
+          <Tabs
+            value={tab}
+            onChange={(_, v) => setTab(v)}
+            textColor="primary"
+            indicatorColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            sx={{
+              borderBottom: '1px solid #FFFFFF30',
+              background: 'transparent',
+              '.MuiTab-root': {
+                color: '#fff',
+                fontWeight: 'bold',
+                fontFamily: inter.style.fontFamily,
+                fontSize: 18,
+                textTransform: 'none',
+                minWidth: 120,
+              },
+              '.Mui-selected': { color: '#FFFFFF' },
+              '& .MuiTabs-scrollButtons': {
+                color: '#fff',
+              },
+            }}
+          >
+            <Tab label="Books" />
+            <Tab label="Hall of Fame" />
+            <Tab label="Stats" />
+            <Tab label="Activity" />
+          </Tabs>
+          {tab === 0 && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                gap: 4,
+                mt: 4,
+              }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  minWidth: { xs: '100%', md: 220 },
+                  maxWidth: { xs: '100%', md: 260 },
+                  p: 3,
+                  borderRadius: '18px',
+                  background: 'rgba(35, 35, 35, 0.85)',
+                  border: '1px solid #FFFFFF30',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                }}
+              >
+                {isMobile ? (
+                  <Select
+                    value={statusFilter ?? 'all'}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === 'all') {
+                        setStatusFilter(null);
+                      } else {
+                        setStatusFilter(v as EStatus);
+                      }
+                    }}
+                    fullWidth
+                    sx={{
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      fontSize: 16,
+                      fontFamily: inter.style.fontFamily,
+                      background: 'rgba(35, 35, 35, 0.85)',
+                      borderRadius: '12px',
+                      '.MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#FFFFFF',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#8C54FF',
+                      },
+                      '& .MuiSvgIcon-root': {
+                        color: '#fff',
+                      },
+                    }}
+                  >
+                    <MenuItem
+                      value="all"
+                      sx={{ color: '#8C54FF', fontWeight: 'bold' }}
+                    >
+                      All
+                    </MenuItem>
+                    {statusOptions.map((opt) => (
+                      <MenuItem
+                        key={opt.value}
+                        value={opt.value}
+                        sx={{ color: '#fff', fontWeight: 'bold' }}
+                      >
+                        {opt.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                ) : (
+                  <RadioGroup
+                    value={statusFilter ?? 'all'}
+                    onChange={(_, v) => {
+                      if (v === 'all') {
+                        setStatusFilter(null);
+                      } else {
+                        setStatusFilter(v as EStatus);
+                      }
+                    }}
+                    sx={{ gap: 1 }}
+                  >
+                    <FormControlLabel
+                      value="all"
+                      control={
+                        <Radio
+                          sx={{
+                            color: '#fff',
+                            '&.Mui-checked': {
+                              color: '#8C54FF',
+                            },
+                          }}
+                        />
+                      }
+                      label={
+                        <span
+                          style={{
+                            color: statusFilter === null ? '#8C54FF' : '#fff',
+                            fontWeight: 'bold',
+                            fontSize: 16,
+                            fontFamily: inter.style.fontFamily,
+                          }}
+                        >
+                          All
+                        </span>
+                      }
+                      sx={{
+                        ml: 0,
+                        mr: 0,
+                        mb: 1,
+                        borderRadius: '12px',
+                        px: 1.5,
+                        py: 0.5,
+                        background:
+                          statusFilter === null
+                            ? 'rgba(140,84,255,0.10)'
+                            : 'transparent',
+                        '&:hover': {
+                          background: 'rgba(140,84,255,0.15)',
+                        },
+                      }}
+                    />
+                    {statusOptions.map((opt) => (
+                      <FormControlLabel
+                        key={opt.value}
+                        value={opt.value}
+                        control={
+                          <Radio
+                            sx={{
+                              color: '#fff',
+                              '&.Mui-checked': {
+                                color: '#8C54FF',
+                              },
+                            }}
+                          />
+                        }
+                        label={
+                          <span
+                            style={{
+                              color:
+                                statusFilter === opt.value ? '#8C54FF' : '#fff',
+                              fontWeight: 'bold',
+                              fontSize: 16,
+                              fontFamily: inter.style.fontFamily,
+                            }}
+                          >
+                            {opt.label}
+                          </span>
+                        }
+                        sx={{
+                          ml: 0,
+                          mr: 0,
+                          borderRadius: '12px',
+                          px: 1.5,
+                          py: 0.5,
+                          background:
+                            statusFilter === opt.value
+                              ? 'rgba(140,84,255,0.10)'
+                              : 'transparent',
+                          '&:hover': {
+                            background: 'rgba(140,84,255,0.15)',
+                          },
+                        }}
+                      />
+                    ))}
+                  </RadioGroup>
+                )}
+              </Paper>
+              <Box
+                sx={{
+                  flex: 1,
+                  display: { xs: 'grid', sm: 'grid', md: 'flex' },
+                  gridTemplateColumns: {
+                    xs: '1fr 1fr',
+                    sm: '1fr 1fr',
+                    md: 'none',
+                  },
+                  flexWrap: { xs: 'unset', md: 'wrap' },
+                  gap: 2,
+                  overflowY: 'auto',
+                  maxHeight: 560,
+                  minHeight: 340,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  py: 1,
+                  background: 'transparent',
+                  scrollbarColor: '#8C54FF #232323',
+                  '&::-webkit-scrollbar': {
+                    width: 10,
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: '#FFFFFF',
+                    borderRadius: 6,
                   },
                 }}
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    cursor: 'pointer',
-                  }}
-                  onClick={() =>
-                    window.open('https://accounts.gycoding.com', '_blank')
-                  }
-                >
-                  <EditIcon
+                {filteredBooks.length === 0 ? (
+                  <Typography
+                    variant="body1"
                     sx={{
-                      color: '#9333ea',
-                      fontSize: 24,
+                      color: '#fff',
+                      fontFamily: inter.style.fontFamily,
+                      textAlign: 'center',
+                      mt: 6,
                     }}
-                  />
-                  <Box>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: 'white',
-                        fontFamily: inter.style.fontFamily,
-                        fontSize: '1rem',
-                      }}
-                    >
-                      Ir a GY Accounts
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#FFFFFF80' }}>
-                      Accede a tu cuenta para gestionar tu perfil y
-                      configuración
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
-            </Box>
-          </Box>
-
-          {/* Sección de Biblioteca y Estadísticas */}
-          <Box sx={{ flex: { md: '0 0 66.666%', padding: '20px' } }}>
-            <Box sx={{ mb: 4 }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  color: 'white',
-                  mb: 2,
-                  fontFamily: inter.style.fontFamily,
-                  fontWeight: 'bold',
-                  fontSize: '1.25rem',
-                }}
-              >
-                Mi Biblioteca
-              </Typography>
-              <Divider
-                sx={{ mb: 3, borderColor: 'rgba(255, 255, 255, 0.1)' }}
-              />
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-                  gap: 2,
-                }}
-              >
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2,
-                    borderRadius: '16px',
-                    background: 'rgba(42, 42, 42, 0.7)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
-                    },
-                  }}
-                >
-                  <Link href="/profile/library">
+                  >
+                    No hay libros en este estado.
+                  </Typography>
+                ) : (
+                  filteredBooks.map((book) => (
                     <Box
+                      key={book.id}
                       sx={{
+                        minWidth: { xs: 'unset', md: 140 },
+                        maxWidth: { xs: 'unset', md: 220 },
+                        width: { xs: '100%', sm: '100%', md: 'auto' },
+                        boxSizing: 'border-box',
                         display: 'flex',
+                        justifyContent: 'center',
                         alignItems: 'center',
-                        gap: 2,
-                        textDecoration: 'none',
+                        px: { xs: 0.5, sm: 1, md: 0 },
+                        py: { xs: 1, md: 0 },
                       }}
                     >
-                      <BookIcon
-                        sx={{
-                          color: '#9333ea',
-                          fontSize: 32,
-                          textDecoration: 'none',
-                        }}
-                      />
-
-                      <Box>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            color: 'white',
-                            fontFamily: inter.style.fontFamily,
-                            fontSize: '1rem',
-                            textDecoration: 'none',
-                          }}
-                        >
-                          Mis Libros
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: '#FFFFFF80', textDecoration: 'none' }}
-                        >
-                          Próximamente
-                        </Typography>
-                      </Box>
+                      <BookCardCompact book={book} small={isMobile} />
                     </Box>
-                  </Link>
-                </Paper>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2,
-                    borderRadius: '16px',
-                    background: 'rgba(42, 42, 42, 0.7)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                    }}
-                  >
-                    <FavoriteIcon
-                      sx={{
-                        color: '#9333ea',
-                        fontSize: 32,
-                      }}
-                    />
-                    <Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: 'white',
-                          fontFamily: inter.style.fontFamily,
-                          fontSize: '1rem',
-                        }}
-                      >
-                        Favoritos
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#FFFFFF80' }}>
-                        Próximamente
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2,
-                    borderRadius: '16px',
-                    background: 'rgba(42, 42, 42, 0.7)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                    }}
-                  >
-                    <HistoryIcon
-                      sx={{
-                        color: '#9333ea',
-                        fontSize: 32,
-                      }}
-                    />
-                    <Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: 'white',
-                          fontFamily: inter.style.fontFamily,
-                          fontSize: '1rem',
-                        }}
-                      >
-                        Historial de Lectura
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#FFFFFF80' }}>
-                        Próximamente
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2,
-                    borderRadius: '16px',
-                    background: 'rgba(42, 42, 42, 0.7)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                    }}
-                  >
-                    <StarIcon
-                      sx={{
-                        color: '#9333ea',
-                        fontSize: 32,
-                      }}
-                    />
-                    <Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: 'white',
-                          fontFamily: inter.style.fontFamily,
-                          fontSize: '1rem',
-                        }}
-                      >
-                        Reseñas
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#FFFFFF80' }}>
-                        Próximamente
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
+                  ))
+                )}
               </Box>
             </Box>
-
-            {/* Sección de Comunidad */}
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{
-                  color: 'white',
-                  mb: 2,
-                  fontFamily: inter.style.fontFamily,
-                  fontWeight: 'bold',
-                  fontSize: '1.25rem',
-                }}
-              >
-                Comunidad
-              </Typography>
-              <Divider
-                sx={{ mb: 3, borderColor: 'rgba(255, 255, 255, 0.1)' }}
-              />
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-                  gap: 2,
-                }}
-              >
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2,
-                    borderRadius: '16px',
-                    background: 'rgba(42, 42, 42, 0.7)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                    }}
-                  >
-                    <GroupIcon
-                      sx={{
-                        color: '#9333ea',
-                        fontSize: 32,
-                      }}
-                    />
-                    <Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: 'white',
-                          fontFamily: inter.style.fontFamily,
-                          fontSize: '1rem',
-                        }}
-                      >
-                        Clubes de Lectura
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#FFFFFF80' }}>
-                        Próximamente
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
-              </Box>
+          )}
+          {tab === 1 && (
+            <Box
+              sx={{
+                mt: 4,
+                color: '#fff',
+                fontFamily: inter.style.fontFamily,
+                textAlign: 'center',
+              }}
+            >
+              <Typography variant="h5">Hall of Fame</Typography>
+              <Typography variant="body1">Próximamente...</Typography>
             </Box>
-          </Box>
+          )}
+          {tab === 2 && (
+            <Box
+              sx={{
+                mt: 4,
+                color: '#FFFFFF',
+                fontFamily: inter.style.fontFamily,
+                textAlign: 'center',
+              }}
+            >
+              <Typography variant="h5">Stats</Typography>
+              <Typography variant="body1">Próximamente...</Typography>
+            </Box>
+          )}
+          {tab === 3 && (
+            <Box
+              sx={{
+                mt: 4,
+                color: '#FFFFFF',
+                fontFamily: inter.style.fontFamily,
+                textAlign: 'center',
+              }}
+            >
+              <Typography variant="h5">Activity</Typography>
+              <Typography variant="body1">Próximamente...</Typography>
+            </Box>
+          )}
         </Box>
-      </Paper>
+      </Box>
     </Container>
   );
 }

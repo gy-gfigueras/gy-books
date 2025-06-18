@@ -1,3 +1,5 @@
+import { EStatus } from '@/utils/constants/EStatus';
+
 export interface Series {
   name: string;
   id: number;
@@ -28,4 +30,5 @@ export default interface Book {
   author: Author;
   description: string;
   rating?: number;
+  status: EStatus;
 }

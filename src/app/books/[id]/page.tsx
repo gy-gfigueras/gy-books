@@ -8,12 +8,18 @@ import { inter } from '@/utils/fonts/fonts';
 import AuthorCard from '@/app/components/atoms/AuthorCard';
 import { Author } from '@/domain/book.model';
 import { BookRating } from '@/app/components/atoms/BookRating';
+import StarIcon from '@mui/icons-material/Star';
 
 export default function BookDetails() {
   const params = useParams();
-  const { data: book, isLoading } = useBook(params.id as string);
+  const {
+    data: book,
+    isLoading,
+    bookStatus,
+    isBookStatusLoading,
+  } = useBook(params.id as string);
 
-  if (isLoading) {
+  if (isLoading || isBookStatusLoading) {
     return (
       <Box
         sx={{
@@ -107,13 +113,38 @@ export default function BookDetails() {
             color: '#FFFFFF31',
             marginBottom: '1rem',
             textAlign: { xs: 'center', md: 'left' },
-            fontWeight: '800',
+            fontWeight: '400',
             marginTop: '-1rem',
           }}
         >
           {book?.author.name}
         </Typography>
-        <BookRating bookId={book?.id || ''} />
+
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'primary.main',
+            justifySelf: { xs: 'center', md: 'left' },
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.2rem',
+            fontSize: '24px',
+          }}
+        >
+          {bookStatus?.averageRating}
+          <StarIcon
+            sx={{
+              color: 'primary.main',
+              fontSize: '30px',
+              marginTop: '-0.2rem',
+            }}
+          />
+        </Typography>
+        <BookRating
+          bookId={book?.id || ''}
+          bookStatus={bookStatus || undefined}
+        />
         <Typography
           variant="body1"
           sx={{
