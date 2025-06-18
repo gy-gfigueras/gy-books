@@ -83,6 +83,9 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
       setTempStartDate(initialRating.startDate || '');
       setTempEndDate(initialRating.endDate || '');
       setTempRating(initialRating.rating || 0);
+    } else {
+      // Si no hay rating inicial, asegurar que tempRating sea 0
+      setTempRating(0);
     }
   }, [initialRating]);
 
@@ -103,15 +106,20 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
         await addStatus(bookId, tempStatus);
         setStatus(tempStatus);
       }
+
       // 2. Actualizar rating/fechas si han cambiado
+      // Siempre enviar rating: si no hay rating previo, usar 0
+      const currentRating = rating?.rating || 0;
+      const newRating = tempRating || 0; // Asegurar que siempre sea un número
+
       if (
-        tempRating !== (rating?.rating || 0) ||
+        newRating !== currentRating ||
         tempStartDate !== startDate ||
         tempEndDate !== endDate
       ) {
         const formData = new FormData();
         formData.append('bookId', bookId);
-        formData.append('rating', tempRating.toString());
+        formData.append('rating', newRating.toString()); // Siempre enviar un número
         formData.append('startDate', tempStartDate);
         formData.append('endDate', tempEndDate);
         const newRatingData = await rateBook(formData, !!initialRating);

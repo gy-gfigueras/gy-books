@@ -86,7 +86,11 @@ async function handler(request: Request) {
       const body = await request.json();
       console.log('POST Request body:', body);
 
-      if (!body.rating || typeof body.rating !== 'number') {
+      if (
+        body.rating === undefined ||
+        body.rating === null ||
+        typeof body.rating !== 'number'
+      ) {
         return NextResponse.json(
           { error: 'Rating is required and must be a number' },
           { status: 400 }
@@ -132,7 +136,11 @@ async function handler(request: Request) {
       const body = await request.json();
       console.log('POST Request body:', body);
 
-      if (!body.rating || typeof body.rating !== 'number') {
+      if (
+        body.rating === undefined ||
+        body.rating === null ||
+        typeof body.rating !== 'number'
+      ) {
         return NextResponse.json(
           { error: 'Rating is required and must be a number' },
           { status: 400 }

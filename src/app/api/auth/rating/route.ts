@@ -6,6 +6,7 @@ import { ELogs } from '@/utils/constants/ELogs';
 import { Library } from '@/domain/library.model';
 import { GET_BOOK_BY_ID_QUERY } from '@/utils/constants/Query';
 import { mapHardcoverToBook } from '@/mapper/books.mapper';
+import { EStatus } from '@/utils/constants/EStatus';
 
 export const GET = withApiAuthRequired(async () => {
   try {
@@ -14,6 +15,7 @@ export const GET = withApiAuthRequired(async () => {
     const idToken = session?.idToken;
     const apiUrlHardcover = process.env.HARDCOVER_API_URL;
     const apiKey = process.env.HARDCOVER_API_TOKEN;
+    const baseURL = process.env.GY_API?.replace(/['"]/g, '');
 
     if (session) {
       await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: userId });
@@ -75,6 +77,27 @@ export const GET = withApiAuthRequired(async () => {
           );
           continue;
         }
+        const apiUrl = `${baseURL}/books/${rating.bookId}`;
+        const bookStatusResponse = await fetch(apiUrl, {
+          method: 'GET',
+          headers,
+        });
+
+        let bookStatusData = null;
+        if (bookStatusResponse.status === 404) {
+          console.log(
+            `No hay estado para el libro ${rating.bookId}, usando estado por defecto`
+          );
+          bookStatusData = { status: EStatus.WANT_TO_READ };
+        } else if (!bookStatusResponse.ok) {
+          console.error(
+            `Error fetching status for book ${rating.bookId}:`,
+            await bookStatusResponse.text()
+          );
+          bookStatusData = { status: EStatus.WANT_TO_READ };
+        } else {
+          bookStatusData = await bookStatusResponse.json();
+        }
 
         const bookData = await bookResponse.json();
 
@@ -88,6 +111,7 @@ export const GET = withApiAuthRequired(async () => {
                 name: bookData.data.books_by_pk.book_series[0].series.name,
               }
             : null,
+          status: bookStatusData?.status ?? EStatus.WANT_TO_READ,
         };
 
         library.books.push(mappedBook);

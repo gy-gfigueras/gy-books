@@ -30,5 +30,5 @@ export default interface Book {
   author: Author;
   description: string;
   rating?: number;
-  status: EStatus;
+  status?: EStatus;
 }

@@ -25,6 +25,9 @@ const RatingStars: React.FC<RatingStarsProps> = ({
 }) => {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
+  // Asegurar que rating siempre sea un número válido
+  const validRating = typeof rating === 'number' && !isNaN(rating) ? rating : 0;
+
   const handleMouseEnter = (value: number, event: React.MouseEvent) => {
     if (!disabled && onRatingChange) {
       const starElement = event.currentTarget as HTMLElement;
@@ -45,7 +48,8 @@ const RatingStars: React.FC<RatingStarsProps> = ({
       const starElement = event.currentTarget as HTMLElement;
       const rect = starElement.getBoundingClientRect();
       const isLeftHalf = event.clientX - rect.left < rect.width / 2;
-      onRatingChange(isLeftHalf ? value - 0.5 : value);
+      const newRating = isLeftHalf ? value - 0.5 : value;
+      onRatingChange(newRating);
     }
   };
 
@@ -78,7 +82,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({
     );
   }
 
-  const displayRating = hoverRating !== null ? hoverRating : rating;
+  const displayRating = hoverRating !== null ? hoverRating : validRating;
   const starSize = getStarSize();
 
   return (
