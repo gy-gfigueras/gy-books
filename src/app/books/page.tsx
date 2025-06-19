@@ -160,7 +160,7 @@ function BooksContent() {
             alignItems: 'center',
             alignContent: 'start',
             padding: '25px',
-            scrollbarColor: 'red transparent',
+            scrollbarColor: ' #8C54FF transparent',
           }}
         >
           {books.map((book: any) => (
