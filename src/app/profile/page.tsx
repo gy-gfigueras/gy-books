@@ -30,14 +30,16 @@ import { useTheme } from '@mui/material/styles';
 import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
 import { getBooksWithPagination } from '../actions/getApiBook';
 import Book from '@/domain/book.model';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const { user, isLoading } = useGyCodingUser();
   const [tab, setTab] = React.useState(0);
-  const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(null);
   const { user: userData } = useUser();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Estado para paginación automática
   const [books, setBooks] = useState<Book[]>([]);
@@ -45,11 +47,62 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const pageRef = useRef(0);
 
+  // Obtener el status del URL al cargar la página
+  const urlStatus = searchParams.get('status');
+  const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(
+    urlStatus && Object.values(EStatus).includes(urlStatus as EStatus)
+      ? (urlStatus as EStatus)
+      : null
+  );
+
   const statusOptions = [
     { label: 'Currently reading', value: EStatus.READING },
     { label: 'Read', value: EStatus.READ },
     { label: 'Want to read', value: EStatus.WANT_TO_READ },
   ];
+
+  // Función para actualizar la URL cuando cambie el filtro
+  const updateUrl = useCallback(
+    (newStatus: EStatus | null) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (newStatus) {
+        params.set('status', newStatus);
+      } else {
+        params.delete('status');
+      }
+      router.replace(`/profile?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router]
+  );
+
+  // Función para manejar cambios en el filtro
+  const handleStatusFilterChange = useCallback(
+    (newStatus: EStatus | null) => {
+      setStatusFilter(newStatus);
+      updateUrl(newStatus);
+    },
+    [updateUrl]
+  );
+
+  // Sincronizar el estado con los search params cuando cambien (solo para navegación del navegador)
+  useEffect(() => {
+    const currentUrlStatus = searchParams.get('status');
+    const newStatus =
+      currentUrlStatus &&
+      Object.values(EStatus).includes(currentUrlStatus as EStatus)
+        ? (currentUrlStatus as EStatus)
+        : null;
+
+    // Solo actualizar si es diferente y no es el mismo valor que ya tenemos
+    if (newStatus !== statusFilter) {
+      setStatusFilter(newStatus);
+    }
+  }, [searchParams]); // Removido statusFilter de las dependencias para evitar loops
+
+  // Memoizar el valor del filtro para evitar re-renders innecesarios
+  const filterValue = React.useMemo(() => {
+    return statusFilter ?? 'all';
+  }, [statusFilter]);
 
   // Función para cargar más libros
   const loadMoreBooks = useCallback(async () => {
@@ -373,13 +426,13 @@ export default function ProfilePage() {
               >
                 {isMobile ? (
                   <Select
-                    value={statusFilter ?? 'all'}
+                    value={filterValue}
                     onChange={(e) => {
                       const v = e.target.value;
                       if (v === 'all') {
-                        setStatusFilter(null);
+                        handleStatusFilterChange(null);
                       } else {
-                        setStatusFilter(v as EStatus);
+                        handleStatusFilterChange(v as EStatus);
                       }
                     }}
                     fullWidth
@@ -419,12 +472,12 @@ export default function ProfilePage() {
                   </Select>
                 ) : (
                   <RadioGroup
-                    value={statusFilter ?? 'all'}
+                    value={filterValue}
                     onChange={(_, v) => {
                       if (v === 'all') {
-                        setStatusFilter(null);
+                        handleStatusFilterChange(null);
                       } else {
-                        setStatusFilter(v as EStatus);
+                        handleStatusFilterChange(v as EStatus);
                       }
                     }}
                     sx={{ gap: 1 }}
