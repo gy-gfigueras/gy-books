@@ -28,6 +28,7 @@ import { getMenuItems } from '@/utils/constants/MenuItems';
 import { User } from '@/domain/user.model';
 import { useRouter } from 'next/navigation';
 import { inter } from './components/atoms/BookCard';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useGyCodingUser();
@@ -68,32 +69,36 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-      <Button
-        variant="contained"
-        onClick={() => (window.location.href = '/api/auth/login?prompt=login')}
-        sx={{
-          display: { xs: 'none', md: 'flex' },
-          background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
-          border: 'none',
-          color: '#ffffff',
-          fontWeight: 600,
-          px: 3,
-          py: 1.5,
-          borderRadius: '12px',
-          boxShadow: '0 4px 14px rgba(147, 51, 234, 0.4)',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 6px 20px rgba(147, 51, 234, 0.6)',
-            background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-          },
-          '&:active': {
-            transform: 'translateY(0)',
-          },
-        }}
-      >
-        Iniciar Sesión
-      </Button>
+      <a href="/api/auth/login" style={{ textDecoration: 'none' }}>
+        <Button
+          variant="contained"
+          onClick={() =>
+            (window.location.href = '/api/auth/login?prompt=login')
+          }
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
+            border: 'none',
+            color: '#ffffff',
+            fontWeight: 600,
+            px: 3,
+            py: 1.5,
+            borderRadius: '12px',
+            boxShadow: '0 4px 14px rgba(147, 51, 234, 0.4)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 20px rgba(147, 51, 234, 0.6)',
+              background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+            },
+            '&:active': {
+              transform: 'translateY(0)',
+            },
+          }}
+        >
+          Iniciar Sesión
+        </Button>
+      </a>
     );
   };
 
@@ -228,6 +233,37 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
               ))}
             </List>
           </Box>
+          {user && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                p: 3,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <a href="/api/auth/logout" style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  sx={(theme) => ({
+                    fontSize: ['12px', '14px'],
+                    transition: '0.3s',
+                    '&:hover': {
+                      background: 'red',
+                      color: theme.palette.text.primary,
+                    },
+                  })}
+                  startIcon={<LogoutIcon />}
+                >
+                  Logout
+                </Button>
+              </a>
+            </Box>
+          )}
         </Drawer>
 
         <Box sx={{ mt: '80px' }}>{children}</Box>

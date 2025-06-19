@@ -23,12 +23,6 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
         icon: React.createElement(MenuIcons.Home),
         route: '/',
       },
-      {
-        text: 'Cerrar Sesión',
-        color: 'red',
-        icon: React.createElement(MenuIcons.Logout),
-        route: '/api/auth/logout?federated=true',
-      },
     ];
   }
 

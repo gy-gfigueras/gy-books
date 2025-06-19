@@ -159,7 +159,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                       },
                     }}
                   >
-                    <Link
+                    <a
                       style={{
                         textDecoration: 'none',
                         color: '#FF5252',
@@ -179,7 +179,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         width={20}
                         height={20}
                       />
-                    </Link>
+                    </a>
                   </Box>
                 </Box>
               </ClickAwayListener>
