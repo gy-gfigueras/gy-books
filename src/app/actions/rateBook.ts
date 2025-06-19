@@ -1,23 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import { Rating } from '@/domain/rating.model';
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 
-export default async function rateBook(
-  formData: FormData,
-  updating: boolean
-): Promise<Rating> {
+export default async function rateBook(formData: FormData) {
   try {
     const bookId = formData.get('bookId') as string;
     const rating = formData.get('rating') as string;
     const startDate = formData.get('startDate') as string;
     const endDate = formData.get('endDate') as string;
-    console.log('updating', updating);
+    const status = formData.get('status') as string;
 
-    if (!bookId || !rating) {
-      throw new Error('Book ID and rating are required');
+    if (!bookId) {
+      throw new Error('Book ID is required');
     }
 
     const ratingNumber = parseFloat(rating);
@@ -25,57 +21,42 @@ export default async function rateBook(
       throw new Error('Rating must be a number between 0 and 5');
     }
 
-    console.log('Server Action - Rating book:', {
-      bookId,
-      rating: ratingNumber,
-      startDate,
-      endDate,
-    });
-
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
     const cookieStore = cookies();
     const cookieHeader = cookieStore.toString();
 
-    console.log('updating', updating);
-    console.log('protocol', updating ? 'PATCH' : 'POST');
-    console.log('host', host);
-    console.log('cookieHeader', cookieHeader);
-
     const response = await fetch(
-      `${protocol}://${host}/api/auth/rating/${bookId}`,
+      `${protocol}://${host}/api/auth/books/${bookId}`,
       {
-        method: updating ? 'PATCH' : 'POST',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Cookie: cookieHeader,
         },
         body: JSON.stringify({
           rating: ratingNumber,
-          startDate: startDate || '2025-01-01',
-          endDate: endDate || '2025-01-26',
+          startDate: startDate || '',
+          endDate: endDate || '',
+          status: status,
         }),
         credentials: 'include',
       }
     );
 
-    console.log('Server Action - Response status:', response.status);
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Server Action - Error response:', errorText);
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    if (!data.rating) {
-      throw new Error('No rating data received from server');
+    if (!data.bookRatingData) {
+      throw new Error('No ApiBook data received from server');
     }
 
-    return data.rating;
+    return data.bookRatingData;
   } catch (error: any) {
-    console.error('Server Action - Error details:', error);
     throw new Error(`Failed to rate book: ${error.message}`);
   }
 }

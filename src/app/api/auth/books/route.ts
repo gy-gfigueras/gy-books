@@ -6,7 +6,7 @@ import { ELogs } from '@/utils/constants/ELogs';
 import { Library } from '@/domain/library.model';
 import { GET_BOOK_BY_ID_QUERY } from '@/utils/constants/Query';
 import { mapHardcoverToBook } from '@/mapper/books.mapper';
-import { EStatus } from '@/utils/constants/EStatus';
+import { ApiBook } from '@/domain/apiBook.model';
 
 export const GET = withApiAuthRequired(async () => {
   try {
@@ -15,19 +15,16 @@ export const GET = withApiAuthRequired(async () => {
     const idToken = session?.idToken;
     const apiUrlHardcover = process.env.HARDCOVER_API_URL;
     const apiKey = process.env.HARDCOVER_API_TOKEN;
-    const baseURL = process.env.GY_API?.replace(/['"]/g, '');
 
     if (session) {
       await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: userId });
     }
 
-    const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
-    if (!baseUrl || !idToken) {
+    if (!idToken) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    const apiUrl = `${baseUrl}/books/ratings`;
+    const apiUrl = `${process.env.GY_API}/books/`;
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`,
@@ -44,17 +41,14 @@ export const GET = withApiAuthRequired(async () => {
     }
 
     const ratingsData = await response.json();
+    console.log(ratingsData as ApiBook[]);
+
     const library: Library = {
       books: [],
-      stats: {
-        totalBooks: 0,
-        totalRatings: 0,
-        averageRating: 0,
-      },
     };
 
     // Obtener los detalles de cada libro
-    for (const rating of ratingsData) {
+    for (const book of ratingsData) {
       try {
         const bookResponse = await fetch(apiUrlHardcover!, {
           method: 'POST',
@@ -65,69 +59,39 @@ export const GET = withApiAuthRequired(async () => {
           body: JSON.stringify({
             query: GET_BOOK_BY_ID_QUERY,
             variables: {
-              id: parseInt(rating.bookId),
+              id: parseInt(book.id),
             },
           }),
         });
 
         if (!bookResponse.ok) {
           console.error(
-            `Error fetching book ${rating.bookId}:`,
+            `Error fetching book ${book.bookId}:`,
             await bookResponse.text()
           );
           continue;
-        }
-        const apiUrl = `${baseURL}/books/${rating.bookId}`;
-        const bookStatusResponse = await fetch(apiUrl, {
-          method: 'GET',
-          headers,
-        });
-
-        let bookStatusData = null;
-        if (bookStatusResponse.status === 404) {
-          console.log(
-            `No hay estado para el libro ${rating.bookId}, usando estado por defecto`
-          );
-          bookStatusData = { status: EStatus.WANT_TO_READ };
-        } else if (!bookStatusResponse.ok) {
-          console.error(
-            `Error fetching status for book ${rating.bookId}:`,
-            await bookStatusResponse.text()
-          );
-          bookStatusData = { status: EStatus.WANT_TO_READ };
-        } else {
-          bookStatusData = await bookStatusResponse.json();
         }
 
         const bookData = await bookResponse.json();
 
         const mappedBook = {
           ...mapHardcoverToBook(bookData.data.books_by_pk),
-          id: rating.bookId,
-          rating: rating.rating,
+          id: book.id,
+          rating: book.userData.rating,
           series: bookData.data.books_by_pk.book_series?.[0]?.series
             ? {
                 id: bookData.data.books_by_pk.book_series[0].series.id,
                 name: bookData.data.books_by_pk.book_series[0].series.name,
               }
             : null,
-          status: bookStatusData?.status ?? EStatus.WANT_TO_READ,
+          status: book.userData.status,
         };
 
         library.books.push(mappedBook);
       } catch (error) {
-        console.error(`Error processing book ${rating.bookId}:`, error);
+        console.error(`Error processing book ${book.bookId}:`, error);
       }
     }
-
-    // Calcular estadísticas
-    library.stats = {
-      totalBooks: library.books.length,
-      totalRatings: ratingsData.length,
-      averageRating:
-        library.books.reduce((acc, curr) => acc + (curr.rating || 0), 0) /
-          library.books.length || 0,
-    };
 
     return NextResponse.json(library);
   } catch (error) {

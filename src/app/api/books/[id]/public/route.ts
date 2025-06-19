@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
+import { ApiBook } from '@/domain/apiBook.model';
 
 async function handler(request: Request) {
   const url = new URL(request.url);
@@ -46,16 +47,13 @@ async function handler(request: Request) {
         throw new Error(`GyCoding API Error: ${errorText}`);
       }
 
-      const bookStatusData = await gyCodingResponse.json();
+      const apiBook = await gyCodingResponse.json();
 
       await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, {
         bookId: id,
       });
-      console.log(bookStatusData);
 
-      return NextResponse.json({
-        bookStatusData: bookStatusData,
-      });
+      return NextResponse.json(apiBook as ApiBook);
     }
 
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });

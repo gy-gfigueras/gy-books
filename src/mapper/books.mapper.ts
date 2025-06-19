@@ -44,7 +44,6 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
     title: hardcoverBook.title,
     hasImage: !!hardcoverBook.image,
     imageUrl: hardcoverBook.image?.url,
-    rating: hardcoverBook.rating,
   });
 
   const mainAuthor = hardcoverBook.contributions?.[0]?.author;

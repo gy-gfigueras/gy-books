@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import bookStatus from '@/domain/bookStatus';
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 import { getSession } from '@auth0/nextjs-auth0';
+import { ApiBook } from '@/domain/apiBook.model';
 
-export default async function getBookStatus(
+export default async function getApiBook(
   bookId: string
-): Promise<bookStatus | null> {
-  console.log('Server Action - Getting book status for:', bookId);
+): Promise<ApiBook | null> {
+  console.log('Server Action', bookId);
 
   try {
     const headersList = headers();
@@ -70,7 +70,7 @@ export default async function getBookStatus(
         if (publicResponse.ok) {
           const publicData = await publicResponse.json();
           console.log('Server Action - Public fallback successful');
-          return publicData.bookStatus as bookStatus;
+          return publicData as ApiBook;
         }
       }
 
@@ -80,13 +80,17 @@ export default async function getBookStatus(
     }
 
     const data = await response.json();
-    console.log('Server Action - Received data:', data.bookStatusData);
+    console.log('Server Action - Received data:', data);
+
+    if (data.status === 404) {
+      return null;
+    }
 
     // Manejar la estructura de respuesta diferente según la ruta
     if (isAuthenticated) {
-      return data.bookStatusData as bookStatus;
+      return data as ApiBook;
     } else {
-      return data.bookStatusData as bookStatus;
+      return data as ApiBook;
     }
   } catch (error: any) {
     console.error('Server Action - Error details:', error);

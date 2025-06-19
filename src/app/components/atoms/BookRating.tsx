@@ -15,8 +15,6 @@ import {
 } from '@mui/material';
 import RatingStars from './RatingStars';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { Rating } from '@/domain/rating.model';
-import { useRating } from '@/hooks/useRating';
 import rateBook from '@/app/actions/rateBook';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -25,11 +23,12 @@ import { EStatus } from '@/utils/constants/EStatus';
 import { useTheme } from '@mui/material/styles';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import addStatus from '@/app/actions/addStatus';
-import bookStatus from '@/domain/bookStatus';
+import { ApiBook } from '@/domain/apiBook.model';
+
 interface BookRatingProps {
   bookId: string;
-  bookStatus?: bookStatus;
+  apiBook: ApiBook;
+  isRatingLoading: boolean;
 }
 
 const statusOptions = [
@@ -46,24 +45,18 @@ const statusOptions = [
   { label: 'Read', value: EStatus.READ, icon: <CheckCircleIcon /> },
 ];
 
-export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
+export const BookRating = ({
+  bookId,
+  apiBook,
+  isRatingLoading,
+}: BookRatingProps) => {
   const { user, isLoading: isUserLoading } = useUser();
-  const { data: initialRating, isLoading: isRatingLoading } = useRating(bookId);
-  const [rating, setRating] = useState<Rating | undefined>(
-    initialRating || undefined
-  );
-  console.log(bookStatus);
-  const [status, setStatus] = useState<EStatus>(
-    bookStatus?.status || EStatus.WANT_TO_READ
-  );
-  const [startDate, setStartDate] = useState<string>(
-    initialRating?.startDate || ''
-  );
-  const [endDate, setEndDate] = useState<string>(initialRating?.endDate || '');
-  const [tempRating, setTempRating] = useState<number>(rating?.rating || 0);
-  const [tempStatus, setTempStatus] = useState<EStatus>(status);
-  const [tempStartDate, setTempStartDate] = useState<string>(startDate);
-  const [tempEndDate, setTempEndDate] = useState<string>(endDate);
+
+  // Estado temporal único para todos los campos
+  const [tempRating, setTempRating] = useState<number>(0);
+  const [tempStatus, setTempStatus] = useState<EStatus>(EStatus.WANT_TO_READ);
+  const [tempStartDate, setTempStartDate] = useState<string>('');
+  const [tempEndDate, setTempEndDate] = useState<string>('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -71,61 +64,38 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // Sincronizar estado temporal con apiBook
   useEffect(() => {
-    if (initialRating) {
-      setRating(initialRating);
-      if ('status' in initialRating && initialRating.status) {
-        setStatus(initialRating.status as EStatus);
-        setTempStatus(initialRating.status as EStatus);
-      }
-      setStartDate(initialRating.startDate || '');
-      setEndDate(initialRating.endDate || '');
-      setTempStartDate(initialRating.startDate || '');
-      setTempEndDate(initialRating.endDate || '');
-      setTempRating(initialRating.rating || 0);
+    if (apiBook && apiBook.userData) {
+      setTempRating(apiBook.userData.rating || 0);
+      setTempStatus(apiBook.userData.status ?? EStatus.WANT_TO_READ);
+      setTempStartDate(apiBook.userData.startDate || '');
+      setTempEndDate(apiBook.userData.endDate || '');
     } else {
-      // Si no hay rating inicial, asegurar que tempRating sea 0
       setTempRating(0);
+      setTempStatus(EStatus.WANT_TO_READ);
+      setTempStartDate('');
+      setTempEndDate('');
     }
-  }, [initialRating]);
-
-  // Actualizar el status cuando bookStatus cambie
-  useEffect(() => {
-    if (bookStatus?.status) {
-      setStatus(bookStatus.status as EStatus);
-      setTempStatus(bookStatus.status as EStatus);
-    }
-  }, [bookStatus]);
+  }, [apiBook]);
 
   const handleApply = async () => {
     if (!user || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      // 1. Actualizar status si ha cambiado
-      if (tempStatus !== status) {
-        await addStatus(bookId, tempStatus);
-        setStatus(tempStatus);
-      }
-
-      // 2. Actualizar rating/fechas si han cambiado
-      // Siempre enviar rating: si no hay rating previo, usar 0
-      const currentRating = rating?.rating || 0;
-      const newRating = tempRating || 0; // Asegurar que siempre sea un número
-
-      if (
-        newRating !== currentRating ||
-        tempStartDate !== startDate ||
-        tempEndDate !== endDate
-      ) {
-        const formData = new FormData();
-        formData.append('bookId', bookId);
-        formData.append('rating', newRating.toString()); // Siempre enviar un número
-        formData.append('startDate', tempStartDate);
-        formData.append('endDate', tempEndDate);
-        const newRatingData = await rateBook(formData, !!initialRating);
-        setRating(newRatingData);
-        setStartDate(tempStartDate);
-        setEndDate(tempEndDate);
+      const formData = new FormData();
+      formData.append('bookId', bookId);
+      formData.append('rating', tempRating.toString());
+      formData.append('startDate', tempStartDate);
+      formData.append('endDate', tempEndDate);
+      formData.append('status', tempStatus.toString());
+      const updatedApiBook = await rateBook(formData);
+      // Actualizar los temporales con la respuesta
+      if (updatedApiBook && updatedApiBook.userData) {
+        setTempRating(updatedApiBook.userData.rating || 0);
+        setTempStatus(updatedApiBook.userData.status ?? EStatus.WANT_TO_READ);
+        setTempStartDate(updatedApiBook.userData.startDate || '');
+        setTempEndDate(updatedApiBook.userData.endDate || '');
       }
       setAnchorEl(null);
       setDrawerOpen(false);
@@ -136,14 +106,8 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
     }
   };
 
-  const handleTempRating = (val: number) => setTempRating(val);
-  const handleTempStatus = (val: EStatus) => setTempStatus(val);
-  const handleTempStartDate = (val: string) => setTempStartDate(val);
-  const handleTempEndDate = (val: string) => setTempEndDate(val);
-
   const isLoading = isUserLoading || isRatingLoading;
-
-  const currentStatus = statusOptions.find((opt) => opt.value === status);
+  const currentStatus = statusOptions.find((opt) => opt.value === tempStatus);
 
   return (
     <Box
@@ -167,10 +131,6 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
           onClick={(e) => {
             if (isMobile) setDrawerOpen(true);
             else setAnchorEl(e.currentTarget);
-            setTempRating(rating?.rating || 0);
-            setTempStatus(status);
-            setTempStartDate(startDate);
-            setTempEndDate(endDate);
           }}
           sx={{
             justifyContent: 'space-between',
@@ -219,7 +179,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
               </Typography>
               <RatingStars
                 rating={tempRating}
-                onRatingChange={handleTempRating}
+                onRatingChange={setTempRating}
                 disabled={!user || isSubmitting}
                 isLoading={isLoading}
               />
@@ -244,7 +204,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                     startIcon={React.cloneElement(opt.icon, {
                       sx: { color: tempStatus === opt.value ? '#fff' : '#fff' },
                     })}
-                    onClick={() => handleTempStatus(opt.value)}
+                    onClick={() => setTempStatus(opt.value)}
                     sx={{
                       borderRadius: 3,
                       fontWeight: 'bold',
@@ -274,7 +234,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                 label="Fecha inicio"
                 type="date"
                 value={tempStartDate || ''}
-                onChange={(e) => handleTempStartDate(e.target.value)}
+                onChange={(e) => setTempStartDate(e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   flex: 1,
@@ -310,7 +270,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                 label="Fecha fin"
                 type="date"
                 value={tempEndDate || ''}
-                onChange={(e) => handleTempEndDate(e.target.value)}
+                onChange={(e) => setTempEndDate(e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 sx={{
                   flex: 1,
@@ -382,7 +342,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                 </Typography>
                 <RatingStars
                   rating={tempRating}
-                  onRatingChange={handleTempRating}
+                  onRatingChange={setTempRating}
                   disabled={!user || isSubmitting}
                   isLoading={isLoading}
                 />
@@ -404,7 +364,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                           color: tempStatus === opt.value ? '#fff' : '#fff',
                         },
                       })}
-                      onClick={() => handleTempStatus(opt.value)}
+                      onClick={() => setTempStatus(opt.value)}
                       sx={{
                         borderRadius: 3,
                         fontWeight: 'bold',
@@ -434,7 +394,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                   label="Fecha inicio"
                   type="date"
                   value={tempStartDate || ''}
-                  onChange={(e) => handleTempStartDate(e.target.value)}
+                  onChange={(e) => setTempStartDate(e.target.value)}
                   InputLabelProps={{ shrink: true }}
                   sx={{
                     flex: 1,
@@ -470,7 +430,7 @@ export const BookRating = ({ bookId, bookStatus }: BookRatingProps) => {
                   label="Fecha fin"
                   type="date"
                   value={tempEndDate || ''}
-                  onChange={(e) => handleTempEndDate(e.target.value)}
+                  onChange={(e) => setTempEndDate(e.target.value)}
                   InputLabelProps={{ shrink: true }}
                   sx={{
                     flex: 1,

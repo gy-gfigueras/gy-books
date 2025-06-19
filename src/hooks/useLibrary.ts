@@ -1,24 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import Book from '@/domain/book.model';
 import { Library } from '@/domain/library.model';
-import { Rating } from '@/domain/rating.model';
+import { getBooks } from '@/service/books.service';
 import useSWR from 'swr';
-import { getLibrary } from '@/service/library.service';
 
 interface useLibraryProps {
-  data: Library | undefined;
+  data: Book[] | undefined;
   isLoading: boolean;
 }
 
 export function useLibrary(): useLibraryProps {
   const {
-    data: library,
+    data: books,
     isLoading,
     error,
-  } = useSWR<Library>('/api/auth/rating', getLibrary);
+  } = useSWR<Book[]>('/api/auth/books', getBooks);
 
+  console.log(books);
   return {
-    data: library,
+    data: books,
     isLoading: isLoading,
   };
 }

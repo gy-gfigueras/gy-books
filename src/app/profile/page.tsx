@@ -16,6 +16,7 @@ import {
   Select,
   MenuItem,
   useMediaQuery,
+  CircularProgress,
 } from '@mui/material';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import EditIcon from '@mui/icons-material/Edit';
@@ -27,10 +28,11 @@ import { EStatus } from '@/utils/constants/EStatus';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { useTheme } from '@mui/material/styles';
+import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
 
 export default function ProfilePage() {
   const { user, isLoading } = useGyCodingUser();
-  const { data: library } = useLibrary();
+  const { data: books, isLoading: isBooksLoading } = useLibrary();
   const [tab, setTab] = React.useState(0);
   const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(null);
   const { user: userData } = useUser();
@@ -44,177 +46,13 @@ export default function ProfilePage() {
   ];
 
   const filteredBooks = React.useMemo(() => {
-    if (!library?.books) return [];
-    if (!statusFilter) return library.books;
-    return library.books.filter((book) => book.status === statusFilter);
-  }, [library, statusFilter]);
+    if (!books) return [];
+    if (!statusFilter) return books;
+    return books.filter((book) => book.status === statusFilter);
+  }, [books, statusFilter]);
 
   if (isLoading) {
-    return (
-      <Container
-        maxWidth="xl"
-        sx={{
-          mt: 6,
-          mb: 8,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          minHeight: '70vh',
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: '100%', md: '90%' },
-            maxWidth: 1200,
-            mx: 'auto',
-            p: { xs: 3, md: 6 },
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: { xs: 'column', md: 'row' },
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              gap: 6,
-              minHeight: 20,
-            }}
-          >
-            <Avatar
-              sx={{
-                width: 160,
-                height: 160,
-                bgcolor: '#232323',
-                border: '3px solid #FFFFFF',
-                ml: 2,
-                mb: { xs: 2, md: 0 },
-              }}
-            />
-            <Box
-              sx={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                gap: 2,
-              }}
-            >
-              <Typography
-                variant="h3"
-                sx={{
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                  fontFamily: inter.style.fontFamily,
-                  mb: 0,
-                }}
-              >
-                {'Username'}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ color: '#FFFFFFB3', fontSize: 18, mb: 1 }}
-              >
-                {'username@gmail.com'}
-              </Typography>
-              <Box sx={{ width: 400, maxWidth: '100%' }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    border: '2px solid #FFFFFF',
-                    borderRadius: '12px',
-                    background: 'transparent',
-                    p: 1.5,
-                    mb: 1,
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: '#FFFFFF',
-                      fontFamily: inter.style.fontFamily,
-                      fontWeight: 'bold',
-                      mb: 0.5,
-                    }}
-                  >
-                    Biography
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: '#FFFFFFB3',
-                      fontFamily: inter.style.fontFamily,
-                      minHeight: 32,
-                    }}
-                  >
-                    Aquí irá la biografía del usuario.
-                  </Typography>
-                </Paper>
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{ color: '#FFFFFF', fontWeight: 'bold', mt: 1 }}
-              >
-                12 friends
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1,
-                alignItems: 'flex-end',
-                ml: 'auto',
-                mt: { xs: 2, md: 0 },
-              }}
-            >
-              <Button
-                variant="outlined"
-                component={Link}
-                href="https://accounts.gycoding.com"
-                target="_blank"
-                sx={{
-                  borderColor: '#FFFFFF',
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                  borderRadius: '8px',
-                  minWidth: 140,
-                  mb: 1,
-                  px: 2,
-                  py: 0.5,
-                  fontSize: 16,
-                  textTransform: 'none',
-                  '&:hover': { borderColor: '#c4b5fd', color: '#c4b5fd' },
-                }}
-                endIcon={<LaunchIcon />}
-              >
-                Edit Account
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: '#FFFFFF',
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                  borderRadius: '8px',
-                  minWidth: 140,
-                  px: 2,
-                  py: 0.5,
-                  fontSize: 16,
-                  textTransform: 'none',
-                  '&:hover': { borderColor: '#c4b5fd', color: '#c4b5fd' },
-                }}
-                endIcon={<EditIcon />}
-              >
-                Edit Profile
-              </Button>
-            </Box>
-          </Box>
-        </Box>
-      </Container>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!user) {
@@ -640,18 +478,17 @@ export default function ProfilePage() {
                   },
                 }}
               >
-                {filteredBooks.length === 0 ? (
-                  <Typography
-                    variant="body1"
+                {isBooksLoading ? (
+                  <Box
                     sx={{
-                      color: '#fff',
-                      fontFamily: inter.style.fontFamily,
-                      textAlign: 'center',
-                      mt: 6,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
                     }}
                   >
-                    No hay libros en este estado.
-                  </Typography>
+                    <CircularProgress />
+                  </Box>
                 ) : (
                   filteredBooks.map((book) => (
                     <Box

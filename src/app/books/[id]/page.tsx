@@ -9,17 +9,17 @@ import AuthorCard from '@/app/components/atoms/AuthorCard';
 import { Author } from '@/domain/book.model';
 import { BookRating } from '@/app/components/atoms/BookRating';
 import StarIcon from '@mui/icons-material/Star';
+import { useApiBook } from '@/hooks/useApiBook';
 
 export default function BookDetails() {
   const params = useParams();
-  const {
-    data: book,
-    isLoading,
-    bookStatus,
-    isBookStatusLoading,
-  } = useBook(params.id as string);
+  const { data: book, isLoading } = useBook(params.id as string);
 
-  if (isLoading || isBookStatusLoading) {
+  const { data: apiBook, isLoading: isApiBookLoading } = useApiBook(
+    params.id as string
+  );
+
+  if (isLoading || isApiBookLoading) {
     return (
       <Box
         sx={{
@@ -132,7 +132,7 @@ export default function BookDetails() {
             fontSize: '24px',
           }}
         >
-          {bookStatus?.averageRating}
+          {apiBook?.averageRating}
           <StarIcon
             sx={{
               color: 'primary.main',
@@ -141,10 +141,13 @@ export default function BookDetails() {
             }}
           />
         </Typography>
-        <BookRating
-          bookId={book?.id || ''}
-          bookStatus={bookStatus || undefined}
-        />
+        {apiBook && (
+          <BookRating
+            apiBook={apiBook}
+            bookId={book?.id || ''}
+            isRatingLoading={isApiBookLoading}
+          />
+        )}
         <Typography
           variant="body1"
           sx={{
