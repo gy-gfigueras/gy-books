@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { getSession } from '@auth0/nextjs-auth0';
 import { ApiBook } from '@/domain/apiBook.model';
 
+// Función para traer un libro específico
 export default async function getApiBook(
   bookId: string
 ): Promise<ApiBook | null> {
@@ -95,5 +96,59 @@ export default async function getApiBook(
   } catch (error: any) {
     console.error('Server Action - Error details:', error);
     throw new Error(`Failed to get book status: ${error.message}`);
+  }
+}
+
+// Nueva función para traer todos los libros con paginación
+export async function getBooksWithPagination(
+  page: number = 0,
+  size: number = 10
+): Promise<{ books: any[]; hasMore: boolean } | null> {
+  try {
+    const headersList = headers();
+    const host = headersList.get('host') || 'localhost:3000';
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const cookieStore = cookies();
+    const cookieHeader = cookieStore.toString();
+
+    // Verificar si el usuario está autenticado
+    const session = await getSession();
+    const isAuthenticated = !!session?.user;
+
+    if (!isAuthenticated) {
+      throw new Error('User not authenticated');
+    }
+
+    const url = `${protocol}://${host}/api/auth/books?page=${page}&size=${size}`;
+    const fetchOptions: RequestInit = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: cookieHeader,
+      },
+      credentials: 'include',
+      cache: 'no-store',
+    };
+
+    console.log('Server Action - Fetching books from URL:', url);
+
+    const response = await fetch(url, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Server Action - Error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Server Action - Received books data:', data);
+
+    return {
+      books: data.books || [],
+      hasMore: data.hasMore || false,
+    };
+  } catch (error: any) {
+    console.error('Server Action - Error details:', error);
+    throw new Error(`Failed to get books: ${error.message}`);
   }
 }

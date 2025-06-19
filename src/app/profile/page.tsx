@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Box,
   Container,
@@ -22,22 +22,28 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import EditIcon from '@mui/icons-material/Edit';
 import { inter } from '@/utils/fonts/fonts';
 import Link from 'next/link';
-import { useLibrary } from '@/hooks/useLibrary';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
 import { EStatus } from '@/utils/constants/EStatus';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { useTheme } from '@mui/material/styles';
 import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
+import { getBooksWithPagination } from '../actions/getApiBook';
+import Book from '@/domain/book.model';
 
 export default function ProfilePage() {
   const { user, isLoading } = useGyCodingUser();
-  const { data: books, isLoading: isBooksLoading } = useLibrary();
   const [tab, setTab] = React.useState(0);
   const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(null);
   const { user: userData } = useUser();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Estado para paginación automática
+  const [books, setBooks] = useState<Book[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const pageRef = useRef(0);
 
   const statusOptions = [
     { label: 'Currently reading', value: EStatus.READING },
@@ -45,8 +51,67 @@ export default function ProfilePage() {
     { label: 'Want to read', value: EStatus.WANT_TO_READ },
   ];
 
+  // Función para cargar más libros
+  const loadMoreBooks = useCallback(async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    const currentPage = pageRef.current;
+    try {
+      const res = await getBooksWithPagination(currentPage, 10);
+      if (res && Array.isArray(res.books) && res.books.length > 0) {
+        setBooks((prev) => {
+          const allBooks = [...prev, ...res.books];
+          const uniqueBooks = allBooks.filter(
+            (book, idx, arr) => arr.findIndex((b) => b.id === book.id) === idx
+          );
+          return uniqueBooks;
+        });
+        pageRef.current = currentPage + 1;
+        setHasMore(!!res.hasMore);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error loading books:', error);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [hasMore, loading]);
+
+  // Cargar libros iniciales
+  useEffect(() => {
+    pageRef.current = 0;
+    setBooks([]);
+    setHasMore(true);
+    loadMoreBooks();
+  }, []);
+
+  // Paginación automática cada 3 segundos usando setTimeout encadenado
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (hasMore && !loading) {
+      timeout = setTimeout(() => {
+        loadMoreBooks();
+      }, 3000);
+    }
+    return () => clearTimeout(timeout);
+  }, [books, hasMore, loading, loadMoreBooks]);
+
+  // Filtrar libros por status
+  React.useEffect(() => {
+    if (books.length > 0) {
+      // Log temporal para depuración
+      // eslint-disable-next-line no-console
+      console.log(
+        'Libros y sus status:',
+        books.map((b) => ({ id: b.id, status: b.status }))
+      );
+    }
+  }, [books]);
+
   const filteredBooks = React.useMemo(() => {
-    if (!books) return [];
     if (!statusFilter) return books;
     return books.filter((book) => book.status === statusFilter);
   }, [books, statusFilter]);
@@ -478,36 +543,35 @@ export default function ProfilePage() {
                   },
                 }}
               >
-                {isBooksLoading ? (
+                {filteredBooks.map((book) => (
                   <Box
+                    key={book.id}
                     sx={{
+                      minWidth: { xs: 'unset', md: 140 },
+                      maxWidth: { xs: 'unset', md: 220 },
+                      width: { xs: '100%', sm: '100%', md: 'auto' },
+                      boxSizing: 'border-box',
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      height: '100%',
+                      px: { xs: 0.5, sm: 1, md: 0 },
+                      py: { xs: 1, md: 0 },
                     }}
                   >
+                    <BookCardCompact book={book} small={isMobile} />
+                  </Box>
+                ))}
+                {loading && (
+                  <Box sx={{ width: '100%', textAlign: 'center', py: 2 }}>
                     <CircularProgress />
                   </Box>
-                ) : (
-                  filteredBooks.map((book) => (
-                    <Box
-                      key={book.id}
-                      sx={{
-                        minWidth: { xs: 'unset', md: 140 },
-                        maxWidth: { xs: 'unset', md: 220 },
-                        width: { xs: '100%', sm: '100%', md: 'auto' },
-                        boxSizing: 'border-box',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        px: { xs: 0.5, sm: 1, md: 0 },
-                        py: { xs: 1, md: 0 },
-                      }}
-                    >
-                      <BookCardCompact book={book} small={isMobile} />
-                    </Box>
-                  ))
+                )}
+                {!hasMore && books.length > 0 && (
+                  <Box sx={{ width: '100%', textAlign: 'center', py: 2 }}>
+                    <Typography variant="body2" sx={{ color: '#fff' }}>
+                      Todos los libros cargados
+                    </Typography>
+                  </Box>
                 )}
               </Box>
             </Box>
