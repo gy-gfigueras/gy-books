@@ -16,8 +16,6 @@ export function useLibrary(): useLibraryProps {
     isLoading,
     error,
   } = useSWR<Book[]>('/api/auth/books', getBooks);
-
-  console.log(books);
   return {
     data: books,
     isLoading: isLoading,

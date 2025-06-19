@@ -139,15 +139,11 @@ export default function ProfileSkeleton() {
               <Skeleton
                 key={i}
                 variant="rectangular"
-                width={
-                  isNaN(window?.innerWidth)
-                    ? 140
-                    : window.innerWidth < 600
-                      ? '100%'
-                      : 140
-                }
-                height={220}
-                sx={{ borderRadius: 3 }}
+                sx={{
+                  borderRadius: 3,
+                  width: { xs: '100%', md: 140 },
+                  height: 220,
+                }}
               />
             ))}
           </Box>

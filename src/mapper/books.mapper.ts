@@ -38,14 +38,6 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
   if (!hardcoverBook) {
     throw new Error('Book data is undefined');
   }
-
-  console.log('Mapping book:', {
-    id: hardcoverBook.id,
-    title: hardcoverBook.title,
-    hasImage: !!hardcoverBook.image,
-    imageUrl: hardcoverBook.image?.url,
-  });
-
   const mainAuthor = hardcoverBook.contributions?.[0]?.author;
   if (!mainAuthor) {
     return {
