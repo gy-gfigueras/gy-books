@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  Suspense,
+} from 'react';
 import {
   Box,
   Container,
@@ -32,7 +38,7 @@ import Book from '@/domain/book.model';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { goudi } from '@/utils/fonts/fonts';
 
-export default function ProfilePage() {
+function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
   const [tab, setTab] = React.useState(0);
   const { user: userData } = useUser();
@@ -710,5 +716,13 @@ export default function ProfilePage() {
         </Box>
       </Box>
     </Container>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileSkeleton />}>
+      <ProfilePageContent />
+    </Suspense>
   );
 }
