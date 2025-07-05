@@ -1,14 +1,9 @@
 'use client';
 
+import { goudi, birthStone } from '@/utils/fonts/fonts';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { Inter } from 'next/font/google';
 import React from 'react';
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '700', '800'],
-});
 
 export const Hero = () => {
   const router = useRouter();
@@ -32,9 +27,9 @@ export const Hero = () => {
         variant="h1"
         sx={{
           color: 'white',
-          fontSize: { xs: '2.5rem', md: '4.5rem' },
+          fontSize: { xs: '3rem', md: '10rem' },
           fontWeight: '800',
-          fontFamily: inter.style.fontFamily,
+          fontFamily: birthStone.style.fontFamily,
           marginBottom: '1.5rem',
           position: 'relative',
           zIndex: 1,
@@ -49,11 +44,11 @@ export const Hero = () => {
           marginBottom: '2.5rem',
           lineHeight: 1.6,
           position: 'relative',
+          fontFamily: goudi.style.fontFamily,
           zIndex: 1,
         }}
       >
-        Tu red social literaria. Descubre, comparte y conecta con otros
-        lectores.
+        Descubre, comparte y conecta con otros lectores.
       </Typography>
       <Button
         variant="contained"
@@ -64,6 +59,9 @@ export const Hero = () => {
           color: 'white',
           padding: '1.2rem 2.5rem',
           fontSize: '1.2rem',
+          fontFamily: goudi.style.fontFamily,
+          fontWeight: 'bold',
+          letterSpacing: '.3rem',
           borderRadius: '12px',
           boxShadow: '0 4px 14px rgba(147, 51, 234, 0.4)',
           transition: 'all 0.3s ease',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { inter } from '@/utils/fonts/fonts';
+import { goudi } from '@/utils/fonts/fonts';
 
 interface Author {
   name: string;
@@ -18,7 +18,7 @@ export default function AuthorCard({ author }: { author: Author }) {
         flexDirection: 'column',
         gap: '1rem',
         width: '100%',
-        height: '250px',
+        height: '260px',
         backgroundColor: 'rgba(42, 42, 42, 0.7)',
         backdropFilter: 'blur(10px)',
         padding: '16px',
@@ -76,7 +76,7 @@ export default function AuthorCard({ author }: { author: Author }) {
             variant="h2"
             sx={{
               fontWeight: '800',
-              fontFamily: inter.style.fontFamily,
+              fontFamily: goudi.style.fontFamily,
               display: { xs: 'block', md: 'none' },
               fontSize: { xs: '20px', md: '30px' },
             }}
@@ -97,8 +97,10 @@ export default function AuthorCard({ author }: { author: Author }) {
           <Typography
             variant="h5"
             sx={{
+              fontSize: 28,
+              letterSpacing: '.05rem',
               fontWeight: '800',
-              fontFamily: inter.style.fontFamily,
+              fontFamily: goudi.style.fontFamily,
               display: { xs: 'none', md: 'block' },
             }}
           >
@@ -108,12 +110,14 @@ export default function AuthorCard({ author }: { author: Author }) {
             variant="body1"
             sx={{
               fontWeight: '400',
-              fontFamily: inter.style.fontFamily,
+              fontFamily: goudi.style.fontFamily,
+              fontSize: 17,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
               WebkitLineClamp: 5,
               WebkitBoxOrient: 'vertical',
+              marginBottom: '12px',
             }}
           >
             {author.bio}
@@ -121,12 +125,12 @@ export default function AuthorCard({ author }: { author: Author }) {
           <Typography
             sx={{
               color: '#FFFFFF50',
-              fontSize: '14px',
+              fontSize: '16px',
               fontWeight: 'bold',
               textAlign: 'left',
-              marginTop: '10px',
               position: 'absolute',
-              fontFamily: inter.style.fontFamily,
+              fontFamily: goudi.style.fontFamily,
+              letterSpacing: '.05rem',
               textDecoration: 'none',
               display: 'flex',
               flexDirection: 'row',

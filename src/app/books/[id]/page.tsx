@@ -4,7 +4,7 @@ import React from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { useBook } from '@/hooks/useBook';
-import { inter } from '@/utils/fonts/fonts';
+import { goudi, cinzel } from '@/utils/fonts/fonts';
 import AuthorCard from '@/app/components/atoms/AuthorCard';
 import { Author } from '@/domain/book.model';
 import { BookRating } from '@/app/components/atoms/BookRating';
@@ -85,8 +85,10 @@ export default function BookDetails() {
           <Typography
             variant="h4"
             sx={{
-              fontFamily: inter.style.fontFamily,
+              fontFamily: goudi.style.fontFamily,
               fontWeight: '800',
+              fontSize: 48,
+              letterSpacing: '.1rem',
               marginBottom: '1rem',
               textAlign: { xs: 'center', md: 'left' },
             }}
@@ -98,6 +100,7 @@ export default function BookDetails() {
               variant="h5"
               sx={{
                 color: '#FFFFFF45',
+                fontFamily: goudi.style.fontFamily,
                 fontStyle: 'italic',
                 marginBottom: '1rem',
                 textAlign: { xs: 'center', md: 'left' },
@@ -110,11 +113,13 @@ export default function BookDetails() {
         <Typography
           variant="h6"
           sx={{
-            color: '#FFFFFF31',
+            color: '#FFFFFF33',
             marginBottom: '1rem',
             textAlign: { xs: 'center', md: 'left' },
-            fontWeight: '400',
+            fontSize: 26,
+            letterSpacing: '.05rem',
             marginTop: '-1rem',
+            fontFamily: goudi.style.fontFamily,
           }}
         >
           {book?.author.name}
@@ -128,11 +133,12 @@ export default function BookDetails() {
             fontWeight: 'bold',
             display: 'flex',
             alignItems: 'center',
+            fontFamily: cinzel.style.fontFamily,
             gap: '0.2rem',
             fontSize: '24px',
           }}
         >
-          {apiBook?.averageRating}
+          {apiBook?.averageRating || 0}
           <StarIcon
             sx={{
               color: 'primary.main',
@@ -154,7 +160,8 @@ export default function BookDetails() {
             lineHeight: 1.6,
             marginBottom: '2rem',
             marginTop: '2rem',
-            fontFamily: inter.style.fontFamily,
+            fontSize: 18,
+            fontFamily: goudi.style.fontFamily,
           }}
           dangerouslySetInnerHTML={{ __html: book?.description ?? '' }}
         />

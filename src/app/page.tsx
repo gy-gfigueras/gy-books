@@ -3,7 +3,6 @@
 import React from 'react';
 import { Box, Container } from '@mui/material';
 import { Hero } from './components/organisms/Hero';
-import { FeaturesSection } from './components/organisms/FeaturesSection';
 import { CTASection } from './components/organisms/CTASection';
 import { Footer } from './components/organisms/Footer';
 
@@ -46,7 +45,6 @@ export default function Home() {
         }}
       >
         <Hero />
-        <FeaturesSection />
         <CTASection />
       </Container>
       <Box sx={{ mt: 'auto' }}>

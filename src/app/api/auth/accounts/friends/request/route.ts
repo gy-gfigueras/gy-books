@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { User } from '@/domain/user.model';
 
 export const GET = withApiAuthRequired(async () => {
   try {
@@ -27,7 +26,7 @@ export const GET = withApiAuthRequired(async () => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    apiUrl = `${baseUrl}/accounts/user/profile`;
+    apiUrl = `${baseUrl}/accounts/books/friends/request`;
     headers = {
       ...headers,
       Authorization: `Bearer ${ID_TOKEN}`,
@@ -47,16 +46,13 @@ export const GET = withApiAuthRequired(async () => {
       throw new Error(`GyCoding API Error: ${errorText}`);
     }
 
-    const gyCodingData = await gyCodingResponse.json();
+    const FRIENDS_DATA = await gyCodingResponse.json();
 
     await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, {
-      user: gyCodingData.username,
-      status: gyCodingResponse.status,
+      FRIENDS_DATA,
     });
 
-    return NextResponse.json({
-      gyCodingUser: gyCodingData as User,
-    });
+    return NextResponse.json(FRIENDS_DATA);
   } catch (error) {
     console.error('Error in /api/auth/user:', error);
     await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {

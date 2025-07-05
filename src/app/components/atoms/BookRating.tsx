@@ -24,6 +24,7 @@ import { useTheme } from '@mui/material/styles';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { ApiBook } from '@/domain/apiBook.model';
+import { goudi } from '@/utils/fonts/fonts';
 
 interface BookRatingProps {
   bookId: string;
@@ -38,7 +39,7 @@ const statusOptions = [
     icon: <BookmarkIcon />,
   },
   {
-    label: 'Currently reading',
+    label: 'Reading',
     value: EStatus.READING,
     icon: <RemoveRedEyeIcon />,
   },
@@ -137,7 +138,9 @@ export const BookRating = ({
             color: '#fff',
             borderColor: '#8C54FF',
             fontWeight: 'bold',
-            fontSize: 18,
+            fontSize: 20,
+            fontFamily: goudi.style.fontFamily,
+            letterSpacing: '.05rem',
             borderRadius: '12px',
             background: 'rgba(140,84,255,0.10)',
             px: 2,
@@ -174,7 +177,16 @@ export const BookRating = ({
         >
           <Stack spacing={2} alignItems="stretch">
             <Box>
-              <Typography sx={{ color: '#fff', fontWeight: 'bold', mb: 0.5 }}>
+              <Typography
+                sx={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  mb: 0.5,
+                  fontSize: 20,
+                  fontFamily: goudi.style.fontFamily,
+                  letterSpacing: '.05rem',
+                }}
+              >
                 Calificación
               </Typography>
               <RatingStars
@@ -186,7 +198,16 @@ export const BookRating = ({
             </Box>
             <Divider sx={{ borderColor: '#8C54FF30' }} />
             <Box>
-              <Typography sx={{ color: '#fff', fontWeight: 'bold', mb: 0.5 }}>
+              <Typography
+                sx={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  mb: 1,
+                  fontSize: 20,
+                  fontFamily: goudi.style.fontFamily,
+                  letterSpacing: '.05rem',
+                }}
+              >
                 Estado
               </Typography>
               <Stack
@@ -216,7 +237,9 @@ export const BookRating = ({
                       py: 1,
                       minWidth: 0,
                       textTransform: 'none',
-                      fontSize: 16,
+                      fontSize: 18,
+                      fontFamily: goudi.style.fontFamily,
+                      letterSpacing: '.05rem',
                       '&:hover': {
                         background: '#8C54FF',
                         color: '#fff',
@@ -308,7 +331,15 @@ export const BookRating = ({
               color="primary"
               onClick={handleApply}
               disabled={isSubmitting}
-              sx={{ borderRadius: 3, fontWeight: 'bold', fontSize: 16, mt: 1 }}
+              sx={{
+                borderRadius: 3,
+                fontWeight: 'bold',
+                fontSize: 18,
+                fontFamily: goudi.style.fontFamily,
+                letterSpacing: '.05rem',
+                mt: 20,
+                textTransform: 'none',
+              }}
             >
               Aplicar
             </Button>
@@ -389,7 +420,7 @@ export const BookRating = ({
                 </Stack>
               </Box>
               <Divider sx={{ borderColor: '#8C54FF30' }} />
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: 'flex', gap: 2, mb: '10px' }}>
                 <TextField
                   label="Fecha inicio"
                   type="date"
@@ -471,8 +502,9 @@ export const BookRating = ({
                 sx={{
                   borderRadius: 3,
                   fontWeight: 'bold',
-                  fontSize: 16,
-                  mt: 1,
+                  fontSize: 18,
+                  mt: 20,
+                  textTransform: 'none',
                 }}
               >
                 Aplicar

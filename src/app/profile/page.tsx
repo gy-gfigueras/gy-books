@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import EditIcon from '@mui/icons-material/Edit';
-import { inter } from '@/utils/fonts/fonts';
 import Link from 'next/link';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
 import { EStatus } from '@/utils/constants/EStatus';
@@ -31,6 +30,7 @@ import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
 import { getBooksWithPagination } from '../actions/getApiBook';
 import Book from '@/domain/book.model';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { goudi } from '@/utils/fonts/fonts';
 
 export default function ProfilePage() {
   const { user, isLoading } = useGyCodingUser();
@@ -56,7 +56,7 @@ export default function ProfilePage() {
   );
 
   const statusOptions = [
-    { label: 'Currently reading', value: EStatus.READING },
+    { label: 'Reading', value: EStatus.READING },
     { label: 'Read', value: EStatus.READ },
     { label: 'Want to read', value: EStatus.WANT_TO_READ },
   ];
@@ -250,9 +250,9 @@ export default function ProfilePage() {
               sx={{
                 color: '#fff',
                 fontWeight: 'bold',
-                fontFamily: inter.style.fontFamily,
+                fontFamily: goudi.style.fontFamily,
                 mb: 0,
-                fontSize: { xs: 28, sm: 32, md: 36 },
+                fontSize: { xs: 28, sm: 32, md: 40 },
               }}
             >
               {user.username}
@@ -261,7 +261,8 @@ export default function ProfilePage() {
               variant="body1"
               sx={{
                 color: '#fff',
-                fontSize: { xs: 15, sm: 16, md: 18 },
+                fontFamily: goudi.style.fontFamily,
+                fontSize: { xs: 15, sm: 16, md: 22 },
                 mb: 1,
               }}
             >
@@ -284,7 +285,8 @@ export default function ProfilePage() {
                   variant="body2"
                   sx={{
                     color: '#fff',
-                    fontFamily: inter.style.fontFamily,
+                    fontFamily: goudi.style.fontFamily,
+                    fontSize: 18,
                     minHeight: 32,
                   }}
                 >
@@ -318,6 +320,7 @@ export default function ProfilePage() {
           >
             <Button
               variant="outlined"
+              color="primary"
               component={Link}
               href="https://accounts.gycoding.com"
               target="_blank"
@@ -327,11 +330,13 @@ export default function ProfilePage() {
                 fontWeight: 'bold',
                 borderRadius: '8px',
                 minWidth: { xs: 0, md: 140 },
-                width: { xs: '50%', md: 'auto' },
+                width: { xs: '50%', md: '180px' },
                 mb: { xs: 0, md: 1 },
                 px: 2,
                 py: 0.5,
-                fontSize: { xs: 15, md: 16 },
+                fontSize: { xs: 15, md: 20 },
+                letterSpacing: '.05rem',
+                fontFamily: goudi.style.fontFamily,
                 textTransform: 'none',
                 background: 'transparent',
                 '&:hover': {
@@ -352,10 +357,13 @@ export default function ProfilePage() {
                 fontWeight: 'bold',
                 borderRadius: '8px',
                 minWidth: { xs: 0, md: 140 },
-                width: { xs: '50%', md: 'auto' },
+                width: { xs: '50%', md: '180px' },
                 px: 2,
                 py: 0.5,
-                fontSize: { xs: 15, md: 16 },
+                fontSize: { xs: 15, md: 20 },
+                letterSpacing: '.05rem',
+
+                fontFamily: goudi.style.fontFamily,
                 textTransform: 'none',
                 background: 'transparent',
                 '&:hover': {
@@ -385,8 +393,8 @@ export default function ProfilePage() {
               '.MuiTab-root': {
                 color: '#fff',
                 fontWeight: 'bold',
-                fontFamily: inter.style.fontFamily,
-                fontSize: 18,
+                fontFamily: goudi.style.fontFamily,
+                fontSize: 20,
                 textTransform: 'none',
                 minWidth: 120,
               },
@@ -396,10 +404,38 @@ export default function ProfilePage() {
               },
             }}
           >
-            <Tab label="Books" />
-            <Tab label="Hall of Fame" />
-            <Tab label="Stats" />
-            <Tab label="Activity" />
+            <Tab
+              sx={{
+                fontSize: { xs: 15, md: 20 },
+                letterSpacing: '.05rem',
+                fontFamily: goudi.style.fontFamily,
+              }}
+              label="Books"
+            />
+            <Tab
+              sx={{
+                fontSize: { xs: 15, md: 20 },
+                letterSpacing: '.05rem',
+                fontFamily: goudi.style.fontFamily,
+              }}
+              label="Hall of Fame"
+            />
+            <Tab
+              sx={{
+                fontSize: { xs: 15, md: 20 },
+                letterSpacing: '.05rem',
+                fontFamily: goudi.style.fontFamily,
+              }}
+              label="Stats"
+            />
+            <Tab
+              sx={{
+                fontSize: { xs: 15, md: 20 },
+                letterSpacing: '.05rem',
+                fontFamily: goudi.style.fontFamily,
+              }}
+              label="Activity"
+            />
           </Tabs>
           {tab === 0 && (
             <Box
@@ -414,7 +450,7 @@ export default function ProfilePage() {
                 elevation={0}
                 sx={{
                   minWidth: { xs: '100%', md: 220 },
-                  maxWidth: { xs: '100%', md: 260 },
+                  maxWidth: { xs: '100%', md: 280 },
                   p: 3,
                   borderRadius: '18px',
                   background: 'rgba(35, 35, 35, 0.85)',
@@ -440,7 +476,7 @@ export default function ProfilePage() {
                       color: '#fff',
                       fontWeight: 'bold',
                       fontSize: 16,
-                      fontFamily: inter.style.fontFamily,
+                      fontFamily: goudi.style.fontFamily,
                       background: 'rgba(35, 35, 35, 0.85)',
                       borderRadius: '12px',
                       '.MuiOutlinedInput-notchedOutline': {
@@ -499,8 +535,9 @@ export default function ProfilePage() {
                           style={{
                             color: statusFilter === null ? '#8C54FF' : '#fff',
                             fontWeight: 'bold',
-                            fontSize: 16,
-                            fontFamily: inter.style.fontFamily,
+                            fontSize: 18,
+                            letterSpacing: '.05rem',
+                            fontFamily: goudi.style.fontFamily,
                           }}
                         >
                           All
@@ -542,8 +579,9 @@ export default function ProfilePage() {
                               color:
                                 statusFilter === opt.value ? '#8C54FF' : '#fff',
                               fontWeight: 'bold',
-                              fontSize: 16,
-                              fontFamily: inter.style.fontFamily,
+                              fontSize: 18,
+                              letterSpacing: '.05rem',
+                              fontFamily: goudi.style.fontFamily,
                             }}
                           >
                             {opt.label}
@@ -553,7 +591,8 @@ export default function ProfilePage() {
                           ml: 0,
                           mr: 0,
                           borderRadius: '12px',
-                          px: 1.5,
+                          pl: 1.5,
+                          pr: 2.2,
                           py: 0.5,
                           background:
                             statusFilter === opt.value
@@ -634,7 +673,7 @@ export default function ProfilePage() {
               sx={{
                 mt: 4,
                 color: '#fff',
-                fontFamily: inter.style.fontFamily,
+                fontFamily: goudi.style.fontFamily,
                 textAlign: 'center',
               }}
             >
@@ -647,7 +686,7 @@ export default function ProfilePage() {
               sx={{
                 mt: 4,
                 color: '#FFFFFF',
-                fontFamily: inter.style.fontFamily,
+                fontFamily: goudi.style.fontFamily,
                 textAlign: 'center',
               }}
             >
@@ -660,7 +699,7 @@ export default function ProfilePage() {
               sx={{
                 mt: 4,
                 color: '#FFFFFF',
-                fontFamily: inter.style.fontFamily,
+                fontFamily: goudi.style.fontFamily,
                 textAlign: 'center',
               }}
             >

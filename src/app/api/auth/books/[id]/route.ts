@@ -9,19 +9,18 @@ import { EStatus } from '@/utils/constants/EStatus';
 
 async function handler(request: Request) {
   const url = new URL(request.url);
-  const id = url.pathname.split('/').pop();
+  const ID = url.pathname.split('/').pop();
 
-  if (!id) {
+  if (!ID) {
     return NextResponse.json({ error: 'Book ID is required' }, { status: 400 });
   }
-
-  console.log('API Route - Book ID:', id);
 
   try {
     const session = await getSession();
     const idToken = session?.idToken;
 
     if (!session || !idToken) {
+      await sendLog(ELevel.ERROR, ELogs.NO_ACTIVE_SESSION);
       return NextResponse.json(
         { error: 'No active session found' },
         { status: 401 }
@@ -33,29 +32,27 @@ async function handler(request: Request) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    const apiUrl = `${baseUrl}/books/${id}`;
-    const headers = {
+    const API_URL = `${baseUrl}/books/${ID}`;
+    const HEADERS = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`,
     };
 
     console.log('Request details:', {
       method: request.method,
-      apiUrl,
+      API_URL,
       headers: {
-        ...headers,
-        Authorization: 'Bearer [REDACTED]',
+        ...HEADERS,
       },
     });
 
     if (request.method === 'GET') {
-      const gyCodingResponse = await fetch(apiUrl, {
-        headers,
+      const gyCodingResponse = await fetch(API_URL, {
+        headers: HEADERS,
         method: 'GET',
       });
 
       if (gyCodingResponse.status === 404) {
-        console.log('No hay calificaciones para este libro');
         return NextResponse.json(
           {
             apiBook: {
@@ -77,51 +74,53 @@ async function handler(request: Request) {
           statusText: gyCodingResponse.statusText,
           error: errorText,
         });
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+        await sendLog(ELevel.ERROR, ELogs.BOOK_ERROR, {
           error: errorText,
         });
         throw new Error(`GyCoding API Error: ${errorText}`);
       }
 
-      const apiBook = await gyCodingResponse.json();
-      return NextResponse.json(apiBook as ApiBook);
+      const API_BOOK = await gyCodingResponse.json();
+      return NextResponse.json(API_BOOK as ApiBook);
     }
 
     if (request.method === 'PATCH') {
-      const body = await request.json();
-      const userData = {
+      const BODY = await request.json();
+
+      const USER_DATA = {
         userData: {
-          rating: body.rating,
-          status: body.status,
-          startDate: body.startDate,
-          endDate: body.endDate,
+          rating: BODY.rating,
+          status: BODY.status,
+          startDate: BODY.startDate,
+          endDate: BODY.endDate,
         },
       };
-      console.log(`BODY ${JSON.stringify(body)}`);
-      const gyCodingResponse = await fetch(apiUrl, {
-        headers,
+
+      const gyCodingResponse = await fetch(API_URL, {
+        headers: HEADERS,
         method: 'PATCH',
-        body: JSON.stringify(userData),
+        body: JSON.stringify(USER_DATA),
       });
 
       if (!gyCodingResponse.ok) {
+        await sendLog(ELevel.ERROR, 'BOOK CANNOT BE UPDATED');
         return NextResponse.json(
-          { error: 'Error updating book rating' },
+          { error: 'ERROR UPDATING BOOK DATA' },
           { status: 500 }
         );
       }
 
-      const bookRatingData = await gyCodingResponse.json();
-      console.log(`PATCH RESPONSE ${JSON.stringify(bookRatingData)}`);
+      const BOOK_RATING_DATA = await gyCodingResponse.json();
+      console.log(`PATCH RESPONSE ${JSON.stringify(BOOK_RATING_DATA)}`);
       return NextResponse.json({
-        bookRatingData: bookRatingData as ApiBook,
+        bookRatingData: BOOK_RATING_DATA as ApiBook,
       });
     }
 
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (error) {
     console.error('Error in /api/auth/books/[id]:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+    await sendLog(ELevel.ERROR, ELogs.BOOK_ERROR, {
       error: error,
     });
 
@@ -132,5 +131,5 @@ async function handler(request: Request) {
   }
 }
 
-export const PATCH = withApiAuthRequired(handler);
-export const GET = withApiAuthRequired(handler);
+export const PATCH = withApiAuthRequired(handler); //ACTUALIZAR LIBRO
+export const GET = withApiAuthRequired(handler); //OBTENER LIBRO CON INFO DEL USUARIO

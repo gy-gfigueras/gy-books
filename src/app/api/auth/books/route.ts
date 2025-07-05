@@ -5,65 +5,62 @@ import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
 import { GET_BOOK_BY_ID_QUERY } from '@/utils/constants/Query';
 import { mapHardcoverToBook } from '@/mapper/books.mapper';
-import { ApiBook } from '@/domain/apiBook.model';
 import Book from '@/domain/book.model';
 
 export const GET = withApiAuthRequired(async (req) => {
   try {
-    const session = await getSession();
-    const userId = session?.user.sub;
-    const idToken = session?.idToken;
-    const apiUrlHardcover = process.env.HARDCOVER_API_URL;
-    const apiKey = process.env.HARDCOVER_API_TOKEN;
+    const SESSION = await getSession();
+    const USER_ID = SESSION?.user.sub;
+    const ID_TOKEN = SESSION?.idToken;
+    const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
+    const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
 
-    if (session) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: userId });
+    if (SESSION) {
+      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
     }
 
-    if (!idToken) {
+    if (!HARDCOVER_API_TOKEN || !HARDCOVER_API_URL) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    // Leer page y size de la query
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '0', 10);
     const size = parseInt(searchParams.get('size') || '10', 10);
 
-    // Log para depuración
     console.log(`[API] page: ${page}, size: ${size}`);
 
     const apiUrl = `${process.env.GY_API}/books/?page=${page}&size=${size}`;
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${idToken}`,
+      Authorization: `Bearer ${ID_TOKEN}`,
     };
 
     const response = await fetch(apiUrl, { headers });
 
     if (!response.ok) {
       const errorText = await response.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+      await sendLog(ELevel.ERROR, ELogs.PROFILE_BOOKS_CANNOT_BE_RECEIVED, {
         error: errorText,
       });
-      throw new Error(`GyCoding API Error: ${errorText}`);
+      throw new Error(
+        `${ELogs.PROFILE_BOOKS_CANNOT_BE_RECEIVED}: ${errorText}`
+      );
     }
 
-    const ratingsData = await response.json();
-    console.log(ratingsData as ApiBook[]);
+    const RATINGS_DATA = await response.json();
 
-    const library: { books: Book[]; hasMore: boolean } = {
+    const LIBRARY: { books: Book[]; hasMore: boolean } = {
       books: [],
-      hasMore: ratingsData.length === size, // Si devuelve menos que size, no hay más
+      hasMore: RATINGS_DATA.length === size,
     };
 
-    // Obtener los detalles de cada libro
-    for (const book of ratingsData) {
+    for (const book of RATINGS_DATA) {
       try {
-        const bookResponse = await fetch(apiUrlHardcover!, {
+        const bookResponse = await fetch(HARDCOVER_API_URL!, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `${apiKey}`,
+            Authorization: `${HARDCOVER_API_TOKEN}`,
           },
           body: JSON.stringify({
             query: GET_BOOK_BY_ID_QUERY,
@@ -83,7 +80,7 @@ export const GET = withApiAuthRequired(async (req) => {
 
         const bookData = await bookResponse.json();
 
-        const mappedBook: Book = {
+        const MAPPED_BOOK: Book = {
           ...mapHardcoverToBook(bookData.data.books_by_pk),
           id: book.id,
           rating: book.userData.rating,
@@ -96,17 +93,17 @@ export const GET = withApiAuthRequired(async (req) => {
           status: book.userData.status,
         };
 
-        library.books.push(mappedBook);
+        LIBRARY.books.push(MAPPED_BOOK);
       } catch (error) {
         console.error(`Error processing book ${book.bookId}:`, error);
       }
     }
 
-    return NextResponse.json(library);
+    return NextResponse.json(LIBRARY);
   } catch (error) {
-    console.error('Error in /api/auth/rating:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error instanceof Error ? error.message : 'Unknown error',
+    console.error('Error in /api/auth/books', error);
+    await sendLog(ELevel.ERROR, ELogs.LIBRARY_CANNOT_BE_RECEIVED, {
+      error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR,
     });
 
     return NextResponse.json(

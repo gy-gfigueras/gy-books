@@ -11,6 +11,7 @@ import Head from 'next/head';
 import { useDebounce } from '@/hooks/useDebounce';
 import { BookCard } from '../components/atoms/BookCard';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { goudi } from '@/utils/fonts/fonts';
 
 function BooksContent() {
   const searchParams = useSearchParams();
@@ -95,6 +96,7 @@ function BooksContent() {
               width: ['60%', '60%', '60%'],
               backgroundColor: '#232323',
               borderRadius: '16px',
+              fontFamily: goudi.style.fontFamily,
               '& .MuiOutlinedInput-root': {
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'transparent',
@@ -106,6 +108,7 @@ function BooksContent() {
                 },
                 '&.MuiFormLabel-root': {
                   color: 'transparent',
+                  fontFamily: goudi.style.fontFamily,
                 },
               },
               '& .MuiOutlinedInput-notchedOutline': {
@@ -113,14 +116,16 @@ function BooksContent() {
               },
               '& .MuiInputBase-input': {
                 color: 'white',
+                fontFamily: goudi.style.fontFamily,
               },
               '& .MuiInputLabel-root': {
                 color: 'white',
-                fontSize: '17px',
+                fontFamily: goudi.style.fontFamily,
               },
               '& .MuiInputLabel-root.Mui-focused': {
                 color: 'white',
-                fontSize: '17px',
+                fontSize: '22px',
+                fontFamily: goudi.style.fontFamily,
               },
             }}
             slotProps={{
@@ -128,8 +133,12 @@ function BooksContent() {
                 style: {
                   width: '100%',
                   color: 'white',
+                  fontFamily: goudi.style.fontFamily,
+                  fontSize: '20px',
+
                   fieldSet: {
                     borderColor: 'white',
+                    fontFamily: goudi.style.fontFamily,
                   },
                 },
               },

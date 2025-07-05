@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Typography, Chip, Rating, Skeleton } from '@mui/material';
 import Book from '@/domain/book.model';
 import { useRouter } from 'next/navigation';
-import { inter } from '@/utils/fonts/fonts';
 import { Library } from '@/domain/library.model';
+import { goudi } from '@/utils/fonts/fonts';
 
 interface BookCardCompactProps {
   book: Book;
@@ -200,9 +200,10 @@ export const BookCardCompact = ({
             variant="subtitle1"
             sx={{
               color: '#FFFFFF',
-              fontWeight: '700',
-              fontSize: '1rem',
-              fontFamily: inter.style.fontFamily,
+              fontWeight: '800',
+              fontSize: '1.1rem',
+              fontFamily: goudi.style.fontFamily,
+              letterSpacing: '.05rem',
               lineHeight: 1.3,
               display: '-webkit-box',
               WebkitLineClamp: 1,
@@ -215,8 +216,9 @@ export const BookCardCompact = ({
           <Typography
             sx={{
               color: 'rgba(255, 255, 255, 0.7)',
-              fontSize: '0.875rem',
-              fontFamily: inter.style.fontFamily,
+              fontSize: '1rem',
+              fontFamily: goudi.style.fontFamily,
+              letterSpacing: '.05rem',
               fontWeight: '500',
             }}
           >
@@ -253,11 +255,12 @@ export const BookCardCompact = ({
               alignSelf: 'flex-start',
               backgroundColor: 'rgba(147, 51, 234, 0.1)',
               color: 'primary.main',
-              fontSize: '0.75rem',
+              fontSize: '.85rem',
+              fontFamily: goudi.style.fontFamily,
+              letterSpacing: '.05rem',
+              fontWeight: '800',
               height: '24px',
               borderRadius: '12px',
-              fontFamily: inter.style.fontFamily,
-              fontWeight: '500',
               border: '1px solid rgba(147, 51, 234, 0.2)',
               '&:hover': {
                 backgroundColor: 'rgba(147, 51, 234, 0.15)',

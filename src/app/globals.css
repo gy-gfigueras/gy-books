@@ -1,7 +1,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-family: 'Inter';
+  --font-family: 'Goudi';
 }
 
 @media (prefers-color-scheme: dark) {

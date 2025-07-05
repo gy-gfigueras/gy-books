@@ -4,6 +4,7 @@ import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
+import { goudi } from '@/utils/fonts/fonts';
 
 export const CTASection = () => {
   const router = useRouter();
@@ -34,7 +35,10 @@ export const CTASection = () => {
           marginBottom: '2rem',
           fontWeight: '700',
           position: 'relative',
+          fontSize: 40,
           zIndex: 1,
+          fontFamily: goudi.style.fontFamily,
+          letterSpacing: '.05rem',
         }}
       >
         {user ? 'Conecta con Otros Lectores' : 'Únete a la Comunidad'}
@@ -43,9 +47,11 @@ export const CTASection = () => {
         sx={{
           color: '#FFFFFF80',
           marginBottom: '2.5rem',
-          fontSize: '1.1rem',
+          fontSize: '1.4rem',
           lineHeight: 1.6,
           position: 'relative',
+          fontFamily: goudi.style.fontFamily,
+          letterSpacing: '.05rem',
           zIndex: 1,
         }}
       >
@@ -62,6 +68,9 @@ export const CTASection = () => {
           color: 'white',
           padding: '1.2rem 2.5rem',
           fontSize: '1.2rem',
+          fontFamily: goudi.style.fontFamily,
+          fontWeight: 'bold',
+          letterSpacing: '.3rem',
           borderRadius: '12px',
           transition: 'all 0.3s ease',
           position: 'relative',

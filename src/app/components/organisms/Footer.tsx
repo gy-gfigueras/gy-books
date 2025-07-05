@@ -5,6 +5,7 @@ import { Box, Container, Typography, Link, IconButton } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
+import { birthStone, cinzel, goudi } from '@/utils/fonts/fonts';
 
 export const Footer = () => {
   return (
@@ -33,6 +34,9 @@ export const Footer = () => {
               sx={{
                 color: 'white',
                 fontWeight: '700',
+                fontSize: '32px',
+                letterSpacing: '.05rem',
+                fontFamily: birthStone.style.fontFamily,
                 mb: 1,
               }}
             >
@@ -44,6 +48,8 @@ export const Footer = () => {
                 color: '#FFFFFF80',
                 maxWidth: '300px',
                 mx: { xs: 'auto', md: 0 },
+                fontSize: '16px',
+                fontFamily: goudi.style.fontFamily,
               }}
             >
               Tu red social literaria. Descubre, comparte y conecta con otros
@@ -60,11 +66,12 @@ export const Footer = () => {
             }}
           >
             <Link
-              href="/about"
+              href="https://gycoding.com"
               sx={{
                 color: '#FFFFFF80',
                 textDecoration: 'none',
-                fontSize: { xs: '0.9rem', sm: '1rem' },
+                fontSize: { xs: '0.9rem', sm: '1.2rem' },
+                fontFamily: goudi.style.fontFamily,
                 '&:hover': {
                   color: '#9333ea',
                 },
@@ -77,7 +84,8 @@ export const Footer = () => {
               sx={{
                 color: '#FFFFFF80',
                 textDecoration: 'none',
-                fontSize: { xs: '0.9rem', sm: '1rem' },
+                fontSize: { xs: '0.9rem', sm: '1.2rem' },
+                fontFamily: goudi.style.fontFamily,
                 '&:hover': {
                   color: '#9333ea',
                 },
@@ -90,7 +98,8 @@ export const Footer = () => {
               sx={{
                 color: '#FFFFFF80',
                 textDecoration: 'none',
-                fontSize: { xs: '0.9rem', sm: '1rem' },
+                fontSize: { xs: '0.9rem', sm: '1.2rem' },
+                fontFamily: goudi.style.fontFamily,
                 '&:hover': {
                   color: '#9333ea',
                 },
@@ -155,17 +164,30 @@ export const Footer = () => {
             mt: { xs: 3, sm: 4 },
             pt: { xs: 3, sm: 4 },
             textAlign: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '.5rem',
           }}
         >
           <Typography
             variant="body2"
             sx={{
               color: '#FFFFFF60',
-              fontSize: { xs: '0.8rem', sm: '0.875rem' },
+              fontSize: { xs: '0.8rem', sm: '1rem' },
+              fontFamily: cinzel.style.fontFamily,
             }}
           >
-            © {new Date().getFullYear()} GYCODING. Todos los derechos
-            reservados.
+            © {new Date().getFullYear()}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: '#FFFFFF60',
+              fontSize: { xs: '0.8rem', sm: '1rem' },
+              fontFamily: goudi.style.fontFamily,
+            }}
+          >
+            GYCODING. Todos los derechos reservados.
           </Typography>
         </Box>
       </Container>

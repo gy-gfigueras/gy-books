@@ -1,3 +1,4 @@
+import { goudi } from '@/utils/fonts/fonts';
 import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
@@ -26,45 +27,45 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+    fontFamily: goudi.style.fontFamily,
     h1: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     h2: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     h3: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     h4: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     h5: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     h6: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     subtitle1: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     subtitle2: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     body1: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     body2: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     button: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     caption: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
     overline: {
-      fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+      fontFamily: goudi.style.fontFamily,
     },
   },
 });

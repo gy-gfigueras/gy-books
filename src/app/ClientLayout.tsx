@@ -27,8 +27,8 @@ import { useState } from 'react';
 import { getMenuItems } from '@/utils/constants/MenuItems';
 import { User } from '@/domain/user.model';
 import { useRouter } from 'next/navigation';
-import { inter } from './components/atoms/BookCard';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { goudi } from '@/utils/fonts/fonts';
 
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useGyCodingUser();
@@ -226,7 +226,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                     primary={item.text}
                     sx={{
                       fontWeight: 'bold',
-                      fontFamily: inter.style.fontFamily,
+                      fontFamily: goudi.style.fontFamily,
                     }}
                   />
                 </ListItem>

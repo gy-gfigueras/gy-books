@@ -2,14 +2,7 @@ import Book from '@/domain/book.model';
 import { Box, Typography } from '@mui/material';
 import React from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
-import { Inter } from 'next/font/google';
-import RatingStars from './RatingStars';
-
-export const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '700', '800'],
-});
+import { goudi } from '@/utils/fonts/fonts';
 
 export function BookCard({ book }: { book: Book }) {
   return (
@@ -22,7 +15,7 @@ export function BookCard({ book }: { book: Book }) {
         textDecoration: 'none',
         minWidth: '300px',
         maxWidth: '1000px',
-        height: '250px',
+        height: '280px',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -92,8 +85,9 @@ export function BookCard({ book }: { book: Book }) {
             sx={{
               color: 'white',
               fontSize: { xs: '18px', md: '28px' },
+              letterSpacing: '.05rem',
               fontWeight: '800',
-              fontFamily: inter.style.fontFamily,
+              fontFamily: goudi.style.fontFamily,
               textAlign: 'left',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -111,8 +105,10 @@ export function BookCard({ book }: { book: Book }) {
             <Typography
               sx={{
                 color: '#FFFFFF45',
-                fontSize: { xs: '16px', md: '20px' },
+                fontSize: { xs: '16px', md: '22px' },
                 fontWeight: 'thin',
+                fontFamily: goudi.style.fontFamily,
+                letterSpacing: '.05rem',
                 textAlign: 'left',
                 fontStyle: 'italic',
                 whiteSpace: 'nowrap',
@@ -126,62 +122,61 @@ export function BookCard({ book }: { book: Book }) {
         <Typography
           sx={{
             color: '#FFFFFF31',
-            fontSize: { xs: '14px', md: '16px' },
+            fontSize: { xs: '14px', md: '20px' },
             fontWeight: 'bold',
             textAlign: 'left',
             marginTop: { xs: '0px', md: '-10px' },
+            letterSpacing: '.05rem',
             width: '100%',
+            fontFamily: goudi.style.fontFamily,
           }}
           variant="h6"
         >
           {book.author.name}
         </Typography>
-
-        {book.rating && (
-          <RatingStars
-            sx={{ marginTop: '5px' }}
-            rating={book.rating}
-            size="small"
+        {book.description && (
+          <Typography
+            sx={{
+              display: { xs: 'none', md: '-webkit-box' },
+              color: '#FFFFFF',
+              marginTop: '10px',
+              fontSize: '16px',
+              fontFamily: goudi.style.fontFamily,
+              fontWeight: 'thin',
+              flexDirection: 'row',
+              alignItems: 'start',
+              justifyContent: 'start',
+              whiteSpace: 'pre-wrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              WebkitLineClamp: 4,
+              WebkitBoxOrient: 'vertical',
+              lineClamp: 4,
+              boxOrient: 'vertical',
+              width: '100%',
+              textAlign: 'left',
+            }}
+            dangerouslySetInnerHTML={{ __html: book.description }}
+            variant="h6"
           />
         )}
         <Typography
           sx={{
-            display: { xs: 'none', md: '-webkit-box' },
-            color: '#FFFFFF',
-            marginTop: '10px',
-            fontSize: '14px',
-            fontWeight: 'thin',
-            flexDirection: 'row',
-            alignItems: 'start',
-            justifyContent: 'start',
-            whiteSpace: 'pre-wrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical',
-            lineClamp: 3,
-            boxOrient: 'vertical',
-            width: '100%',
-            textAlign: 'left',
-          }}
-          dangerouslySetInnerHTML={{ __html: book.description }}
-          variant="h6"
-        ></Typography>
-        <Typography
-          sx={{
             color: '#FFFFFF50',
-            fontSize: '14px',
+            fontSize: '16px',
             fontWeight: 'bold',
             textAlign: 'left',
             marginTop: '10px',
             position: 'absolute',
-            fontFamily: inter.style.fontFamily,
+            fontFamily: goudi.style.fontFamily,
             textDecoration: 'none',
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'start',
             gap: '5px',
+            letterSpacing: '.05rem',
+
             bottom: '0',
             transition: 'all 0.3s ease',
             '&:hover': {
