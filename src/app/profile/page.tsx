@@ -193,13 +193,12 @@ function ProfilePageContent() {
     <Container
       maxWidth="xl"
       sx={{
-        mt: 6,
+        mt: { xs: 0, md: 6 },
         mb: 8,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
         minHeight: '70vh',
-        background: 'transparent',
         borderRadius: 0,
         boxShadow: 'none',
       }}
@@ -209,7 +208,6 @@ function ProfilePageContent() {
           width: { xs: '100%', md: '90%' },
           maxWidth: 1200,
           mx: 'auto',
-          p: { xs: 3, md: 0 },
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'stretch',
@@ -252,6 +250,7 @@ function ProfilePageContent() {
             }}
           >
             <Typography
+              id="profile-username"
               variant="h3"
               sx={{
                 color: '#fff',
@@ -338,7 +337,7 @@ function ProfilePageContent() {
                 minWidth: { xs: 0, md: 140 },
                 width: { xs: '50%', md: '180px' },
                 mb: { xs: 0, md: 1 },
-                px: 2,
+                px: 1,
                 py: 0.5,
                 fontSize: { xs: 15, md: 20 },
                 letterSpacing: '.05rem',
@@ -364,7 +363,7 @@ function ProfilePageContent() {
                 borderRadius: '8px',
                 minWidth: { xs: 0, md: 140 },
                 width: { xs: '50%', md: '180px' },
-                px: 2,
+                px: 1,
                 py: 0.5,
                 fontSize: { xs: 15, md: 20 },
                 letterSpacing: '.05rem',
@@ -617,6 +616,7 @@ function ProfilePageContent() {
                 sx={{
                   flex: 1,
                   display: { xs: 'grid', sm: 'grid', md: 'flex' },
+                  width: '100%',
                   gridTemplateColumns: {
                     xs: '1fr 1fr',
                     sm: '1fr 1fr',
@@ -664,6 +664,7 @@ function ProfilePageContent() {
                     <CircularProgress />
                   </Box>
                 )}
+
                 {!hasMore && books.length > 0 && (
                   <Box sx={{ width: '100%', textAlign: 'center', py: 2 }}>
                     <Typography variant="body2" sx={{ color: '#fff' }}>

@@ -47,6 +47,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
       <Box
         ref={anchorRef}
         onClick={handleToggle}
+        id={'profile-button'}
         sx={{
           cursor: 'pointer',
           padding: '4px',
@@ -105,6 +106,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                   }}
                 >
                   <Box
+                    id="profile-menu-item"
                     sx={{
                       fontWeight: 'bold',
                       height: '40px',
@@ -145,6 +147,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                   </Box>
 
                   <Box
+                    id="logout-menu-item"
                     sx={{
                       fontWeight: 'bold',
                       height: '40px',

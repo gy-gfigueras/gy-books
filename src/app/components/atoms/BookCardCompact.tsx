@@ -140,9 +140,9 @@ export const BookCardCompact = ({
         handleClick();
       }}
       sx={{
-        width: small ? '140px' : '220px',
-        minWidth: small ? '140px' : '220px',
-        maxWidth: small ? '140px' : '220px',
+        width: small ? '160px' : '220px',
+        minWidth: small ? '160px' : '220px',
+        maxWidth: small ? '160px' : '220px',
         textDecoration: 'none',
         display: 'flex',
         flexDirection: 'column',
@@ -163,7 +163,7 @@ export const BookCardCompact = ({
       <Box
         sx={{
           position: 'relative',
-          width: small ? '140px' : '220px',
+          width: small ? '160px' : '220px',
           height: small ? '210px' : '330px',
           overflow: 'hidden',
         }}

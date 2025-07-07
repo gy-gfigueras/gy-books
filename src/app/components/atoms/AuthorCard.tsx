@@ -18,7 +18,7 @@ export default function AuthorCard({ author }: { author: Author }) {
         flexDirection: 'column',
         gap: '1rem',
         width: '100%',
-        height: '260px',
+        height: '290px',
         backgroundColor: 'rgba(42, 42, 42, 0.7)',
         backdropFilter: 'blur(10px)',
         padding: '16px',
@@ -36,7 +36,7 @@ export default function AuthorCard({ author }: { author: Author }) {
         sx={{
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
-          gap: '1rem',
+          gap: { xs: '0rem', md: '1rem' },
           width: '100%',
           height: '100%',
           position: 'relative',
@@ -45,7 +45,7 @@ export default function AuthorCard({ author }: { author: Author }) {
         <Box
           sx={{
             width: { xs: '100%', md: '200px' },
-            height: { xs: '200px', md: '100%' },
+            height: { xs: '100px', md: '100%' },
             position: 'relative',
             borderRadius: { xs: '20px', md: '16px' },
             overflow: 'hidden',
@@ -111,13 +111,13 @@ export default function AuthorCard({ author }: { author: Author }) {
             sx={{
               fontWeight: '400',
               fontFamily: goudi.style.fontFamily,
-              fontSize: 17,
+              fontSize: { sx: 12, md: 17 },
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
               WebkitLineClamp: 5,
               WebkitBoxOrient: 'vertical',
-              marginBottom: '12px',
+              marginBottom: { xs: '0px', md: '12px' },
             }}
           >
             {author.bio}
