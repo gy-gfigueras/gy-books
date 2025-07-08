@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { User } from '../domain/user.model';
 import useSWR from 'swr';
 import { getUser } from '../service/user.service';
+import { User } from '@/domain/user.model';
 interface useUserProps {
   data: User | undefined;
   isLoading: boolean;

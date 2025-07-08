@@ -14,14 +14,24 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
   if (user) {
     return [
       {
+        text: 'Inicio',
+        icon: React.createElement(MenuIcons.Home),
+        route: '/',
+      },
+      {
         text: 'Perfil',
         icon: React.createElement(MenuIcons.Profile),
         route: '/profile',
       },
       {
-        text: 'Inicio',
-        icon: React.createElement(MenuIcons.Home),
-        route: '/',
+        text: 'Amigos',
+        icon: React.createElement(MenuIcons.Friends),
+        route: '/users/friends',
+      },
+      {
+        text: 'Notificaciones',
+        icon: React.createElement(MenuIcons.Inbox),
+        route: '/users/inbox',
       },
     ];
   }

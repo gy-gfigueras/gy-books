@@ -3,15 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
+import { User } from '@/domain/friend.model';
 
-export const POST = withApiAuthRequired(async (req: NextRequest) => {
+export const GET = withApiAuthRequired(async (req: NextRequest) => {
   try {
     const SESSION = await getSession();
     const USER_ID = SESSION?.user.sub;
     const ID_TOKEN = SESSION?.idToken;
 
-    const body = await req.json();
-    const userId = body.userId;
+    const searchParams = req.nextUrl.searchParams;
+    const queryParam = searchParams.get('query');
 
     if (SESSION) {
       await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
@@ -29,19 +30,10 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    console.log(
-      JSON.stringify({
-        to: userId,
-      })
-    );
-
-    apiUrl = `${baseUrl}/accounts/books/friends/request`;
+    apiUrl = `${baseUrl}/accounts/books/users?query=${queryParam}`;
     headers = {
       ...headers,
       Authorization: `Bearer ${ID_TOKEN}`,
-      body: JSON.stringify({
-        to: userId,
-      }),
     };
 
     if (!apiUrl) {
@@ -58,13 +50,9 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
       throw new Error(`GyCoding API Error: ${errorText}`);
     }
 
-    const FRIENDS_DATA = await gyCodingResponse.json();
+    const users = await gyCodingResponse.json();
 
-    await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, {
-      FRIENDS_DATA,
-    });
-
-    return NextResponse.json(FRIENDS_DATA);
+    return NextResponse.json(users as User[]);
   } catch (error) {
     console.error('Error in /api/auth/user:', error);
     await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {

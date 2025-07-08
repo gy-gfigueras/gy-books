@@ -29,7 +29,7 @@ import { User } from '@/domain/user.model';
 import { useRouter } from 'next/navigation';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { goudi } from '@/utils/fonts/fonts';
-
+import InboxIcon from '@mui/icons-material/Inbox';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useGyCodingUser();
   const theme = useTheme();
@@ -157,6 +157,15 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 onClick={() => router.push('/')}
                 src="/gy-logo.png"
                 alt="logo"
+              />
+              <InboxIcon
+                sx={{
+                  fontSize: '28px',
+                  color: '#FFF',
+                  cursor: 'pointer',
+                  position: 'absolute',
+                  right: '100px',
+                }}
               />
               {renderProfileOrLogin()}
             </>

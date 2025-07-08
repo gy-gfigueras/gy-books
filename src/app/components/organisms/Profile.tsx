@@ -11,7 +11,8 @@ import { User } from '@/domain/user.model';
 import Image from 'next/image';
 import Link from 'next/link';
 import { goudi } from '@/utils/fonts/fonts';
-
+import GroupIcon from '@mui/icons-material/Group';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 interface ProfileProps {
   user?: User;
 }
@@ -137,13 +138,46 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                       href={'/profile'}
                     >
                       Perfil
-                      <Image
-                        src="/logout.svg"
-                        alt="profile"
-                        width={20}
-                        height={20}
+                      <AccountCircleIcon
+                        sx={{ fontSize: '24px', color: '#FFF' }}
                       />
                     </Link>
+                  </Box>
+
+                  <Box
+                    id="logout-menu-item"
+                    sx={{
+                      fontWeight: 'bold',
+                      height: '40px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingX: '20px',
+                      fontFamily: goudi.style.fontFamily,
+                      borderRadius: '8px',
+                      transition: 'background-color 0.3s ease',
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 82, 82, 0.1)',
+                      },
+                    }}
+                  >
+                    <a
+                      style={{
+                        textDecoration: 'none',
+                        color: '#FFF',
+                        fontWeight: 'bold',
+                        fontFamily: goudi.style.fontFamily,
+                        fontSize: '18px',
+                        display: 'flex',
+                        width: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                      href={'/users/friends'}
+                    >
+                      Amigos
+                      <GroupIcon sx={{ fontSize: '24px', color: '#FFF' }} />
+                    </a>
                   </Box>
 
                   <Box

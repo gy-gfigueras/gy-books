@@ -23,6 +23,7 @@ import {
   MenuItem,
   useMediaQuery,
   CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import EditIcon from '@mui/icons-material/Edit';
@@ -36,7 +37,8 @@ import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
 import { getBooksWithPagination } from '../actions/getApiBook';
 import Book from '@/domain/book.model';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { goudi } from '@/utils/fonts/fonts';
+import { cinzel, goudi } from '@/utils/fonts/fonts';
+import { useFriends } from '@/hooks/useFriends';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
@@ -46,6 +48,7 @@ function ProfilePageContent() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { isLoading: isLoadingFriends, count: friendsCount } = useFriends();
 
   // Estado para paginación automática
   const [books, setBooks] = useState<Book[]>([]);
@@ -299,17 +302,47 @@ function ProfilePageContent() {
                 </Typography>
               </Paper>
             </Box>
-            <Typography
-              variant="body2"
+            <Box
+              component={'a'}
+              href={'/users/friends'}
               sx={{
-                color: '#FFFFFF',
-                fontWeight: 'bold',
-                mt: 1,
-                fontSize: { xs: 14, sm: 15, md: 16 },
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                textDecoration: 'none',
               }}
             >
-              12 friends
-            </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#FFFFFF',
+                  fontWeight: 'bold',
+                  mt: 1,
+                  fontSize: { xs: 14, sm: 15, md: 18 },
+                  fontFamily: cinzel.style.fontFamily,
+                }}
+              >
+                {isLoadingFriends ? (
+                  <Skeleton variant="text" width={100} height={24} />
+                ) : (
+                  `${friendsCount}`
+                )}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#FFFFFF',
+                  fontWeight: 'bold',
+                  mt: 1,
+                  fontSize: { xs: 14, sm: 15, md: 20 },
+                  fontFamily: goudi.style.fontFamily,
+                }}
+              >
+                {isLoadingFriends ? '' : 'friends'}
+              </Typography>
+            </Box>
           </Box>
           <Box
             sx={{
