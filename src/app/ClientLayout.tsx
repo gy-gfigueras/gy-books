@@ -19,6 +19,7 @@ import {
   useTheme,
   Button,
   Skeleton,
+  IconButton,
 } from '@mui/material';
 import { getTheme } from '@/styles/theme';
 import Profile from './components/organisms/Profile';
@@ -158,15 +159,22 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 src="/gy-logo.png"
                 alt="logo"
               />
-              <InboxIcon
-                sx={{
-                  fontSize: '28px',
-                  color: '#FFF',
-                  cursor: 'pointer',
-                  position: 'absolute',
-                  right: '100px',
-                }}
-              />
+              {user && (
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    right: '100px',
+                  }}
+                  onClick={() => router.push('/users/friends/request')}
+                >
+                  <InboxIcon
+                    sx={{
+                      fontSize: '28px',
+                      color: '#FFF',
+                    }}
+                  />
+                </IconButton>
+              )}
               {renderProfileOrLogin()}
             </>
           )}

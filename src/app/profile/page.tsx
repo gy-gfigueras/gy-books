@@ -120,7 +120,11 @@ function ProfilePageContent() {
     setLoading(true);
     const currentPage = pageRef.current;
     try {
-      const res = await getBooksWithPagination(currentPage, 10);
+      const res = await getBooksWithPagination(
+        userData?.id as string,
+        currentPage,
+        10
+      );
       if (res && Array.isArray(res.books) && res.books.length > 0) {
         setBooks((prev) => {
           const allBooks = [...prev, ...res.books];
@@ -197,7 +201,6 @@ function ProfilePageContent() {
       maxWidth="xl"
       sx={{
         mt: { xs: 0, md: 6 },
-        mb: 8,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
@@ -208,7 +211,7 @@ function ProfilePageContent() {
     >
       <Box
         sx={{
-          width: { xs: '100%', md: '90%' },
+          width: { xs: '100%', md: '100%' },
           maxWidth: 1200,
           mx: 'auto',
           display: 'flex',
@@ -687,6 +690,7 @@ function ProfilePageContent() {
                       alignItems: 'center',
                       px: { xs: 0.5, sm: 1, md: 0 },
                       py: { xs: 1, md: 0 },
+                      height: '100%',
                     }}
                   >
                     <BookCardCompact book={book} small={isMobile} />

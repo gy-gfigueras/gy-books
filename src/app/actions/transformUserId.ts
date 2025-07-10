@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import { headers } from 'next/headers';
-import { cookies } from 'next/headers';
+import { UUID } from 'crypto';
+import { cookies, headers } from 'next/headers';
 
-export default async function addFriend(formData: FormData): Promise<boolean> {
+export default async function transformUserId(userId: string): Promise<UUID> {
   try {
-    const userId = formData.get('userId') as string;
-
     if (!userId) {
       throw new Error('User ID is required');
     }
@@ -19,7 +17,7 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
     const cookieHeader = cookieStore.toString();
 
     const response = await fetch(
-      `${protocol}://${host}/api/auth/accounts/friends/request`,
+      `${protocol}://${host}/api/accounts/users/transform`,
       {
         method: 'POST',
         headers: {
@@ -29,7 +27,6 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
         body: JSON.stringify({
           userId: userId,
         }),
-        credentials: 'include',
       }
     );
 
@@ -40,11 +37,11 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
 
     const data = await response.json();
     if (!data) {
-      throw new Error('No ApiFriendRequest data received from server');
+      throw new Error('No ApiUser data received from server');
     }
 
-    return true;
+    return data as UUID;
   } catch (error: any) {
-    throw new Error(`Failed to add friend: ${error.message}`);
+    throw new Error(`Failed to transform user id: ${error.message}`);
   }
 }

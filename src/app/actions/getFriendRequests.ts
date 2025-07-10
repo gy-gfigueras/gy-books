@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { FriendRequest } from '@/domain/friend.model';
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 
-export default async function addFriend(formData: FormData): Promise<boolean> {
+export default async function getFriendRequests(): Promise<FriendRequest[]> {
   try {
-    const userId = formData.get('userId') as string;
-
-    if (!userId) {
-      throw new Error('User ID is required');
-    }
-
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
@@ -21,14 +16,11 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
     const response = await fetch(
       `${protocol}://${host}/api/auth/accounts/friends/request`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Cookie: cookieHeader,
         },
-        body: JSON.stringify({
-          userId: userId,
-        }),
         credentials: 'include',
       }
     );
@@ -43,7 +35,7 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
       throw new Error('No ApiFriendRequest data received from server');
     }
 
-    return true;
+    return data as FriendRequest[];
   } catch (error: any) {
     throw new Error(`Failed to add friend: ${error.message}`);
   }

@@ -29,9 +29,9 @@ export default function ProfileSkeleton() {
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            gap: 6,
+            alignItems: { xs: 'center', md: 'flex-start' },
+            justifyContent: { xs: 'center', md: 'flex-start' },
+            gap: { xs: 2, md: 6 },
             minHeight: 20,
           }}
         >
@@ -42,7 +42,13 @@ export default function ProfileSkeleton() {
             sx={{ ml: 2, mb: { xs: 2, md: 0 } }}
           />
           <Box
-            sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}
+            sx={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              alignItems: { xs: 'center', md: 'flex-start' },
+            }}
           >
             <Skeleton variant="text" width={220} height={48} />
             <Skeleton variant="text" width={180} height={28} />
@@ -66,9 +72,9 @@ export default function ProfileSkeleton() {
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: { xs: 'row', md: 'column' },
               gap: 1,
-              alignItems: 'flex-end',
+              alignItems: { xs: 'center', md: 'flex-end' },
               ml: 'auto',
               mt: { xs: 2, md: 0 },
             }}
@@ -77,7 +83,7 @@ export default function ProfileSkeleton() {
               variant="rectangular"
               width={140}
               height={40}
-              sx={{ mb: 1, borderRadius: 2 }}
+              sx={{ borderRadius: 2 }}
             />
             <Skeleton
               variant="rectangular"

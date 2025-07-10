@@ -30,7 +30,7 @@ export const GET = withApiAuthRequired(async (req: NextRequest) => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    apiUrl = `${baseUrl}/accounts/books/users?query=${queryParam}`;
+    apiUrl = `${baseUrl}/accounts/user/list?query=${queryParam}`;
     headers = {
       ...headers,
       Authorization: `Bearer ${ID_TOKEN}`,

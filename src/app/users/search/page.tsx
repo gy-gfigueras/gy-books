@@ -19,15 +19,16 @@ import { User } from '@/domain/friend.model';
 import queryUsers from '@/app/actions/searchUsers';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import addFriend from '@/app/actions/addFriend';
+import AnimatedAlert from '@/app/components/atoms/Alert';
+import { ESeverity } from '@/utils/constants/ESeverity';
 
 function BooksContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [userSearched, setUserSearched] = useState(searchParams.get('q') || '');
   const [users, setUsers] = useState<User[]>([]);
-  console.log(users);
   const debouncedUsername = useDebounce(userSearched, 250);
-
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     const fetchUsers = async () => {
       if (debouncedUsername) {
@@ -44,9 +45,14 @@ function BooksContent() {
   }, [debouncedUsername]);
 
   const handleAddFriend = async (userId: string) => {
-    const formData = new FormData();
-    formData.append('userId', userId);
-    await addFriend(formData);
+    try {
+      const formData = new FormData();
+      formData.append('userId', userId);
+      await addFriend(formData);
+      setOpen(true);
+    } catch (error) {
+      console.error('Error adding friend:', error);
+    }
   };
 
   useEffect(() => {
@@ -246,6 +252,12 @@ function BooksContent() {
           ))}
         </Box>
       </Box>
+      <AnimatedAlert
+        open={open}
+        message={'Solicitud enviada'}
+        onClose={() => setOpen(false)}
+        severity={ESeverity.SUCCESS}
+      />
     </>
   );
 }

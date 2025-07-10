@@ -62,7 +62,7 @@ export const CTASection = () => {
       <Button
         variant="outlined"
         size="large"
-        onClick={() => router.push(user ? '/friends' : '/api/auth/login')}
+        onClick={() => router.push(user ? '/users/search' : '/api/auth/login')}
         sx={{
           borderColor: '#9333ea',
           color: 'white',
@@ -82,7 +82,7 @@ export const CTASection = () => {
           },
         }}
       >
-        {user ? 'Buscar Amigos' : 'Crear Cuenta'}
+        {user ? 'Buscar Usuarios' : 'Crear Cuenta'}
       </Button>
     </Container>
   );

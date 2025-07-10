@@ -1,20 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { ApiBook } from '@/domain/apiBook.model';
+import { User } from '@/domain/friend.model';
+import { getSession } from '@auth0/nextjs-auth0';
 
 async function handler(request: Request) {
   const url = new URL(request.url);
-  const pathParts = url.pathname.split('/');
-  const id = pathParts[pathParts.length - 2];
-  console.log('public route');
-  if (!id) {
+  const ID = url.pathname.split('/').pop();
+  const SESSION = await getSession();
+  const USER_ID = SESSION?.user.sub;
+  const ID_TOKEN = SESSION?.idToken;
+
+  if (!ID) {
     return NextResponse.json({ error: 'Book ID is required' }, { status: 400 });
   }
 
-  console.log('API Route - Book ID:', id);
+  if (SESSION) {
+    await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
+  }
 
   try {
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
@@ -22,10 +26,15 @@ async function handler(request: Request) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    const apiUrl = `${baseUrl}/books/${id}/public`;
+    const API_URL = `${baseUrl}/accounts/user/${ID}`;
+    const HEADERS = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${ID_TOKEN}`,
+    };
 
     if (request.method === 'GET') {
-      const gyCodingResponse = await fetch(apiUrl, {
+      const gyCodingResponse = await fetch(API_URL, {
+        headers: HEADERS,
         method: 'GET',
       });
 
@@ -36,25 +45,20 @@ async function handler(request: Request) {
           statusText: gyCodingResponse.statusText,
           error: errorText,
         });
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+        await sendLog(ELevel.ERROR, ELogs.BOOK_ERROR, {
           error: errorText,
         });
         throw new Error(`GyCoding API Error: ${errorText}`);
       }
 
-      const apiBook = await gyCodingResponse.json();
-
-      await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, {
-        bookId: id,
-      });
-
-      return NextResponse.json(apiBook as ApiBook);
+      const USER = await gyCodingResponse.json();
+      return NextResponse.json(USER as User);
     }
 
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (error) {
-    console.error('Error in /api/auth/books/[id]:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+    console.error('Error in /api/accounts/users/[id]:', error);
+    await sendLog(ELevel.ERROR, ELogs.BOOK_ERROR, {
       error: error,
     });
 

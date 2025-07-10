@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { User } from '@/domain/friend.model';
+import { UUID } from 'crypto';
 
-export const GET = async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
   try {
-    const searchParams = req.nextUrl.searchParams;
-    const queryParam = searchParams.get('query');
+    const body = await req.json();
+    const userId = body.userId;
 
     let apiUrl: string | null = null;
     let headers: Record<string, string> = {
@@ -21,7 +21,7 @@ export const GET = async (req: NextRequest) => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    apiUrl = `${baseUrl}/accounts/user/list/public?query=${queryParam}`;
+    apiUrl = `${baseUrl}/accounts/user/transform/profileId`;
     headers = {
       ...headers,
     };
@@ -29,8 +29,15 @@ export const GET = async (req: NextRequest) => {
     if (!apiUrl) {
       throw new Error(ELogs.API_URL_NOT_DEFINED);
     }
+    console.log('apiUrl', apiUrl);
+    console.log('headers', headers);
+    console.log(JSON.stringify({ userId: userId }));
 
-    const gyCodingResponse = await fetch(apiUrl, { headers });
+    const gyCodingResponse = await fetch(apiUrl, {
+      headers,
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    });
 
     if (!gyCodingResponse.ok) {
       const errorText = await gyCodingResponse.text();
@@ -40,9 +47,9 @@ export const GET = async (req: NextRequest) => {
       throw new Error(`GyCoding API Error: ${errorText}`);
     }
 
-    const users = await gyCodingResponse.json();
-
-    return NextResponse.json(users as User[]);
+    const profileId = await gyCodingResponse.text();
+    console.log('profileId', profileId);
+    return NextResponse.json(profileId as UUID);
   } catch (error) {
     console.error('Error in /api/auth/user:', error);
     await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {

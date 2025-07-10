@@ -38,14 +38,6 @@ async function handler(request: Request) {
       Authorization: `Bearer ${idToken}`,
     };
 
-    console.log('Request details:', {
-      method: request.method,
-      API_URL,
-      headers: {
-        ...HEADERS,
-      },
-    });
-
     if (request.method === 'GET') {
       const gyCodingResponse = await fetch(API_URL, {
         headers: HEADERS,

@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { ECommands } from '@/utils/constants/ECommands';
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 
-export default async function addFriend(formData: FormData): Promise<boolean> {
+export default async function manageRequest(
+  formData: FormData
+): Promise<boolean> {
   try {
-    const userId = formData.get('userId') as string;
+    const requestId = formData.get('requestId') as string;
+    const command = formData.get('command') as string;
 
-    if (!userId) {
+    if (!requestId) {
       throw new Error('User ID is required');
     }
 
@@ -19,7 +23,7 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
     const cookieHeader = cookieStore.toString();
 
     const response = await fetch(
-      `${protocol}://${host}/api/auth/accounts/friends/request`,
+      `${protocol}://${host}/api/auth/accounts/friends/manage`,
       {
         method: 'POST',
         headers: {
@@ -27,7 +31,8 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
           Cookie: cookieHeader,
         },
         body: JSON.stringify({
-          userId: userId,
+          requestId: requestId,
+          command: command as ECommands,
         }),
         credentials: 'include',
       }
@@ -38,6 +43,12 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
       throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
     }
 
+    // Handle 204 No Content response
+    if (response.status === 204) {
+      return true;
+    }
+
+    // For other successful responses, try to parse JSON
     const data = await response.json();
     if (!data) {
       throw new Error('No ApiFriendRequest data received from server');
@@ -45,6 +56,6 @@ export default async function addFriend(formData: FormData): Promise<boolean> {
 
     return true;
   } catch (error: any) {
-    throw new Error(`Failed to add friend: ${error.message}`);
+    throw new Error(`Failed to manage request: ${error.message}`);
   }
 }

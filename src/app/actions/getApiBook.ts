@@ -81,7 +81,6 @@ export default async function getApiBook(
     }
 
     const data = await response.json();
-    console.log('Server Action - Received data:', data);
 
     if (data.status === 404) {
       return null;
@@ -101,6 +100,7 @@ export default async function getApiBook(
 
 // Nueva función para traer todos los libros con paginación
 export async function getBooksWithPagination(
+  userId?: string,
   page: number = 0,
   size: number = 10
 ): Promise<{ books: any[]; hasMore: boolean } | null> {
@@ -119,7 +119,7 @@ export async function getBooksWithPagination(
       throw new Error('User not authenticated');
     }
 
-    const url = `${protocol}://${host}/api/auth/books?page=${page}&size=${size}`;
+    const url = `${protocol}://${host}/api/auth/books?page=${page}&size=${size}&userId=${userId}`;
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: {
@@ -141,7 +141,6 @@ export async function getBooksWithPagination(
     }
 
     const data = await response.json();
-    console.log('Server Action - Received books data:', data);
 
     return {
       books: data.books || [],

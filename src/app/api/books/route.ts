@@ -67,16 +67,9 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('API Route - Backend data received:', data);
 
     // Mapear los resultados usando el mapper
     const books = data.data.search.results.hits.map((hit: any) => {
-      console.log('Processing book:', {
-        id: hit.document.id,
-        title: hit.document.title,
-        hasImage: !!hit.document.image,
-        imageUrl: hit.document.image?.url,
-      });
       return mapHardcoverToBook(hit.document);
     });
 
