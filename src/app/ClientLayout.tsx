@@ -34,7 +34,7 @@ import InboxIcon from '@mui/icons-material/Inbox';
 import { useFriendRequestsCount } from '@/hooks/useFriendRequestsCount';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useGyCodingUser();
-  const { count, isLoading: isLoadingCount } = useFriendRequestsCount();
+  const { count } = useFriendRequestsCount();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
