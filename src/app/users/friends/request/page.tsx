@@ -79,6 +79,17 @@ export default function FriendsRequestPage() {
             ))}
           </Box>
         )}
+        {data?.length === 0 && (
+          <Typography
+            sx={{
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              fontFamily: goudi.style.fontFamily,
+            }}
+          >
+            No friend requests
+          </Typography>
+        )}
       </Box>
       <AnimatedAlert
         open={errorManageRequest}

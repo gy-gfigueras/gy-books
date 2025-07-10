@@ -31,8 +31,10 @@ import { useRouter } from 'next/navigation';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { goudi } from '@/utils/fonts/fonts';
 import InboxIcon from '@mui/icons-material/Inbox';
+import { useFriendRequestsCount } from '@/hooks/useFriendRequestsCount';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useGyCodingUser();
+  const { count, isLoading: isLoadingCount } = useFriendRequestsCount();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -171,8 +173,27 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                     sx={{
                       fontSize: '28px',
                       color: '#FFF',
+                      position: 'relative',
                     }}
                   />
+                  {count > 0 && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        width: '20px',
+                        height: '20px',
+                        backgroundColor: 'primary.main',
+                        color: 'white',
+                        borderRadius: '50%',
+                        padding: '4px',
+                        fontSize: '12px',
+                      }}
+                    >
+                      {count}
+                    </Box>
+                  )}
                 </IconButton>
               )}
               {renderProfileOrLogin()}

@@ -24,6 +24,7 @@ interface useFriendRequestsProps {
   users: User[] | undefined;
   isLoadingUsers: boolean;
   friendRequestsWithUsers: FriendRequestWithUser[] | undefined;
+  count: number;
   handleManageRequest: (requestId: string, command: ECommands) => Promise<void>;
   isLoadingManageRequest: (requestId: string) => boolean;
   errorManageRequest: boolean;
@@ -112,6 +113,7 @@ export function useFriendRequests(): useFriendRequestsProps {
     users: users as User[] | undefined,
     isLoadingUsers,
     friendRequestsWithUsers,
+    count: data?.length || 0,
     handleManageRequest,
     isLoadingManageRequest,
     errorManageRequest,
