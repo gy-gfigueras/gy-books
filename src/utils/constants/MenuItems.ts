@@ -31,7 +31,7 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
       {
         text: 'Notificaciones',
         icon: React.createElement(MenuIcons.Inbox),
-        route: '/users/inbox',
+        route: '/users/friends/request',
       },
     ];
   }
