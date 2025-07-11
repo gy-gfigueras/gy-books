@@ -32,8 +32,12 @@ export const GET = withApiAuthRequired(async () => {
     if (!userDoc) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+    const biography = userDoc.books.biography;
 
-    return NextResponse.json(userDoc.profile as User);
+    return NextResponse.json({
+      ...userDoc.profile,
+      biography,
+    } as User);
   } catch (error) {
     return NextResponse.json(
       { error: 'Internal server error' },
