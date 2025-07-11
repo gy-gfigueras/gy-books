@@ -424,6 +424,7 @@ function ProfilePageContent() {
                       fontFamily: goudi.style.fontFamily,
                       fontSize: 18,
                       minHeight: 32,
+                      fontStyle: 'italic',
                     }}
                   >
                     {user.biography || 'Aquí irá la biografía del usuario.'}
