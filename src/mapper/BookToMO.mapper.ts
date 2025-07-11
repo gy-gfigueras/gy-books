@@ -22,7 +22,7 @@ export function mapHardcoverToBook(data: any): Book {
     id: parseInt(authorData?.id),
     name: authorData?.name ?? '',
     image: authorImage,
-    bio: authorData?.bio ?? '',
+    biography: authorData?.bio ?? '',
   };
 
   const cover: Cover = {

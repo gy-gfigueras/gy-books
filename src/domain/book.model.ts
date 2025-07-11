@@ -17,7 +17,7 @@ export interface Author {
   id: number;
   name: string;
   image: AuthorImage;
-  bio: string;
+  biography: string;
 }
 
 export default interface Book {

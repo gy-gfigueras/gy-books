@@ -301,7 +301,7 @@ function ProfilePageContent() {
                     minHeight: 32,
                   }}
                 >
-                  {user.bio || 'Aquí irá la biografía del usuario.'}
+                  {user.biography || 'Aquí irá la biografía del usuario.'}
                 </Typography>
               </Paper>
             </Box>

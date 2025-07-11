@@ -2,14 +2,8 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { goudi } from '@/utils/fonts/fonts';
+import { Author } from '@/domain/book.model';
 
-interface Author {
-  name: string;
-  image: {
-    url: string;
-  };
-  bio: string;
-}
 export default function AuthorCard({ author }: { author: Author }) {
   return (
     <Box
@@ -120,7 +114,7 @@ export default function AuthorCard({ author }: { author: Author }) {
               marginBottom: { xs: '0px', md: '12px' },
             }}
           >
-            {author.bio}
+            {author.biography}
           </Typography>
           <Typography
             sx={{

@@ -4,7 +4,7 @@ export interface Friend {
   id: UUID;
   username: string;
   email?: string;
-  bio?: string;
+  biography?: string;
   phoneNumber: string;
   picture: string;
 }
@@ -13,7 +13,7 @@ export interface User extends Friend {
   id: UUID;
   username: string;
   email?: string;
-  bio?: string;
+  biography?: string;
   phoneNumber: string;
   picture: string;
   isFriend?: boolean;

@@ -27,7 +27,7 @@ interface HardcoverBook {
         url: string;
         color_name: string;
       };
-      bio: string;
+      biography: string;
     };
   }>;
   description: string;
@@ -60,7 +60,7 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
         image: {
           url: '',
         },
-        bio: '',
+        biography: '',
       },
       description: hardcoverBook.description || '',
       rating: hardcoverBook.rating || 0,
@@ -96,7 +96,7 @@ export function mapHardcoverToBook(hardcoverBook: HardcoverBook): Book {
       image: {
         url: mainAuthor.image?.url || '',
       },
-      bio: mainAuthor.bio || '',
+      biography: mainAuthor.biography || '',
     },
     description: hardcoverBook.description || '',
     rating: hardcoverBook.rating || 0,
