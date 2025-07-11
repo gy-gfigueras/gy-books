@@ -3,7 +3,6 @@
 import getAccountsUser from '@/app/actions/accounts/user/fetchAccountsUser';
 import getFriendRequests from '@/app/actions/accounts/user/friend/fetchFriendRequest';
 import manageRequest from '@/app/actions/accounts/user/friend/handleRequest';
-import transformUserId from '@/app/actions/accounts/user/transformUserId';
 import { FriendRequest, User } from '@/domain/friend.model';
 import { ECommands } from '@/utils/constants/ECommands';
 import { UUID } from 'crypto';
@@ -51,17 +50,12 @@ export function useFriendRequests(profileId: UUID): useFriendRequestsProps {
     getFriendRequests(id)
   );
 
-  const { data: profilesID, mutate: mutateProfilesID } = useSWR(
-    data ? ['transformUserIds', data.map((r) => r.from)] : null,
-    async ([, fromIds]) => Promise.all(fromIds.map(transformUserId))
-  );
-
   const {
     data: users,
     isLoading: isLoadingUsers,
     mutate: mutateUsers,
   } = useSWR(
-    profilesID ? ['getAccountsUsers', profilesID] : null,
+    data ? ['getAccountsUsers', data.map((r) => r.from)] : null,
     async ([, ids]) => Promise.all(ids.map(getAccountsUser))
   );
 
@@ -89,7 +83,7 @@ export function useFriendRequests(profileId: UUID): useFriendRequestsProps {
       setErrorManageRequest(false);
       setIsSuccessManageRequest(true);
 
-      await Promise.all([mutateRequests(), mutateProfilesID(), mutateUsers()]);
+      await Promise.all([mutateRequests(), mutateUsers()]);
     } catch (error: any) {
       setErrorManageRequest(true);
       console.error(error);
@@ -111,7 +105,7 @@ export function useFriendRequests(profileId: UUID): useFriendRequestsProps {
     data,
     isLoading,
     error,
-    profilesID: profilesID as UUID[] | undefined,
+    profilesID: data?.map((r) => r.from) as UUID[] | undefined,
     users: users as User[] | undefined,
     isLoadingUsers,
     friendRequestsWithUsers,
