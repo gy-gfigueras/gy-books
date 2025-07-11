@@ -2,19 +2,22 @@
 'use server';
 
 import { FriendRequest } from '@/domain/friend.model';
+import { UUID } from 'crypto';
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 
-export default async function getFriendRequests(): Promise<FriendRequest[]> {
+export default async function getFriendRequests(
+  profileId: UUID
+): Promise<FriendRequest[]> {
   try {
+    console.log('profileId', profileId);
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
     const cookieStore = cookies();
     const cookieHeader = cookieStore.toString();
-
     const response = await fetch(
-      `${protocol}://${host}/api/auth/accounts/users/friends/request`,
+      `${protocol}://${host}/api/auth/accounts/users/friends/request?profileId=${profileId}`,
       {
         method: 'GET',
         headers: {

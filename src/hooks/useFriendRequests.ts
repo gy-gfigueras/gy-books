@@ -34,7 +34,7 @@ interface useFriendRequestsProps {
   setIsSuccessManageRequest: (isSuccess: boolean) => void;
 }
 
-export function useFriendRequests(): useFriendRequestsProps {
+export function useFriendRequests(profileId: UUID): useFriendRequestsProps {
   const [loadingRequests, setLoadingRequests] = useState<Set<string>>(
     new Set()
   );
@@ -42,12 +42,15 @@ export function useFriendRequests(): useFriendRequestsProps {
   const [isSuccessManageRequest, setIsSuccessManageRequest] =
     useState<boolean>(false);
 
+  console.log('profileId', profileId);
   const {
     data,
     isLoading,
     error,
     mutate: mutateRequests,
-  } = useSWR('/api/auth/accounts/users/friends/request', getFriendRequests);
+  } = useSWR(profileId ? ['friendRequests', profileId] : null, ([, id]) =>
+    getFriendRequests(id)
+  );
 
   const { data: profilesID, mutate: mutateProfilesID } = useSWR(
     data ? ['transformUserIds', data.map((r) => r.from)] : null,

@@ -3,7 +3,7 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import queryBooks from '@/app/actions/queryBooks';
+import queryBooks from '@/app/actions/book/queryBooks';
 import { Box, InputAdornment, TextField } from '@mui/material';
 import Book from '@/domain/book.model';
 import SearchIcon from '@mui/icons-material/Search';

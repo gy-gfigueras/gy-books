@@ -1,71 +1,45 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
+import { MongoClient } from 'mongodb';
 import { User } from '@/domain/user.model';
 
 export const GET = withApiAuthRequired(async () => {
+  console.log('🔐 Entrando a GET /api/auth/user');
+
+  const session = await getSession();
+  const userId = session?.user.sub;
+
+  if (!userId) {
+    return NextResponse.json({ error: 'No user session' }, { status: 401 });
+  }
+
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    return NextResponse.json({ error: 'Missing Mongo URI' }, { status: 500 });
+  }
+
+  const client = new MongoClient(uri);
+
   try {
-    const SESSION = await getSession();
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.idToken;
+    await client.connect();
 
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
+    const db = client.db('GYAccounts');
+    const collection = db.collection('Metadata');
+
+    const userDoc = await collection.findOne({ userId });
+
+    if (!userDoc) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    let apiUrl: string | null = null;
-    let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
-    if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-    }
-
-    apiUrl = `${baseUrl}/accounts/user/profile`;
-    headers = {
-      ...headers,
-      Authorization: `Bearer ${ID_TOKEN}`,
-    };
-
-    if (!apiUrl) {
-      throw new Error(ELogs.API_URL_NOT_DEFINED);
-    }
-
-    const gyCodingResponse = await fetch(apiUrl, { headers });
-
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-        error: errorText,
-      });
-      throw new Error(`GyCoding API Error: ${errorText}`);
-    }
-
-    const gyCodingData = await gyCodingResponse.json();
-
-    await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, {
-      user: gyCodingData.username,
-      status: gyCodingResponse.status,
-    });
-
-    return NextResponse.json({
-      gyCodingUser: gyCodingData as User,
-    });
+    return NextResponse.json(userDoc.profile as User);
   } catch (error) {
-    console.error('Error in /api/auth/user:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error,
-    });
-
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: 'Internal server error' },
       { status: 500 }
     );
+  } finally {
+    await client.close();
   }
 });

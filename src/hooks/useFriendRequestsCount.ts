@@ -1,4 +1,5 @@
 import getFriendRequests from '@/app/actions/accounts/user/friend/fetchFriendRequest';
+import { UUID } from 'crypto';
 import useSWR from 'swr';
 
 interface useFriendRequestsCountProps {
@@ -8,10 +9,12 @@ interface useFriendRequestsCountProps {
   mutate: () => Promise<unknown>;
 }
 
-export function useFriendRequestsCount(): useFriendRequestsCountProps {
+export function useFriendRequestsCount(
+  profileId: UUID
+): useFriendRequestsCountProps {
   const { data, isLoading, error, mutate } = useSWR(
-    '/api/auth/accounts/users/friends/request',
-    getFriendRequests
+    profileId ? ['friendRequests', profileId] : null,
+    ([, id]) => getFriendRequests(id)
   );
 
   const count = data?.length || 0;

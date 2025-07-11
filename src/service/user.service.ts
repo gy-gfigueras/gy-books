@@ -14,11 +14,11 @@ export async function getUser(): Promise<User> {
     }
 
     const data = await response.json();
-    if (!data.gyCodingUser) {
+    if (!data) {
       throw new Error('No user data received');
     }
-
-    const user: User = data.gyCodingUser;
+    console.log(data);
+    const user: User = data;
     return user;
   } catch (error) {
     console.error('Error fetching user data:', error);

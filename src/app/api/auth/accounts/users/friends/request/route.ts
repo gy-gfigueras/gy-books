@@ -4,13 +4,14 @@ import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
 import { FriendRequest } from '@/domain/friend.model';
+import { MongoClient } from 'mongodb';
 
 async function handler(req: Request) {
   try {
     const SESSION = await getSession();
     const ID_TOKEN = SESSION?.idToken;
-
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
+    const MONGO_URI = process.env.MONGO_URI;
     if (!baseUrl) {
       await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
       return NextResponse.json(
@@ -53,27 +54,29 @@ async function handler(req: Request) {
     }
 
     if (req.method === 'GET') {
-      const gyCodingResponse = await fetch(apiUrl, {
-        method: 'GET',
-        headers,
-      });
+      const url = new URL(
+        req.url,
+        process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+      );
+      const profileId = url.searchParams.get('profileId');
 
-      if (!gyCodingResponse.ok) {
-        const errorText = await gyCodingResponse.text();
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-          error: errorText,
-        });
+      if (!MONGO_URI) {
+        await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
         return NextResponse.json(
-          { error: errorText },
-          { status: gyCodingResponse.status }
+          { error: ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED },
+          { status: 500 }
         );
       }
+      const client = new MongoClient(MONGO_URI);
+      await client.connect();
 
-      const data = await gyCodingResponse.json();
-      return NextResponse.json(data as FriendRequest[]);
+      const db = client.db('GYAccounts');
+      const collection = db.collection('FriendRequest');
+      const data = await collection.find({ to: profileId }).toArray();
+      await client.close();
+      return NextResponse.json(data as unknown as FriendRequest[]);
     }
 
-    // Método no permitido
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (error) {
     console.error('Error in /api/auth/accounts/users/friends/request:', error);

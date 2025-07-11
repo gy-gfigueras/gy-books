@@ -7,8 +7,11 @@ import { goudi } from '@/utils/fonts/fonts';
 import AnimatedAlert from '@/app/components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import FriendCardSkeleton from '@/app/components/atoms/FriendCardSkeleton';
+import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
+import { UUID } from 'crypto';
 
 export default function FriendsRequestPage() {
+  const { user } = useGyCodingUser();
   const {
     data,
     isLoading,
@@ -21,7 +24,8 @@ export default function FriendsRequestPage() {
     isSuccessManageRequest,
     setIsSuccessManageRequest,
     handleManageRequest,
-  } = useFriendRequests();
+  } = useFriendRequests(user?.id as UUID);
+
   console.log('data', data);
   console.log('isLoading', isLoading);
   console.log('isLoadingUsers', isLoadingUsers);

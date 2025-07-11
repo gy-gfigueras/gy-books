@@ -32,9 +32,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { goudi } from '@/utils/fonts/fonts';
 import InboxIcon from '@mui/icons-material/Inbox';
 import { useFriendRequestsCount } from '@/hooks/useFriendRequestsCount';
+import { UUID } from 'crypto';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useGyCodingUser();
-  const { count } = useFriendRequestsCount();
+  const { count } = useFriendRequestsCount(user?.id as UUID);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
