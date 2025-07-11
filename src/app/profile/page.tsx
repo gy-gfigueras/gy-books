@@ -12,7 +12,6 @@ import {
   Container,
   Typography,
   Paper,
-  Button,
   Tab,
   Tabs,
   Radio,
@@ -23,10 +22,10 @@ import {
   useMediaQuery,
   CircularProgress,
   Skeleton,
+  TextField,
 } from '@mui/material';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import EditIcon from '@mui/icons-material/Edit';
-import Link from 'next/link';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
 import { EStatus } from '@/utils/constants/EStatus';
 import { useUser } from '@auth0/nextjs-auth0/client';
@@ -39,6 +38,10 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { cinzel, goudi } from '@/utils/fonts/fonts';
 import { useFriends } from '@/hooks/useFriends';
 import { UserImage } from '../components/atoms/UserImage';
+import { useBiography } from '@/hooks/useBiography';
+import { CustomButton } from '../components/atoms/customButton';
+import AnimatedAlert from '../components/atoms/Alert';
+import { ESeverity } from '@/utils/constants/ESeverity';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
@@ -49,7 +52,16 @@ function ProfilePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isLoading: isLoadingFriends, count: friendsCount } = useFriends();
-
+  const {
+    handleUpdateBiography,
+    setIsUpdated: setIsUpdatedBiography,
+    isLoading: isLoadingBiography,
+    isUpdated: isUpdatedBiography,
+    isError: isErrorBiography,
+    setIsError: setIsErrorBiography,
+  } = useBiography();
+  const [isEditingBiography, setIsEditingBiography] = useState(false);
+  const [biography, setBiography] = useState(user?.biography);
   // Estado para paginación automática
   const [books, setBooks] = useState<Book[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -196,6 +208,15 @@ function ProfilePageContent() {
     );
   }
 
+  const handleBiographyChange = async (biography: string) => {
+    const formData = new FormData();
+    formData.append('biography', biography);
+    const biographyUpdated = await handleUpdateBiography(formData);
+    setBiography(biographyUpdated);
+    setIsEditingBiography(false);
+    setIsUpdatedBiography(true);
+  };
+
   return (
     <Container
       maxWidth="xl"
@@ -243,55 +264,40 @@ function ProfilePageContent() {
               textAlign: { xs: 'center', md: 'left' },
             }}
           >
-            <Typography
-              id="profile-username"
-              variant="h3"
-              sx={{
-                color: '#fff',
-                fontWeight: 'bold',
-                fontFamily: goudi.style.fontFamily,
-                mb: 0,
-                fontSize: { xs: 28, sm: 32, md: 40 },
-              }}
-            >
-              {user.username}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: '#fff',
-                fontFamily: goudi.style.fontFamily,
-                fontSize: { xs: 15, sm: 16, md: 22 },
-                mb: 1,
-              }}
-            >
-              {userData?.email}
-            </Typography>
             <Box
-              sx={{ width: { xs: '100%', sm: 340, md: 400 }, maxWidth: '100%' }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 2,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <Paper
-                elevation={0}
+              <Typography
+                id="profile-username"
+                variant="h3"
                 sx={{
-                  border: '2px solid #FFFFFF30',
-                  borderRadius: '12px',
-                  background: 'rgba(35, 35, 35, 0.85)',
-                  p: 1.5,
-                  mb: 1,
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  fontFamily: goudi.style.fontFamily,
+                  mb: 0,
+                  fontSize: { xs: 28, sm: 32, md: 40 },
                 }}
               >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: '#fff',
-                    fontFamily: goudi.style.fontFamily,
-                    fontSize: 18,
-                    minHeight: 32,
-                  }}
-                >
-                  {user.biography || 'Aquí irá la biografía del usuario.'}
-                </Typography>
-              </Paper>
+                {user.username}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: '#ffffff30',
+                  fontFamily: goudi.style.fontFamily,
+                  fontSize: { xs: 15, sm: 16, md: 22 },
+                  mb: 1,
+                  fontStyle: 'italic',
+                }}
+              >
+                {`(${userData?.email})`}
+              </Typography>
             </Box>
             <Box
               component={'a'}
@@ -302,6 +308,7 @@ function ProfilePageContent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 1,
+                marginTop: '-10px',
                 textDecoration: 'none',
               }}
             >
@@ -310,7 +317,6 @@ function ProfilePageContent() {
                 sx={{
                   color: '#FFFFFF',
                   fontWeight: 'bold',
-                  mt: 1,
                   fontSize: { xs: 14, sm: 15, md: 18 },
                   fontFamily: cinzel.style.fontFamily,
                 }}
@@ -326,13 +332,157 @@ function ProfilePageContent() {
                 sx={{
                   color: '#FFFFFF',
                   fontWeight: 'bold',
-                  mt: 1,
                   fontSize: { xs: 14, sm: 15, md: 20 },
                   fontFamily: goudi.style.fontFamily,
                 }}
               >
                 {isLoadingFriends ? '' : 'friends'}
               </Typography>
+            </Box>
+
+            <Box
+              sx={{ width: { xs: '100%', sm: 340, md: 400 }, maxWidth: '100%' }}
+            >
+              {isEditingBiography ? (
+                <TextField
+                  value={biography}
+                  onChange={(e) => setBiography(e.target.value)}
+                  placeholder="Write your biography here..."
+                  sx={{
+                    mb: '8px',
+                    width: '100%',
+                    backgroundColor: '#232323',
+                    borderRadius: '12px',
+                    border: '2px solid #FFFFFF30',
+
+                    fontFamily: goudi.style.fontFamily,
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'transparent',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderRadius: '12px',
+                      },
+                      '&.MuiFormLabel-root': {
+                        color: 'transparent',
+                        fontFamily: goudi.style.fontFamily,
+                      },
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'transparent',
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'white',
+                      fontFamily: goudi.style.fontFamily,
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                      fontFamily: goudi.style.fontFamily,
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                      fontSize: '18px',
+                      fontFamily: goudi.style.fontFamily,
+                    },
+                  }}
+                  slotProps={{
+                    htmlInput: {
+                      style: {
+                        width: '100%',
+                        color: 'white',
+                        fontFamily: goudi.style.fontFamily,
+                        fontSize: '20px',
+
+                        fieldSet: {
+                          borderColor: 'white',
+                          fontFamily: goudi.style.fontFamily,
+                        },
+                      },
+                    },
+                  }}
+                  fullWidth
+                  multiline
+                  rows={4}
+                />
+              ) : (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    border: '2px solid #FFFFFF30',
+                    width: '100%',
+                    borderRadius: '12px',
+                    background: 'rgba(35, 35, 35, 0.85)',
+                    p: 1.5,
+                    height: '100%',
+                    mb: 1,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#fff',
+                      fontFamily: goudi.style.fontFamily,
+                      fontSize: 18,
+                      minHeight: 32,
+                    }}
+                  >
+                    {user.biography || 'Aquí irá la biografía del usuario.'}
+                  </Typography>
+                </Paper>
+              )}
+              {isEditingBiography && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 2,
+                    alignItems: 'start',
+                    justifyContent: 'start',
+                    mt: 2,
+                  }}
+                >
+                  <CustomButton
+                    isLoading={isLoadingBiography}
+                    sx={{
+                      letterSpacing: '.05rem',
+                      minWidth: { xs: 0, md: 'auto' },
+                      width: { xs: '50%', md: 'auto' },
+                      fontSize: { xs: 15, md: 14 },
+                      height: '44px',
+                      paddingTop: '14px',
+
+                      textAlign: 'center',
+                      fontFamily: goudi.style.fontFamily,
+                    }}
+                    onClick={() => handleBiographyChange(biography as string)}
+                    variant="outlined"
+                  >
+                    Save
+                  </CustomButton>
+                  <CustomButton
+                    sx={{
+                      letterSpacing: '.05rem',
+                      minWidth: { xs: 0, md: 'auto' },
+                      width: { xs: '50%', md: 'auto' },
+                      fontSize: { xs: 15, md: 14 },
+                      fontFamily: goudi.style.fontFamily,
+                      background: 'rgba(255, 0, 0, 0.43)',
+                      boxShadow: '0 4px 14px rgba(255, 0, 0, 0.4)',
+                      paddingTop: '14px',
+                      height: '44px',
+                      textAlign: 'center',
+                      '&:hover': {
+                        background: 'rgba(255, 0, 0, 0.65)',
+                        transform: 'translateY(-2px)',
+                      },
+                    }}
+                    onClick={() => setIsEditingBiography(false)}
+                    variant="outlined"
+                  >
+                    Cancel
+                  </CustomButton>
+                </Box>
+              )}
             </Box>
           </Box>
           <Box
@@ -347,64 +497,34 @@ function ProfilePageContent() {
               width: { xs: '100%', md: 'auto' },
             }}
           >
-            <Button
+            <CustomButton
+              sx={{
+                letterSpacing: '.05rem',
+                minWidth: { xs: 0, md: 170 },
+                width: { xs: '50%', md: '200px' },
+                fontFamily: goudi.style.fontFamily,
+              }}
               variant="outlined"
-              color="primary"
-              component={Link}
+              endIcon={<LaunchIcon />}
+              variantComponent="link"
               href="https://accounts.gycoding.com"
               target="_blank"
-              sx={{
-                borderColor: '#FFFFFF',
-                color: '#FFFFFF',
-                fontWeight: 'bold',
-                borderRadius: '8px',
-                minWidth: { xs: 0, md: 140 },
-                width: { xs: '50%', md: '180px' },
-                mb: { xs: 0, md: 1 },
-                px: 1,
-                py: 0.5,
-                fontSize: { xs: 15, md: 20 },
-                letterSpacing: '.05rem',
-                fontFamily: goudi.style.fontFamily,
-                textTransform: 'none',
-                background: 'transparent',
-                '&:hover': {
-                  borderColor: '#c4b5fd',
-                  color: '#fff',
-                  background: '#8C54FF',
-                },
-              }}
-              endIcon={<LaunchIcon />}
             >
               Edit Account
-            </Button>
-            <Button
-              variant="outlined"
+            </CustomButton>
+            <CustomButton
               sx={{
-                borderColor: '#FFFFFF',
-                color: '#FFFFFF',
-                fontWeight: 'bold',
-                borderRadius: '8px',
-                minWidth: { xs: 0, md: 140 },
-                width: { xs: '50%', md: '180px' },
-                px: 1,
-                py: 0.5,
-                fontSize: { xs: 15, md: 20 },
                 letterSpacing: '.05rem',
-
+                minWidth: { xs: 0, md: 170 },
+                width: { xs: '50%', md: '200px' },
                 fontFamily: goudi.style.fontFamily,
-                textTransform: 'none',
-                background: 'transparent',
-                '&:hover': {
-                  borderColor: '#c4b5fd',
-                  color: '#fff',
-                  background: '#8C54FF',
-                },
               }}
+              onClick={() => setIsEditingBiography(true)}
+              variant="outlined"
               endIcon={<EditIcon />}
             >
               Edit Profile
-            </Button>
+            </CustomButton>
           </Box>
         </Box>
         <Box sx={{ mt: 6 }}>
@@ -741,6 +861,18 @@ function ProfilePageContent() {
           )}
         </Box>
       </Box>
+      <AnimatedAlert
+        open={isUpdatedBiography}
+        onClose={() => setIsUpdatedBiography(false)}
+        message="Biography updated successfully"
+        severity={ESeverity.SUCCESS}
+      />
+      <AnimatedAlert
+        open={isErrorBiography}
+        onClose={() => setIsErrorBiography(false)}
+        message="Error updating biography"
+        severity={ESeverity.ERROR}
+      />
     </Container>
   );
 }
