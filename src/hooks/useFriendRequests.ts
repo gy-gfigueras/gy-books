@@ -42,7 +42,6 @@ export function useFriendRequests(profileId: UUID): useFriendRequestsProps {
   const [isSuccessManageRequest, setIsSuccessManageRequest] =
     useState<boolean>(false);
 
-  console.log('profileId', profileId);
   const {
     data,
     isLoading,

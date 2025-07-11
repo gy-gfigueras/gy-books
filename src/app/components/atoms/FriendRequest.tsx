@@ -1,9 +1,10 @@
 import React from 'react';
 import { goudi } from '@/utils/fonts/fonts';
 import { User } from '@/domain/friend.model';
-import { Box, Avatar, Typography, IconButton } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
 import { ECommands } from '@/utils/constants/ECommands';
+import Image from 'next/image';
 
 interface FriendRequestProps {
   user: User;
@@ -41,13 +42,18 @@ export default function FriendRequest({
         textDecoration: 'none',
       }}
     >
-      <Avatar
-        src={user.picture}
-        sx={{
+      <Image
+        src={user?.picture || ''}
+        style={{
           width: 'auto',
           height: '100%',
           aspectRatio: '1/1',
+          borderRadius: '50%',
+          objectFit: 'cover',
         }}
+        alt={user?.username || ''}
+        width={100}
+        height={100}
       />
       <Typography
         sx={{

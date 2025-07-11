@@ -4,7 +4,6 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import {
-  Avatar,
   Box,
   IconButton,
   InputAdornment,
@@ -21,6 +20,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import addFriend from '@/app/actions/accounts/user/friend/addFriend';
 import AnimatedAlert from '@/app/components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
+import Image from 'next/image';
 
 function BooksContent() {
   const searchParams = useSearchParams();
@@ -207,13 +207,18 @@ function BooksContent() {
                 textDecoration: 'none',
               }}
             >
-              <Avatar
+              <Image
                 src={user.picture}
-                sx={{
+                style={{
                   width: 'auto',
                   height: '100%',
                   aspectRatio: '1/1',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
                 }}
+                alt={user.username}
+                width={100}
+                height={100}
               />
               <Typography
                 sx={{

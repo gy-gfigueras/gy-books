@@ -11,7 +11,6 @@ import {
   Box,
   Container,
   Typography,
-  Avatar,
   Paper,
   Button,
   Tab,
@@ -39,6 +38,7 @@ import Book from '@/domain/book.model';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { cinzel, goudi } from '@/utils/fonts/fonts';
 import { useFriends } from '@/hooks/useFriends';
+import { UserImage } from '../components/atoms/UserImage';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
@@ -230,19 +230,7 @@ function ProfilePageContent() {
             width: '100%',
           }}
         >
-          <Avatar
-            src={user.picture}
-            alt={user.username}
-            sx={{
-              width: { xs: 100, sm: 120, md: 160 },
-              height: { xs: 100, sm: 120, md: 160 },
-              bgcolor: '#232323',
-              border: '3px solid #8C54FF',
-              ml: { xs: 0, md: 2 },
-              mb: { xs: 2, md: 0 },
-              alignSelf: { xs: 'center', md: 'flex-start' },
-            }}
-          />
+          <UserImage user={user} />
           <Box
             sx={{
               flex: 1,

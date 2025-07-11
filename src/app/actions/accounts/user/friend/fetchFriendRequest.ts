@@ -10,7 +10,6 @@ export default async function getFriendRequests(
   profileId: UUID
 ): Promise<FriendRequest[]> {
   try {
-    console.log('profileId', profileId);
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';

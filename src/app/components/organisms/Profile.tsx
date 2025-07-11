@@ -1,11 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Popper,
-  Paper,
-  Grow,
-  ClickAwayListener,
-} from '@mui/material';
+import { Box, Popper, Paper, Grow, ClickAwayListener } from '@mui/material';
 import * as React from 'react';
 import { User } from '@/domain/user.model';
 import Image from 'next/image';
@@ -48,28 +41,28 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
       <Box
         ref={anchorRef}
         onClick={handleToggle}
-        id={'profile-button'}
         sx={{
           cursor: 'pointer',
           padding: '4px',
           borderRadius: '50%',
-          transition: 'background-color 0.3s ease',
-          '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          },
         }}
       >
-        <Avatar
-          src={user?.picture}
-          sx={{
+        <Image
+          src={user?.picture || ''}
+          className="rounded-full"
+          style={{
             width: '48px',
             height: '48px',
-            border: '2px solid rgba(147, 51, 234, 0.3)',
+            aspectRatio: '1/1',
+            borderRadius: '50%',
+            objectFit: 'cover',
+            border: '2px solid #8C54FF',
             transition: 'border-color 0.3s ease',
-            '&:hover': {
-              border: '2px solid #9333ea',
-            },
+            zIndex: 1000,
           }}
+          alt={user?.username || ''}
+          width={100}
+          height={100}
         />
       </Box>
 
@@ -145,7 +138,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                   </Box>
 
                   <Box
-                    id="logout-menu-item"
+                    id="friends-menu-item"
                     sx={{
                       fontWeight: 'bold',
                       height: '40px',
@@ -157,7 +150,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                       borderRadius: '8px',
                       transition: 'background-color 0.3s ease',
                       '&:hover': {
-                        backgroundColor: 'rgba(255, 82, 82, 0.1)',
+                        backgroundColor: 'rgba(147, 51, 234, 0.1)',
                       },
                     }}
                   >

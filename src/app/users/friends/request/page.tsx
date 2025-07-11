@@ -16,7 +16,6 @@ export default function FriendsRequestPage() {
     data,
     isLoading,
     isLoadingUsers,
-    users,
     friendRequestsWithUsers,
     isLoadingManageRequest,
     errorManageRequest,
@@ -25,12 +24,6 @@ export default function FriendsRequestPage() {
     setIsSuccessManageRequest,
     handleManageRequest,
   } = useFriendRequests(user?.id as UUID);
-
-  console.log('data', data);
-  console.log('isLoading', isLoading);
-  console.log('isLoadingUsers', isLoadingUsers);
-  console.log('users', users);
-  console.log('friendRequestsWithUsers', friendRequestsWithUsers);
 
   const handleOpenErrorAlertClose = () => {
     setErrorManageRequest(false);

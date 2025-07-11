@@ -1,7 +1,8 @@
 import React from 'react';
 import { goudi } from '@/utils/fonts/fonts';
 import { Friend } from '@/domain/friend.model';
-import { Box, Avatar, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Image from 'next/image';
 
 export default function FriendCard({ friend }: { friend: Friend }) {
   return (
@@ -25,13 +26,18 @@ export default function FriendCard({ friend }: { friend: Friend }) {
         textDecoration: 'none',
       }}
     >
-      <Avatar
+      <Image
         src={friend.picture}
-        sx={{
+        style={{
           width: 'auto',
           height: '100%',
           aspectRatio: '1/1',
+          borderRadius: '50%',
+          objectFit: 'cover',
         }}
+        alt={friend.username}
+        width={100}
+        height={100}
       />
       <Typography
         sx={{

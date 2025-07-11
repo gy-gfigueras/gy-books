@@ -1,11 +1,12 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { Box, Container, Typography, Avatar, Paper } from '@mui/material';
+import { Box, Container, Typography, Paper } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { goudi } from '@/utils/fonts/fonts';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
 import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton';
+import Image from 'next/image';
 
 function ProfilePageContent() {
   const params = useParams();
@@ -192,18 +193,17 @@ function ProfilePageContent() {
             width: '100%',
           }}
         >
-          <Avatar
+          <Image
             src={user.picture}
-            alt={user.username}
-            sx={{
-              width: { xs: 100, sm: 120, md: 160 },
-              height: { xs: 100, sm: 120, md: 160 },
-              bgcolor: '#232323',
-              border: '3px solid #8C54FF',
-              ml: { xs: 0, md: 2 },
-              mb: { xs: 2, md: 0 },
-              alignSelf: { xs: 'center', md: 'flex-start' },
+            style={{
+              width: 'auto',
+              height: '100%',
+              aspectRatio: '1/1',
+              borderRadius: '50%',
             }}
+            alt={user.username}
+            width={100}
+            height={100}
           />
           <Box
             sx={{
