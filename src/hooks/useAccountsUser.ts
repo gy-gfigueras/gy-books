@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import useSWR from 'swr';
 import { User } from '@/domain/friend.model';
-import getAccountsUser from '@/app/actions/getAccountsUser';
+import getAccountsUser from '@/app/actions/accounts/user/fetchAccountsUser';
 
 interface useBookProps {
   data: User | undefined;

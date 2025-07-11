@@ -76,7 +76,7 @@ async function handler(req: Request) {
     // Método no permitido
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (error) {
-    console.error('Error in /api/auth/accounts/friends/request:', error);
+    console.error('Error in /api/auth/accounts/users/friends/request:', error);
     await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
       error: error instanceof Error ? error.message : String(error),
     });

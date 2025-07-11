@@ -34,7 +34,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { useTheme } from '@mui/material/styles';
 import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
-import { getBooksWithPagination } from '../actions/getApiBook';
+import { getBooksWithPagination } from '../actions/book/fetchApiBook';
 import Book from '@/domain/book.model';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { cinzel, goudi } from '@/utils/fonts/fonts';

@@ -2,7 +2,7 @@ import { Friend } from '@/domain/friend.model';
 
 export async function getFriends(): Promise<Friend[]> {
   try {
-    const response = await fetch('/api/auth/accounts/friends', {
+    const response = await fetch('/api/auth/accounts/users/friends', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

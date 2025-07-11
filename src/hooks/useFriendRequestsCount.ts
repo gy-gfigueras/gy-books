@@ -1,4 +1,4 @@
-import getFriendRequests from '@/app/actions/getFriendRequests';
+import getFriendRequests from '@/app/actions/accounts/user/friend/fetchFriendRequest';
 import useSWR from 'swr';
 
 interface useFriendRequestsCountProps {
@@ -10,7 +10,7 @@ interface useFriendRequestsCountProps {
 
 export function useFriendRequestsCount(): useFriendRequestsCountProps {
   const { data, isLoading, error, mutate } = useSWR(
-    '/api/auth/accounts/friends/request',
+    '/api/auth/accounts/users/friends/request',
     getFriendRequests
   );
 

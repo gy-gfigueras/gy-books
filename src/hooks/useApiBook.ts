@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import useSWR from 'swr';
 import { ApiBook } from '@/domain/apiBook.model';
-import getApiBook from '@/app/actions/getApiBook';
+import getApiBook from '@/app/actions/book/fetchApiBook';
 
 interface useApiBookProps {
   data: ApiBook | null;

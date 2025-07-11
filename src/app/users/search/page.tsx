@@ -16,9 +16,9 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { birthStone, goudi } from '@/utils/fonts/fonts';
 import { User } from '@/domain/friend.model';
-import queryUsers from '@/app/actions/searchUsers';
+import queryUsers from '@/app/actions/accounts/user/fetchUsers';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import addFriend from '@/app/actions/addFriend';
+import addFriend from '@/app/actions/accounts/user/friend/addFriend';
 import AnimatedAlert from '@/app/components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 

@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import RatingStars from './RatingStars';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import rateBook from '@/app/actions/rateBook';
+import rateBook from '@/app/actions/book/rateBook';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CloseIcon from '@mui/icons-material/Close';

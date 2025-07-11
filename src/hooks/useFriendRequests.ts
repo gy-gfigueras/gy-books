@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import getAccountsUser from '@/app/actions/getAccountsUser';
-import getFriendRequests from '@/app/actions/getFriendRequests';
-import manageRequest from '@/app/actions/manageRequest';
-import transformUserId from '@/app/actions/transformUserId';
+import getAccountsUser from '@/app/actions/accounts/user/fetchAccountsUser';
+import getFriendRequests from '@/app/actions/accounts/user/friend/fetchFriendRequest';
+import manageRequest from '@/app/actions/accounts/user/friend/handleRequest';
+import transformUserId from '@/app/actions/accounts/user/transformUserId';
 import { FriendRequest, User } from '@/domain/friend.model';
 import { ECommands } from '@/utils/constants/ECommands';
 import { UUID } from 'crypto';
@@ -47,7 +47,7 @@ export function useFriendRequests(): useFriendRequestsProps {
     isLoading,
     error,
     mutate: mutateRequests,
-  } = useSWR('/api/auth/accounts/friends/request', getFriendRequests);
+  } = useSWR('/api/auth/accounts/users/friends/request', getFriendRequests);
 
   const { data: profilesID, mutate: mutateProfilesID } = useSWR(
     data ? ['transformUserIds', data.map((r) => r.from)] : null,

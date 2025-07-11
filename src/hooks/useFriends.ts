@@ -11,7 +11,7 @@ interface useFriendsProps {
 
 export function useFriends(): useFriendsProps {
   const { data, isLoading, error } = useSWR(
-    '/api/auth/accounts/friends',
+    '/api/auth/users/accounts/friends',
     getFriends
   );
 
