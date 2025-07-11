@@ -200,6 +200,7 @@ function ProfilePageContent() {
               height: '100%',
               aspectRatio: '1/1',
               borderRadius: '50%',
+              objectFit: 'cover',
             }}
             alt={user.username}
             width={100}
