@@ -1,5 +1,4 @@
-import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
@@ -7,17 +6,11 @@ import { GET_BOOK_BY_ID_QUERY } from '@/utils/constants/Query';
 import { mapHardcoverToBook } from '@/mapper/books.mapper';
 import Book from '@/domain/book.model';
 
-export const GET = withApiAuthRequired(async (req) => {
+export const GET = async (req: NextRequest) => {
   try {
-    const SESSION = await getSession();
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.idToken;
     const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
     const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
-
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
-    }
+    const profileId = req.nextUrl.pathname.split('/')[4]; // [id]
 
     if (!HARDCOVER_API_TOKEN || !HARDCOVER_API_URL) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
@@ -29,13 +22,14 @@ export const GET = withApiAuthRequired(async (req) => {
 
     console.log(`[API] page: ${page}, size: ${size}`);
 
-    const apiUrl = `${process.env.GY_API}/books/?page=${page}&size=${size}`;
+    const apiUrl = `${process.env.GY_API}/books/${profileId}/list?page=${page}&size=${size}`;
+    console.log('API ROUTE - Fetching books by user:', profileId);
+    console.log('API ROUTE - URL:', apiUrl);
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${ID_TOKEN}`,
     };
 
-    const response = await fetch(apiUrl, { headers });
+    const response = await fetch(apiUrl, { headers, method: 'GET' });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -101,7 +95,7 @@ export const GET = withApiAuthRequired(async (req) => {
 
     return NextResponse.json(LIBRARY);
   } catch (error) {
-    console.error('Error in /api/auth/books', error);
+    console.error('Error in /api/accounts/users/[id]/books', error);
     await sendLog(ELevel.ERROR, ELogs.LIBRARY_CANNOT_BE_RECEIVED, {
       error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR,
     });
@@ -111,4 +105,4 @@ export const GET = withApiAuthRequired(async (req) => {
       { status: 500 }
     );
   }
-});
+};

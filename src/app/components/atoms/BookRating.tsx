@@ -25,11 +25,16 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { ApiBook } from '@/domain/apiBook.model';
 import { goudi } from '@/utils/fonts/fonts';
-
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useRemoveBook } from '@/hooks/useRemoveBook';
 interface BookRatingProps {
   bookId: string;
   apiBook: ApiBook;
   isRatingLoading: boolean;
+  mutate?: (
+    data?: ApiBook | null,
+    options?: { revalidate?: boolean }
+  ) => Promise<ApiBook | null | undefined>;
 }
 
 const statusOptions = [
@@ -50,8 +55,10 @@ export const BookRating = ({
   bookId,
   apiBook,
   isRatingLoading,
+  mutate,
 }: BookRatingProps) => {
   const { user, isLoading: isUserLoading } = useUser();
+  const { handleDeleteBook, isLoading: isDeleteLoading } = useRemoveBook();
 
   // Estado temporal único para todos los campos
   const [tempRating, setTempRating] = useState<number>(0);
@@ -74,7 +81,7 @@ export const BookRating = ({
       setTempEndDate(apiBook.userData.endDate || '');
     } else {
       setTempRating(0);
-      setTempStatus(EStatus.WANT_TO_READ);
+      setTempStatus(EStatus.RATE); // Usar RATE para indicar que no está guardado
       setTempStartDate('');
       setTempEndDate('');
     }
@@ -89,8 +96,11 @@ export const BookRating = ({
       formData.append('rating', tempRating.toString());
       formData.append('startDate', tempStartDate);
       formData.append('endDate', tempEndDate);
-      formData.append('status', tempStatus.toString());
+      // Si el libro no está guardado, usar WANT_TO_READ como estado inicial
+      const statusToSave = isBookSaved ? tempStatus : EStatus.WANT_TO_READ;
+      formData.append('status', statusToSave.toString());
       const updatedApiBook = await rateBook(formData);
+
       // Actualizar los temporales con la respuesta
       if (updatedApiBook && updatedApiBook.userData) {
         setTempRating(updatedApiBook.userData.rating || 0);
@@ -98,6 +108,12 @@ export const BookRating = ({
         setTempStartDate(updatedApiBook.userData.startDate || '');
         setTempEndDate(updatedApiBook.userData.endDate || '');
       }
+
+      // Mutate para actualizar la UI inmediatamente
+      if (mutate) {
+        await mutate(updatedApiBook, { revalidate: false });
+      }
+
       setAnchorEl(null);
       setDrawerOpen(false);
     } catch (error) {
@@ -108,7 +124,16 @@ export const BookRating = ({
   };
 
   const isLoading = isUserLoading || isRatingLoading;
-  const currentStatus = statusOptions.find((opt) => opt.value === tempStatus);
+
+  // Determinar si el libro está realmente guardado en la base de datos
+  const isBookSaved =
+    apiBook && apiBook.userData && apiBook.userData.status !== EStatus.RATE;
+
+  // Obtener el status a mostrar (si no está guardado, mostrar WANT_TO_READ pero con estilo diferente)
+  const displayStatus = isBookSaved ? tempStatus : EStatus.WANT_TO_READ;
+  const displayStatusOption = statusOptions.find(
+    (opt) => opt.value === displayStatus
+  );
 
   return (
     <Box
@@ -135,22 +160,24 @@ export const BookRating = ({
           }}
           sx={{
             justifyContent: 'space-between',
-            color: '#fff',
-            borderColor: '#8C54FF',
+            color: isBookSaved ? '#fff' : '#ccc',
+            borderColor: isBookSaved ? '#8C54FF' : '#8C54FF40',
             fontWeight: 'bold',
             fontSize: 20,
             fontFamily: goudi.style.fontFamily,
             letterSpacing: '.05rem',
             borderRadius: '12px',
-            background: 'rgba(140,84,255,0.10)',
+            background: isBookSaved ? '#8C54FF' : 'rgba(140,84,255,0.05)',
             px: 2,
             py: 1,
             textTransform: 'none',
             opacity: !user ? 0.5 : 1,
             '&:hover': {
-              borderColor: '#c4b5fd',
-              background: '#8C54FF',
+              borderColor: isBookSaved ? '#c4b5fd' : '#8C54FF',
+              background: isBookSaved ? '#8C54FF' : 'rgba(140,84,255,0.15)',
               color: '#fff',
+              transform: 'translateY(-1px)',
+              boxShadow: '0 4px 12px rgba(140,84,255,0.3)',
             },
             '&:disabled': {
               borderColor: '#666',
@@ -159,7 +186,7 @@ export const BookRating = ({
             },
           }}
         >
-          {currentStatus?.label || 'Want to read'}
+          {displayStatusOption?.label || 'Want to read'}
         </Button>
         <Menu
           anchorEl={anchorEl}
@@ -175,7 +202,35 @@ export const BookRating = ({
             },
           }}
         >
-          <Stack spacing={2} alignItems="stretch">
+          <Stack spacing={2} alignItems="stretch" position="relative">
+            {isBookSaved && (
+              <IconButton
+                loading={isDeleteLoading}
+                sx={{
+                  position: 'absolute',
+                  top: 10,
+                  padding: '10px',
+                  background: 'rgba(255, 83, 83, 0.1)',
+                  borderRadius: '16px',
+                  right: 0,
+                }}
+                onClick={() =>
+                  handleDeleteBook(
+                    bookId,
+                    mutate
+                      ? (data, options) =>
+                          mutate({ ...apiBook, userData: undefined }, options)
+                      : undefined
+                  )
+                }
+              >
+                <DeleteIcon
+                  sx={{
+                    color: '#ff5353',
+                  }}
+                />
+              </IconButton>
+            )}
             <Box>
               <Typography
                 sx={{
@@ -521,6 +576,25 @@ export const BookRating = ({
             WingWords
           </span>{' '}
           para calificar este libro
+        </Typography>
+      )}
+
+      {user && !isBookSaved && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: '#8C54FF',
+            fontStyle: 'italic',
+            fontSize: '16px',
+            mt: 1,
+            textAlign: 'center',
+            fontWeight: '500',
+            fontFamily: goudi.style.fontFamily,
+            letterSpacing: '.05rem',
+            lineHeight: 1.6,
+          }}
+        >
+          ✨ Haz clic para agregar este libro a tu biblioteca
         </Typography>
       )}
     </Box>

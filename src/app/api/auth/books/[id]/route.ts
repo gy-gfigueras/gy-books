@@ -5,7 +5,6 @@ import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
 import { ApiBook } from '@/domain/apiBook.model';
-import { EStatus } from '@/utils/constants/EStatus';
 
 async function handler(request: Request) {
   const url = new URL(request.url);
@@ -47,14 +46,9 @@ async function handler(request: Request) {
       if (gyCodingResponse.status === 404) {
         return NextResponse.json(
           {
-            apiBook: {
-              averageRating: 0,
-              userData: null,
-              status: EStatus.WANT_TO_READ,
-              rating: 0,
-              startDate: null,
-              endDate: null,
-            },
+            id: ID,
+            averageRating: 0,
+            userData: null,
           },
           { status: 200 }
         );
@@ -109,6 +103,27 @@ async function handler(request: Request) {
       });
     }
 
+    if (request.method === 'DELETE') {
+      console.log('API URL', API_URL);
+      console.log('BOOK ID ', ID);
+      const gyCodingResponse = await fetch(API_URL, {
+        headers: HEADERS,
+        method: 'DELETE',
+      });
+
+      if (!gyCodingResponse.ok) {
+        console.log('DELETE RESPONSE', gyCodingResponse);
+
+        await sendLog(ELevel.ERROR, 'BOOK CANNOT BE DELETED');
+        return NextResponse.json(
+          { error: 'ERROR DELETING BOOK' },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(204);
+    }
+
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (error) {
     console.error('Error in /api/auth/books/[id]:', error);
@@ -125,3 +140,4 @@ async function handler(request: Request) {
 
 export const PATCH = withApiAuthRequired(handler); //ACTUALIZAR LIBRO
 export const GET = withApiAuthRequired(handler); //OBTENER LIBRO CON INFO DEL USUARIO
+export const DELETE = withApiAuthRequired(handler); //ELIMINAR LIBRO

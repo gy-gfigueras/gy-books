@@ -15,9 +15,11 @@ export default function BookDetails() {
   const params = useParams();
   const { data: book, isLoading } = useBook(params.id as string);
 
-  const { data: apiBook, isLoading: isApiBookLoading } = useApiBook(
-    params.id as string
-  );
+  const {
+    data: apiBook,
+    isLoading: isApiBookLoading,
+    mutate,
+  } = useApiBook(params.id as string);
 
   if (isLoading || isApiBookLoading) {
     return (
@@ -152,6 +154,7 @@ export default function BookDetails() {
             apiBook={apiBook}
             bookId={book?.id || ''}
             isRatingLoading={isApiBookLoading}
+            mutate={mutate}
           />
         )}
         <Typography

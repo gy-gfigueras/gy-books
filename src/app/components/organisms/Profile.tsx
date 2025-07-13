@@ -129,6 +129,9 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         fontFamily: goudi.style.fontFamily,
                       }}
                       href={'/profile'}
+                      onClick={() => {
+                        handleClose(new Event('click'));
+                      }}
                     >
                       Perfil
                       <AccountCircleIcon
@@ -167,6 +170,9 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         justifyContent: 'space-between',
                       }}
                       href={'/users/friends'}
+                      onClick={() => {
+                        handleClose(new Event('click'));
+                      }}
                     >
                       Amigos
                       <GroupIcon sx={{ fontSize: '24px', color: '#FFF' }} />
@@ -203,6 +209,9 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         justifyContent: 'space-between',
                       }}
                       href={'/api/auth/logout?federated=true'}
+                      onClick={() => {
+                        handleClose(new Event('click'));
+                      }}
                     >
                       Cerrar Sesión
                       <Image

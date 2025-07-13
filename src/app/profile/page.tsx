@@ -28,7 +28,6 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import EditIcon from '@mui/icons-material/Edit';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
 import { EStatus } from '@/utils/constants/EStatus';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { useTheme } from '@mui/material/styles';
 import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
@@ -42,11 +41,11 @@ import { useBiography } from '@/hooks/useBiography';
 import { CustomButton } from '../components/atoms/customButton';
 import AnimatedAlert from '../components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
+import { UUID } from 'crypto';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
   const [tab, setTab] = React.useState(0);
-  const { user: userData } = useUser();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const searchParams = useSearchParams();
@@ -133,7 +132,7 @@ function ProfilePageContent() {
     const currentPage = pageRef.current;
     try {
       const res = await getBooksWithPagination(
-        userData?.id as string,
+        user?.id as UUID,
         currentPage,
         10
       );
@@ -286,19 +285,21 @@ function ProfilePageContent() {
               >
                 {user.username}
               </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: '#ffffff50',
-                  fontFamily: goudi.style.fontFamily,
-                  fontSize: { xs: 17, sm: 16, md: 22 },
-                  mb: 1,
-                  marginTop: { xs: -1, md: 0 },
-                  fontStyle: 'italic',
-                }}
-              >
-                {`(${userData?.email})`}
-              </Typography>
+              {user?.email && (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: '#ffffff50',
+                    fontFamily: goudi.style.fontFamily,
+                    fontSize: { xs: 17, sm: 16, md: 22 },
+                    mb: 1,
+                    marginTop: { xs: -1, md: 0 },
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {`(${user?.email})`}
+                </Typography>
+              )}
             </Box>
             <Box
               component={'a'}

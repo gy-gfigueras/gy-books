@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 import { getSession } from '@auth0/nextjs-auth0';
 import { ApiBook } from '@/domain/apiBook.model';
+import { UUID } from 'crypto';
 
 // Función para traer un libro específico
 export default async function getApiBook(
@@ -86,12 +87,8 @@ export default async function getApiBook(
       return null;
     }
 
-    // Manejar la estructura de respuesta diferente según la ruta
-    if (isAuthenticated) {
-      return data as ApiBook;
-    } else {
-      return data as ApiBook;
-    }
+    // Asegurar que la respuesta tenga la estructura correcta
+    return data as ApiBook;
   } catch (error: any) {
     console.error('Server Action - Error details:', error);
     throw new Error(`Failed to get book status: ${error.message}`);
@@ -100,7 +97,7 @@ export default async function getApiBook(
 
 // Nueva función para traer todos los libros con paginación
 export async function getBooksWithPagination(
-  userId?: string,
+  profileId: UUID,
   page: number = 0,
   size: number = 10
 ): Promise<{ books: any[]; hasMore: boolean } | null> {
@@ -108,29 +105,17 @@ export async function getBooksWithPagination(
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const cookieStore = cookies();
-    const cookieHeader = cookieStore.toString();
 
-    // Verificar si el usuario está autenticado
-    const session = await getSession();
-    const isAuthenticated = !!session?.user;
-
-    if (!isAuthenticated) {
-      throw new Error('User not authenticated');
-    }
-
-    const url = `${protocol}://${host}/api/auth/books?page=${page}&size=${size}&userId=${userId}`;
+    const url = `${protocol}://${host}/api/accounts/users/${profileId}/books?page=${page}&size=${size}`;
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: cookieHeader,
       },
-      credentials: 'include',
       cache: 'no-store',
     };
 
-    console.log('Server Action - Fetching books from URL:', url);
+    console.log('Server Action - Fetching books by user:', profileId);
 
     const response = await fetch(url, fetchOptions);
 
