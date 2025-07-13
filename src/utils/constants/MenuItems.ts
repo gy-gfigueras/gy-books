@@ -28,11 +28,6 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
         icon: React.createElement(MenuIcons.Friends),
         route: '/users/friends',
       },
-      {
-        text: 'Notificaciones',
-        icon: React.createElement(MenuIcons.Inbox),
-        route: '/users/friends/request',
-      },
     ];
   }
 

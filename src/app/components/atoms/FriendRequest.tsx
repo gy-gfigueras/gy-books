@@ -35,7 +35,7 @@ export default function FriendRequest({
         backgroundColor: '#232323',
         borderRadius: '16px',
         padding: '1rem',
-        width: { xs: '90%', md: '25%' },
+        width: { xs: '100%', md: '100%' },
         height: '100px',
         minWidth: { xs: '200px', md: '400px' },
         position: 'relative',
@@ -57,11 +57,11 @@ export default function FriendRequest({
       />
       <Typography
         sx={{
-          fontSize: '22px',
           letterSpacing: '0.1rem',
           fontWeight: 'bold',
           color: 'white',
           fontFamily: goudi.style.fontFamily,
+          fontSize: { xs: 16, md: 20 },
         }}
       >
         {user.username}

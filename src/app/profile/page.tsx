@@ -267,7 +267,7 @@ function ProfilePageContent() {
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: 'row',
+                flexDirection: { xs: 'column', md: 'row' },
                 gap: 2,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -281,7 +281,7 @@ function ProfilePageContent() {
                   fontWeight: 'bold',
                   fontFamily: goudi.style.fontFamily,
                   mb: 0,
-                  fontSize: { xs: 28, sm: 32, md: 40 },
+                  fontSize: { xs: 30, sm: 32, md: 40 },
                 }}
               >
                 {user.username}
@@ -289,10 +289,11 @@ function ProfilePageContent() {
               <Typography
                 variant="body1"
                 sx={{
-                  color: '#ffffff30',
+                  color: '#ffffff50',
                   fontFamily: goudi.style.fontFamily,
-                  fontSize: { xs: 15, sm: 16, md: 22 },
+                  fontSize: { xs: 17, sm: 16, md: 22 },
                   mb: 1,
+                  marginTop: { xs: -1, md: 0 },
                   fontStyle: 'italic',
                 }}
               >
@@ -448,7 +449,7 @@ function ProfilePageContent() {
                       letterSpacing: '.05rem',
                       minWidth: { xs: 0, md: 'auto' },
                       width: { xs: '50%', md: 'auto' },
-                      fontSize: { xs: 15, md: 14 },
+                      fontSize: { xs: 11, md: 15 },
                       height: '44px',
                       paddingTop: '14px',
 
@@ -465,13 +466,13 @@ function ProfilePageContent() {
                       letterSpacing: '.05rem',
                       minWidth: { xs: 0, md: 'auto' },
                       width: { xs: '50%', md: 'auto' },
-                      fontSize: { xs: 15, md: 14 },
                       fontFamily: goudi.style.fontFamily,
                       background: 'rgba(255, 0, 0, 0.43)',
                       boxShadow: '0 4px 14px rgba(255, 0, 0, 0.4)',
                       paddingTop: '14px',
                       height: '44px',
                       textAlign: 'center',
+                      fontSize: { xs: 11, md: 15 },
                       '&:hover': {
                         background: 'rgba(255, 0, 0, 0.65)',
                         transform: 'translateY(-2px)',
@@ -496,6 +497,7 @@ function ProfilePageContent() {
               ml: { xs: 0, md: 'auto' },
               mt: { xs: 2, md: 0 },
               width: { xs: '100%', md: 'auto' },
+              height: 'auto',
             }}
           >
             <CustomButton
@@ -504,6 +506,7 @@ function ProfilePageContent() {
                 minWidth: { xs: 0, md: 170 },
                 width: { xs: '50%', md: '200px' },
                 fontFamily: goudi.style.fontFamily,
+                fontSize: { xs: 11, md: 15 },
               }}
               variant="outlined"
               endIcon={<LaunchIcon />}
@@ -519,6 +522,7 @@ function ProfilePageContent() {
                 minWidth: { xs: 0, md: 170 },
                 width: { xs: '50%', md: '200px' },
                 fontFamily: goudi.style.fontFamily,
+                fontSize: { xs: 11, md: 15 },
               }}
               onClick={() => setIsEditingBiography(true)}
               variant="outlined"

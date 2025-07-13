@@ -34,7 +34,6 @@ export const CustomButton = ({
       onClick={onClick}
       target={target}
       sx={{
-        display: { xs: 'none', md: 'flex' },
         background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
         border: 'none',
         color: '#ffffff',
