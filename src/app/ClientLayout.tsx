@@ -207,7 +207,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                   <InboxIcon
                     sx={{
                       fontSize: '28px',
-                      color: '#FFF',
+                      color: isLoadingRequests ? 'gray' : '#FFF',
                       position: 'relative',
                     }}
                   />
