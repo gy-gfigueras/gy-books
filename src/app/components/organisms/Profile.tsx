@@ -224,7 +224,6 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                   </Box>
                 </Box>
               </ClickAwayListener>
-              z
             </Paper>
           </Grow>
         )}
