@@ -6,13 +6,13 @@ import useSWR from 'swr';
 import fetchUser from '@/app/actions/accounts/fetchUser';
 
 interface GyCodingUserContextType {
-  user: User | undefined;
+  user: User | null;
   isLoading: boolean;
   error: Error | null;
 }
 
 const GyCodingUserContext = createContext<GyCodingUserContextType>({
-  user: undefined,
+  user: null,
   isLoading: true,
   error: null,
 });
@@ -36,7 +36,9 @@ export const GyCodingUserProvider = ({
   });
 
   return (
-    <GyCodingUserContext.Provider value={{ user, isLoading, error }}>
+    <GyCodingUserContext.Provider
+      value={{ user: user || null, isLoading, error }}
+    >
       {children}
     </GyCodingUserContext.Provider>
   );

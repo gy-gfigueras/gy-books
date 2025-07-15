@@ -7,7 +7,7 @@ import { ECommands } from '@/utils/constants/ECommands';
 import Image from 'next/image';
 
 interface FriendRequestProps {
-  user: User;
+  user: User | null;
   handleManageRequest: (requestId: string, command: ECommands) => Promise<void>;
   isLoadingManageRequest: (requestId: string) => boolean;
   requestId: string;
@@ -24,8 +24,8 @@ export default function FriendRequest({
   return (
     <Box
       component="a"
-      href={`/users/${user.id}`}
-      key={user.id}
+      href={`/users/${user?.id}`}
+      key={user?.id}
       sx={{
         display: 'flex',
         flexDirection: 'row',
@@ -64,7 +64,7 @@ export default function FriendRequest({
           fontSize: { xs: 16, md: 20 },
         }}
       >
-        {user.username}
+        {user?.username || ''}
       </Typography>
       <Box
         sx={{

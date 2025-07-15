@@ -4,7 +4,7 @@ import { User } from '@/domain/friend.model';
 import getAccountsUser from '@/app/actions/accounts/user/fetchAccountsUser';
 
 interface useBookProps {
-  data: User | undefined;
+  data: User | null;
   isLoading: boolean;
   error: Error | null;
 }
@@ -20,7 +20,7 @@ export function useAccountsUser(id: string): useBookProps {
   );
 
   return {
-    data,
+    data: data || null,
     isLoading,
     error,
   };

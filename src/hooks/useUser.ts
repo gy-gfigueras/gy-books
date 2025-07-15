@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { User } from '@/domain/user.model';
 import fetchUser from '@/app/actions/accounts/fetchUser';
 interface useUserProps {
-  data: User | undefined;
+  data: User | null;
   isLoading: boolean;
   error: Error | null;
 }
@@ -19,7 +19,7 @@ export function useUser(): useUserProps {
   });
 
   return {
-    data,
+    data: data || null,
     isLoading,
     error,
   };

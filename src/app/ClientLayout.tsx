@@ -331,7 +331,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 friendRequestsWithUsers.map((requestWithUser) => (
                   <Box key={requestWithUser.id} sx={{ mb: 2, width: '100%' }}>
                     <FriendRequest
-                      user={requestWithUser.user}
+                      user={requestWithUser.user || null}
                       handleManageRequest={handleManageRequest}
                       isLoadingManageRequest={isLoadingManageRequest}
                       requestId={requestWithUser.id}

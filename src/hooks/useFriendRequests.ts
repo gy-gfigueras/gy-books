@@ -11,9 +11,12 @@ import useSWR from 'swr';
 import React from 'react';
 
 // Extended interface that combines FriendRequest with User data
-interface FriendRequestWithUser extends FriendRequest {
-  user: User;
-}
+type FriendRequestWithUser = {
+  id: string;
+  from: string;
+  to: string;
+  user: User | null;
+};
 
 interface useFriendRequestsProps {
   data: FriendRequest[] | undefined;
