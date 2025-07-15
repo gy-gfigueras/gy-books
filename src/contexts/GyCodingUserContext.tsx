@@ -3,7 +3,7 @@
 import React, { createContext, useContext } from 'react';
 import { User } from '@/domain/user.model';
 import useSWR from 'swr';
-import { getUser } from '@/service/user.service';
+import fetchUser from '@/app/actions/accounts/fetchUser';
 
 interface GyCodingUserContextType {
   user: User | undefined;
@@ -28,7 +28,7 @@ export const GyCodingUserProvider = ({
     data: user,
     isLoading,
     error,
-  } = useSWR('/api/auth/get', getUser, {
+  } = useSWR('/api/auth/get', fetchUser, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     dedupingInterval: 5000,

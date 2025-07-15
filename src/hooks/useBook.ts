@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import useSWR from 'swr';
 import Book from '@/domain/book.model';
-import getBookById from '@/service/book.service';
+import fetchBookById from '@/app/actions/book/fetchBookById';
 
 interface useBookProps {
   data: Book | undefined;
@@ -12,12 +12,13 @@ interface useBookProps {
 export function useBook(id: string): useBookProps {
   const { data, isLoading, error } = useSWR(
     id ? `/api/books/${id}` : null,
-    getBookById,
+    () => fetchBookById(id),
     {
       revalidateOnFocus: false,
       shouldRetryOnError: false,
     }
   );
+  console.log(data);
 
   return {
     data,

@@ -1,5 +1,5 @@
 import { Friend } from '@/domain/friend.model';
-import { getFriends } from '@/service/friends.service';
+import getFriends from '@/app/actions/accounts/user/friend/friends';
 import useSWR from 'swr';
 
 interface useFriendsProps {
