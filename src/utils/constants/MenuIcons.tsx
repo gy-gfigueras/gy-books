@@ -6,6 +6,8 @@ import LoginIcon from '@mui/icons-material/Login';
 import HomeIcon from '@mui/icons-material/Home';
 import InboxIcon from '@mui/icons-material/Inbox';
 import GroupIcon from '@mui/icons-material/Group';
+import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
+import PersonIcon from '@mui/icons-material/Person';
 
 export const MenuIcons = {
   Profile: AccountCircleIcon,
@@ -14,4 +16,6 @@ export const MenuIcons = {
   Home: HomeIcon,
   Inbox: InboxIcon,
   Friends: GroupIcon,
+  Library: LocalLibraryIcon,
+  Users: PersonIcon,
 };

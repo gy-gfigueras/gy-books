@@ -19,6 +19,16 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
         route: '/',
       },
       {
+        text: 'Library',
+        icon: React.createElement(MenuIcons.Library),
+        route: '/books',
+      },
+      {
+        text: 'Users',
+        icon: React.createElement(MenuIcons.Users),
+        route: '/users/search',
+      },
+      {
         text: 'Profile',
         icon: React.createElement(MenuIcons.Profile),
         route: '/profile',
