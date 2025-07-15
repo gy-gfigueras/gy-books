@@ -1,10 +1,21 @@
 import React from 'react';
 import { goudi } from '@/utils/fonts/fonts';
 import { Friend } from '@/domain/friend.model';
-import { Box, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import Image from 'next/image';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function FriendCard({ friend }: { friend: Friend }) {
+interface FriendCardProps {
+  friend: Friend;
+  isDeleteLoading: boolean;
+  handleDeleteFriend: (userId: string) => Promise<void>;
+}
+
+export default function FriendCard({
+  friend,
+  isDeleteLoading,
+  handleDeleteFriend,
+}: FriendCardProps) {
   return (
     <Box
       component="a"
@@ -50,6 +61,27 @@ export default function FriendCard({ friend }: { friend: Friend }) {
       >
         {friend.username}
       </Typography>
+      <IconButton
+        loading={isDeleteLoading}
+        sx={{
+          position: 'absolute',
+          padding: '10px',
+          background: 'rgba(255, 83, 83, 0.1)',
+          borderRadius: '16px',
+          right: '1rem',
+        }}
+        onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+          event.stopPropagation();
+          event.preventDefault();
+          handleDeleteFriend(friend.id);
+        }}
+      >
+        <DeleteIcon
+          sx={{
+            color: '#ff5353',
+          }}
+        />
+      </IconButton>
     </Box>
   );
 }

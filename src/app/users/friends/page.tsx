@@ -15,9 +15,20 @@ import { birthStone, goudi } from '@/utils/fonts/fonts';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useRouter } from 'next/navigation';
+import AnimatedAlert from '@/app/components/atoms/Alert';
+import { ESeverity } from '@/utils/constants/ESeverity';
 
 export default function FriendsPage() {
-  const { data, isLoading } = useFriends();
+  const {
+    data,
+    isLoading,
+    handleDeleteFriend,
+    isLoadingDelete,
+    setErrorDelete,
+    errorDelete,
+    isSuccessDelete,
+    setIsSuccessDelete,
+  } = useFriends();
   const [search, setSearch] = useState('');
   const router = useRouter();
   // Filtra amigos por nombre de usuario (case-insensitive)
@@ -167,9 +178,26 @@ export default function FriendsPage() {
           </Typography>
         ) : (
           filteredFriends.map((friend: Friend) => (
-            <FriendCard key={friend.id} friend={friend as Friend} />
+            <FriendCard
+              key={friend.id}
+              friend={friend as Friend}
+              isDeleteLoading={isLoadingDelete}
+              handleDeleteFriend={handleDeleteFriend}
+            />
           ))
         )}
+        <AnimatedAlert
+          open={isSuccessDelete}
+          onClose={() => setIsSuccessDelete(false)}
+          severity={ESeverity.SUCCESS}
+          message="Friend deleted successfully"
+        />
+        <AnimatedAlert
+          open={!!errorDelete}
+          onClose={() => setErrorDelete(null)}
+          severity={ESeverity.ERROR}
+          message="Error deleting friend"
+        />
       </Box>
     </>
   );
