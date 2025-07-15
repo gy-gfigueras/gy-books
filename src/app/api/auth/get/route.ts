@@ -3,6 +3,27 @@ import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import { User } from '@/domain/user.model';
+/**
+ * @swagger
+ * /api/auth/get:
+ *   get:
+ *     summary: Obtiene el usuario autenticado / perfil
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: "123e4567-e89b-12d3-a456-426614174000"
+ *               username: "username123"
+ *               email: "user@gycoding.com"
+ *               phoneNumber: "+34 600000000"
+ *               roles:
+ *                 - "COMMON"
+ *               apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+ *               picture: "https://api.gycoding.com/user/picture/id"
+ *               biography: "Aquí una biografía ficticia."
+ */
 
 export const GET = withApiAuthRequired(async () => {
   console.log('🔐 Entrando a GET /api/auth/user');
