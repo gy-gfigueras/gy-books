@@ -9,7 +9,7 @@ import { goudi } from '@/utils/fonts/fonts';
 export default function StatsComponent({ id }: { id: UUID }) {
   const { data, isLoading, error } = useStats(id);
 
-  if (isLoading) return <div>Cargando...</div>;
+  if (isLoading) return <div>Loading Stats...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
@@ -41,7 +41,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
           sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
           variant="h4"
         >
-          Autores leidos
+          Authors read
         </Typography>
         <AuthorsBarChart authors={data?.authors} />
       </Box>
@@ -63,7 +63,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
           sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
           variant="h4"
         >
-          Estado de los libros
+          Book status
         </Typography>
         <DonutChart bookStatus={data?.bookStatus} />
       </Box>

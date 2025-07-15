@@ -14,17 +14,17 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
   if (user) {
     return [
       {
-        text: 'Inicio',
+        text: 'Home',
         icon: React.createElement(MenuIcons.Home),
         route: '/',
       },
       {
-        text: 'Perfil',
+        text: 'Profile',
         icon: React.createElement(MenuIcons.Profile),
         route: '/profile',
       },
       {
-        text: 'Amigos',
+        text: 'Friends',
         icon: React.createElement(MenuIcons.Friends),
         route: '/users/friends',
       },

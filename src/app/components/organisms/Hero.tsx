@@ -48,7 +48,7 @@ export const Hero = () => {
           zIndex: 1,
         }}
       >
-        Descubre, comparte y conecta con otros lectores.
+        Discover, share, and connect with other readers.
       </Typography>
       <Button
         variant="contained"
@@ -74,7 +74,7 @@ export const Hero = () => {
           },
         }}
       >
-        Explorar Biblioteca
+        Explore Library
       </Button>
     </Container>
   );

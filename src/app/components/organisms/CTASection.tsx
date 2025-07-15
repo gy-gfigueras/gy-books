@@ -2,14 +2,9 @@
 
 import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import { goudi } from '@/utils/fonts/fonts';
-
+import Link from 'next/link';
 export const CTASection = () => {
-  const router = useRouter();
-  const { user } = useGyCodingUser();
-
   return (
     <Container
       maxWidth="md"
@@ -41,7 +36,7 @@ export const CTASection = () => {
           letterSpacing: '.05rem',
         }}
       >
-        {user ? 'Conecta con Otros Lectores' : 'Únete a la Comunidad'}
+        {'Connect with Other Readers'}
       </Typography>
       <Typography
         sx={{
@@ -55,35 +50,36 @@ export const CTASection = () => {
           zIndex: 1,
         }}
       >
-        {user
-          ? 'Descubre lectores con gustos similares y comparte tus experiencias literarias.'
-          : 'Conecta con otros lectores, comparte tus experiencias y descubre tu próxima lectura favorita.'}
+        {
+          'Discover readers with similar tastes and share your literary experiences.'
+        }
       </Typography>
-      <Button
-        variant="outlined"
-        size="large"
-        onClick={() => router.push(user ? '/users/search' : '/api/auth/login')}
-        sx={{
-          borderColor: '#9333ea',
-          color: 'white',
-          padding: '1.2rem 2.5rem',
-          fontSize: '1.2rem',
-          fontFamily: goudi.style.fontFamily,
-          fontWeight: 'bold',
-          letterSpacing: '.3rem',
-          borderRadius: '12px',
-          transition: 'all 0.3s ease',
-          position: 'relative',
-          zIndex: 1,
-          '&:hover': {
-            borderColor: '#a855f7',
-            backgroundColor: 'rgba(147, 51, 234, 0.1)',
-            transform: 'translateY(-2px)',
-          },
-        }}
-      >
-        {user ? 'Buscar Usuarios' : 'Crear Cuenta'}
-      </Button>
+      <Link style={{ textDecoration: 'none' }} href="/users/search">
+        <Button
+          variant="outlined"
+          size="large"
+          sx={{
+            borderColor: '#9333ea',
+            color: 'white',
+            padding: '1.2rem 2.5rem',
+            fontSize: '1.2rem',
+            fontFamily: goudi.style.fontFamily,
+            fontWeight: 'bold',
+            letterSpacing: '.3rem',
+            borderRadius: '12px',
+            transition: 'all 0.3s ease',
+            position: 'relative',
+            zIndex: 1,
+            '&:hover': {
+              borderColor: '#a855f7',
+              backgroundColor: 'rgba(147, 51, 234, 0.1)',
+              transform: 'translateY(-2px)',
+            },
+          }}
+        >
+          {'Search Users'}
+        </Button>
+      </Link>
     </Container>
   );
 };

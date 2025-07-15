@@ -34,7 +34,7 @@ export const Footer = () => {
               sx={{
                 color: 'white',
                 fontWeight: '700',
-                fontSize: '32px',
+                fontSize: { xs: '24px', sm: '50px' },
                 letterSpacing: '.05rem',
                 fontFamily: birthStone.style.fontFamily,
                 mb: 1,
@@ -52,8 +52,7 @@ export const Footer = () => {
                 fontFamily: goudi.style.fontFamily,
               }}
             >
-              Tu red social literaria. Descubre, comparte y conecta con otros
-              lectores.
+              Discover, share, and connect with other readers.
             </Typography>
           </Box>
 
@@ -77,7 +76,7 @@ export const Footer = () => {
                 },
               }}
             >
-              Sobre Nosotros
+              About Us
             </Link>
             <Link
               href="/privacy"
@@ -91,7 +90,7 @@ export const Footer = () => {
                 },
               }}
             >
-              Privacidad
+              Privacy
             </Link>
             <Link
               href="/terms"
@@ -105,7 +104,7 @@ export const Footer = () => {
                 },
               }}
             >
-              Términos
+              Terms
             </Link>
           </Box>
 
@@ -187,7 +186,7 @@ export const Footer = () => {
               fontFamily: goudi.style.fontFamily,
             }}
           >
-            GYCODING. Todos los derechos reservados.
+            GYCODING. All rights reserved.
           </Typography>
         </Box>
       </Container>

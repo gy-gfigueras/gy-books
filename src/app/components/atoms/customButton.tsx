@@ -12,6 +12,7 @@ interface CustomButtonProps {
   href?: string;
   target?: string;
   isLoading?: boolean;
+  startIcon?: React.ReactNode;
 }
 
 export const CustomButton = ({
@@ -19,6 +20,7 @@ export const CustomButton = ({
   children,
   variant = 'contained',
   endIcon,
+  startIcon,
   sx,
   variantComponent = 'button',
   href,
@@ -34,14 +36,20 @@ export const CustomButton = ({
       onClick={onClick}
       target={target}
       sx={{
-        background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
-        border: 'none',
+        background:
+          variant === 'contained'
+            ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
+            : 'transparent',
+        border: variant === 'outlined' ? '1px solid #9333ea' : 'none',
         color: '#ffffff',
         fontWeight: 600,
         px: 3,
         py: 1.5,
         borderRadius: '12px',
-        boxShadow: '0 4px 14px rgba(147, 51, 234, 0.4)',
+        boxShadow:
+          variant === 'contained'
+            ? '0 4px 14px rgba(147, 51, 234, 0.4)'
+            : 'none',
         transition: 'all 0.3s ease',
         '&:hover': {
           transform: 'translateY(-2px)',
@@ -54,6 +62,7 @@ export const CustomButton = ({
         ...sx,
       }}
       endIcon={endIcon}
+      startIcon={startIcon}
     >
       {children}
     </Button>

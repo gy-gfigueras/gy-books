@@ -59,7 +59,7 @@ export default function FriendsPage() {
             fontFamily: birthStone.style.fontFamily,
           }}
         >
-          Amigos
+          Friends
         </Typography>
         <Box
           sx={{
@@ -190,13 +190,13 @@ export default function FriendsPage() {
           open={isSuccessDelete}
           onClose={() => setIsSuccessDelete(false)}
           severity={ESeverity.SUCCESS}
-          message="Friend deleted successfully"
+          message="Friend deleted successfully."
         />
         <AnimatedAlert
           open={!!errorDelete}
           onClose={() => setErrorDelete(null)}
           severity={ESeverity.ERROR}
-          message="Error deleting friend"
+          message="Error deleting friend."
         />
       </Box>
     </>

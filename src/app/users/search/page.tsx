@@ -85,7 +85,7 @@ function BooksContent() {
             fontFamily: birthStone.style.fontFamily,
           }}
         >
-          Buscar Usuarios
+          Search Users
         </Typography>
         <Box
           sx={{
@@ -96,11 +96,11 @@ function BooksContent() {
             width: '100%',
             height: '10%',
             gap: '1rem',
-            paddingTop: '50px',
+            paddingTop: '10px',
           }}
         >
           <TextField
-            placeholder="Search for a friend..."
+            placeholder="Search for a user..."
             value={userSearched}
             onChange={(e) => setUserSearched(e.target.value)}
             variant="outlined"
@@ -259,7 +259,7 @@ function BooksContent() {
       </Box>
       <AnimatedAlert
         open={open}
-        message={'Solicitud enviada'}
+        message={'Request sent'}
         onClose={() => setOpen(false)}
         severity={ESeverity.SUCCESS}
       />

@@ -502,7 +502,7 @@ function ProfilePageContent() {
                 fontFamily: goudi.style.fontFamily,
                 fontSize: { xs: 11, md: 15 },
               }}
-              variant="outlined"
+              variant="contained"
               endIcon={<LaunchIcon />}
               variantComponent="link"
               href="https://accounts.gycoding.com"
@@ -519,7 +519,7 @@ function ProfilePageContent() {
                 fontSize: { xs: 11, md: 15 },
               }}
               onClick={() => setIsEditingBiography(true)}
-              variant="outlined"
+              variant="contained"
               endIcon={<EditIcon />}
             >
               Edit Profile

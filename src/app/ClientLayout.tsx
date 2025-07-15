@@ -40,7 +40,9 @@ import FriendRequest from './components/atoms/FriendRequest';
 import AnimatedAlert from './components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { UUID } from 'crypto';
-
+import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
+import PersonIcon from '@mui/icons-material/Person';
+import { CustomButton } from './components/atoms/customButton';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useGyCodingUser();
   const { count } = useFriendRequestsCount(user?.id as UUID);
@@ -108,34 +110,19 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
 
     return (
       <a href="/api/auth/login" style={{ textDecoration: 'none' }}>
-        <Button
-          variant="contained"
-          onClick={() =>
-            (window.location.href = '/api/auth/login?prompt=login')
-          }
+        <CustomButton
           sx={{
-            display: { xs: 'none', md: 'flex' },
-            background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
-            border: 'none',
-            color: '#ffffff',
-            fontWeight: 600,
-            px: 3,
-            py: 1.5,
-            borderRadius: '12px',
-            boxShadow: '0 4px 14px rgba(147, 51, 234, 0.4)',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              transform: 'translateY(-2px)',
-              boxShadow: '0 6px 20px rgba(147, 51, 234, 0.6)',
-              background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-            },
-            '&:active': {
-              transform: 'translateY(0)',
-            },
+            backgroundColor: 'primary.main',
+            color: 'white',
+            fontSize: '14px',
+            letterSpacing: '0.1rem',
+            height: '10px',
+            py: '1.3rem',
+            fontFamily: goudi.style.fontFamily,
           }}
         >
-          Iniciar Sesión
-        </Button>
+          Login
+        </CustomButton>
       </a>
     );
   };
@@ -196,42 +183,91 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 src="/gy-logo.png"
                 alt="logo"
               />
-              {user && (
-                <IconButton
+              <Box
+                sx={{
+                  display: 'flex',
+                  height: '100%',
+                  width: '100%',
+                  justifyContent: 'end',
+                  alignItems: 'center',
+                  gap: 2,
+                }}
+              >
+                <CustomButton
+                  variant="outlined"
+                  onClick={() => router.push('/books')}
                   sx={{
-                    position: 'absolute',
-                    right: '100px',
+                    borderColor: '#9333ea',
+                    backgroundColor: 'transparent',
+                    color: 'white',
+                    fontSize: '14px',
+                    letterSpacing: '0.1rem',
+                    height: '10px',
+                    py: '1.3rem',
+                    fontFamily: goudi.style.fontFamily,
+                    '&:hover': {
+                      borderColor: '#a855f7',
+                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                      transform: 'translateY(-2px)',
+                    },
                   }}
-                  onClick={toggleFriendRequests}
+                  startIcon={<LocalLibraryIcon />}
                 >
-                  <InboxIcon
-                    sx={{
-                      fontSize: '28px',
-                      color: isLoadingRequests ? 'gray' : '#FFF',
-                      position: 'relative',
-                    }}
-                  />
-                  {count > 0 && (
-                    <Box
+                  Library
+                </CustomButton>
+                <CustomButton
+                  variant="outlined"
+                  onClick={() => router.push('/users/search')}
+                  sx={{
+                    borderColor: '#9333ea',
+                    backgroundColor: 'transparent',
+                    color: 'white',
+                    fontSize: '14px',
+                    letterSpacing: '0.1rem',
+                    height: '10px',
+                    py: '1.3rem',
+                    fontFamily: goudi.style.fontFamily,
+                    '&:hover': {
+                      borderColor: '#a855f7',
+                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                  startIcon={<PersonIcon />}
+                >
+                  Users
+                </CustomButton>
+                {user && (
+                  <IconButton sx={{}} onClick={toggleFriendRequests}>
+                    <InboxIcon
                       sx={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        width: '20px',
-                        height: '20px',
-                        backgroundColor: 'primary.main',
-                        color: 'white',
-                        borderRadius: '50%',
-                        padding: '4px',
-                        fontSize: '12px',
+                        fontSize: '28px',
+                        color: isLoadingRequests ? 'gray' : '#FFF',
+                        position: 'relative',
                       }}
-                    >
-                      {count}
-                    </Box>
-                  )}
-                </IconButton>
-              )}
-              {renderProfileOrLogin()}
+                    />
+                    {count > 0 && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          width: '20px',
+                          height: '20px',
+                          backgroundColor: 'primary.main',
+                          color: 'white',
+                          borderRadius: '50%',
+                          padding: '4px',
+                          fontSize: '12px',
+                        }}
+                      >
+                        {count}
+                      </Box>
+                    )}
+                  </IconButton>
+                )}
+                {renderProfileOrLogin()}
+              </Box>
             </>
           )}
         </Box>
@@ -290,7 +326,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                   fontSize: { xs: 16, md: 20 },
                 }}
               >
-                Solicitudes de Amistad
+                Friend Requests
               </Typography>
               <IconButton
                 onClick={toggleFriendRequests}
@@ -354,7 +390,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                       textAlign: 'center',
                     }}
                   >
-                    No hay solicitudes de amistad
+                    No friend requests
                   </Typography>
                 </Box>
               )}
@@ -502,13 +538,13 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
           open={errorManageRequest}
           onClose={handleOpenErrorAlertClose}
           severity={ESeverity.ERROR}
-          message="Error al gestionar la solicitud"
+          message="Error managing request"
         />
         <AnimatedAlert
           open={isSuccessManageRequest}
           onClose={handleOpenSuccessAlertClose}
           severity={ESeverity.SUCCESS}
-          message="Solicitud gestionada exitosamente"
+          message="Request managed successfully"
         />
       </Box>
     </ThemeProvider>

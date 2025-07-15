@@ -4,14 +4,14 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import queryBooks from '@/app/actions/book/queryBooks';
-import { Box, InputAdornment, TextField } from '@mui/material';
+import { Box, InputAdornment, TextField, Typography } from '@mui/material';
 import Book from '@/domain/book.model';
 import SearchIcon from '@mui/icons-material/Search';
 import Head from 'next/head';
 import { useDebounce } from '@/hooks/useDebounce';
 import { BookCard } from '../components/atoms/BookCard';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { goudi } from '@/utils/fonts/fonts';
+import { birthStone, goudi } from '@/utils/fonts/fonts';
 
 function BooksContent() {
   const searchParams = useSearchParams();
@@ -67,11 +67,34 @@ function BooksContent() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '1rem',
+        }}
+      >
+        <Typography
+          variant="h1"
+          sx={{
+            fontSize: '4rem',
+            fontWeight: 'bold',
+            color: 'white',
+            fontFamily: birthStone.style.fontFamily,
+          }}
+        >
+          Library
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
           alignItems: 'start',
           justifyContent: 'start',
-          height: '100vh',
+          height: '100%',
           gap: '1rem',
           backgroundColor: '#161616',
+          paddingBottom: '100px',
         }}
       >
         <Box
@@ -83,7 +106,7 @@ function BooksContent() {
             width: '100%',
             height: '10%',
             gap: '1rem',
-            paddingTop: '50px',
+            paddingTop: '10px',
           }}
         >
           <TextField
@@ -160,15 +183,15 @@ function BooksContent() {
         <Box
           sx={{
             width: '100%',
-            height: '100%',
+            height: '70vh',
             display: 'flex',
-            overflowX: 'auto',
             flexWrap: 'wrap',
             gap: '1rem',
             justifyContent: 'center',
             alignItems: 'center',
             alignContent: 'start',
             padding: '25px',
+            overflow: 'auto',
             scrollbarColor: ' #8C54FF transparent',
           }}
         >

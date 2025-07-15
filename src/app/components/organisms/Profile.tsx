@@ -133,7 +133,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         handleClose(new Event('click'));
                       }}
                     >
-                      Perfil
+                      Profile
                       <AccountCircleIcon
                         sx={{ fontSize: '24px', color: '#FFF' }}
                       />
@@ -174,7 +174,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         handleClose(new Event('click'));
                       }}
                     >
-                      Amigos
+                      Friends
                       <GroupIcon sx={{ fontSize: '24px', color: '#FFF' }} />
                     </a>
                   </Box>
@@ -213,7 +213,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         handleClose(new Event('click'));
                       }}
                     >
-                      Cerrar Sesión
+                      Logout
                       <Image
                         src="/logout-red.svg"
                         alt="logout"
@@ -224,6 +224,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                   </Box>
                 </Box>
               </ClickAwayListener>
+              z
             </Paper>
           </Grow>
         )}
