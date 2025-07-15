@@ -20,9 +20,9 @@ Description of the technologies and procedures used to develop this project.
 
 ## Creators
 
-|                                                                            Product Owner                                                                             |                                                                            Collaborators                                                                             |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <img src="https://github.com/ghost.png?size=115" width=115> <br> [![ghost1](https://img.shields.io/badge/ghost-black?style=for-the-badge)](https://github.com/ghost) | <img src="https://github.com/ghost.png?size=115" width=115> <br> [![ghost2](https://img.shields.io/badge/ghost-black?style=for-the-badge)](https://github.com/ghost) |
+|                                                                                         Product Owner                                                                                         |                                                                               Collaborators                                                                                |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/gy-gfigueras.png?size=115" width=115> <br> [![gfigueras](https://img.shields.io/badge/gy-gfigueras-B833FF?style=for-the-badge)](https://github.com/gy-gfigueras) | <img src="https://github.com/gy-toxyc.png?size=115" width=115> <br> [![toxyc](https://img.shields.io/badge/toxyc-yellow?style=for-the-badge)](https://github.com/gy-toxyc) |
 
 <br>
 
