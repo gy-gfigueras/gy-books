@@ -35,8 +35,6 @@ export const GyCodingUserProvider = ({
     errorRetryCount: 3,
   });
 
-  console.log({ user });
-
   return (
     <GyCodingUserContext.Provider value={{ user, isLoading, error }}>
       {children}

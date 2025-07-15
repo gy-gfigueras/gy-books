@@ -26,7 +26,7 @@ async function handler(request: Request) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    const API_URL = `${baseUrl}/accounts/user/${ID}`;
+    const API_URL = `${baseUrl}/accounts/books/${ID}`;
     const HEADERS = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${ID_TOKEN}`,

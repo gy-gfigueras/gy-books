@@ -5,7 +5,6 @@ import { goudi } from '@/utils/fonts/fonts';
 import { Author } from '@/domain/book.model';
 
 export default function AuthorCard({ author }: { author: Author }) {
-  console.log(author);
   return (
     <Box
       sx={{

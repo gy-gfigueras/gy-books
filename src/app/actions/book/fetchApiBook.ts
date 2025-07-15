@@ -116,6 +116,7 @@ export async function getBooksWithPagination(
     };
 
     console.log('Server Action - Fetching books by user:', profileId);
+    console.log('Server Action - Fetching books by user:', url);
 
     const response = await fetch(url, fetchOptions);
 

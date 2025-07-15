@@ -40,3 +40,44 @@ export const GET_BOOK_BY_ID_QUERY = `
     }
   }
 `;
+
+export const GET_SPANISH_BOOK_BY_ID_QUERY = `
+query GetSpanishEditionByBookId {
+  editions(where: {book_id: {_eq: 386446}, language_id: {_eq: 148}}, limit: 1) {
+    id
+    pages
+    image {
+      id
+    }
+    contributions(limit: 1) {
+      author {
+        id
+        name
+        image {
+          url
+        }
+      }
+    }
+    title
+  }
+}
+`;
+
+export const GET_STATS = `
+ query GetBookStats($id: Int!) {
+    books_by_pk(id: $id) {
+    dto_combined
+    pages
+    contributions{
+      author {
+        id
+        name
+        image {
+          url
+        }
+      }
+    }
+  }
+}
+
+`;

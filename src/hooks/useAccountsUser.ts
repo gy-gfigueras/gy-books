@@ -10,11 +10,14 @@ interface useBookProps {
 }
 
 export function useAccountsUser(id: string): useBookProps {
-  console.log('id', id);
-  const { data, isLoading, error } = useSWR(id ? id : null, getAccountsUser, {
-    revalidateOnFocus: false,
-    shouldRetryOnError: false,
-  });
+  const { data, isLoading, error } = useSWR(
+    id ? `/api/accounts/users/${id}` : null,
+    () => getAccountsUser(id),
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+    }
+  );
 
   return {
     data,

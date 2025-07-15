@@ -34,10 +34,12 @@ import { EStatus } from '@/utils/constants/EStatus';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
+import Stats from '@/app/components/organisms/Stats';
 
 function ProfilePageContent() {
   const params = useParams();
   const { data: user, isLoading } = useAccountsUser(params.id as string);
+  const userId = params.id as string;
   const [tab, setTab] = React.useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -72,9 +74,11 @@ function ProfilePageContent() {
       } else {
         params.delete('status');
       }
-      router.replace(`/profile?${params.toString()}`, { scroll: false });
+      router.replace(`/users/${userId as string}?${params.toString()}`, {
+        scroll: false,
+      });
     },
-    [searchParams, router]
+    [searchParams, router, params.id]
   );
 
   // Función para manejar cambios en el filtro
@@ -244,30 +248,44 @@ function ProfilePageContent() {
               textAlign: { xs: 'center', md: 'left' },
             }}
           >
-            <Typography
-              id="profile-username"
-              variant="h3"
+            <Box
               sx={{
-                color: '#fff',
-                fontWeight: 'bold',
-                fontFamily: goudi.style.fontFamily,
-                mb: 0,
-                fontSize: { xs: 28, sm: 32, md: 40 },
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                gap: 2,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {user.username}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: '#fff',
-                fontFamily: goudi.style.fontFamily,
-                fontSize: { xs: 15, sm: 16, md: 22 },
-                mb: 1,
-              }}
-            >
-              {user?.email}
-            </Typography>
+              <Typography
+                id="profile-username"
+                variant="h3"
+                sx={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  fontFamily: goudi.style.fontFamily,
+                  mb: 0,
+                  fontSize: { xs: 30, sm: 32, md: 40 },
+                }}
+              >
+                {user.username}
+              </Typography>
+              {user?.email && (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: '#ffffff50',
+                    fontFamily: goudi.style.fontFamily,
+                    fontSize: { xs: 17, sm: 16, md: 22 },
+                    mb: 1,
+                    marginTop: { xs: -1, md: 0 },
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {`(${user?.email})`}
+                </Typography>
+              )}
+            </Box>
             <Box
               sx={{ width: { xs: '100%', sm: 340, md: 400 }, maxWidth: '100%' }}
             >
@@ -611,8 +629,7 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h5">Stats</Typography>
-              <Typography variant="body1">Próximamente...</Typography>
+              <Stats id={user?.id as UUID} />
             </Box>
           )}
           {tab === 3 && (

@@ -42,6 +42,7 @@ import { CustomButton } from '../components/atoms/customButton';
 import AnimatedAlert from '../components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { UUID } from 'crypto';
+import Stats from '../components/organisms/Stats';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
@@ -126,7 +127,7 @@ function ProfilePageContent() {
 
   // Función para cargar más libros
   const loadMoreBooks = useCallback(async () => {
-    if (loading || !hasMore) return;
+    if (loading || !hasMore || !user?.id) return;
 
     setLoading(true);
     const currentPage = pageRef.current;
@@ -138,6 +139,7 @@ function ProfilePageContent() {
       );
       if (res && Array.isArray(res.books) && res.books.length > 0) {
         setBooks((prev) => {
+          // Evitar duplicados por id
           const allBooks = [...prev, ...res.books];
           const uniqueBooks = allBooks.filter(
             (book, idx, arr) => arr.findIndex((b) => b.id === book.id) === idx
@@ -155,39 +157,30 @@ function ProfilePageContent() {
     } finally {
       setLoading(false);
     }
-  }, [hasMore, loading]);
+  }, [hasMore, loading, user?.id]);
 
-  // Cargar libros iniciales
+  // Cargar libros iniciales SOLO cuando user.id cambie
   useEffect(() => {
+    if (!user?.id) return;
     pageRef.current = 0;
     setBooks([]);
     setHasMore(true);
+    setLoading(false);
     loadMoreBooks();
-  }, []);
+  }, [user?.id]);
 
-  // Paginación automática cada 3 segundos usando setTimeout encadenado
+  // Paginación automática cada 2 segundos usando setTimeout encadenado
   useEffect(() => {
     let timeout: NodeJS.Timeout;
-    if (hasMore && !loading) {
+    if (hasMore && !loading && user?.id) {
       timeout = setTimeout(() => {
         loadMoreBooks();
-      }, 3000);
+      }, 2000);
     }
     return () => clearTimeout(timeout);
-  }, [books, hasMore, loading, loadMoreBooks]);
+  }, [books, hasMore, loading, loadMoreBooks, user?.id]);
 
   // Filtrar libros por status
-  React.useEffect(() => {
-    if (books.length > 0) {
-      // Log temporal para depuración
-      // eslint-disable-next-line no-console
-      console.log(
-        'Libros y sus status:',
-        books.map((b) => ({ id: b.id, status: b.status }))
-      );
-    }
-  }, [books]);
-
   const filteredBooks = React.useMemo(() => {
     if (!statusFilter) return books;
     return books.filter((book) => book.status === statusFilter);
@@ -848,8 +841,7 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h5">Stats</Typography>
-              <Typography variant="body1">Próximamente...</Typography>
+              <Stats id={user?.id as UUID} />
             </Box>
           )}
           {tab === 3 && (

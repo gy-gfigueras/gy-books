@@ -21,6 +21,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.0.0",
+    "@mui/x-charts": "^8.8.0",
     "@next/font": "^14.2.15",
     "eslint-config-prettier": "^10.1.1",
     "framer-motion": "^12.5.0",
