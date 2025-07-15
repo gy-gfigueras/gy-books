@@ -13,7 +13,7 @@ export default async function queryBooks(formData: FormData): Promise<Book[]> {
 
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const url = `${baseUrl}/api/books/hardcover?query=${query}`;
+    const url = `${baseUrl}/api/public/hardcover?query=${query}`;
     console.log('Server Action - Fetching from URL:', url);
 
     const response = await fetch(url, {

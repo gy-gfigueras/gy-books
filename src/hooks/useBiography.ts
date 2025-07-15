@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import updateBiography from '@/app/actions/books/updateBiography';
+import updateBiography from '@/app/actions/book/updateBiography';
 import { useState } from 'react';
 import { mutate } from 'swr';
 

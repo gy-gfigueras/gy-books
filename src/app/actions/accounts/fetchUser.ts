@@ -5,7 +5,7 @@ import { User } from '@/domain/user.model';
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 
-export default async function fetchUser(): Promise<User> {
+export default async function fetchUser(): Promise<User | null> {
   try {
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
@@ -22,6 +22,11 @@ export default async function fetchUser(): Promise<User> {
       credentials: 'include',
     });
 
+    if (response.status === 401) {
+      // No hay sesión activa
+      return null;
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
@@ -34,6 +39,10 @@ export default async function fetchUser(): Promise<User> {
 
     return data as User;
   } catch (error: any) {
-    throw new Error(`Failed to add friend: ${error.message}`);
+    // Si el error es por no autenticado, devuelve null
+    if (error.message && error.message.includes('401')) {
+      return null;
+    }
+    throw new Error(`Failed to fetch user: ${error.message}`);
   }
 }

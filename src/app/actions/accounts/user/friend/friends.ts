@@ -14,7 +14,7 @@ export default async function getFriends(): Promise<Friend[]> {
     const cookieStore = cookies();
     const cookieHeader = cookieStore.toString();
     const response = await fetch(
-      `${protocol}://${host}/api/auth/accounts/users/friends`,
+      `${protocol}://${host}/api/auth/accounts/friends`,
       {
         method: 'GET',
         headers: {

@@ -43,7 +43,7 @@ export default async function getApiBook(
       fetchOptions.credentials = 'include';
     } else {
       // Usar ruta pública sin autenticación
-      url = `${protocol}://${host}/api/books/${bookId}/public`;
+      url = `${protocol}://${host}/api/public/books/${bookId}`;
     }
 
     console.log('Server Action - Fetching from URL:', url);
@@ -60,7 +60,7 @@ export default async function getApiBook(
           'Server Action - Private route failed, trying public route as fallback'
         );
 
-        const publicUrl = `${protocol}://${host}/api/books/${bookId}/public`;
+        const publicUrl = `${protocol}://${host}/api/public/books/${bookId}`;
         const publicResponse = await fetch(publicUrl, {
           method: 'GET',
           headers: {
@@ -106,7 +106,7 @@ export async function getBooksWithPagination(
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
-    const url = `${protocol}://${host}/api/accounts/users/${profileId}/books?page=${page}&size=${size}`;
+    const url = `${protocol}://${host}/api/public/accounts/${profileId}/books?page=${page}&size=${size}`;
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: {

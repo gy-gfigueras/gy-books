@@ -14,15 +14,11 @@ export default async function queryUsers(formData: FormData): Promise<User[]> {
   const cookieStore = cookies();
   const cookieHeader = cookieStore.toString();
 
-  const urlPrivate = `${protocol}://${host}/api/auth/accounts/users?query=${query}`;
-  const urlPublic = `${protocol}://${host}/api/accounts/users?query=${query}`;
+  const urlPrivate = `${protocol}://${host}/api/auth/accounts?query=${query}`;
+  const urlPublic = `${protocol}://${host}/api/public/accounts?query=${query}`;
 
   // --- DEBUG: Log info before private fetch ---
   console.log('[DEBUG] Private fetch URL:', urlPrivate);
-  console.log('[DEBUG] Private fetch headers:', {
-    'Content-Type': 'application/json',
-    Cookie: cookieHeader,
-  });
 
   let privateRes;
   try {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Rutas que requieren autenticación
-const protectedRoutes = ['/profile', '/settings', '/dashboard'];
+const protectedRoutes = ['/profile', '/users/friends'];
 
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -29,6 +29,7 @@ export default function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    // Protege todo menos las rutas públicas y estáticas
     '/((?!api/auth|api/public|api/books|_next/static|_next/image|gy-logo.ico).*)',
   ],
 };

@@ -12,7 +12,7 @@ export async function getStats(profileId: UUID): Promise<any> {
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
-    const url = `${protocol}://${host}/api/accounts/users/${profileId}/books/stats`;
+    const url = `${protocol}://${host}/api/public/books/${profileId}/stats`;
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: {
