@@ -183,7 +183,7 @@ function ProfilePageContent() {
     return (
       <Container maxWidth="xl" sx={{ mt: 6 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Typography>No hay usuario logueado</Typography>
+          <Typography>No user logged in</Typography>
         </Box>
       </Container>
     );

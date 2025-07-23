@@ -10,11 +10,14 @@ import { Author } from '@/domain/book.model';
 import { BookRating } from '@/app/components/atoms/BookRating';
 import StarIcon from '@mui/icons-material/Star';
 import { useApiBook } from '@/hooks/useApiBook';
+import { useUser } from '@/hooks/useUser';
 
 export default function BookDetails() {
   const params = useParams();
   const { data: book, isLoading } = useBook(params.id as string);
 
+  const { data: user } = useUser();
+  const isLoggedIn = !!user;
   const {
     data: apiBook,
     isLoading: isApiBookLoading,
@@ -149,14 +152,13 @@ export default function BookDetails() {
             }}
           />
         </Typography>
-        {apiBook && (
-          <BookRating
-            apiBook={apiBook}
-            bookId={book?.id || ''}
-            isRatingLoading={isApiBookLoading}
-            mutate={mutate}
-          />
-        )}
+        <BookRating
+          apiBook={apiBook}
+          bookId={book?.id || ''}
+          isRatingLoading={isApiBookLoading}
+          mutate={mutate}
+          isLoggedIn={isLoggedIn}
+        />
         <Typography
           variant="body1"
           sx={{

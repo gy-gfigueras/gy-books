@@ -14,7 +14,6 @@ import {
   Stack,
 } from '@mui/material';
 import RatingStars from './RatingStars';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import rateBook from '@/app/actions/book/rateBook';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -27,14 +26,17 @@ import { ApiBook } from '@/domain/apiBook.model';
 import { goudi } from '@/utils/fonts/fonts';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useRemoveBook } from '@/hooks/useRemoveBook';
+import { useUser } from '@/hooks/useUser';
+
 interface BookRatingProps {
   bookId: string;
-  apiBook: ApiBook;
+  apiBook: ApiBook | null;
   isRatingLoading: boolean;
   mutate?: (
     data?: ApiBook | null,
     options?: { revalidate?: boolean }
   ) => Promise<ApiBook | null | undefined>;
+  isLoggedIn: boolean;
 }
 
 const statusOptions = [
@@ -56,8 +58,9 @@ export const BookRating = ({
   apiBook,
   isRatingLoading,
   mutate,
+  isLoggedIn,
 }: BookRatingProps) => {
-  const { user, isLoading: isUserLoading } = useUser();
+  const { data: user, isLoading: isUserLoading } = useUser();
   const { handleDeleteBook, isLoading: isDeleteLoading } = useRemoveBook();
 
   // Estado temporal único para todos los campos
@@ -153,7 +156,7 @@ export const BookRating = ({
           fullWidth
           startIcon={<BookmarkIcon />}
           endIcon={<ArrowDropDownIcon />}
-          disabled={!user}
+          disabled={!isLoggedIn}
           onClick={(e) => {
             if (isMobile) setDrawerOpen(true);
             else setAnchorEl(e.currentTarget);
@@ -188,6 +191,12 @@ export const BookRating = ({
         >
           {displayStatusOption?.label || 'Want to read'}
         </Button>
+        {/* Mensaje solo si NO hay usuario y NO está cargando */}
+        {!user && !isUserLoading && (
+          <Typography variant="caption" sx={{ color: '#666' }}>
+            Sign in to rate this book
+          </Typography>
+        )}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl) && !isMobile}
@@ -432,6 +441,37 @@ export const BookRating = ({
                   disabled={!user || isSubmitting}
                   isLoading={isLoading}
                 />
+                {isBookSaved && (
+                  <IconButton
+                    loading={isDeleteLoading}
+                    sx={{
+                      position: 'absolute',
+                      top: 55,
+                      padding: '10px',
+                      background: 'rgba(255, 83, 83, 0.1)',
+                      borderRadius: '16px',
+                      right: 10,
+                    }}
+                    onClick={() =>
+                      handleDeleteBook(
+                        bookId,
+                        mutate
+                          ? (data, options) =>
+                              mutate(
+                                { ...apiBook, userData: undefined },
+                                options
+                              )
+                          : undefined
+                      )
+                    }
+                  >
+                    <DeleteIcon
+                      sx={{
+                        color: '#ff5353',
+                      }}
+                    />
+                  </IconButton>
+                )}
               </Box>
               <Divider sx={{ borderColor: '#8C54FF30' }} />
               <Box>
@@ -569,16 +609,7 @@ export const BookRating = ({
         </Drawer>
       </Box>
 
-      {!user && (
-        <Typography variant="caption" sx={{ color: '#666' }}>
-          Inicia sesión en{' '}
-          <span style={{ color: '#9c27b0', fontWeight: 'bold' }}>
-            WingWords
-          </span>{' '}
-          para calificar este libro
-        </Typography>
-      )}
-
+      {/* Mensaje solo si hay usuario y el libro no está guardado */}
       {user && !isBookSaved && (
         <Typography
           variant="caption"
