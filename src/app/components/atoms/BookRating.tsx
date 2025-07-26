@@ -89,7 +89,8 @@ export const BookRating = ({
         formatProgress(apiBook.userData.progress || 0) as unknown as number
       );
       setIsProgressPercent(
-        apiBook.userData.progress !== undefined && apiBook.userData.progress < 1
+        apiBook.userData.progress !== undefined &&
+          apiBook.userData.progress <= 1
       );
     } else {
       setTempRating(0);

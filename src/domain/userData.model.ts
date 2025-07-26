@@ -13,7 +13,7 @@ export function formatProgress(progress: number) {
   if (progress <= 0) {
     return '0';
   }
-  if (progress < 1) {
+  if (progress <= 1) {
     return progress * 100;
   }
   return progress;
