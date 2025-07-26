@@ -11,6 +11,7 @@ export default async function rateBook(formData: FormData) {
     const startDate = formData.get('startDate') as string;
     const endDate = formData.get('endDate') as string;
     const status = formData.get('status') as string;
+    const progress = formData.get('progress') as string;
 
     if (!bookId) {
       throw new Error('Book ID is required');
@@ -40,6 +41,7 @@ export default async function rateBook(formData: FormData) {
           startDate: startDate || '',
           endDate: endDate || '',
           status: status,
+          progress: progress,
         }),
         credentials: 'include',
       }

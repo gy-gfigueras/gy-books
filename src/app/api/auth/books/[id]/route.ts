@@ -73,15 +73,19 @@ async function handler(request: Request) {
     if (request.method === 'PATCH') {
       const BODY = await request.json();
 
+      const progressNumber = parseFloat(BODY.progress as string);
+
       const USER_DATA = {
         userData: {
           rating: BODY.rating,
           status: BODY.status,
           startDate: BODY.startDate,
           endDate: BODY.endDate,
+          progress: progressNumber,
         },
       };
 
+      console.log('USER DATA', JSON.stringify(USER_DATA));
       const gyCodingResponse = await fetch(API_URL, {
         headers: HEADERS,
         method: 'PATCH',

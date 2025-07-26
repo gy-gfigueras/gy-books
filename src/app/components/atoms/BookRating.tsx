@@ -27,7 +27,9 @@ import { goudi } from '@/utils/fonts/fonts';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useRemoveBook } from '@/hooks/useRemoveBook';
 import { useUser } from '@/hooks/useUser';
-
+import BookIcon from '@mui/icons-material/Book';
+import PercentIcon from '@mui/icons-material/Percent';
+import { formatPercent, formatProgress } from '@/domain/userData.model';
 interface BookRatingProps {
   bookId: string;
   apiBook: ApiBook | null;
@@ -68,12 +70,13 @@ export const BookRating = ({
   const [tempStatus, setTempStatus] = useState<EStatus>(EStatus.WANT_TO_READ);
   const [tempStartDate, setTempStartDate] = useState<string>('');
   const [tempEndDate, setTempEndDate] = useState<string>('');
-
+  const [tempProgress, setTempProgress] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isProgressPercent, setIsProgressPercent] = useState(true);
 
   // Sincronizar estado temporal con apiBook
   useEffect(() => {
@@ -82,6 +85,12 @@ export const BookRating = ({
       setTempStatus(apiBook.userData.status ?? EStatus.WANT_TO_READ);
       setTempStartDate(apiBook.userData.startDate || '');
       setTempEndDate(apiBook.userData.endDate || '');
+      setTempProgress(
+        formatProgress(apiBook.userData.progress || 0) as unknown as number
+      );
+      setIsProgressPercent(
+        apiBook.userData.progress !== undefined && apiBook.userData.progress < 1
+      );
     } else {
       setTempRating(0);
       setTempStatus(EStatus.RATE); // Usar RATE para indicar que no está guardado
@@ -94,11 +103,20 @@ export const BookRating = ({
     if (!user || isSubmitting) return;
     setIsSubmitting(true);
     try {
+      // Validar progreso
+      let progressValue = tempProgress as unknown as number;
+      if (isProgressPercent) {
+        progressValue = formatPercent(progressValue);
+      }
+
       const formData = new FormData();
       formData.append('bookId', bookId);
       formData.append('rating', tempRating.toString());
       formData.append('startDate', tempStartDate);
       formData.append('endDate', tempEndDate);
+      formData.append('progress', progressValue as unknown as string);
+      console.log(formData);
+
       // Si el libro no está guardado, usar WANT_TO_READ como estado inicial
       const statusToSave = isBookSaved ? tempStatus : EStatus.WANT_TO_READ;
       formData.append('status', statusToSave.toString());
@@ -110,6 +128,11 @@ export const BookRating = ({
         setTempStatus(updatedApiBook.userData.status ?? EStatus.WANT_TO_READ);
         setTempStartDate(updatedApiBook.userData.startDate || '');
         setTempEndDate(updatedApiBook.userData.endDate || '');
+        setTempProgress(
+          formatProgress(
+            updatedApiBook.userData.progress || 0
+          ) as unknown as number
+        );
       }
 
       // Mutate para actualizar la UI inmediatamente
@@ -261,7 +284,7 @@ export const BookRating = ({
               />
             </Box>
             <Divider sx={{ borderColor: '#8C54FF30' }} />
-            <Box>
+            <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
               <Typography
                 sx={{
                   color: '#fff',
@@ -314,6 +337,94 @@ export const BookRating = ({
                   </Button>
                 ))}
               </Stack>
+              <Box
+                sx={{
+                  position: 'relative',
+                  display: 'flex',
+                  gap: 2,
+                  alignItems: 'center',
+                }}
+              >
+                <TextField
+                  sx={{ width: '100px' }}
+                  value={tempProgress}
+                  label="Progress"
+                  type="text"
+                  onChange={(e) =>
+                    setTempProgress(e.target.value as unknown as number)
+                  }
+                />
+                <Typography
+                  sx={{
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    color: '#fff',
+                    fontFamily: goudi.style.fontFamily,
+                    letterSpacing: '.05rem',
+                  }}
+                >
+                  {isProgressPercent ? '%' : 'pages.'}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: 1,
+                    position: 'absolute',
+                    right: 0,
+                  }}
+                >
+                  <Button
+                    variant={isProgressPercent ? 'contained' : 'outlined'}
+                    onClick={() => setIsProgressPercent(true)}
+                    sx={{
+                      borderRadius: 3,
+                      fontWeight: 'bold',
+                      color: isProgressPercent ? '#fff' : 'white',
+                      background: isProgressPercent ? '#8C54FF' : 'transparent',
+                      borderColor: '#8C54FF',
+                      px: 2,
+                      py: 1,
+                      minWidth: 0,
+                      textTransform: 'none',
+                      fontSize: 18,
+                      fontFamily: goudi.style.fontFamily,
+                      letterSpacing: '.05rem',
+                      '&:hover': {
+                        background: '#8C54FF',
+                        color: '#fff',
+                      },
+                    }}
+                  >
+                    <PercentIcon />
+                  </Button>
+                  <Button
+                    variant={!isProgressPercent ? 'contained' : 'outlined'}
+                    onClick={() => setIsProgressPercent(false)}
+                    sx={{
+                      borderRadius: 3,
+                      fontWeight: 'bold',
+                      color: !isProgressPercent ? '#fff' : 'white',
+                      background: !isProgressPercent
+                        ? '#8C54FF'
+                        : 'transparent',
+                      borderColor: '#8C54FF',
+                      px: 2,
+                      py: 1,
+                      minWidth: 0,
+                      textTransform: 'none',
+                      fontSize: 18,
+                      fontFamily: goudi.style.fontFamily,
+                      letterSpacing: '.05rem',
+                      '&:hover': {
+                        background: '#8C54FF',
+                        color: '#fff',
+                      },
+                    }}
+                  >
+                    <BookIcon />
+                  </Button>
+                </Box>
+              </Box>
             </Box>
             <Divider sx={{ borderColor: '#8C54FF30' }} />
             <Box sx={{ display: 'flex', gap: 2 }}>
@@ -474,7 +585,7 @@ export const BookRating = ({
                 )}
               </Box>
               <Divider sx={{ borderColor: '#8C54FF30' }} />
-              <Box>
+              <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
                 <Typography sx={{ color: '#fff', fontWeight: 'bold', mb: 0.5 }}>
                   Estado
                 </Typography>
@@ -513,6 +624,96 @@ export const BookRating = ({
                     </Button>
                   ))}
                 </Stack>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    display: 'flex',
+                    gap: 2,
+                    alignItems: 'center',
+                  }}
+                >
+                  <TextField
+                    sx={{ width: '100px' }}
+                    value={tempProgress}
+                    label="Progress"
+                    type="text"
+                    onChange={(e) =>
+                      setTempProgress(e.target.value as unknown as number)
+                    }
+                  />
+                  <Typography
+                    sx={{
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      color: '#fff',
+                      fontFamily: goudi.style.fontFamily,
+                      letterSpacing: '.05rem',
+                    }}
+                  >
+                    {isProgressPercent ? '%' : 'pages.'}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 1,
+                      position: 'absolute',
+                      right: 0,
+                    }}
+                  >
+                    <Button
+                      variant={isProgressPercent ? 'contained' : 'outlined'}
+                      onClick={() => setIsProgressPercent(true)}
+                      sx={{
+                        borderRadius: 3,
+                        fontWeight: 'bold',
+                        color: isProgressPercent ? '#fff' : 'white',
+                        background: isProgressPercent
+                          ? '#8C54FF'
+                          : 'transparent',
+                        borderColor: '#8C54FF',
+                        px: 2,
+                        py: 1,
+                        minWidth: 0,
+                        textTransform: 'none',
+                        fontSize: 18,
+                        fontFamily: goudi.style.fontFamily,
+                        letterSpacing: '.05rem',
+                        '&:hover': {
+                          background: '#8C54FF',
+                          color: '#fff',
+                        },
+                      }}
+                    >
+                      <PercentIcon />
+                    </Button>
+                    <Button
+                      variant={!isProgressPercent ? 'contained' : 'outlined'}
+                      onClick={() => setIsProgressPercent(false)}
+                      sx={{
+                        borderRadius: 3,
+                        fontWeight: 'bold',
+                        color: !isProgressPercent ? '#fff' : 'white',
+                        background: !isProgressPercent
+                          ? '#8C54FF'
+                          : 'transparent',
+                        borderColor: '#8C54FF',
+                        px: 2,
+                        py: 1,
+                        minWidth: 0,
+                        textTransform: 'none',
+                        fontSize: 18,
+                        fontFamily: goudi.style.fontFamily,
+                        letterSpacing: '.05rem',
+                        '&:hover': {
+                          background: '#8C54FF',
+                          color: '#fff',
+                        },
+                      }}
+                    >
+                      <BookIcon />
+                    </Button>
+                  </Box>
+                </Box>
               </Box>
               <Divider sx={{ borderColor: '#8C54FF30' }} />
               <Box sx={{ display: 'flex', gap: 2, mb: '10px' }}>
