@@ -98,6 +98,11 @@ export const BookRating = ({
       setTempStartDate('');
       setTempEndDate('');
     }
+
+    if (apiBook?.userData?.status === EStatus.READ) {
+      apiBook.userData.progress = 1;
+      setIsProgressPercent(true);
+    }
   }, [apiBook]);
 
   const handleApply = async () => {
@@ -275,7 +280,7 @@ export const BookRating = ({
                   letterSpacing: '.05rem',
                 }}
               >
-                Calificación
+                Rating
               </Typography>
               <RatingStars
                 rating={tempRating}
@@ -296,7 +301,7 @@ export const BookRating = ({
                   letterSpacing: '.05rem',
                 }}
               >
-                Estado
+                Status
               </Typography>
               <Stack
                 direction="row"
@@ -430,7 +435,7 @@ export const BookRating = ({
             <Divider sx={{ borderColor: '#8C54FF30' }} />
             <Box sx={{ display: 'flex', gap: 2 }}>
               <TextField
-                label="Fecha inicio"
+                label="Start date"
                 type="date"
                 value={tempStartDate || ''}
                 onChange={(e) => setTempStartDate(e.target.value)}
@@ -466,7 +471,7 @@ export const BookRating = ({
                 }}
               />
               <TextField
-                label="Fecha fin"
+                label="End date"
                 type="date"
                 value={tempEndDate || ''}
                 onChange={(e) => setTempEndDate(e.target.value)}
@@ -517,7 +522,7 @@ export const BookRating = ({
                 textTransform: 'none',
               }}
             >
-              Aplicar
+              Apply
             </Button>
           </Stack>
         </Menu>
