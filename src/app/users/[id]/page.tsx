@@ -27,7 +27,6 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { goudi } from '@/utils/fonts/fonts';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
 import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton';
-import Image from 'next/image';
 import { getBooksWithPagination } from '@/app/actions/book/fetchApiBook';
 import Book from '@/domain/book.model';
 import { EStatus } from '@/utils/constants/EStatus';
@@ -35,6 +34,8 @@ import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
 import Stats from '@/app/components/organisms/Stats';
+import { UserImage } from '@/app/components/atoms/UserImage';
+import { User } from '@/domain/user.model';
 
 function ProfilePageContent() {
   const params = useParams();
@@ -223,19 +224,7 @@ function ProfilePageContent() {
             width: '100%',
           }}
         >
-          <Image
-            src={user.picture}
-            style={{
-              width: 'auto',
-              height: '100%',
-              aspectRatio: '1/1',
-              borderRadius: '50%',
-              objectFit: 'cover',
-            }}
-            alt={user.username}
-            width={100}
-            height={100}
-          />
+          <UserImage user={user as User} />
           <Box
             sx={{
               flex: 1,

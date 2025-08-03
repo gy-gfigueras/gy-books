@@ -13,6 +13,7 @@ interface CustomButtonProps {
   target?: string;
   isLoading?: boolean;
   startIcon?: React.ReactNode;
+  type?: 'ACTION' | 'CANCEL';
 }
 
 export const CustomButton = ({
@@ -26,6 +27,7 @@ export const CustomButton = ({
   href,
   target,
   isLoading,
+  type = 'ACTION',
 }: CustomButtonProps) => {
   return (
     <Button
@@ -38,9 +40,16 @@ export const CustomButton = ({
       sx={{
         background:
           variant === 'contained'
-            ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
+            ? type === 'ACTION'
+              ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
+              : 'linear-gradient(135deg,rgb(234, 51, 51) 0%,rgb(206, 34, 34) 100%)'
             : 'transparent',
-        border: variant === 'outlined' ? '1px solid #9333ea' : 'none',
+        border:
+          variant === 'outlined'
+            ? type === 'ACTION'
+              ? '2px solid #9333ea'
+              : '2px solid rgb(234, 51, 51)'
+            : 'none',
         color: '#ffffff',
         fontWeight: 600,
         px: 3,
@@ -48,13 +57,21 @@ export const CustomButton = ({
         borderRadius: '12px',
         boxShadow:
           variant === 'contained'
-            ? '0 4px 14px rgba(147, 51, 234, 0.4)'
+            ? type === 'ACTION'
+              ? '0 4px 12px rgba(147, 51, 234, 0.5)'
+              : '0 4px 12px rgba(234, 51, 51, 0.21)'
             : 'none',
         transition: 'all 0.3s ease',
         '&:hover': {
           transform: 'translateY(-2px)',
-          boxShadow: '0 6px 20px rgba(147, 51, 234, 0.6)',
-          background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+          boxShadow:
+            type === 'ACTION'
+              ? '0 6px 20px rgba(147, 51, 234, 0.6)'
+              : '0 6px 20px rgba(234, 51, 51, 0.6)',
+          background:
+            type === 'ACTION'
+              ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
+              : 'linear-gradient(135deg,rgb(234, 51, 51) 0%,rgb(206, 34, 34) 100%)',
         },
         '&:active': {
           transform: 'translateY(0)',

@@ -35,6 +35,8 @@ export default function DonutChart({ bookStatus }: DonutChartProps) {
     <PieChart
       title="Estado de los libros"
       sx={{
+        width: ['300px', '500px'],
+        height: ['250px', '300px'],
         '& .MuiPieChart-root': {
           backgroundColor: 'white',
         },

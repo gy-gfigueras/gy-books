@@ -43,6 +43,7 @@ import AnimatedAlert from '../components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { UUID } from 'crypto';
 import Stats from '../components/organisms/Stats';
+import HallOfFame from '../components/molecules/HallOfFame';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
@@ -341,6 +342,7 @@ function ProfilePageContent() {
               {isEditingBiography ? (
                 <TextField
                   value={biography}
+                  defaultValue={user.biography || ''}
                   onChange={(e) => setBiography(e.target.value)}
                   placeholder="Write your biography here..."
                   sx={{
@@ -456,6 +458,7 @@ function ProfilePageContent() {
                     Save
                   </CustomButton>
                   <CustomButton
+                    type="CANCEL"
                     sx={{
                       letterSpacing: '.05rem',
                       minWidth: { xs: 0, md: 'auto' },
@@ -828,8 +831,7 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h5">Hall of Fame</Typography>
-              <Typography variant="body1">Próximamente...</Typography>
+              <HallOfFame userId={user.id} />
             </Box>
           )}
           {tab === 2 && (

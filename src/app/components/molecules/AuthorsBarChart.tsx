@@ -16,8 +16,8 @@ export default function AuthorsBarChart({
         '& .MuiBarChart-root': {
           backgroundColor: 'transparent',
         },
-        width: '500px',
-        height: '300px',
+        width: ['300px', '500px'],
+        height: ['250px', '300px'],
         backgroundColor: 'transparent',
         borderRadius: '16px',
       }}

@@ -24,7 +24,7 @@
     "@mui/x-charts": "^8.8.0",
     "@next/font": "^14.2.15",
     "eslint-config-prettier": "^10.1.1",
-    "framer-motion": "^12.5.0",
+    "framer-motion": "^12.23.12",
     "google": "^2.1.0",
     "husky": "^9.1.7",
     "mtgsdk-ts": "^1.1.2",
