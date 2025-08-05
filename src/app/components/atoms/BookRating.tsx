@@ -30,6 +30,7 @@ import { useUser } from '@/hooks/useUser';
 import BookIcon from '@mui/icons-material/Book';
 import PercentIcon from '@mui/icons-material/Percent';
 import { formatPercent, formatProgress } from '@/domain/userData.model';
+
 interface BookRatingProps {
   bookId: string;
   apiBook: ApiBook | null;
@@ -64,7 +65,6 @@ export const BookRating = ({
 }: BookRatingProps) => {
   const { data: user, isLoading: isUserLoading } = useUser();
   const { handleDeleteBook, isLoading: isDeleteLoading } = useRemoveBook();
-
   // Estado temporal único para todos los campos
   const [tempRating, setTempRating] = useState<number>(0);
   const [tempStatus, setTempStatus] = useState<EStatus>(EStatus.WANT_TO_READ);
@@ -121,12 +121,15 @@ export const BookRating = ({
       formData.append('startDate', tempStartDate);
       formData.append('endDate', tempEndDate);
       formData.append('progress', progressValue as unknown as string);
-      console.log(formData);
 
       // Si el libro no está guardado, usar WANT_TO_READ como estado inicial
       const statusToSave = isBookSaved ? tempStatus : EStatus.WANT_TO_READ;
       formData.append('status', statusToSave.toString());
-      const updatedApiBook = await rateBook(formData);
+      const updatedApiBook = await rateBook(
+        formData,
+        user.username,
+        apiBook?.userData
+      );
 
       // Actualizar los temporales con la respuesta
       if (updatedApiBook && updatedApiBook.userData) {
@@ -174,11 +177,11 @@ export const BookRating = ({
         flexDirection: 'column',
         gap: 2,
         alignItems: { xs: 'center', sm: 'flex-start' },
-        width: '100%',
+        width: 'auto',
         mt: 2,
       }}
     >
-      <Box sx={{ width: { xs: '100%', sm: 320 }, mb: 1 }}>
+      <Box sx={{ mb: 1 }}>
         <Button
           variant="outlined"
           color="primary"

@@ -4,9 +4,7 @@
 import { hallOfFame } from '@/domain/hallOfFame.model';
 import { headers, cookies } from 'next/headers';
 
-export default async function updateHallOfFame(
-  formData: FormData
-): Promise<string> {
+export default async function setHallOfFameBook(formData: FormData) {
   if (!formData) throw new Error('No quote provided in formData');
   const headersList = headers();
   const host = headersList.get('host') || 'localhost:3000';
@@ -19,16 +17,11 @@ export default async function updateHallOfFame(
   // --- DEBUG: Log info before private fetch ---
 
   const hallOfFameData = {
-    quote: formData.get('quote') as string,
-    books:
-      formData.getAll('books').map((book) => ({
-        bookId: book.toString(),
-      })) ?? [],
+    books: [formData.get('bookId')],
   } as unknown as hallOfFame;
 
-  let privateRes: Response;
   try {
-    privateRes = await fetch(urlPrivate, {
+    void (await fetch(urlPrivate, {
       method: 'PATCH',
       body: JSON.stringify(hallOfFameData),
       headers: {
@@ -37,19 +30,7 @@ export default async function updateHallOfFame(
       },
       credentials: 'include',
       cache: 'no-store',
-    });
-    const privateText = await privateRes.clone().text();
-
-    if (privateRes.ok) {
-      return privateText;
-    }
-    if (privateRes.status !== 401) {
-      throw new Error(
-        `Private fetch failed. Status: ${privateRes.status} - ${privateText}`
-      );
-    }
-    // Si es 401, sigue al endpoint público
-    return privateText as string;
+    }));
   } catch (error) {
     console.warn('[DEBUG] Error in private fetch:', error);
     throw error;

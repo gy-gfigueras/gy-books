@@ -18,7 +18,6 @@ export default async function queryUsers(formData: FormData): Promise<User[]> {
   const urlPublic = `${protocol}://${host}/api/public/accounts?query=${query}`;
 
   // --- DEBUG: Log info before private fetch ---
-  console.log('[DEBUG] Private fetch URL:', urlPrivate);
 
   let privateRes;
   try {
@@ -31,9 +30,7 @@ export default async function queryUsers(formData: FormData): Promise<User[]> {
       credentials: 'include',
       cache: 'no-store',
     });
-    console.log('[DEBUG] Private fetch status:', privateRes.status);
     const privateText = await privateRes.clone().text();
-    console.log('[DEBUG] Private fetch body:', privateText);
 
     if (privateRes.ok) {
       return JSON.parse(privateText) as User[];
@@ -43,19 +40,11 @@ export default async function queryUsers(formData: FormData): Promise<User[]> {
         `Private fetch failed. Status: ${privateRes.status} - ${privateText}`
       );
     }
-    // Si es 401, sigue al endpoint público
-    console.log(
-      '[DEBUG] Private fetch returned 401. Trying public endpoint...'
-    );
   } catch (error) {
     console.warn('[DEBUG] Error in private fetch:', error);
   }
 
-  // --- DEBUG: Log info before public fetch ---
-  console.log('[DEBUG] Public fetch URL:', urlPublic);
-  console.log('[DEBUG] Public fetch headers:', {
-    'Content-Type': 'application/json',
-  });
+  // --- DEBUG: Log info before public fetch --
 
   const publicRes = await fetch(urlPublic, {
     method: 'GET',
@@ -65,9 +54,7 @@ export default async function queryUsers(formData: FormData): Promise<User[]> {
     cache: 'no-store',
   });
 
-  console.log('[DEBUG] Public fetch status:', publicRes.status);
   const publicText = await publicRes.clone().text();
-  console.log('[DEBUG] Public fetch body:', publicText);
 
   if (publicRes.ok) {
     return JSON.parse(publicText) as User[];

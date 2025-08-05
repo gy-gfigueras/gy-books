@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, IconButton } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { useBook } from '@/hooks/useBook';
 import { goudi, cinzel } from '@/utils/fonts/fonts';
@@ -11,12 +11,33 @@ import { BookRating } from '@/app/components/atoms/BookRating';
 import StarIcon from '@mui/icons-material/Star';
 import { useApiBook } from '@/hooks/useApiBook';
 import { useUser } from '@/hooks/useUser';
-
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import { useHallOfFame } from '@/hooks/useHallOfFame';
+import AnimatedAlert from '@/app/components/atoms/Alert';
+import { ESeverity } from '@/utils/constants/ESeverity';
 export default function BookDetails() {
   const params = useParams();
   const { data: book, isLoading } = useBook(params.id as string);
-
   const { data: user } = useUser();
+  const {
+    data: hallOfFame,
+    handleAddBookToHallOfFame,
+    setIsLoadingToAddHallOfFame,
+    setIsUpdatedAddToHallOfFame,
+    setIsErrorAddToHallOfFame,
+    isErrorAddToHallOfFame,
+    isLoadingAddToHallOfFame,
+    isUpdatedAddToHallOfFame,
+    handleDeleteBookToHallOfFame,
+    setIsLoadingToDeleteHallOfFame,
+    setIsUpdatedDeleteToHallOfFame,
+    setIsErrorDeleteToHallOfFame,
+    isLoadingDeleteToHallOfFame,
+    isUpdatedDeleteToHallOfFame,
+    isErrorDeleteToHallOfFame,
+  } = useHallOfFame(user?.id || '');
+  console.log('hallOfFame', hallOfFame);
+  const isOnHallOfFame = hallOfFame?.books.some((b) => b.id === book?.id);
   const isLoggedIn = !!user;
   const {
     data: apiBook,
@@ -39,6 +60,23 @@ export default function BookDetails() {
       </Box>
     );
   }
+
+  const handleClick = () => {
+    if (isOnHallOfFame) {
+      setIsLoadingToDeleteHallOfFame(true);
+      setIsUpdatedDeleteToHallOfFame(false);
+      setIsErrorDeleteToHallOfFame(false);
+      handleDeleteBookToHallOfFame(book?.id || '');
+      setIsLoadingToAddHallOfFame(false);
+      setIsUpdatedAddToHallOfFame(false);
+      setIsErrorAddToHallOfFame(false);
+    } else if (!isOnHallOfFame) {
+      setIsLoadingToAddHallOfFame(false);
+      setIsUpdatedAddToHallOfFame(false);
+      setIsErrorAddToHallOfFame(false);
+      handleAddBookToHallOfFame(book?.id || '');
+    }
+  };
 
   return (
     <Box
@@ -152,13 +190,40 @@ export default function BookDetails() {
             }}
           />
         </Typography>
-        <BookRating
-          apiBook={apiBook}
-          bookId={book?.id || ''}
-          isRatingLoading={isApiBookLoading}
-          mutate={mutate}
-          isLoggedIn={isLoggedIn}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '1rem',
+            width: '100%',
+            justifyContent: 'start',
+            alignItems: 'start',
+          }}
+        >
+          <BookRating
+            apiBook={apiBook}
+            bookId={book?.id || ''}
+            isRatingLoading={isApiBookLoading}
+            mutate={mutate}
+            isLoggedIn={isLoggedIn}
+          />
+
+          {user && (
+            <IconButton
+              loading={isLoadingAddToHallOfFame || isLoadingDeleteToHallOfFame}
+              sx={{ marginTop: '1rem' }}
+            >
+              <WorkspacePremiumIcon
+                sx={{
+                  color: isOnHallOfFame ? 'gold' : 'gray',
+                  fontSize: '32px',
+                }}
+                onClick={handleClick}
+              />
+            </IconButton>
+          )}
+        </Box>
+
         <Typography
           variant="body1"
           sx={{
@@ -174,6 +239,30 @@ export default function BookDetails() {
           <AuthorCard author={book?.author as Author} />
         </Box>
       </Box>
+      <AnimatedAlert
+        open={isUpdatedAddToHallOfFame}
+        onClose={() => setIsUpdatedAddToHallOfFame(false)}
+        message="Book added to Hall of Fame successfully!"
+        severity={ESeverity.SUCCESS}
+      />
+      <AnimatedAlert
+        open={isErrorAddToHallOfFame}
+        onClose={() => setIsErrorAddToHallOfFame(false)}
+        message="Error adding book to Hall of Fame."
+        severity={ESeverity.ERROR}
+      />
+      <AnimatedAlert
+        open={isUpdatedDeleteToHallOfFame}
+        onClose={() => setIsUpdatedAddToHallOfFame(false)}
+        message="Book deleted from Hall of Fame!"
+        severity={ESeverity.SUCCESS}
+      />
+      <AnimatedAlert
+        open={isErrorDeleteToHallOfFame}
+        onClose={() => setIsErrorDeleteToHallOfFame(false)}
+        message="Error deleting book from Hall of Fame."
+        severity={ESeverity.ERROR}
+      />
     </Box>
   );
 }

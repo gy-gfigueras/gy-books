@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { ECommands } from '@/utils/constants/ECommands';
 
 export const POST = withApiAuthRequired(async (req: NextRequest) => {
   try {
@@ -12,8 +11,6 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
     const ID_TOKEN = SESSION?.idToken;
 
     const body = await req.json();
-    const requestId = body.requestId;
-    const command = body.command as ECommands;
 
     if (SESSION) {
       await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
@@ -31,7 +28,7 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    apiUrl = `${baseUrl}/accounts/books/friends/manage?requestId=${requestId}`;
+    apiUrl = `${baseUrl}/accounts/books/activity`;
     headers = {
       ...headers,
       Authorization: `Bearer ${ID_TOKEN}`,
@@ -43,7 +40,7 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
     const gyCodingResponse = await fetch(apiUrl, {
       headers,
       method: 'POST',
-      body: JSON.stringify({ command: command }),
+      body: JSON.stringify({ message: body }),
     });
 
     if (!gyCodingResponse.ok) {
@@ -56,7 +53,7 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
 
     return NextResponse.json(204);
   } catch (error) {
-    console.error('Error in /api/auth/user:', error);
+    console.error('Error in /api/auth/books/biography:', error);
     await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
       error: error,
     });

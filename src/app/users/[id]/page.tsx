@@ -36,6 +36,9 @@ import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
 import Stats from '@/app/components/organisms/Stats';
 import { UserImage } from '@/app/components/atoms/UserImage';
 import { User } from '@/domain/user.model';
+import ActivityTab from '@/app/components/molecules/activityTab';
+import HallOfFame from '@/app/components/molecules/HallOfFame';
+import { useActivities } from '@/hooks/useActivities';
 
 function ProfilePageContent() {
   const params = useParams();
@@ -46,7 +49,7 @@ function ProfilePageContent() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const searchParams = useSearchParams();
   const router = useRouter();
-
+  const { data: activities } = useActivities(user?.id as UUID);
   const [books, setBooks] = useState<Book[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -605,8 +608,7 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h5">Hall of Fame</Typography>
-              <Typography variant="body1">Próximamente...</Typography>
+              <HallOfFame userId={user.id} />
             </Box>
           )}
           {tab === 2 && (
@@ -630,8 +632,7 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h5">Activity</Typography>
-              <Typography variant="body1">Próximamente...</Typography>
+              <ActivityTab activities={activities} />
             </Box>
           )}
         </Box>

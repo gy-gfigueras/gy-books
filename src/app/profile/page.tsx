@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
 
 import React, {
@@ -44,6 +45,8 @@ import { ESeverity } from '@/utils/constants/ESeverity';
 import { UUID } from 'crypto';
 import Stats from '../components/organisms/Stats';
 import HallOfFame from '../components/molecules/HallOfFame';
+import { useActivities } from '@/hooks/useActivities';
+import ActivityTab from '../components/molecules/activityTab';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
@@ -53,6 +56,7 @@ function ProfilePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isLoading: isLoadingFriends, count: friendsCount } = useFriends();
+  const { data: activities } = useActivities(user?.id as UUID);
   const {
     handleUpdateBiography,
     setIsUpdated: setIsUpdatedBiography,
@@ -83,7 +87,6 @@ function ProfilePageContent() {
     { label: 'Want to read', value: EStatus.WANT_TO_READ },
   ];
 
-  // Función para actualizar la URL cuando cambie el filtro
   const updateUrl = useCallback(
     (newStatus: EStatus | null) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -136,7 +139,7 @@ function ProfilePageContent() {
       const res = await getBooksWithPagination(
         user?.id as UUID,
         currentPage,
-        10
+        5
       );
       if (res && Array.isArray(res.books) && res.books.length > 0) {
         setBooks((prev) => {
@@ -855,8 +858,7 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h5">Activity</Typography>
-              <Typography variant="body1">Próximamente...</Typography>
+              <ActivityTab activities={activities} />{' '}
             </Box>
           )}
         </Box>

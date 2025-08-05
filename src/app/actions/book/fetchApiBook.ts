@@ -11,8 +11,6 @@ import { UUID } from 'crypto';
 export default async function getApiBook(
   bookId: string
 ): Promise<ApiBook | null> {
-  console.log('Server Action', bookId);
-
   try {
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
@@ -46,20 +44,11 @@ export default async function getApiBook(
       url = `${protocol}://${host}/api/public/books/${bookId}`;
     }
 
-    console.log('Server Action - Fetching from URL:', url);
-    console.log('Server Action - Is authenticated:', isAuthenticated);
-
     const response = await fetch(url, fetchOptions);
-
-    console.log('Server Action - Response status:', response.status);
 
     if (!response.ok) {
       // Si la ruta privada falla y el usuario está autenticado, intentar con la ruta pública
       if (isAuthenticated && response.status >= 500) {
-        console.log(
-          'Server Action - Private route failed, trying public route as fallback'
-        );
-
         const publicUrl = `${protocol}://${host}/api/public/books/${bookId}`;
         const publicResponse = await fetch(publicUrl, {
           method: 'GET',
@@ -71,7 +60,6 @@ export default async function getApiBook(
 
         if (publicResponse.ok) {
           const publicData = await publicResponse.json();
-          console.log('Server Action - Public fallback successful');
           return publicData as ApiBook;
         }
       }
@@ -114,9 +102,6 @@ export async function getBooksWithPagination(
       },
       cache: 'no-store',
     };
-
-    console.log('Server Action - Fetching books by user:', profileId);
-    console.log('Server Action - Fetching books by user:', url);
 
     const response = await fetch(url, fetchOptions);
 

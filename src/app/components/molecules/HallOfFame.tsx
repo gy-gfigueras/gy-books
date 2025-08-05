@@ -16,8 +16,10 @@ import { useRouter } from 'next/navigation';
 import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUpdateHallOfFame } from '@/hooks/useUpdateHallOfFame';
 import { goudi } from '@/utils/fonts/fonts';
+import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 
 export default function HallOfFame({ userId }: { userId: string }) {
+  const { user } = useGyCodingUser();
   const router = useRouter();
   const { isLoading, error, quote, books } = useHallOfFame(userId);
   const { handleUpdateHallOfFame } = useUpdateHallOfFame();
@@ -261,6 +263,7 @@ export default function HallOfFame({ userId }: { userId: string }) {
         }}
       >
         <TextField
+          disabled={userId !== user?.id}
           multiline
           value={`${editedQuote}`}
           onChange={(e) => setEditedQuote(e.target.value)}

@@ -4,59 +4,87 @@ import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
 
-export const PATCH = withApiAuthRequired(async (req: NextRequest) => {
+async function handler(req: NextRequest) {
   try {
     const SESSION = await getSession();
     const USER_ID = SESSION?.user.sub;
     const ID_TOKEN = SESSION?.idToken;
 
-    const body = await req.json();
-    const quote = body.quote;
-    const books = body.books;
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
+    if (!SESSION) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    let apiUrl: string | null = null;
-    let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
       await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    apiUrl = `${baseUrl}/accounts/books/halloffame`;
-    headers = {
-      ...headers,
+    const headers = {
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${ID_TOKEN}`,
     };
 
-    if (!apiUrl) {
-      throw new Error(ELogs.API_URL_NOT_DEFINED);
-    }
-    const gyCodingResponse = await fetch(apiUrl, {
-      headers,
-      method: 'PATCH',
-      body: JSON.stringify({ quote, books }),
-    });
+    if (req.method === 'PATCH') {
+      const body = await req.json();
+      const { quote, books } = body;
 
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-        error: errorText,
+      const apiUrl = `${baseUrl}/accounts/books/halloffame`;
+      console.log(JSON.stringify({ quote, books }));
+
+      const response = await fetch(apiUrl, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ quote, books }),
       });
-      throw new Error(`GyCoding API Error: ${errorText}`);
-    }
 
-    return NextResponse.json(204);
+      if (!response.ok) {
+        const errorText = await response.text();
+        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+          error: errorText,
+        });
+        throw new Error(`GyCoding API Error: ${errorText}`);
+      }
+
+      return new NextResponse(null, { status: 204 });
+    } else if (req.method === 'DELETE') {
+      const body = await req.json();
+
+      if (!body) {
+        return NextResponse.json(
+          { error: 'bookId is required' },
+          { status: 400 }
+        );
+      }
+
+      const apiUrl = `${baseUrl}/accounts/books/halloffame/book/${body}`;
+
+      const response = await fetch(apiUrl, {
+        method: 'DELETE',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+          error: errorText,
+        });
+        throw new Error(`GyCoding API Error: ${errorText}`);
+      }
+
+      return new NextResponse(null, { status: 204 });
+    } else {
+      return NextResponse.json(
+        { error: 'Method not allowed' },
+        { status: 405 }
+      );
+    }
   } catch (error) {
     console.error('Error in /api/auth/books/halloffame:', error);
     await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error,
+      error: error instanceof Error ? error.message : String(error),
     });
 
     return NextResponse.json(
@@ -64,4 +92,7 @@ export const PATCH = withApiAuthRequired(async (req: NextRequest) => {
       { status: 500 }
     );
   }
-});
+}
+
+export const PATCH = withApiAuthRequired(handler);
+export const DELETE = withApiAuthRequired(handler);

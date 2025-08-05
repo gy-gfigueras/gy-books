@@ -3,16 +3,16 @@
 
 import { headers } from 'next/headers';
 import { UUID } from 'crypto';
-import { Stats } from '@/domain/stats.model';
+import { Activity } from '@/domain/activity.model';
 
 // Nueva función para traer todos los libros con paginación
-export async function getStats(profileId: UUID): Promise<any> {
+export async function fetchActivities(profileId: UUID): Promise<Activity[]> {
   try {
     const headersList = headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
-    const url = `${protocol}://${host}/api/public/books/${profileId}/stats`;
+    const url = `${protocol}://${host}/api/public/books/activities?userId=${profileId}`;
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: {
@@ -29,7 +29,7 @@ export async function getStats(profileId: UUID): Promise<any> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: Stats = await response.json();
+    const data: Activity[] = await response.json();
 
     return data;
   } catch (error: any) {

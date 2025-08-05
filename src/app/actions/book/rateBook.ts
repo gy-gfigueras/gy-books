@@ -3,8 +3,18 @@
 
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
+import fetchBookById from './fetchBookById';
+import Book from '@/domain/book.model';
+import { setActivity } from './activities/setActivity';
+import { EActivity } from '@/utils/constants/formatActivity';
+import { ApiBook } from '@/domain/apiBook.model';
+import { EStatus } from '@/utils/constants/EStatus';
 
-export default async function rateBook(formData: FormData) {
+export default async function rateBook(
+  formData: FormData,
+  username: string,
+  oldUserData?: ApiBook['userData'] // los datos antiguos
+) {
   try {
     const bookId = formData.get('bookId') as string;
     const rating = formData.get('rating') as string;
@@ -55,6 +65,59 @@ export default async function rateBook(formData: FormData) {
     const data = await response.json();
     if (!data.bookRatingData) {
       throw new Error('No ApiBook data received from server');
+    }
+
+    const book: Book = await fetchBookById(bookId);
+    const newUserData = data.bookRatingData.userData;
+
+    // Detectar cambios y setear actividad adecuada
+    if (book && username && newUserData) {
+      const oldStatus = oldUserData?.status;
+      const newStatus = newUserData.status;
+
+      const oldProgress = oldUserData?.progress;
+      const newProgress = newUserData.progress;
+
+      const oldRating = oldUserData?.rating;
+      const newRating = newUserData.rating;
+
+      // Status actualizado
+      if (oldStatus !== newStatus) {
+        if (newStatus === EStatus.WANT_TO_READ) {
+          await setActivity(EActivity.BOOK_WANT_TO_READ, username, book);
+        } else if (newStatus === EStatus.READING) {
+          await setActivity(EActivity.BOOK_STARED_READING, username, book);
+        } else if (newStatus === EStatus.READ) {
+          await setActivity(EActivity.BOOK_READ, username, book);
+        }
+      }
+
+      // Progreso actualizado
+      const progressChanged =
+        typeof newProgress === 'number' &&
+        newProgress !== undefined &&
+        newProgress !== oldProgress &&
+        newStatus === EStatus.READING;
+
+      if (progressChanged) {
+        await setActivity(EActivity.BOOK_PROGRESS, username, book, newProgress);
+      }
+
+      // Rating actualizado
+      const ratingChanged =
+        typeof newRating === 'number' &&
+        newRating > 0 &&
+        newRating !== oldRating;
+
+      if (ratingChanged) {
+        await setActivity(
+          EActivity.BOOK_RATED,
+          username,
+          book,
+          undefined,
+          newRating
+        );
+      }
     }
 
     return data.bookRatingData;

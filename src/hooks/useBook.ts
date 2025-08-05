@@ -18,7 +18,6 @@ export function useBook(id: string): useBookProps {
       shouldRetryOnError: false,
     }
   );
-  console.log(data);
 
   return {
     data,

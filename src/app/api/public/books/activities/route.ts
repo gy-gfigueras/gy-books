@@ -1,23 +1,13 @@
-import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { ECommands } from '@/utils/constants/ECommands';
+import { Activity } from '@/domain/activity.model';
 
-export const POST = withApiAuthRequired(async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
   try {
-    const SESSION = await getSession();
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.idToken;
-
-    const body = await req.json();
-    const requestId = body.requestId;
-    const command = body.command as ECommands;
-
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
-    }
+    const searchParams = req.nextUrl.searchParams;
+    const userId = searchParams.get('userId');
 
     let apiUrl: string | null = null;
     let headers: Record<string, string> = {
@@ -31,20 +21,16 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    apiUrl = `${baseUrl}/accounts/books/friends/manage?requestId=${requestId}`;
+    apiUrl = `${baseUrl}/accounts/books/${userId}/activity`;
     headers = {
       ...headers,
-      Authorization: `Bearer ${ID_TOKEN}`,
     };
 
     if (!apiUrl) {
       throw new Error(ELogs.API_URL_NOT_DEFINED);
     }
-    const gyCodingResponse = await fetch(apiUrl, {
-      headers,
-      method: 'POST',
-      body: JSON.stringify({ command: command }),
-    });
+
+    const gyCodingResponse = await fetch(apiUrl, { headers });
 
     if (!gyCodingResponse.ok) {
       const errorText = await gyCodingResponse.text();
@@ -54,7 +40,9 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
       throw new Error(`GyCoding API Error: ${errorText}`);
     }
 
-    return NextResponse.json(204);
+    const activity = await gyCodingResponse.json();
+
+    return NextResponse.json(activity as Activity[]);
   } catch (error) {
     console.error('Error in /api/auth/user:', error);
     await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
@@ -66,4 +54,4 @@ export const POST = withApiAuthRequired(async (req: NextRequest) => {
       { status: 500 }
     );
   }
-});
+};
