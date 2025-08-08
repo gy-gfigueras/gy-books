@@ -14,7 +14,7 @@ Brief description of this project.
 
 ## How it was made
 
-Description of the technologies and procedures used to develop this project.
+Description of the technologies and procedures used to develop this project
 
 <br>
 
