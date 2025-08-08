@@ -12,6 +12,7 @@ async function handler(req: Request) {
     const ID_TOKEN = SESSION?.idToken;
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
     const MONGO_URI = process.env.MONGO_URI;
+
     if (!baseUrl) {
       await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
       return NextResponse.json(
@@ -68,13 +69,29 @@ async function handler(req: Request) {
         );
       }
       const client = new MongoClient(MONGO_URI);
-      await client.connect();
 
-      const db = client.db('GYAccounts');
-      const collection = db.collection('FriendRequest');
-      const data = await collection.find({ to: profileId }).toArray();
-      await client.close();
-      return NextResponse.json(data as unknown as FriendRequest[]);
+      try {
+        await client.connect();
+
+        const db = client.db('GYAccounts');
+        const collection = db.collection('FriendRequest');
+        const data = await collection.find({ to: profileId }).toArray();
+        await client.close();
+        return NextResponse.json(data as unknown as FriendRequest[]);
+      } catch (error) {
+        console.error('Error fetching friend requests:', error);
+        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        return NextResponse.json(
+          {
+            error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR,
+          },
+          { status: 500 }
+        );
+      } finally {
+        await client.close();
+      }
     }
 
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });

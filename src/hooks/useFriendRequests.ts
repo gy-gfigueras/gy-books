@@ -49,8 +49,10 @@ export function useFriendRequests(profileId: UUID): useFriendRequestsProps {
     isLoading,
     error,
     mutate: mutateRequests,
-  } = useSWR(profileId ? ['friendRequests', profileId] : null, ([, id]) =>
-    getFriendRequests(id)
+  } = useSWR(
+    profileId ? ['friendRequests', profileId] : null,
+    ([, id]) => getFriendRequests(id),
+    { refreshInterval: 5000 }
   );
 
   const {
