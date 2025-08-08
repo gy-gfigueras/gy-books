@@ -13,7 +13,6 @@ export default async function getApiBookPublic(
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
     const publicUrl = `${protocol}://${host}/api/public/books/${bookId}`;
-    console.log('Public API URL:', publicUrl);
     const publicResponse = await fetch(publicUrl, {
       method: 'GET',
       headers: {

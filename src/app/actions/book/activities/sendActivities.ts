@@ -14,7 +14,6 @@ export default async function sendActivity(formData: FormData) {
     const cookieStore = cookies();
     const cookieHeader = cookieStore.toString();
 
-    console.log('Sending activity:', message);
     const response = await fetch(
       `${protocol}://${host}/api/auth/books/activities`,
       {

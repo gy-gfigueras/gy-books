@@ -29,7 +29,6 @@ interface useHallOfFameProps {
 }
 
 export function useHallOfFame(userId: string): useHallOfFameProps {
-  console.log('useHallOfFame', userId);
   const [isLoadingAddToHallOfFame, setIsLoadingToAddHallOfFame] =
     useState(false);
   const [isUpdatedAddToHallOfFame, setIsUpdatedAddToHallOfFame] =

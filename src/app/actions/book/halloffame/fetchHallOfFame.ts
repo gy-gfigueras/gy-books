@@ -16,7 +16,6 @@ export default async function fetchHallOfFame(
     const cookieHeader = cookieStore.toString();
 
     if (!userId) {
-      console.log('User ID is required to fetch Hall of Fame');
       return null;
     }
 

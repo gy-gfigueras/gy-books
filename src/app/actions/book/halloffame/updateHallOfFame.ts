@@ -18,7 +18,6 @@ export default async function updateHallOfFame(
   // --- DEBUG: Log info before private fetch ---
 
   const quote = formData.get('quote');
-  console.log('[DEBUG] Updating Hall of Fame with quote:', quote);
   let privateRes: Response;
   try {
     privateRes = await fetch(urlPrivate, {

@@ -38,7 +38,6 @@ export default function BookDetails() {
     isUpdatedDeleteToHallOfFame,
     isErrorDeleteToHallOfFame,
   } = useHallOfFame(user?.id || '');
-  console.log('hallOfFame', hallOfFame);
   const isOnHallOfFame = hallOfFame?.books.some((b) => b.id === book?.id);
   const isLoggedIn = !!user;
   const {
@@ -48,7 +47,6 @@ export default function BookDetails() {
   } = useApiBook(params.id as string);
   const { data: apiBookPublic, isLoading: isApiBookLoadingPublic } =
     useApiBookPublic(params.id as string);
-  console.log('apiBookPublic', apiBookPublic);
   if (isLoading || isApiBookLoading || isApiBookLoadingPublic) {
     return (
       <Box

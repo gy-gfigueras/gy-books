@@ -32,8 +32,6 @@ export function useActivities(id?: UUID): useActivitiesProps {
         message: activity.message.replace(/\[.*?\]\s*/, ''),
       })) || undefined;
 
-  console.log(formattedActivities);
-
   return {
     data: formattedActivities,
     isLoading,

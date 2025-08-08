@@ -24,7 +24,6 @@ export default function HallOfFame({ userId }: { userId: string }) {
   const { user } = useGyCodingUser();
   const router = useRouter();
   const { isLoading, error, quote, books } = useHallOfFame(userId);
-  console.log('HallOfFame books:', books);
   const { handleUpdateHallOfFame } = useUpdateHallOfFame();
 
   const [editedQuote, setEditedQuote] = useState('');

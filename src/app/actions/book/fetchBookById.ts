@@ -5,7 +5,6 @@ import Book from '@/domain/book.model';
 import { mapHardcoverToBook } from '@/mapper/BookToMO.mapper';
 
 export default async function fetchBookById(id: string): Promise<Book> {
-  console.log(`book to search` + id);
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const url = `${baseUrl}/api/public/hardcover/${id}`;
