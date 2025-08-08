@@ -15,7 +15,6 @@ export const BookImage: React.FC<{ bookId: string }> = ({
     const load = async () => {
       try {
         const book = (await fetchBookById(bookId as string)) as Book;
-        console.log(book.cover);
         if (!book.cover || book.cover.toString() === '') {
           setSrc(DEFAULT_COVER_IMAGE);
           return;
@@ -28,7 +27,6 @@ export const BookImage: React.FC<{ bookId: string }> = ({
     };
     load();
   }, [bookId]);
-  console.log(`BookImage: ${bookId} - ${src}`);
 
   if (src === '/images/default-book-cover.png') {
     return <CircularProgress />;

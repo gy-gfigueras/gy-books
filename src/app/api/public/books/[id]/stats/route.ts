@@ -65,7 +65,7 @@ export const GET = async (req: NextRequest) => {
             continue;
           }
           const bookData = await bookResponse.json();
-          const status = book.userData?.status || 'unknown';
+          const status = book.userData?.status || null;
           bookStatus[status] = (bookStatus[status] || 0) + 1;
           if (status === EStatus.READ) {
             calculateStats(bookData, authors, stats);
