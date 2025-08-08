@@ -4,17 +4,22 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Book from '@/domain/book.model';
 import { CircularProgress } from '@mui/material';
+import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 export const BookImage: React.FC<{ bookId: string }> = ({
   bookId,
 }: {
   bookId: string;
 }) => {
-  const [src, setSrc] = useState('/images/default-book-cover.png');
+  const [src, setSrc] = useState(DEFAULT_COVER_IMAGE);
   useEffect(() => {
     const load = async () => {
       try {
         const book = (await fetchBookById(bookId as string)) as Book;
         console.log(book.cover);
+        if (!book.cover || book.cover.toString() === '') {
+          setSrc(DEFAULT_COVER_IMAGE);
+          return;
+        }
         setSrc(book.cover.url as unknown as string);
       } catch (error) {
         console.error('Error loading book image:', error);
@@ -35,7 +40,7 @@ export const BookImage: React.FC<{ bookId: string }> = ({
         height: '100%',
         width: 'auto',
       }}
-      src={src}
+      src={src || DEFAULT_COVER_IMAGE}
       alt="Activity Icon"
       width={1080}
       height={1080}

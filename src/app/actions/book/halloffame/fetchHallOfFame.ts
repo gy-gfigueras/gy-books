@@ -15,6 +15,11 @@ export default async function fetchHallOfFame(
     const cookieStore = cookies();
     const cookieHeader = cookieStore.toString();
 
+    if (!userId) {
+      console.log('User ID is required to fetch Hall of Fame');
+      return null;
+    }
+
     const response = await fetch(
       `${protocol}://${host}/api/public/books/halloffame?userId=${userId}`,
       {

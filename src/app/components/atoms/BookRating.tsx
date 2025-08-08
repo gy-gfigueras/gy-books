@@ -123,7 +123,7 @@ export const BookRating = ({
       formData.append('progress', progressValue as unknown as string);
 
       // Si el libro no está guardado, usar WANT_TO_READ como estado inicial
-      const statusToSave = isBookSaved ? tempStatus : EStatus.WANT_TO_READ;
+      const statusToSave = tempStatus;
       formData.append('status', statusToSave.toString());
       const updatedApiBook = await rateBook(
         formData,
@@ -165,7 +165,7 @@ export const BookRating = ({
     apiBook && apiBook.userData && apiBook.userData.status !== EStatus.RATE;
 
   // Obtener el status a mostrar (si no está guardado, mostrar WANT_TO_READ pero con estilo diferente)
-  const displayStatus = isBookSaved ? tempStatus : EStatus.WANT_TO_READ;
+  const displayStatus = tempStatus;
   const displayStatusOption = statusOptions.find(
     (opt) => opt.value === displayStatus
   );

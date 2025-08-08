@@ -6,6 +6,7 @@ const nextConfig = {
       'api.gycoding.com',
       'lh3.googleusercontent.com',
       'assets.hardcover.app',
+      'raw.githubusercontent.com',
     ],
   },
 };

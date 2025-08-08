@@ -6,6 +6,7 @@ const nextConfig = {
       'localhost',
       'lh3.googleusercontent.com',
       'assets.hardcover.app',
+      'raw.githubusercontent.com',
     ],
   },
 };

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import { hallOfFame } from '@/domain/hallOfFame.model';
 import { headers, cookies } from 'next/headers';
 
 export default async function updateHallOfFame(
@@ -14,23 +13,17 @@ export default async function updateHallOfFame(
   const cookieStore = cookies();
   const cookieHeader = cookieStore.toString();
 
-  const urlPrivate = `${protocol}://${host}/api/auth/books/halloffame`;
+  const urlPrivate = `${protocol}://${host}/api/auth/books/halloffame/quote`;
 
   // --- DEBUG: Log info before private fetch ---
 
-  const hallOfFameData = {
-    quote: formData.get('quote') as string,
-    books:
-      formData.getAll('books').map((book) => ({
-        bookId: book.toString(),
-      })) ?? [],
-  } as unknown as hallOfFame;
-
+  const quote = formData.get('quote');
+  console.log('[DEBUG] Updating Hall of Fame with quote:', quote);
   let privateRes: Response;
   try {
     privateRes = await fetch(urlPrivate, {
       method: 'PATCH',
-      body: JSON.stringify(hallOfFameData),
+      body: JSON.stringify(quote),
       headers: {
         'Content-Type': 'application/json',
         Cookie: cookieHeader,

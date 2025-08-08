@@ -6,7 +6,7 @@ export interface Series {
 }
 
 export interface Cover {
-  url: string;
+  url?: string;
 }
 
 export interface AuthorImage {

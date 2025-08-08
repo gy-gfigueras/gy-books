@@ -1,8 +1,6 @@
+import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 import Book from '../domain/book.model';
 import { EStatus } from '@/utils/constants/EStatus';
-
-const DEFAULT_COVER_IMAGE =
-  'https://raw.githubusercontent.com/GY-CODING/img-repo/refs/heads/main/gy-books/none.png';
 
 interface HardcoverBook {
   id: string;

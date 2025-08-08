@@ -29,15 +29,11 @@ async function handler(req: NextRequest) {
 
     if (req.method === 'PATCH') {
       const body = await req.json();
-      const { quote, books } = body;
-
-      const apiUrl = `${baseUrl}/accounts/books/halloffame`;
-      console.log(JSON.stringify({ quote, books }));
-
+      const apiUrl = `${baseUrl}/accounts/books/halloffame/book`;
       const response = await fetch(apiUrl, {
         method: 'PATCH',
         headers,
-        body: JSON.stringify({ quote, books }),
+        body: JSON.stringify({ bookId: body }),
       });
 
       if (!response.ok) {

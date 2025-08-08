@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-binary-expression */
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -17,11 +18,13 @@ import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUpdateHallOfFame } from '@/hooks/useUpdateHallOfFame';
 import { goudi } from '@/utils/fonts/fonts';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
+import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 
 export default function HallOfFame({ userId }: { userId: string }) {
   const { user } = useGyCodingUser();
   const router = useRouter();
   const { isLoading, error, quote, books } = useHallOfFame(userId);
+  console.log('HallOfFame books:', books);
   const { handleUpdateHallOfFame } = useUpdateHallOfFame();
 
   const [editedQuote, setEditedQuote] = useState('');
@@ -177,6 +180,7 @@ export default function HallOfFame({ userId }: { userId: string }) {
         >
           <AnimatePresence initial={false}>
             {getVisibleBooks().map((book, i) => {
+              const noCover = !book.cover?.url || book.cover.url === '';
               const pos = positionMap[i] as keyof typeof variants;
               const isCenter = pos === 'center';
 
@@ -214,7 +218,7 @@ export default function HallOfFame({ userId }: { userId: string }) {
                   }
                 >
                   <img
-                    src={book.cover.url}
+                    src={noCover ? DEFAULT_COVER_IMAGE : book.cover?.url}
                     alt={book.title}
                     style={{
                       width: '100%',

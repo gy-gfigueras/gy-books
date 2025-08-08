@@ -15,6 +15,8 @@ import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { useHallOfFame } from '@/hooks/useHallOfFame';
 import AnimatedAlert from '@/app/components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
+import { useApiBookPublic } from '@/hooks/useApiBookPublic';
+import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 export default function BookDetails() {
   const params = useParams();
   const { data: book, isLoading } = useBook(params.id as string);
@@ -44,8 +46,10 @@ export default function BookDetails() {
     isLoading: isApiBookLoading,
     mutate,
   } = useApiBook(params.id as string);
-
-  if (isLoading || isApiBookLoading) {
+  const { data: apiBookPublic, isLoading: isApiBookLoadingPublic } =
+    useApiBookPublic(params.id as string);
+  console.log('apiBookPublic', apiBookPublic);
+  if (isLoading || isApiBookLoading || isApiBookLoadingPublic) {
     return (
       <Box
         sx={{
@@ -78,6 +82,8 @@ export default function BookDetails() {
     }
   };
 
+  const bookHasCover = book?.cover.url && book.cover.url !== '';
+
   return (
     <Box
       sx={{
@@ -98,7 +104,7 @@ export default function BookDetails() {
       >
         <Box
           component="img"
-          src={book?.cover.url}
+          src={bookHasCover ? book?.cover.url : DEFAULT_COVER_IMAGE}
           alt={book?.title}
           sx={{
             width: '100%',
@@ -181,7 +187,7 @@ export default function BookDetails() {
             fontSize: '24px',
           }}
         >
-          {apiBook?.averageRating || 0}
+          {apiBookPublic?.averageRating}
           <StarIcon
             sx={{
               color: 'primary.main',
