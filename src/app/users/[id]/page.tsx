@@ -611,7 +611,7 @@ function ProfilePageContent() {
               <HallOfFame userId={user.id} />
             </Box>
           )}
-          {tab === 2 && (
+          {tab === 2 && user?.id && (
             <Box
               sx={{
                 mt: 4,

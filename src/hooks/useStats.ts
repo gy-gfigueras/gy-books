@@ -12,7 +12,7 @@ interface useStatsProps {
 
 export function useStats(id: UUID): useStatsProps {
   const { data, isLoading, error } = useSWR(
-    `/api/accounts/users/${id}/books/stats`,
+    `/api/public/accounts/${id}/books/stats`,
     () => getStats(id)
   );
 
