@@ -6,120 +6,98 @@ import { GET_STATS } from '@/utils/constants/Query';
 import { calculateStats } from '@/utils/functions/mapStats';
 import { EStatus } from '@/utils/constants/EStatus';
 
+const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
+const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
+const GY_API = process.env.GY_API;
+const PAGE_SIZE = 20;
+
+async function fetchUserBooksPage(profileId: string, page: number) {
+  const url = `${GY_API}/books/${profileId}/list?page=${page}&size=${PAGE_SIZE}`;
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(errorText);
+  }
+  return res.json();
+}
+
+async function fetchBookStats(bookId: number) {
+  const res = await fetch(HARDCOVER_API_URL!, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: HARDCOVER_API_TOKEN!,
+    },
+    body: JSON.stringify({
+      query: GET_STATS,
+      variables: { id: bookId },
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return res.json();
+}
+
 export const GET = async (req: NextRequest) => {
   try {
-    const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
-    const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
-    const profileId = req.nextUrl.pathname.split('/')[4]; // [id]
-
-    if (!HARDCOVER_API_TOKEN || !HARDCOVER_API_URL) {
+    if (!HARDCOVER_API_TOKEN || !HARDCOVER_API_URL || !GY_API) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
+    const profileId = req.nextUrl.pathname.split('/')[4];
+    if (!profileId) throw new Error('Profile ID missing in path');
+
     const authors: Record<string, number> = {};
     const stats = { totalPages: 0, totalBooks: 0 };
-    const processedBookIds = new Set<string>();
     const bookStatus: Record<string, number> = {};
+    const processedBookIds = new Set<string>();
 
     let currentPage = 0;
-    const size = 20;
     let hasMore = true;
 
-    console.log(
-      `[STATS-DEBUG] Starting book pagination fetch for profile ${profileId}`
-    );
-
     while (hasMore) {
-      const apiUrl = `${process.env.GY_API}/books/${profileId}/list?page=${currentPage}&size=${size}`;
-      const headers = { 'Content-Type': 'application/json' };
-
-      console.log(
-        `[STATS-DEBUG] Fetching page: ${currentPage}, size: ${size}, URL: ${apiUrl}`
-      );
-
-      const response = await fetch(apiUrl, { headers, method: 'GET' });
-      if (!response.ok) {
-        const errorText = await response.text();
+      let userBooks;
+      try {
+        userBooks = await fetchUserBooksPage(profileId, currentPage);
+      } catch (error) {
         await sendLog(ELevel.ERROR, ELogs.PROFILE_BOOKS_CANNOT_BE_RECEIVED, {
-          error: errorText,
+          error: (error as Error).message,
         });
-        throw new Error(
-          `${ELogs.PROFILE_BOOKS_CANNOT_BE_RECEIVED}: ${errorText}`
-        );
+        throw error;
       }
 
-      const USER_BOOKS = await response.json();
-      console.log(
-        `[STATS-DEBUG] Received ${USER_BOOKS.length} books on page ${currentPage}`
-      );
+      if (!Array.isArray(userBooks) || userBooks.length === 0) break;
 
-      // Cortar si no hay más libros
-      if (!Array.isArray(USER_BOOKS) || USER_BOOKS.length === 0) {
-        console.log(
-          `[STATS-DEBUG] No more books found, stopping pagination at page ${currentPage}`
-        );
-        break;
-      }
-
-      for (const book of USER_BOOKS) {
+      for (const book of userBooks) {
         try {
-          const bookId = book.id || book.bookId || book?.book?.id;
-          if (!bookId) {
-            console.warn(`⚠️ Libro sin id válido:`, book);
-            continue;
-          }
+          const bookIdStr = book.id || book.bookId || book?.book?.id;
+          if (!bookIdStr || processedBookIds.has(bookIdStr)) continue;
 
-          if (processedBookIds.has(bookId)) {
-            continue;
-          }
-          processedBookIds.add(bookId);
+          processedBookIds.add(bookIdStr);
+          const bookId = parseInt(bookIdStr, 10);
+          if (isNaN(bookId)) continue;
 
-          if (!book.userData?.status) {
-            console.warn(`⚠️ Libro sin status: ${bookId}`);
-          }
-
-          const bookResponse = await fetch(HARDCOVER_API_URL!, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `${HARDCOVER_API_TOKEN}`,
-            },
-            body: JSON.stringify({
-              query: GET_STATS,
-              variables: { id: parseInt(bookId) },
-            }),
-          });
-
-          if (!bookResponse.ok) {
-            const errText = await bookResponse.text();
-            if (errText.includes('Throttled')) {
-              console.warn(`🚦 Rate limited en HARDCOVER para libro ${bookId}`);
-            } else {
-              console.error(
-                `❌ Error HARDCOVER para libro ${bookId}:`,
-                errText
-              );
-            }
-            continue;
-          }
-
-          const bookData = await bookResponse.json();
           const status = book.userData?.status || 'unknown';
           bookStatus[status] = (bookStatus[status] || 0) + 1;
 
           if (status === EStatus.READ) {
+            const bookData = await fetchBookStats(bookId);
             calculateStats(bookData, authors, stats);
           }
 
-          // Pequeña pausa para evitar rate limit
-          await new Promise((res) => setTimeout(res, 150));
-        } catch (error) {
-          console.error(`💥 Error procesando libro:`, error);
+          // Small delay to avoid rate limits
+          await new Promise((r) => setTimeout(r, 150));
+        } catch (err) {
+          console.error('Error processing book:', err);
         }
       }
 
-      // Si la página tiene menos de "size" elementos, no hay más
-      hasMore = USER_BOOKS.length === size;
+      hasMore = userBooks.length === PAGE_SIZE;
       currentPage++;
     }
 
@@ -130,12 +108,12 @@ export const GET = async (req: NextRequest) => {
       bookStatus,
     });
   } catch (error) {
-    console.error('💥 Error en /api/accounts/users/[id]/books', error);
+    console.error('Error in stats API:', error);
     await sendLog(ELevel.ERROR, ELogs.LIBRARY_CANNOT_BE_RECEIVED, {
-      error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR,
+      error: (error as Error).message || ELogs.UNKNOWN_ERROR,
     });
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: (error as Error).message || ELogs.UNKNOWN_ERROR },
       { status: 500 }
     );
   }

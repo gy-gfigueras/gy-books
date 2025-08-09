@@ -1,26 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { getStats } from '@/app/actions/book/fetchUserStats';
-import { UUID } from 'crypto';
 import useSWR from 'swr';
+import { UUID } from 'crypto';
+import { getStats } from '@/app/actions/book/fetchUserStats';
 
-interface useStatsProps {
-  data: any | undefined;
+interface UseStatsResult<T> {
+  data?: T;
   isLoading: boolean;
-  error: Error | null;
+  error?: Error;
 }
 
-export function useStats(id: UUID): useStatsProps {
-  const { data, isLoading, error } = useSWR(
-    `/api/public/accounts/${id}/books/stats`,
+export function useStats(id: UUID): UseStatsResult<any> {
+  const { data, error, isLoading } = useSWR(
+    id ? `/api/public/accounts/${id}/books/stats` : null,
     () => getStats(id)
   );
 
-  console.log('useStats - Data fetched:', data);
-
-  return {
-    data,
-    isLoading,
-    error,
-  };
+  return { data, isLoading, error };
 }
