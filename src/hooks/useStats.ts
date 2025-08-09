@@ -16,6 +16,8 @@ export function useStats(id: UUID): useStatsProps {
     () => getStats(id)
   );
 
+  console.log('useStats - Data fetched:', data);
+
   return {
     data,
     isLoading,
