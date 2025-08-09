@@ -16,18 +16,27 @@ export const GET = async (req: NextRequest) => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    // Siempre traer todos los libros en bucle de 20 en 20
     const authors: Record<string, number> = {};
     const stats = { totalPages: 0, totalBooks: 0 };
     const processedBookIds = new Set<string>();
     const bookStatus: Record<string, number> = {};
-    let hasMore = true;
+
     let currentPage = 0;
     const size = 20;
+    let hasMore = true;
+
+    console.log(
+      `[STATS-DEBUG] Starting book pagination fetch for profile ${profileId}`
+    );
 
     while (hasMore) {
       const apiUrl = `${process.env.GY_API}/books/${profileId}/list?page=${currentPage}&size=${size}`;
       const headers = { 'Content-Type': 'application/json' };
+
+      console.log(
+        `[STATS-DEBUG] Fetching page: ${currentPage}, size: ${size}, URL: ${apiUrl}`
+      );
+
       const response = await fetch(apiUrl, { headers, method: 'GET' });
       if (!response.ok) {
         const errorText = await response.text();
@@ -38,14 +47,37 @@ export const GET = async (req: NextRequest) => {
           `${ELogs.PROFILE_BOOKS_CANNOT_BE_RECEIVED}: ${errorText}`
         );
       }
+
       const USER_BOOKS = await response.json();
-      hasMore = USER_BOOKS.length === size;
+      console.log(
+        `[STATS-DEBUG] Received ${USER_BOOKS.length} books on page ${currentPage}`
+      );
+
+      // Cortar si no hay más libros
+      if (!Array.isArray(USER_BOOKS) || USER_BOOKS.length === 0) {
+        console.log(
+          `[STATS-DEBUG] No more books found, stopping pagination at page ${currentPage}`
+        );
+        break;
+      }
+
       for (const book of USER_BOOKS) {
         try {
-          if (processedBookIds.has(book.id)) {
-            continue; // Ya procesado, lo saltamos
+          const bookId = book.id || book.bookId || book?.book?.id;
+          if (!bookId) {
+            console.warn(`⚠️ Libro sin id válido:`, book);
+            continue;
           }
-          processedBookIds.add(book.id);
+
+          if (processedBookIds.has(bookId)) {
+            continue;
+          }
+          processedBookIds.add(bookId);
+
+          if (!book.userData?.status) {
+            console.warn(`⚠️ Libro sin status: ${bookId}`);
+          }
+
           const bookResponse = await fetch(HARDCOVER_API_URL!, {
             method: 'POST',
             headers: {
@@ -54,26 +86,40 @@ export const GET = async (req: NextRequest) => {
             },
             body: JSON.stringify({
               query: GET_STATS,
-              variables: { id: parseInt(book.id) },
+              variables: { id: parseInt(bookId) },
             }),
           });
+
           if (!bookResponse.ok) {
-            console.error(
-              `Error fetching book ${book.bookId}:`,
-              await bookResponse.text()
-            );
+            const errText = await bookResponse.text();
+            if (errText.includes('Throttled')) {
+              console.warn(`🚦 Rate limited en HARDCOVER para libro ${bookId}`);
+            } else {
+              console.error(
+                `❌ Error HARDCOVER para libro ${bookId}:`,
+                errText
+              );
+            }
             continue;
           }
+
           const bookData = await bookResponse.json();
           const status = book.userData?.status || 'unknown';
           bookStatus[status] = (bookStatus[status] || 0) + 1;
+
           if (status === EStatus.READ) {
             calculateStats(bookData, authors, stats);
           }
+
+          // Pequeña pausa para evitar rate limit
+          await new Promise((res) => setTimeout(res, 150));
         } catch (error) {
-          console.error(`Error processing book ${book.bookId}:`, error);
+          console.error(`💥 Error procesando libro:`, error);
         }
       }
+
+      // Si la página tiene menos de "size" elementos, no hay más
+      hasMore = USER_BOOKS.length === size;
       currentPage++;
     }
 
@@ -84,7 +130,7 @@ export const GET = async (req: NextRequest) => {
       bookStatus,
     });
   } catch (error) {
-    console.error('Error in /api/accounts/users/[id]/books', error);
+    console.error('💥 Error en /api/accounts/users/[id]/books', error);
     await sendLog(ELevel.ERROR, ELogs.LIBRARY_CANNOT_BE_RECEIVED, {
       error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR,
     });
