@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import useSWR from 'swr';
 import { UUID } from 'crypto';
-import { getStats } from '@/app/actions/book/fetchUserStats';
+import getStats from '@/service/stats.service';
 
 interface UseStatsResult<T> {
   data?: T;
