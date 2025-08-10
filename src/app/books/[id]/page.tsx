@@ -197,11 +197,11 @@ export default function BookDetails() {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'row',
-            gap: '1rem',
+            flexDirection: ['column', 'column', 'row'],
+            gap: ['0rem', '0rem', '1rem'],
             width: '100%',
-            justifyContent: 'start',
-            alignItems: 'start',
+            justifyContent: ['center', 'center', 'start'],
+            alignItems: ['center', 'center', 'start'],
           }}
         >
           <BookRating
