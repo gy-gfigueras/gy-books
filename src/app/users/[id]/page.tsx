@@ -33,12 +33,15 @@ import { EStatus } from '@/utils/constants/EStatus';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
-import Stats from '@/app/components/organisms/Stats';
 import { UserImage } from '@/app/components/atoms/UserImage';
 import { User } from '@/domain/user.model';
-import ActivityTab from '@/app/components/molecules/activityTab';
-import HallOfFame from '@/app/components/molecules/HallOfFame';
-import { useActivities } from '@/hooks/useActivities';
+const ActivityTab = React.lazy(
+  () => import('@/app/components/molecules/activityTab')
+);
+const HallOfFame = React.lazy(
+  () => import('@/app/components/molecules/HallOfFame')
+);
+const Stats = React.lazy(() => import('@/app/components/organisms/Stats'));
 
 function ProfilePageContent() {
   const params = useParams();
@@ -49,7 +52,6 @@ function ProfilePageContent() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: activities } = useActivities(user?.id as UUID);
   const [books, setBooks] = useState<Book[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -608,7 +610,10 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <HallOfFame userId={user.id} />
+              <Suspense fallback={<CircularProgress />}>
+                {' '}
+                <HallOfFame userId={user.id} />
+              </Suspense>
             </Box>
           )}
           {tab === 2 && user?.id && (
@@ -620,7 +625,10 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Stats id={user?.id as UUID} />
+              <Suspense fallback={<CircularProgress />}>
+                {' '}
+                <Stats id={user?.id as UUID} />
+              </Suspense>
             </Box>
           )}
           {tab === 3 && (
@@ -632,7 +640,9 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <ActivityTab activities={activities} />
+              <Suspense fallback={<CircularProgress />}>
+                <ActivityTab id={user?.id} />
+              </Suspense>
             </Box>
           )}
         </Box>

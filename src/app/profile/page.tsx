@@ -43,10 +43,15 @@ import { CustomButton } from '../components/atoms/customButton';
 import AnimatedAlert from '../components/atoms/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { UUID } from 'crypto';
-import Stats from '../components/organisms/Stats';
-import HallOfFame from '../components/molecules/HallOfFame';
-import { useActivities } from '@/hooks/useActivities';
-import ActivityTab from '../components/molecules/activityTab';
+const Stats = React.lazy(() => import('../components/organisms/Stats'));
+const HallOfFame = React.lazy(
+  () => import('../components/molecules/HallOfFame')
+);
+const ActivityTab = React.lazy(
+  () => import('../components/molecules/activityTab')
+);
+import StatsSkeleton from '../components/molecules/StatsSkeleton';
+import { HallOfFameSkeleton } from '../components/molecules/HallOfFameSkeleton';
 
 function ProfilePageContent() {
   const { user, isLoading } = useGyCodingUser();
@@ -56,7 +61,6 @@ function ProfilePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isLoading: isLoadingFriends, count: friendsCount } = useFriends();
-  const { data: activities } = useActivities(user?.id as UUID);
   const {
     handleUpdateBiography,
     setIsUpdated: setIsUpdatedBiography,
@@ -834,7 +838,9 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <HallOfFame userId={user.id} />
+              <Suspense fallback={<HallOfFameSkeleton />}>
+                <HallOfFame userId={user.id} />
+              </Suspense>
             </Box>
           )}
           {tab === 2 && (
@@ -846,7 +852,9 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <Stats id={user?.id as UUID} />
+              <Suspense fallback={<StatsSkeleton />}>
+                <Stats id={user?.id as UUID} />
+              </Suspense>
             </Box>
           )}
           {tab === 3 && (
@@ -858,7 +866,9 @@ function ProfilePageContent() {
                 textAlign: 'center',
               }}
             >
-              <ActivityTab activities={activities} />{' '}
+              <Suspense fallback={<CircularProgress />}>
+                <ActivityTab id={user?.id as UUID} />
+              </Suspense>
             </Box>
           )}
         </Box>

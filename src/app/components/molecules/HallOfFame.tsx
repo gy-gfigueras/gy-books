@@ -1,14 +1,8 @@
 /* eslint-disable no-constant-binary-expression */
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  IconButton,
-  TextField,
-  CircularProgress,
-  Typography,
-} from '@mui/material';
+import React, { useState } from 'react';
+import { Box, IconButton, TextField, Typography } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -16,9 +10,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUpdateHallOfFame } from '@/hooks/useUpdateHallOfFame';
-import { goudi } from '@/utils/fonts/fonts';
+import { birthStone, goudi } from '@/utils/fonts/fonts';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
+import { HallOfFameSkeleton } from './HallOfFameSkeleton';
 
 export default function HallOfFame({ userId }: { userId: string }) {
   const { user } = useGyCodingUser();
@@ -26,37 +21,112 @@ export default function HallOfFame({ userId }: { userId: string }) {
   const { isLoading, error, quote, books } = useHallOfFame(userId);
   const { handleUpdateHallOfFame } = useUpdateHallOfFame();
 
-  const [editedQuote, setEditedQuote] = useState('');
+  const [editedQuote, setEditedQuote] = useState(quote);
+  const [isEditing, setIsEditing] = useState(false);
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  useEffect(() => {
-    if (!isLoading && quote) {
-      setEditedQuote(quote);
-    }
-  }, [isLoading, quote]);
+  if (isLoading) return <HallOfFameSkeleton />;
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '300px',
-          width: '100%',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error || !books || books.length === 0) {
+  if (error) {
     return (
       <Box sx={{ color: 'white', textAlign: 'center', p: 4 }}>
         <Typography variant="h6" color="white">
           Error loading Hall of Fame.
         </Typography>
+      </Box>
+    );
+  }
+  const handleUpdate = () => {
+    const formData = new FormData();
+    formData.append('quote', editedQuote);
+    handleUpdateHallOfFame(formData);
+  };
+
+  // Si books es undefined o array vacío
+  if (!books || books.length === 0) {
+    return (
+      <Box
+        sx={{
+          backgroundColor: '#1A1A1A',
+          borderRadius: '16px',
+          padding: '2rem',
+          width: '100%',
+          maxWidth: '900px',
+          margin: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '2rem',
+          userSelect: 'none',
+          color: 'white',
+        }}
+      >
+        <Typography
+          variant="body1"
+          sx={{
+            fontStyle: 'normal',
+            fontSize: '50px',
+            textAlign: 'center',
+            fontFamily: birthStone.style.fontFamily,
+          }}
+        >
+          ✨ Add books to see them here! ✨
+        </Typography>
+
+        {/* Quote input */}
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: '800px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            userSelect: 'text',
+            textAlign: 'center',
+          }}
+        >
+          <TextField
+            defaultValue={quote || ''}
+            disabled={userId !== user?.id}
+            multiline
+            value={`${editedQuote}`}
+            onChange={(e) => setEditedQuote(e.target.value)}
+            placeholder="Write your quote here..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleUpdate();
+              }
+            }}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={handleUpdate} aria-label="Save quote">
+                  <CheckIcon sx={{ fontSize: '20px', color: 'white' }} />
+                </IconButton>
+              ),
+            }}
+            fullWidth
+            sx={{
+              backgroundColor: '#232323',
+              borderRadius: '12px',
+              textAlign: 'center',
+              border: '2px solid #FFFFFF30',
+              '& .MuiOutlinedInput-root': {
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'transparent',
+                },
+              },
+              '& .MuiInputBase-input': {
+                color: 'white',
+                fontSize: '20px',
+                fontFamily: goudi.style.fontFamily,
+                fontStyle: 'italic',
+                textAlign: 'center',
+              },
+            }}
+          />
+        </Box>
       </Box>
     );
   }
@@ -72,11 +142,14 @@ export default function HallOfFame({ userId }: { userId: string }) {
     setCurrentIndex((prev) => (prev + 1) % total);
   };
 
-  // Obtener 5 libros centrados en currentIndex (cíclico)
+  // Obtener visible libros: máximo 5 o menos si no hay tantos
+  const visibleCount = Math.min(5, total);
+
   const getVisibleBooks = () =>
     Array.from(
-      { length: 5 },
-      (_, i) => books[(currentIndex - 2 + i + total) % total]
+      { length: visibleCount },
+      (_, i) =>
+        books[(currentIndex - Math.floor(visibleCount / 2) + i + total) % total]
     );
 
   // Variantes para posición y animación
@@ -88,14 +161,19 @@ export default function HallOfFame({ userId }: { userId: string }) {
     offRight: { opacity: 0, scale: 0.7, x: 250, pointerEvents: 'none' },
   };
 
-  // Mapea la posición al variant correspondiente
-  const positionMap = ['offLeft', 'left', 'center', 'right', 'offRight'];
+  // Adaptar posición map según visibleCount
+  // Por simplicidad, definimos para 1 a 5 libros:
+  const positionMap1 = ['center'];
+  const positionMap2 = ['left', 'center'];
+  const positionMap3 = ['left', 'center', 'right'];
+  const positionMap4 = ['offLeft', 'left', 'center', 'right'];
+  const positionMap5 = ['offLeft', 'left', 'center', 'right', 'offRight'];
 
-  const handleUpdate = () => {
-    const formData = new FormData();
-    formData.append('quote', editedQuote);
-    handleUpdateHallOfFame(formData);
-  };
+  let positionMap = positionMap5;
+  if (visibleCount === 1) positionMap = positionMap1;
+  else if (visibleCount === 2) positionMap = positionMap2;
+  else if (visibleCount === 3) positionMap = positionMap3;
+  else if (visibleCount === 4) positionMap = positionMap4;
 
   return (
     <Box
@@ -127,43 +205,47 @@ export default function HallOfFame({ userId }: { userId: string }) {
         }}
       >
         {/* Flechas */}
-        <IconButton
-          onClick={prev}
-          aria-label="Previous book"
-          sx={{
-            position: 'absolute',
-            left: 8,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 10,
-            bgcolor: '#333',
-            color: 'white',
-            '&:hover': { bgcolor: '#555' },
-            width: 40,
-            height: 40,
-          }}
-        >
-          <ChevronLeftIcon />
-        </IconButton>
+        {total > 1 && (
+          <>
+            <IconButton
+              onClick={prev}
+              aria-label="Previous book"
+              sx={{
+                position: 'absolute',
+                left: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                bgcolor: '#333',
+                color: 'white',
+                '&:hover': { bgcolor: '#555' },
+                width: 40,
+                height: 40,
+              }}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
 
-        <IconButton
-          onClick={next}
-          aria-label="Next book"
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 10,
-            bgcolor: '#333',
-            color: 'white',
-            '&:hover': { bgcolor: '#555' },
-            width: 40,
-            height: 40,
-          }}
-        >
-          <ChevronRightIcon />
-        </IconButton>
+            <IconButton
+              onClick={next}
+              aria-label="Next book"
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                bgcolor: '#333',
+                color: 'white',
+                '&:hover': { bgcolor: '#555' },
+                width: 40,
+                height: 40,
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+          </>
+        )}
 
         {/* Libros */}
         <Box
@@ -266,7 +348,12 @@ export default function HallOfFame({ userId }: { userId: string }) {
         }}
       >
         <TextField
+          onClick={() => {
+            setIsEditing(true);
+          }}
+          onBlur={() => setIsEditing(false)}
           disabled={userId !== user?.id}
+          defaultValue={quote || ''}
           multiline
           value={`${editedQuote}`}
           onChange={(e) => setEditedQuote(e.target.value)}
@@ -279,7 +366,11 @@ export default function HallOfFame({ userId }: { userId: string }) {
           }}
           InputProps={{
             endAdornment: (
-              <IconButton onClick={handleUpdate} aria-label="Save quote">
+              <IconButton
+                sx={{ display: isEditing ? 'flex' : 'none' }}
+                onClick={handleUpdate}
+                aria-label="Save quote"
+              >
                 <CheckIcon sx={{ fontSize: '20px', color: 'white' }} />
               </IconButton>
             ),

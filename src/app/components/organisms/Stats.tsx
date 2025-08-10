@@ -2,28 +2,15 @@ import React from 'react';
 import { UUID } from 'crypto';
 import { useStats } from '@/hooks/useStats';
 import AuthorsBarChart from '../molecules/AuthorsBarChart';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import DonutChart from '../molecules/DonutChart';
 import { goudi } from '@/utils/fonts/fonts';
+import StatsSkeleton from '../molecules/StatsSkeleton';
 
 export default function StatsComponent({ id }: { id: UUID }) {
   const { data, isLoading, error } = useStats(id);
+  if (isLoading) return <StatsSkeleton />;
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '300px',
-          width: '100%',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
   if (error) return <div>Error: {error.message}</div>;
 
   return (

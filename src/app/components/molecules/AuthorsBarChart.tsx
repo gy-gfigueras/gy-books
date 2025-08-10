@@ -6,8 +6,11 @@ export default function AuthorsBarChart({
 }: {
   authors: Record<string, number>;
 }) {
-  const authorNames = Object.keys(authors);
-  const authorCounts = Object.values(authors);
+  // Convertir en array de pares y ordenarlo por número
+  const sortedEntries = Object.entries(authors).sort((a, b) => b[1] - a[1]);
+  // Extraer nombres y conteos ya ordenados
+  const authorNames = sortedEntries.map(([name]) => name);
+  const authorCounts = sortedEntries.map(([, count]) => count);
 
   return (
     <BarChart

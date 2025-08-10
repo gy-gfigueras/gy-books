@@ -818,26 +818,6 @@ export const BookRating = ({
           </Box>
         </Drawer>
       </Box>
-
-      {/* Mensaje solo si hay usuario y el libro no está guardado */}
-      {user && !isBookSaved && (
-        <Typography
-          variant="caption"
-          sx={{
-            color: '#8C54FF',
-            fontStyle: 'italic',
-            fontSize: '16px',
-            mt: 1,
-            textAlign: 'center',
-            fontWeight: '500',
-            fontFamily: goudi.style.fontFamily,
-            letterSpacing: '.05rem',
-            lineHeight: 1.6,
-          }}
-        >
-          ✨ Haz clic para agregar este libro a tu biblioteca
-        </Typography>
-      )}
     </Box>
   );
 };

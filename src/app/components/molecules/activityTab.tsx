@@ -3,11 +3,15 @@ import { Box, Typography } from '@mui/material';
 import { goudi } from '@/utils/fonts/fonts';
 import { Activity } from '@/domain/activity.model';
 import { BookImage } from '../atoms/BookImage';
+import { UUID } from 'crypto';
+import { useActivities } from '@/hooks/useActivities';
 
 interface ActivityTabProps {
-  activities: Activity[];
+  id: UUID;
 }
-export default function ActivityTab({ activities }: ActivityTabProps) {
+export default function ActivityTab({ id }: ActivityTabProps) {
+  const { data: activities } = useActivities(id);
+
   return (
     <Box
       sx={{
