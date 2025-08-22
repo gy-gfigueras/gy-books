@@ -2,6 +2,8 @@
 'use client';
 
 import { UserProvider } from '@auth0/nextjs-auth0/client';
+import { Provider } from 'react-redux';
+import store from '@/store';
 import {
   GyCodingUserProvider,
   useGyCodingUser,
@@ -43,7 +45,9 @@ import { UUID } from 'crypto';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import PersonIcon from '@mui/icons-material/Person';
 import { CustomButton } from './components/atoms/customButton';
+import { useUser } from '@/hooks/useUser';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
+  useUser(); // Fetch and store profile in Redux
   const { user, isLoading } = useGyCodingUser();
   const { count } = useFriendRequestsCount(user?.id as UUID);
   const theme = useTheme();
@@ -557,10 +561,12 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   return (
-    <UserProvider>
-      <GyCodingUserProvider>
-        <ClientLayoutContent>{children}</ClientLayoutContent>
-      </GyCodingUserProvider>
-    </UserProvider>
+    <Provider store={store}>
+      <UserProvider>
+        <GyCodingUserProvider>
+          <ClientLayoutContent>{children}</ClientLayoutContent>
+        </GyCodingUserProvider>
+      </UserProvider>
+    </Provider>
   );
 }

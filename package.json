@@ -23,6 +23,7 @@
     "@mui/material": "^7.0.0",
     "@mui/x-charts": "^8.8.0",
     "@next/font": "^14.2.15",
+    "@reduxjs/toolkit": "^2.8.2",
     "eslint-config-prettier": "^10.1.1",
     "framer-motion": "^12.23.12",
     "google": "^2.1.0",
@@ -32,6 +33,7 @@
     "prettier": "^3.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
     "redoc": "^2.5.0",
     "swagger-jsdoc": "^6.2.8",
     "swr": "^2.3.3"

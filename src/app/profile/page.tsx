@@ -25,7 +25,8 @@ import {
   Skeleton,
   TextField,
 } from '@mui/material';
-import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 import EditIcon from '@mui/icons-material/Edit';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact';
 import { EStatus } from '@/utils/constants/EStatus';
@@ -54,7 +55,8 @@ import StatsSkeleton from '../components/molecules/StatsSkeleton';
 import { HallOfFameSkeleton } from '../components/molecules/HallOfFameSkeleton';
 
 function ProfilePageContent() {
-  const { user, isLoading } = useGyCodingUser();
+  const user = useSelector((state: RootState) => state.user.profile);
+  const isLoading = !user;
   const [tab, setTab] = React.useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
