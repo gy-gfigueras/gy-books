@@ -40,14 +40,16 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Llamar al pipeline de test
-                    build job: 'gy-books-test',
-                          parameters: [
-                              string(name: 'BRANCH', value: 'main'),
-                              string(name: 'WORKSPACE_PARENT', value: "${WORKSPACE}")
-                          ],
-                          wait: true,
-                          propagate: true
+                    try {
+                        // Llamar al pipeline de test usando la ruta completa
+                        build job: 'Front/Test/WingWords',
+                              wait: true,
+                              propagate: true
+                    } catch (Exception e) {
+                        echo "Error calling test job: ${e.getMessage()}"
+                        echo "Job path: Front/Test/WingWords"
+                        throw e
+                    }
                 }
             }
         }

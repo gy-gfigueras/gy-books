@@ -1,44 +1,24 @@
 pipeline {
   agent any
 
-  parameters {
-    string(name: 'BRANCH', defaultValue: 'main', description: 'Branch to test')
-    string(name: 'WORKSPACE_PARENT', defaultValue: '', description: 'Parent workspace path (for when called from another pipeline)')
-  }
-
   environment {
     WORKSPACE_DIR = 'WingWords'
-    TARGET_WORKSPACE = "${params.WORKSPACE_PARENT ?: WORKSPACE}"
   }
 
   stages {
     stage('Prepare Workspace') {
       steps {
         script {
-          if (params.WORKSPACE_PARENT) {
-            echo "Using parent workspace: ${params.WORKSPACE_PARENT}"
-            // Si es llamado desde otro pipeline, el workspace ya está preparado
-            if (fileExists("${TARGET_WORKSPACE}/${WORKSPACE_DIR}")) {
-              echo "WingWords directory exists in parent workspace, cleaning NVM setup..."
-              dir("${TARGET_WORKSPACE}/${WORKSPACE_DIR}") {
-                sh '''
-                rm -rf .nvm with-node.sh
-                '''
-              }
+          if (fileExists(WORKSPACE_DIR)) {
+            echo "WingWords directory already exists, cleaning..."
+            dir(WORKSPACE_DIR) {
+              sh '''
+              rm -rf .nvm with-node.sh
+              '''
             }
           } else {
-            // Si se ejecuta standalone, preparar el workspace normalmente
-            if (fileExists(WORKSPACE_DIR)) {
-              echo "WingWords directory already exists, cleaning..."
-              dir(WORKSPACE_DIR) {
-                sh '''
-                rm -rf .nvm with-node.sh
-                '''
-              }
-            } else {
-              echo "Creating WingWords directory..."
-              sh "mkdir -p $WORKSPACE_DIR"
-            }
+            echo "Creating WingWords directory..."
+            sh "mkdir -p $WORKSPACE_DIR"
           }
         }
       }
@@ -46,46 +26,37 @@ pipeline {
 
     stage('Install Node') {
         steps {
-            script {
-              def workDir = params.WORKSPACE_PARENT ? "${TARGET_WORKSPACE}/${WORKSPACE_DIR}" : WORKSPACE_DIR
-              dir(workDir) {
-                sh '''
-                    export NVM_DIR="$WORKSPACE/.nvm"
-                    mkdir -p "$NVM_DIR"
-                    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                    nvm install 18
+            dir(WORKSPACE_DIR) {
+              sh '''
+                  export NVM_DIR="$WORKSPACE/.nvm"
+                  mkdir -p "$NVM_DIR"
+                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+                  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                  nvm install 18
 
-                    echo '#!/bin/bash' > with-node.sh
-                    echo 'export NVM_DIR="$WORKSPACE/.nvm"' >> with-node.sh
-                    echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
-                    echo 'nvm use 18' >> with-node.sh
-                    echo '"$@"' >> with-node.sh
-                    chmod +x with-node.sh
-                '''
-              }
+                  echo '#!/bin/bash' > with-node.sh
+                  echo 'export NVM_DIR="$WORKSPACE/.nvm"' >> with-node.sh
+                  echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
+                  echo 'nvm use 18' >> with-node.sh
+                  echo '"$@"' >> with-node.sh
+                  chmod +x with-node.sh
+              '''
             }
         }
     }
 
     stage('Install Dependencies') {
       steps {
-        script {
-          def workDir = params.WORKSPACE_PARENT ? "${TARGET_WORKSPACE}/${WORKSPACE_DIR}" : WORKSPACE_DIR
-          dir(workDir) {
-            sh './with-node.sh npm install'
-          }
+        dir(WORKSPACE_DIR) {
+          sh './with-node.sh npm install'
         }
       }
     }
 
     stage('Run Tests') {
       steps {
-        script {
-          def workDir = params.WORKSPACE_PARENT ? "${TARGET_WORKSPACE}/${WORKSPACE_DIR}" : WORKSPACE_DIR
-          dir(workDir) {
-            sh './with-node.sh npm run test'
-          }
+        dir(WORKSPACE_DIR) {
+          sh './with-node.sh npm run test'
         }
       }
     }
