@@ -37,6 +37,21 @@ pipeline {
             }
         }
 
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Llamar al pipeline de test
+                    build job: 'gy-books-test',
+                          parameters: [
+                              string(name: 'BRANCH', value: 'main'),
+                              string(name: 'WORKSPACE_PARENT', value: "${WORKSPACE}")
+                          ],
+                          wait: true,
+                          propagate: true
+                }
+            }
+        }
+
         stage('Sync Fork') {
             steps {
                 script {
