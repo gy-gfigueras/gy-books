@@ -1,0 +1,42 @@
+name: Bump Version and Update README
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Bump patch version
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          npm version patch --no-git-tag-version
+
+      - name: Update version badge in README.md
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          sed -i "" "s|version-[0-9]\+\.[0-9]\+\.[0-9]\+-gold|version-$VERSION-gold|g" README.md
+
+      - name: Commit and push changes
+        run: |
+          git add package.json README.md
+          git commit -m "ci: bump version to $VERSION and update README [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
