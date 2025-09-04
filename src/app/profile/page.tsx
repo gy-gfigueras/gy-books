@@ -11,7 +11,6 @@ import React, {
 import { ProfileHeader } from './components/ProfileHeader/ProfileHeader';
 import { ProfileHeaderSkeleton } from './components/ProfileHeader/ProfileHeaderSkeleton';
 import { BooksFilter } from './components/BooksFilter/BooksFilter';
-import { BooksFilterSkeleton } from './components/BooksFilter/BooksFilterSkeleton';
 import { BooksList } from './components/BooksList/BooksList';
 import { BooksListSkeleton } from './components/BooksList/BooksListSkeleton';
 import {
@@ -24,6 +23,7 @@ import {
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { User } from '@/domain/user.model';
 import { EStatus } from '@/utils/constants/EStatus';
 import ProfileSkeleton from '../components/atoms/ProfileSkeleton';
 import { getBooksWithPagination } from '../actions/book/fetchApiBook';
@@ -46,7 +46,9 @@ import StatsSkeleton from '../components/molecules/StatsSkeleton';
 import { HallOfFameSkeleton } from '../components/molecules/HallOfFameSkeleton';
 
 function ProfilePageContent() {
-  const user = useSelector((state: RootState) => state.user.profile);
+  const user = useSelector(
+    (state: RootState) => state.user.profile
+  ) as User | null;
   const isLoading = !user;
   const [tab, setTab] = React.useState(0);
   const searchParams = useSearchParams();
@@ -58,6 +60,7 @@ function ProfilePageContent() {
   const urlAuthor = searchParams.get('author');
   const urlSeries = searchParams.get('series');
   const urlRating = searchParams.get('rating');
+  const urlSearch = searchParams.get('search') || '';
 
   const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(
     urlStatus && Object.values(EStatus).includes(urlStatus as EStatus)
@@ -69,6 +72,7 @@ function ProfilePageContent() {
   const [ratingFilter, setRatingFilter] = useState(
     urlRating ? Number(urlRating) : 0
   );
+  const [search, setSearch] = useState(urlSearch);
 
   const {
     handleUpdateBiography,
@@ -99,6 +103,7 @@ function ProfilePageContent() {
       author?: string;
       series?: string;
       rating?: number;
+      search?: string;
     }) => {
       const params = new URLSearchParams(searchParams.toString());
       if (filters.status) {
@@ -121,9 +126,28 @@ function ProfilePageContent() {
       } else {
         params.delete('rating');
       }
+      if (filters.search) {
+        params.set('search', filters.search);
+      } else {
+        params.delete('search');
+      }
       router.replace(`/profile?${params.toString()}`, { scroll: false });
     },
     [searchParams, router]
+  );
+  // Handler para el buscador
+  const handleSearchChange = useCallback(
+    (newSearch: string) => {
+      setSearch(newSearch);
+      updateUrl({
+        status: statusFilter,
+        author: authorFilter,
+        series: seriesFilter,
+        rating: ratingFilter,
+        search: newSearch,
+      });
+    },
+    [statusFilter, authorFilter, seriesFilter, ratingFilter, updateUrl]
   );
 
   // Handlers para cada filtro
@@ -277,9 +301,19 @@ function ProfilePageContent() {
       const ratingOk =
         !ratingFilter ||
         (typeof book.rating === 'number' && book.rating >= ratingFilter);
-      return statusOk && authorOk && seriesOk && ratingOk;
+      const searchOk =
+        !search ||
+        (book.title &&
+          book.title.toLowerCase().includes(search.toLowerCase())) ||
+        (book.author &&
+          book.author.name &&
+          book.author.name.toLowerCase().includes(search.toLowerCase())) ||
+        (book.series &&
+          book.series.name &&
+          book.series.name.toLowerCase().includes(search.toLowerCase()));
+      return statusOk && authorOk && seriesOk && ratingOk && searchOk;
     });
-  }, [books, statusFilter, authorFilter, seriesFilter, ratingFilter]);
+  }, [books, statusFilter, authorFilter, seriesFilter, ratingFilter, search]);
 
   if (isLoading) {
     return (
@@ -314,7 +348,6 @@ function ProfilePageContent() {
               gap: 4,
             }}
           >
-            <BooksFilterSkeleton />
             <BooksListSkeleton />
           </Box>
         </Box>
@@ -369,7 +402,7 @@ function ProfilePageContent() {
           friendsCount={friendsCount}
           isLoadingFriends={isLoadingFriends}
           onEditProfile={() => setIsEditingBiography(true)}
-          biography={biography || user.biography || ''}
+          biography={biography || user?.biography || ''}
           isEditingBiography={isEditingBiography}
           isLoadingBiography={isLoadingBiography}
           onBiographyChange={setBiography}
@@ -425,10 +458,12 @@ function ProfilePageContent() {
                 authorFilter={authorFilter}
                 seriesFilter={seriesFilter}
                 ratingFilter={ratingFilter}
+                search={search}
                 onStatusChange={handleStatusFilterChange}
                 onAuthorChange={handleAuthorFilterChange}
                 onSeriesChange={handleSeriesFilterChange}
                 onRatingChange={handleRatingFilterChange}
+                onSearchChange={handleSearchChange}
               />
               <BooksList
                 books={filteredBooks}
@@ -447,7 +482,7 @@ function ProfilePageContent() {
               }}
             >
               <Suspense fallback={<HallOfFameSkeleton />}>
-                <HallOfFame userId={user.id} />
+                {user && <HallOfFame userId={user.id} />}
               </Suspense>
             </Box>
           )}
@@ -461,7 +496,7 @@ function ProfilePageContent() {
               }}
             >
               <Suspense fallback={<StatsSkeleton />}>
-                <Stats id={user?.id as UUID} />
+                {user && <Stats id={user.id} />}
               </Suspense>
             </Box>
           )}
@@ -475,7 +510,7 @@ function ProfilePageContent() {
               }}
             >
               <Suspense fallback={<CircularProgress />}>
-                <ActivityTab id={user?.id as UUID} />
+                {user && <ActivityTab id={user.id} />}
               </Suspense>
             </Box>
           )}

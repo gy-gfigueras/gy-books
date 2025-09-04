@@ -100,13 +100,13 @@ function BooksContent() {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'stretch', sm: 'center' },
             justifyContent: 'center',
             width: '100%',
-            height: '10%',
-            gap: '1rem',
-            paddingTop: '10px',
+            gap: { xs: '0.5rem', sm: '1rem' },
+            paddingTop: { xs: '8px', sm: '10px' },
+            px: { xs: 2, sm: 0 },
           }}
         >
           <TextField
@@ -114,67 +114,45 @@ function BooksContent() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             variant="outlined"
-            sx={{
-              mb: '8px',
-              width: ['60%', '60%', '60%'],
-              backgroundColor: '#232323',
-              borderRadius: '16px',
-              fontFamily: goudi.style.fontFamily,
-              '& .MuiOutlinedInput-root': {
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'transparent',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'white',
-                  borderRadius: '16px',
-                  borderWidth: '1px',
-                },
-                '&.MuiFormLabel-root': {
-                  color: 'transparent',
-                  fontFamily: goudi.style.fontFamily,
-                },
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'transparent',
-              },
-              '& .MuiInputBase-input': {
+            fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: 'white' }} />
+                </InputAdornment>
+              ),
+              style: {
                 color: 'white',
                 fontFamily: goudi.style.fontFamily,
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white',
-                fontFamily: goudi.style.fontFamily,
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white',
-                fontSize: '22px',
-                fontFamily: goudi.style.fontFamily,
+                fontSize: '18px',
+                backgroundColor: '#232323',
+                borderRadius: '16px',
+                minHeight: '48px',
               },
             }}
-            slotProps={{
-              htmlInput: {
-                style: {
-                  width: '100%',
-                  color: 'white',
-                  fontFamily: goudi.style.fontFamily,
-                  fontSize: '20px',
-
-                  fieldSet: {
-                    borderColor: 'white',
-                    fontFamily: goudi.style.fontFamily,
-                  },
-                },
+            InputLabelProps={{
+              style: {
+                color: 'white',
+                fontFamily: goudi.style.fontFamily,
+                fontSize: '20px',
               },
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon
-                      sx={{
-                        color: 'white',
-                      }}
-                    />
-                  </InputAdornment>
-                ),
+            }}
+            sx={{
+              mb: { xs: 1, sm: 2 },
+              width: { xs: '100%', sm: '60%', md: '60%' },
+              maxWidth: { xs: '100%', sm: '500px' },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'transparent',
+                  borderRadius: '16px',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#8C54FF',
+                  borderWidth: 2,
+                },
               },
             }}
           />

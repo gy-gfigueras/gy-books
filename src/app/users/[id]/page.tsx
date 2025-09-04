@@ -22,7 +22,6 @@ import { goudi } from '@/utils/fonts/fonts';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
 import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton';
 import { ProfileHeaderSkeleton } from '@/app/profile/components/ProfileHeader/ProfileHeaderSkeleton';
-import { BooksFilterSkeleton } from '@/app/profile/components/BooksFilter/BooksFilterSkeleton';
 import { BooksListSkeleton } from '@/app/profile/components/BooksList/BooksListSkeleton';
 import { getBooksWithPagination } from '@/app/actions/book/fetchApiBook';
 import Book from '@/domain/book.model';
@@ -55,6 +54,7 @@ function ProfilePageContent() {
   const urlAuthor = searchParams.get('author');
   const urlSeries = searchParams.get('series');
   const urlRating = searchParams.get('rating');
+  const urlSearch = searchParams.get('search') || '';
 
   const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(
     urlStatus && Object.values(EStatus).includes(urlStatus as EStatus)
@@ -66,6 +66,7 @@ function ProfilePageContent() {
   const [ratingFilter, setRatingFilter] = useState(
     urlRating ? Number(urlRating) : 0
   );
+  const [search, setSearch] = useState(urlSearch);
 
   const statusOptions = [
     { label: 'Reading', value: EStatus.READING },
@@ -80,6 +81,7 @@ function ProfilePageContent() {
       author?: string;
       series?: string;
       rating?: number;
+      search?: string;
     }) => {
       const paramsUrl = new URLSearchParams(searchParams.toString());
       if (filters.status) {
@@ -102,11 +104,30 @@ function ProfilePageContent() {
       } else {
         paramsUrl.delete('rating');
       }
+      if (filters.search) {
+        paramsUrl.set('search', filters.search);
+      } else {
+        paramsUrl.delete('search');
+      }
       router.replace(`/users/${userId}?${paramsUrl.toString()}`, {
         scroll: false,
       });
     },
     [searchParams, router, userId]
+  );
+  // Handler para el buscador
+  const handleSearchChange = useCallback(
+    (newSearch: string) => {
+      setSearch(newSearch);
+      updateUrl({
+        status: statusFilter,
+        author: authorFilter,
+        series: seriesFilter,
+        rating: ratingFilter,
+        search: newSearch,
+      });
+    },
+    [statusFilter, authorFilter, seriesFilter, ratingFilter, updateUrl]
   );
 
   // Handlers para cada filtro
@@ -182,6 +203,10 @@ function ProfilePageContent() {
     const newRating = currentUrlRating ? Number(currentUrlRating) : 0;
     if (newRating !== ratingFilter) {
       setRatingFilter(newRating);
+    }
+    const currentUrlSearch = searchParams.get('search') || '';
+    if (currentUrlSearch !== search) {
+      setSearch(currentUrlSearch);
     }
   }, [searchParams]);
 
@@ -266,9 +291,19 @@ function ProfilePageContent() {
       const ratingOk =
         !ratingFilter ||
         (typeof book.rating === 'number' && book.rating >= ratingFilter);
-      return statusOk && authorOk && seriesOk && ratingOk;
+      const searchOk =
+        !search ||
+        (book.title &&
+          book.title.toLowerCase().includes(search.toLowerCase())) ||
+        (book.author &&
+          book.author.name &&
+          book.author.name.toLowerCase().includes(search.toLowerCase())) ||
+        (book.series &&
+          book.series.name &&
+          book.series.name.toLowerCase().includes(search.toLowerCase()));
+      return statusOk && authorOk && seriesOk && ratingOk && searchOk;
     });
-  }, [books, statusFilter, authorFilter, seriesFilter, ratingFilter]);
+  }, [books, statusFilter, authorFilter, seriesFilter, ratingFilter, search]);
 
   if (isLoading) {
     return (
@@ -303,7 +338,6 @@ function ProfilePageContent() {
               gap: 4,
             }}
           >
-            <BooksFilterSkeleton />
             <BooksListSkeleton />
           </Box>
         </Box>
@@ -434,10 +468,12 @@ function ProfilePageContent() {
                 authorFilter={authorFilter}
                 seriesFilter={seriesFilter}
                 ratingFilter={ratingFilter}
+                search={search}
                 onStatusChange={handleStatusFilterChange}
                 onAuthorChange={handleAuthorFilterChange}
                 onSeriesChange={handleSeriesFilterChange}
                 onRatingChange={handleRatingFilterChange}
+                onSearchChange={handleSearchChange}
               />
               <BooksList
                 books={filteredBooks}

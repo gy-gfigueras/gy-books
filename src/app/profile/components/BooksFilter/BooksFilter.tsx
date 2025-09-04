@@ -1,5 +1,13 @@
 import React from 'react';
-import { Select, MenuItem, Box, FormControl } from '@mui/material';
+import {
+  Select,
+  MenuItem,
+  Box,
+  FormControl,
+  TextField,
+  InputAdornment,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { goudi } from '@/utils/fonts/fonts';
 import { EStatus } from '@/utils/constants/EStatus';
 
@@ -11,10 +19,12 @@ interface BooksFilterProps {
   authorFilter: string;
   seriesFilter: string;
   ratingFilter: number;
+  search: string;
   onStatusChange: (status: EStatus | null) => void;
   onAuthorChange: (author: string) => void;
   onSeriesChange: (series: string) => void;
   onRatingChange: (rating: number) => void;
+  onSearchChange: (search: string) => void;
 }
 
 export const BooksFilter: React.FC<BooksFilterProps> = ({
@@ -25,10 +35,12 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
   authorFilter,
   seriesFilter,
   ratingFilter,
+  search,
   onStatusChange,
   onAuthorChange,
   onSeriesChange,
   onRatingChange,
+  onSearchChange,
 }) => {
   return (
     <Box
@@ -43,10 +55,48 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
         mb: 2,
         borderRadius: '12px',
         minHeight: 48,
-        maxWidth: { xs: '100%', md: 700 },
+        maxWidth: { xs: '100%', md: 1000 },
         mx: 'auto',
       }}
     >
+      <TextField
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Search books..."
+        variant="outlined"
+        size="small"
+        sx={{
+          background: 'rgba(45,45,45,0.95)',
+          borderRadius: '16px',
+          minWidth: 110,
+          flex: 2,
+          mb: { xs: 1, sm: 0 },
+          input: {
+            color: '#fff',
+            fontFamily: goudi.style.fontFamily,
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'transparent',
+              borderRadius: '16px',
+            },
+            '&:hover fieldset': {
+              borderColor: 'white',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#8C54FF',
+              borderWidth: 2,
+            },
+          },
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon sx={{ color: '#8C54FF' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
       <FormControl
         sx={{
           minWidth: 110,
