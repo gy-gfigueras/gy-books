@@ -17,16 +17,25 @@ export const BooksList: React.FC<BooksListProps> = ({
   <Box
     sx={{
       flex: 1,
-      display: { xs: 'grid', sm: 'grid', md: 'flex' },
+      display: {
+        xs: 'grid',
+        sm: 'grid',
+        md: 'flex',
+      },
+      gridTemplateColumns: {
+        xs: '1fr 1fr',
+        sm: '1fr 1fr',
+        md: 'none',
+      },
+      flexDirection: { xs: 'unset', md: 'unset' },
       width: '100%',
-      gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'none' },
       flexWrap: { xs: 'unset', md: 'wrap' },
       gap: { xs: 1, sm: 2 },
       overflowY: 'auto',
-      maxHeight: { xs: 400, md: 560 },
+      maxHeight: { xs: 'calc(100vh - 180px)', md: 560 },
       minHeight: 240,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: { xs: 'stretch', md: 'center' },
+      justifyContent: { xs: 'flex-start', md: 'center' },
       py: { xs: 0.5, md: 1 },
       background: 'transparent',
       scrollbarColor: '#8C54FF #232323',
@@ -43,11 +52,11 @@ export const BooksList: React.FC<BooksListProps> = ({
           width: { xs: '100%', sm: '100%', md: 'auto' },
           boxSizing: 'border-box',
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: { xs: 'center', md: 'center' },
+          alignItems: { xs: 'stretch', md: 'center' },
           px: { xs: 0, sm: 1, md: 0 },
           py: { xs: 0.5, md: 0 },
-          height: '100%',
+          height: { xs: 'auto', md: '100%' },
         }}
       >
         <BookCardCompact book={book} small={true} />

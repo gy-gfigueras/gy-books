@@ -199,28 +199,30 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
 
   if (isMobile) {
     return (
-      <Box
-        sx={{ width: '100%', mb: 2, display: 'flex', justifyContent: 'center' }}
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<FilterListIcon />}
-          sx={{
-            borderRadius: 3,
-            fontWeight: 'bold',
-            fontSize: 18,
-            fontFamily: goudi.style.fontFamily,
-            letterSpacing: '.05rem',
-            textTransform: 'none',
-            px: 3,
-            py: 1.5,
-            boxShadow: '0 4px 12px rgba(140,84,255,0.15)',
-          }}
-          onClick={() => setDrawerOpen(true)}
-        >
-          Filters
-        </Button>
+      <>
+        {!drawerOpen && (
+          <Box sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1201 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{
+                minWidth: 0,
+                width: 56,
+                height: 56,
+                borderRadius: '50%',
+                boxShadow: '0 4px 16px rgba(140,84,255,0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 0,
+              }}
+              onClick={() => setDrawerOpen(true)}
+            >
+              <FilterListIcon sx={{ fontSize: 32, color: '#fff' }} />
+            </Button>
+          </Box>
+        )}
+        {/* El botón flotante desaparece cuando el drawer está abierto */}
         <BooksFilterMobileDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
@@ -242,7 +244,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           onOrderByChange={onOrderByChange}
           onOrderDirectionChange={onOrderDirectionChange}
         />
-      </Box>
+      </>
     );
   }
   // Desktop view (unchanged)

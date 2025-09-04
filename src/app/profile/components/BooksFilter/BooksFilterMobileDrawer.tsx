@@ -11,11 +11,12 @@ import {
   MenuItem,
   TextField,
   InputAdornment,
+  IconButton,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import CloseIcon from '@mui/icons-material/Close';
 import { goudi } from '@/utils/fonts/fonts';
 import { EStatus } from '@/utils/constants/EStatus';
 
@@ -94,6 +95,24 @@ export const BooksFilterMobileDrawer: React.FC<
       }}
     >
       <Box sx={{ p: 3, position: 'relative' }}>
+        {/* Botón X para cerrar el drawer */}
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            color: '#fff',
+            zIndex: 10,
+            background: 'rgba(45,45,45,0.7)',
+            borderRadius: '50%',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            '&:hover': { background: 'rgba(140,84,255,0.2)' },
+          }}
+          aria-label="Close filters"
+        >
+          <CloseIcon sx={{ fontSize: 28 }} />
+        </IconButton>
         <Stack spacing={2} alignItems="stretch" sx={{ mt: 2 }}>
           <Typography
             sx={{
@@ -365,7 +384,6 @@ export const BooksFilterMobileDrawer: React.FC<
                 gap: 0.5,
               }}
             >
-              <FilterListIcon sx={{ fontSize: 20, color: 'white' }} />
               {orderDirection === 'asc' ? (
                 <ArrowUpwardIcon fontSize="small" />
               ) : (
