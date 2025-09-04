@@ -492,7 +492,7 @@ function ProfilePageContent() {
     <Container
       maxWidth="xl"
       sx={{
-        mt: { xs: 0, md: 6 },
+        mt: { xs: 0, md: 0 },
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
@@ -523,7 +523,7 @@ function ProfilePageContent() {
           onBiographySave={handleBiographyChange}
           onBiographyCancel={() => setIsEditingBiography(false)}
         />
-        <Box sx={{ mt: 6 }}>
+        <Box sx={{ mt: 0 }}>
           <Tabs
             value={tab}
             onChange={(_, v) => setTab(v)}

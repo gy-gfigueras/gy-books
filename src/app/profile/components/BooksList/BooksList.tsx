@@ -36,7 +36,7 @@ export const BooksList: React.FC<BooksListProps> = ({
       minHeight: 240,
       alignItems: { xs: 'stretch', md: 'center' },
       justifyContent: { xs: 'flex-start', md: 'center' },
-      py: { xs: 0.5, md: 1 },
+      py: { md: 1 },
       background: 'transparent',
       scrollbarColor: '#8C54FF #232323',
       '&::-webkit-scrollbar': { width: 10 },
