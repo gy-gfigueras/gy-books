@@ -55,6 +55,9 @@ function ProfilePageContent() {
   const urlSeries = searchParams.get('series');
   const urlRating = searchParams.get('rating');
   const urlSearch = searchParams.get('search') || '';
+  const urlOrderBy = searchParams.get('orderBy') || 'title';
+  const urlOrderDirection =
+    searchParams.get('orderDirection') === 'desc' ? 'desc' : 'asc';
 
   const [statusFilter, setStatusFilter] = React.useState<EStatus | null>(
     urlStatus && Object.values(EStatus).includes(urlStatus as EStatus)
@@ -67,6 +70,10 @@ function ProfilePageContent() {
     urlRating ? Number(urlRating) : 0
   );
   const [search, setSearch] = useState(urlSearch);
+  const [orderBy, setOrderBy] = useState<string>(urlOrderBy);
+  const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>(
+    urlOrderDirection
+  );
 
   const statusOptions = [
     { label: 'Reading', value: EStatus.READING },
@@ -82,6 +89,8 @@ function ProfilePageContent() {
       series?: string;
       rating?: number;
       search?: string;
+      orderBy?: string;
+      orderDirection?: 'asc' | 'desc';
     }) => {
       const paramsUrl = new URLSearchParams(searchParams.toString());
       if (filters.status) {
@@ -109,11 +118,68 @@ function ProfilePageContent() {
       } else {
         paramsUrl.delete('search');
       }
+      if (filters.orderBy) {
+        paramsUrl.set('orderBy', filters.orderBy);
+      } else {
+        paramsUrl.delete('orderBy');
+      }
+      if (filters.orderDirection) {
+        paramsUrl.set('orderDirection', filters.orderDirection);
+      } else {
+        paramsUrl.delete('orderDirection');
+      }
       router.replace(`/users/${userId}?${paramsUrl.toString()}`, {
         scroll: false,
       });
     },
     [searchParams, router, userId]
+  );
+  // Handlers para ordenamiento
+  const handleOrderByChange = useCallback(
+    (newOrderBy: string) => {
+      setOrderBy(newOrderBy);
+      updateUrl({
+        status: statusFilter,
+        author: authorFilter,
+        series: seriesFilter,
+        rating: ratingFilter,
+        search,
+        orderBy: newOrderBy,
+        orderDirection,
+      });
+    },
+    [
+      statusFilter,
+      authorFilter,
+      seriesFilter,
+      ratingFilter,
+      search,
+      orderDirection,
+      updateUrl,
+    ]
+  );
+  const handleOrderDirectionChange = useCallback(
+    (newDirection: 'asc' | 'desc') => {
+      setOrderDirection(newDirection);
+      updateUrl({
+        status: statusFilter,
+        author: authorFilter,
+        series: seriesFilter,
+        rating: ratingFilter,
+        search,
+        orderBy,
+        orderDirection: newDirection,
+      });
+    },
+    [
+      statusFilter,
+      authorFilter,
+      seriesFilter,
+      ratingFilter,
+      search,
+      orderBy,
+      updateUrl,
+    ]
   );
   // Handler para el buscador
   const handleSearchChange = useCallback(
@@ -280,9 +346,9 @@ function ProfilePageContent() {
     return Array.from(set).sort();
   }, [books]);
 
-  // Filtrar libros por status, autor, saga/serie y rating
+  // Filtrar y ordenar libros
   const filteredBooks = React.useMemo(() => {
-    return books.filter((book) => {
+    let result = books.filter((book) => {
       const statusOk = !statusFilter || book.status === statusFilter;
       const authorOk =
         !authorFilter || (book.author && book.author.name === authorFilter);
@@ -303,7 +369,54 @@ function ProfilePageContent() {
           book.series.name.toLowerCase().includes(search.toLowerCase()));
       return statusOk && authorOk && seriesOk && ratingOk && searchOk;
     });
-  }, [books, statusFilter, authorFilter, seriesFilter, ratingFilter, search]);
+
+    // Ordenar por orderBy y orderDirection
+    result = result.sort((a, b) => {
+      let aValue: string | number = '';
+      let bValue: string | number = '';
+      switch (orderBy) {
+        case 'author':
+          aValue = a.author?.name || '';
+          bValue = b.author?.name || '';
+          break;
+        case 'series':
+          aValue = a.series?.name || '';
+          bValue = b.series?.name || '';
+          break;
+        case 'rating':
+          aValue = typeof a.rating === 'number' ? a.rating : 0;
+          bValue = typeof b.rating === 'number' ? b.rating : 0;
+          break;
+        case 'title':
+        default:
+          aValue = a.title || '';
+          bValue = b.title || '';
+      }
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        if (orderDirection === 'asc') {
+          return aValue.localeCompare(bValue);
+        } else {
+          return bValue.localeCompare(aValue);
+        }
+      } else {
+        if (orderDirection === 'asc') {
+          return (aValue as number) - (bValue as number);
+        } else {
+          return (bValue as number) - (aValue as number);
+        }
+      }
+    });
+    return result;
+  }, [
+    books,
+    statusFilter,
+    authorFilter,
+    seriesFilter,
+    ratingFilter,
+    search,
+    orderBy,
+    orderDirection,
+  ]);
 
   if (isLoading) {
     return (
@@ -474,6 +587,10 @@ function ProfilePageContent() {
                 onSeriesChange={handleSeriesFilterChange}
                 onRatingChange={handleRatingFilterChange}
                 onSearchChange={handleSearchChange}
+                orderBy={orderBy}
+                orderDirection={orderDirection}
+                onOrderByChange={handleOrderByChange}
+                onOrderDirectionChange={handleOrderDirectionChange}
               />
               <BooksList
                 books={filteredBooks}
