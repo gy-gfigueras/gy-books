@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState } from 'react';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import { BooksFilterMobileDrawer } from './BooksFilterMobileDrawer';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import {
   Select,
@@ -67,6 +70,10 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
   const [orderMenuAnchor, setOrderMenuAnchor] = useState<null | HTMLElement>(
     null
   );
+  // Mobile Drawer state
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Render helpers
   const renderOrderButton = () => (
@@ -190,6 +197,55 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
     })),
   ];
 
+  if (isMobile) {
+    return (
+      <Box
+        sx={{ width: '100%', mb: 2, display: 'flex', justifyContent: 'center' }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<FilterListIcon />}
+          sx={{
+            borderRadius: 3,
+            fontWeight: 'bold',
+            fontSize: 18,
+            fontFamily: goudi.style.fontFamily,
+            letterSpacing: '.05rem',
+            textTransform: 'none',
+            px: 3,
+            py: 1.5,
+            boxShadow: '0 4px 12px rgba(140,84,255,0.15)',
+          }}
+          onClick={() => setDrawerOpen(true)}
+        >
+          Filters
+        </Button>
+        <BooksFilterMobileDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          statusOptions={statusOptions}
+          statusFilter={statusFilter}
+          authorOptions={authorOptions}
+          seriesOptions={seriesOptions}
+          authorFilter={authorFilter}
+          seriesFilter={seriesFilter}
+          ratingFilter={ratingFilter}
+          search={search}
+          onStatusChange={onStatusChange}
+          onAuthorChange={onAuthorChange}
+          onSeriesChange={onSeriesChange}
+          onRatingChange={onRatingChange}
+          onSearchChange={onSearchChange}
+          orderBy={orderBy}
+          orderDirection={orderDirection}
+          onOrderByChange={onOrderByChange}
+          onOrderDirectionChange={onOrderDirectionChange}
+        />
+      </Box>
+    );
+  }
+  // Desktop view (unchanged)
   return (
     <Box
       sx={{
