@@ -18,7 +18,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
     <Box
       component="a"
       href={`/books/${activity.bookId}`}
-      key={activity.id || activity.bookId}
+      key={activity.bookId}
       role="link"
       aria-label={`Go to book ${activity.bookId}`}
       sx={{
@@ -89,10 +89,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
       ) : activities && activities.length > 0 ? (
         <Box sx={{ maxHeight: 500, overflowY: 'auto', px: 1 }}>
           {activities.map((activity: Activity) => (
-            <ActivityItem
-              activity={activity}
-              key={activity.id || activity.bookId}
-            />
+            <ActivityItem activity={activity} key={activity.bookId} />
           ))}
         </Box>
       ) : (
