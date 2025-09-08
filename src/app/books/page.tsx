@@ -12,12 +12,21 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { BookCard } from '../components/atoms/BookCard';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { birthStone, goudi } from '@/utils/fonts/fonts';
+import LottieAnimation from '../components/atoms/LottieAnimation';
 
 function BooksContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [title, setTitle] = useState(searchParams.get('q') || '');
   const [books, setBooks] = useState<Book[]>([]);
+
+  const [animationData, setAnimationData] = useState<object | null>(null);
+
+  useEffect(() => {
+    fetch('/lottie/book_searcher.json')
+      .then((res) => res.json())
+      .then((data) => setAnimationData(data));
+  }, []);
 
   const debouncedTitle = useDebounce(title, 250);
 
@@ -173,9 +182,15 @@ function BooksContent() {
             scrollbarColor: ' #8C54FF transparent',
           }}
         >
-          {books.map((book: any) => (
-            <BookCard key={book.id} book={book} />
-          ))}
+          {books.length > 0
+            ? books.map((book: any) => <BookCard key={book.id} book={book} />)
+            : animationData && (
+                <LottieAnimation
+                  loop
+                  animationData={animationData}
+                  style={{ width: '500px', height: '80%', maxWidth: '100%' }}
+                />
+              )}
         </Box>
       </Box>
     </>
