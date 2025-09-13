@@ -31,10 +31,11 @@ pipeline {
                   export NVM_DIR="$WORKSPACE/.nvm"
                   mkdir -p "$NVM_DIR"
                   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-                    # Limpiar versión previa de Node.js para evitar binarios corruptos
-                    rm -rf "$NVM_DIR/versions/node/v18.20.8"
+                  # Limpiar versión previa de Node.js para evitar binarios corruptos
+                  rm -rf "$NVM_DIR/versions/node/v18.20.8"
                   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                   nvm install 18
+                  nvm use 18
 
                   echo '#!/bin/bash' > with-node.sh
                   echo 'export NVM_DIR="$WORKSPACE/.nvm"' >> with-node.sh
