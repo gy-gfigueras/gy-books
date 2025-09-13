@@ -6,6 +6,15 @@ pipeline {
   }
 
   stages {
+    stage('Clean Node') {
+      steps {
+        dir(WORKSPACE_DIR) {
+          sh '''
+            rm -rf .nvm/versions/node
+          '''
+        }
+      }
+    }
     stage('Prepare Workspace') {
       steps {
         script {
