@@ -3,8 +3,10 @@ pipeline {
 
     environment {
         NVM_DIR = "${WORKSPACE}/.nvm"
+
         GITHUB_USER = 'gy-gfigueras'
         GITHUB_TOKEN = credentials('FRONT_GITHUB_TOKEN')
+
         MAIN_REPO = 'GY-CODING/gy-books'
         FORK_REPO = "${GITHUB_USER}/gy-books"
         WORKSPACE_DIR = 'WingWords'
@@ -12,16 +14,6 @@ pipeline {
     }
 
     stages {
-        stage('Diagnóstico Entorno Inicial') {
-            steps {
-                sh '''
-                  echo "Node version (global):"; node -v || echo "No node global"
-                  echo "npm version (global):"; npm -v || echo "No npm global"
-                  echo "NVM version (global):"; command -v nvm || echo "No nvm global"
-                '''
-            }
-        }
-
         stage('Prepare Repository') {
             steps {
                 script {
@@ -29,88 +21,35 @@ pipeline {
                         echo "Repository already exists, updating..."
                         dir(WORKSPACE_DIR) {
                             sh '''
-                                git reset --hard
-                                git clean -fd
-                                git checkout main
-                                git config pull.rebase false
-                                git pull origin main
+                            git reset --hard
+                            git clean -fd
+                            git checkout main
+                            git pull origin main
                             '''
                         }
                     } else {
                         echo "Cloning repository..."
                         sh '''
-                            git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$FORK_REPO.git $WORKSPACE_DIR
+                        git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$FORK_REPO.git $WORKSPACE_DIR
                         '''
                     }
                 }
             }
         }
 
-        // stage('Run Tests') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 // Llamar al pipeline de test usando la ruta completa
-        //                 build job: 'Front/Test/WingWords',
-        //                       wait: true,
-        //                       propagate: true
-        //             } catch (Exception e) {
-        //                 echo "Error calling test job: ${e.getMessage()}"
-        //                 echo "Job path: Front/Test/WingWords"
-        //                 throw e
-        //             }
-        //         }
-        //     }
-        // }
-
-        stage('Install Node & NVM') {
+        stage('Run Tests') {
             steps {
-                dir(WORKSPACE_DIR) {
-                    sh '''
-                        export NVM_DIR="$WORKSPACE/.nvm"
-                        mkdir -p "$NVM_DIR"
-                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-                        # Limpiar versión previa de Node.js para evitar binarios corruptos
-                        rm -rf "$NVM_DIR/versions/node/v18.20.8"
-                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                        nvm install 18
-                        nvm use 18
-
-                        echo '#!/bin/bash' > with-node.sh
-                        echo 'export NVM_DIR="$WORKSPACE/.nvm"' >> with-node.sh
-                        echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
-                        echo 'nvm use 18' >> with-node.sh
-                        echo '"$@"' >> with-node.sh
-                        chmod +x with-node.sh
-                    '''
-                }
-            }
-        }
-
-        stage('Diagnóstico Node Local') {
-            steps {
-                dir(WORKSPACE_DIR) {
-                    sh '''
-                        ./with-node.sh node -v
-                        ./with-node.sh npm -v
-                        ./with-node.sh npx -v
-                    '''
-                }
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                dir(WORKSPACE_DIR) {
-                    sh './with-node.sh npm install'
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                dir(WORKSPACE_DIR) {
-                    sh './with-node.sh npm run build || echo "No build script"'
+                script {
+                    try {
+                        // Llamar al pipeline de test usando la ruta completa
+                        build job: 'Front/Test/WingWords',
+                              wait: true,
+                              propagate: true
+                    } catch (Exception e) {
+                        echo "Error calling test job: ${e.getMessage()}"
+                        echo "Job path: Front/Test/WingWords"
+                        throw e
+                    }
                 }
             }
         }
@@ -120,11 +59,11 @@ pipeline {
                 script {
                     dir(WORKSPACE_DIR) {
                         sh '''
-                            git remote add upstream https://github.com/$MAIN_REPO.git || true
-                            git fetch upstream
-                            git checkout main
-                            git reset --hard upstream/main
-                            git push origin main --force
+                        git remote add upstream https://github.com/$MAIN_REPO.git || true
+                        git fetch upstream
+                        git checkout main
+                        git merge upstream/main --allow-unrelated-histories
+                        git push origin main
                         '''
                     }
                 }
@@ -132,41 +71,11 @@ pipeline {
         }
 
         stage('Deploy to Vercel') {
-                        steps {
-                                script {
-                                        // Lanzar deploy y esperar a que termine en Vercel
-                                        sh '''
-                                                # Lanzar el deploy y capturar la URL del deployment
-                                                DEPLOY_RESPONSE=$(curl -s -X POST $VERCEL_DEPLOY_URL)
-                                                # Extraer deploymentId o url del deployment si está en la respuesta
-                                                DEPLOYMENT_URL=$(echo "$DEPLOY_RESPONSE" | grep -o 'https://[a-zA-Z0-9.-]*\\.vercel\\.app' | head -n1)
-                                                if [ -z "$DEPLOYMENT_URL" ]; then
-                                                    echo "No se pudo obtener la URL del deployment de la respuesta: $DEPLOY_RESPONSE"
-                                                    exit 1
-                                                fi
-                                                echo "Esperando a que el deployment esté listo: $DEPLOYMENT_URL"
-                                                # Extraer el deploymentId de la URL (subdominio)
-                                                DEPLOYMENT_ID=$(echo "$DEPLOYMENT_URL" | cut -d'.' -f1 | cut -d'/' -f3)
-                                                # Esperar a que el deployment esté listo usando la API de Vercel
-                                                # Se requiere VERCEL_TOKEN como variable de entorno/credential
-                                                for i in {1..30}; do
-                                                    STATUS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-                                                        "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID" | grep -o '"readyState":"[A-Z]*"' | cut -d'"' -f4)
-                                                    echo "Intento $i: Estado actual: $STATUS"
-                                                    if [ "$STATUS" = "READY" ]; then
-                                                        echo "Deployment listo en Vercel: $DEPLOYMENT_URL"
-                                                        exit 0
-                                                    elif [ "$STATUS" = "ERROR" ]; then
-                                                        echo "Deployment fallido en Vercel: $DEPLOYMENT_URL"
-                                                        exit 1
-                                                    fi
-                                                    sleep 10
-                                                done
-                                                echo "Timeout esperando a que el deployment esté listo en Vercel. Última URL: $DEPLOYMENT_URL"
-                                                exit 1
-                                        '''
-                                }
-                        }
+            steps {
+                script {
+                    sh "curl -X POST $VERCEL_DEPLOY_URL"
+                }
+            }
         }
 
         stage('Create Release') {
@@ -175,10 +84,10 @@ pipeline {
                     def WORKFLOW_FILE = "release.yml"
 
                     sh """
-                        curl -X POST https://api.github.com/repos/$MAIN_REPO/actions/workflows/$WORKFLOW_FILE/dispatches \
-                            -H "Accept: application/vnd.github.v3+json" \
-                            -H "Authorization: token $GITHUB_TOKEN" \
-                            -d '{ "ref": "main" }'
+                    curl -X POST https://api.github.com/repos/$MAIN_REPO/actions/workflows/$WORKFLOW_FILE/dispatches \
+                        -H "Accept: application/vnd.github.v3+json" \
+                        -H "Authorization: token $GITHUB_TOKEN" \
+                        -d '{ "ref": "main" }'
                     """
                 }
             }

@@ -6,16 +6,6 @@ pipeline {
   }
 
   stages {
-    stage('Diagnóstico Entorno Inicial') {
-      steps {
-        sh '''
-          echo "Node version (global):"; node -v || echo "No node global"
-          echo "npm version (global):"; npm -v || echo "No npm global"
-          echo "NVM version (global):"; command -v nvm || echo "No nvm global"
-        '''
-      }
-    }
-
     stage('Prepare Workspace') {
       steps {
         script {
@@ -23,7 +13,7 @@ pipeline {
             echo "WingWords directory already exists, cleaning..."
             dir(WORKSPACE_DIR) {
               sh '''
-                rm -rf .nvm with-node.sh
+              rm -rf .nvm with-node.sh
               '''
             }
           } else {
@@ -34,55 +24,31 @@ pipeline {
       }
     }
 
-    stage('Install Node & NVM') {
-      steps {
-        dir(WORKSPACE_DIR) {
-          sh '''
-            export NVM_DIR="$WORKSPACE/.nvm"
-            mkdir -p "$NVM_DIR"
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-            # Limpiar versión previa de Node.js para evitar binarios corruptos
-            rm -rf "$NVM_DIR/versions/node/v18.20.8"
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm install 18
-            nvm use 18
+    stage('Install Node') {
+        steps {
+            dir(WORKSPACE_DIR) {
+              sh '''
+                  export NVM_DIR="$WORKSPACE/.nvm"
+                  mkdir -p "$NVM_DIR"
+                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+                  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                  nvm install 18
 
-            echo '#!/bin/bash' > with-node.sh
-            echo 'export NVM_DIR="$WORKSPACE/.nvm"' >> with-node.sh
-            echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
-            echo 'nvm use 18' >> with-node.sh
-            echo '"$@"' >> with-node.sh
-            chmod +x with-node.sh
-          '''
+                  echo '#!/bin/bash' > with-node.sh
+                  echo 'export NVM_DIR="$WORKSPACE/.nvm"' >> with-node.sh
+                  echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
+                  echo 'nvm use 18' >> with-node.sh
+                  echo '"$@"' >> with-node.sh
+                  chmod +x with-node.sh
+              '''
+            }
         }
-      }
-    }
-
-    stage('Diagnóstico Node Local') {
-      steps {
-        dir(WORKSPACE_DIR) {
-          sh '''
-            ./with-node.sh node -v
-            ./with-node.sh npm -v
-            ./with-node.sh npx -v
-          '''
-        }
-      }
     }
 
     stage('Install Dependencies') {
       steps {
         dir(WORKSPACE_DIR) {
           sh './with-node.sh npm install'
-        }
-      }
-    }
-
-    stage('Lint & Typecheck') {
-      steps {
-        dir(WORKSPACE_DIR) {
-          sh './with-node.sh npm run lint || echo "Lint no configurado"'
-          sh './with-node.sh npm run typecheck || echo "Typecheck no configurado"'
         }
       }
     }
