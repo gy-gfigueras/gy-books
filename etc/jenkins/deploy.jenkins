@@ -123,8 +123,8 @@ pipeline {
                             git remote add upstream https://github.com/$MAIN_REPO.git || true
                             git fetch upstream
                             git checkout main
-                            git merge upstream/main --allow-unrelated-histories
-                            git push origin main
+                            git reset --hard upstream/main
+                            git push origin main --force
                         '''
                     }
                 }
@@ -132,11 +132,41 @@ pipeline {
         }
 
         stage('Deploy to Vercel') {
-            steps {
-                script {
-                    sh "curl -X POST $VERCEL_DEPLOY_URL"
-                }
-            }
+                        steps {
+                                script {
+                                        // Lanzar deploy y esperar a que termine en Vercel
+                                        sh '''
+                                                # Lanzar el deploy y capturar la URL del deployment
+                                                DEPLOY_RESPONSE=$(curl -s -X POST $VERCEL_DEPLOY_URL)
+                                                # Extraer deploymentId o url del deployment si está en la respuesta
+                                                DEPLOYMENT_URL=$(echo "$DEPLOY_RESPONSE" | grep -o 'https://[a-zA-Z0-9.-]*\.vercel\.app' | head -n1)
+                                                if [ -z "$DEPLOYMENT_URL" ]; then
+                                                    echo "No se pudo obtener la URL del deployment de la respuesta: $DEPLOY_RESPONSE"
+                                                    exit 1
+                                                fi
+                                                echo "Esperando a que el deployment esté listo: $DEPLOYMENT_URL"
+                                                # Extraer el deploymentId de la URL (subdominio)
+                                                DEPLOYMENT_ID=$(echo "$DEPLOYMENT_URL" | cut -d'.' -f1 | cut -d'/' -f3)
+                                                # Esperar a que el deployment esté listo usando la API de Vercel
+                                                # Se requiere VERCEL_TOKEN como variable de entorno/credential
+                                                for i in {1..30}; do
+                                                    STATUS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+                                                        "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID" | grep -o '"readyState":"[A-Z]*"' | cut -d'"' -f4)
+                                                    echo "Intento $i: Estado actual: $STATUS"
+                                                    if [ "$STATUS" = "READY" ]; then
+                                                        echo "Deployment listo en Vercel: $DEPLOYMENT_URL"
+                                                        exit 0
+                                                    elif [ "$STATUS" = "ERROR" ]; then
+                                                        echo "Deployment fallido en Vercel: $DEPLOYMENT_URL"
+                                                        exit 1
+                                                    fi
+                                                    sleep 10
+                                                done
+                                                echo "Timeout esperando a que el deployment esté listo en Vercel. Última URL: $DEPLOYMENT_URL"
+                                                exit 1
+                                        '''
+                                }
+                        }
         }
 
         stage('Create Release') {
