@@ -21,7 +21,6 @@ pipeline {
                         echo "Repository already exists, updating..."
                         dir(WORKSPACE_DIR) {
                             sh '''
-                            sh '''
                         git reset --hard
                         git clean -fd
                         git checkout main
@@ -35,23 +34,6 @@ pipeline {
                         sh '''
                         git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$FORK_REPO.git $WORKSPACE_DIR
                         '''
-                    }
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    try {
-                        // Llamar al pipeline de test usando la ruta completa
-                        build job: 'Front/Test/WingWords',
-                              wait: true,
-                              propagate: true
-                    } catch (Exception e) {
-                        echo "Error calling test job: ${e.getMessage()}"
-                        echo "Job path: Front/Test/WingWords"
-                        throw e
                     }
                 }
             }
