@@ -3,10 +3,8 @@ pipeline {
 
     environment {
         NVM_DIR = "${WORKSPACE}/.nvm"
-
         GITHUB_USER = 'gy-gfigueras'
         GITHUB_TOKEN = credentials('FRONT_GITHUB_TOKEN')
-
         MAIN_REPO = 'GY-CODING/gy-books'
         FORK_REPO = "${GITHUB_USER}/gy-books"
         WORKSPACE_DIR = 'WingWords'
@@ -14,6 +12,16 @@ pipeline {
     }
 
     stages {
+        stage('Diagnóstico Entorno Inicial') {
+            steps {
+                sh '''
+                  echo "Node version (global):"; node -v || echo "No node global"
+                  echo "npm version (global):"; npm -v || echo "No npm global"
+                  echo "NVM version (global):"; command -v nvm || echo "No nvm global"
+                '''
+            }
+        }
+
         stage('Prepare Repository') {
             steps {
                 script {
@@ -21,17 +29,17 @@ pipeline {
                         echo "Repository already exists, updating..."
                         dir(WORKSPACE_DIR) {
                             sh '''
-                            git reset --hard
-                            git clean -fd
-                            git checkout main
-                            git config pull.rebase false
-                            git pull origin main
+                                git reset --hard
+                                git clean -fd
+                                git checkout main
+                                git config pull.rebase false
+                                git pull origin main
                             '''
                         }
                     } else {
                         echo "Cloning repository..."
                         sh '''
-                        git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$FORK_REPO.git $WORKSPACE_DIR
+                            git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$FORK_REPO.git $WORKSPACE_DIR
                         '''
                     }
                 }
@@ -55,16 +63,68 @@ pipeline {
         //     }
         // }
 
+        stage('Install Node & NVM') {
+            steps {
+                dir(WORKSPACE_DIR) {
+                    sh '''
+                        export NVM_DIR="$WORKSPACE/.nvm"
+                        mkdir -p "$NVM_DIR"
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+                        # Limpiar versión previa de Node.js para evitar binarios corruptos
+                        rm -rf "$NVM_DIR/versions/node/v18.20.8"
+                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                        nvm install 18
+                        nvm use 18
+
+                        echo '#!/bin/bash' > with-node.sh
+                        echo 'export NVM_DIR="$WORKSPACE/.nvm"' >> with-node.sh
+                        echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
+                        echo 'nvm use 18' >> with-node.sh
+                        echo '"$@"' >> with-node.sh
+                        chmod +x with-node.sh
+                    '''
+                }
+            }
+        }
+
+        stage('Diagnóstico Node Local') {
+            steps {
+                dir(WORKSPACE_DIR) {
+                    sh '''
+                        ./with-node.sh node -v
+                        ./with-node.sh npm -v
+                        ./with-node.sh npx -v
+                    '''
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir(WORKSPACE_DIR) {
+                    sh './with-node.sh npm install'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir(WORKSPACE_DIR) {
+                    sh './with-node.sh npm run build || echo "No build script"'
+                }
+            }
+        }
+
         stage('Sync Fork') {
             steps {
                 script {
                     dir(WORKSPACE_DIR) {
                         sh '''
-                        git remote add upstream https://github.com/$MAIN_REPO.git || true
-                        git fetch upstream
-                        git checkout main
-                        git merge upstream/main --allow-unrelated-histories
-                        git push origin main
+                            git remote add upstream https://github.com/$MAIN_REPO.git || true
+                            git fetch upstream
+                            git checkout main
+                            git merge upstream/main --allow-unrelated-histories
+                            git push origin main
                         '''
                     }
                 }
@@ -85,10 +145,10 @@ pipeline {
                     def WORKFLOW_FILE = "release.yml"
 
                     sh """
-                    curl -X POST https://api.github.com/repos/$MAIN_REPO/actions/workflows/$WORKFLOW_FILE/dispatches \
-                        -H "Accept: application/vnd.github.v3+json" \
-                        -H "Authorization: token $GITHUB_TOKEN" \
-                        -d '{ "ref": "main" }'
+                        curl -X POST https://api.github.com/repos/$MAIN_REPO/actions/workflows/$WORKFLOW_FILE/dispatches \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            -H "Authorization: token $GITHUB_TOKEN" \
+                            -d '{ "ref": "main" }'
                     """
                 }
             }
