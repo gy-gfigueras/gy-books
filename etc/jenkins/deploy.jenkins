@@ -21,10 +21,13 @@ pipeline {
                         echo "Repository already exists, updating..."
                         dir(WORKSPACE_DIR) {
                             sh '''
-                            git reset --hard
-                            git clean -fd
-                            git checkout main
-                            git pull origin main
+                            sh '''
+                        git reset --hard
+                        git clean -fd
+                        git checkout main
+                        git fetch origin
+                        git reset --hard origin/main
+                        '''
                             '''
                         }
                     } else {
