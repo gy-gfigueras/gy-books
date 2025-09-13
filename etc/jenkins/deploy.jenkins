@@ -139,7 +139,7 @@ pipeline {
                                                 # Lanzar el deploy y capturar la URL del deployment
                                                 DEPLOY_RESPONSE=$(curl -s -X POST $VERCEL_DEPLOY_URL)
                                                 # Extraer deploymentId o url del deployment si está en la respuesta
-                                                DEPLOYMENT_URL=$(echo "$DEPLOY_RESPONSE" | grep -o 'https://[a-zA-Z0-9.-]*\.vercel\.app' | head -n1)
+                                                DEPLOYMENT_URL=$(echo "$DEPLOY_RESPONSE" | grep -o 'https://[a-zA-Z0-9.-]*\\.vercel\\.app' | head -n1)
                                                 if [ -z "$DEPLOYMENT_URL" ]; then
                                                     echo "No se pudo obtener la URL del deployment de la respuesta: $DEPLOY_RESPONSE"
                                                     exit 1
