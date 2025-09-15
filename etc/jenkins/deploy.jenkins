@@ -73,7 +73,37 @@ pipeline {
         stage('Deploy to Vercel') {
             steps {
                 script {
-                    sh "curl -X POST $VERCEL_DEPLOY_URL"
+                    def response = sh(script: "curl -X POST $VERCEL_DEPLOY_URL", returnStdout: true).trim()
+                    def jsonSlurper = new groovy.json.JsonSlurper()
+                    def json = jsonSlurper.parseText(response)
+                    env.DEPLOY_URL = json.url
+                    echo "Deployment URL: ${env.DEPLOY_URL}"
+                }
+            }
+        }
+
+        stage('Deploying') {
+            steps {
+                script {
+                    def maxRetries = 30
+                    def retryCount = 0
+                    def deploymentReady = false
+
+                    while (!deploymentReady && retryCount < maxRetries) {
+                        sleep 10 // Wait 10 seconds between checks
+                        def status = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${env.DEPLOY_URL}", returnStdout: true).trim()
+                        if (status == '200') {
+                            deploymentReady = true
+                            echo "Deployment is ready!"
+                        } else {
+                            echo "Deployment not ready yet (status: ${status}), retrying... (${retryCount + 1}/${maxRetries})"
+                            retryCount++
+                        }
+                    }
+
+                    if (!deploymentReady) {
+                        error("Deployment did not complete within the expected time.")
+                    }
                 }
             }
         }
