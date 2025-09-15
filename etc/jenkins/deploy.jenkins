@@ -10,9 +10,7 @@ pipeline {
         MAIN_REPO = 'GY-CODING/gy-books'
         FORK_REPO = "${GITHUB_USER}/gy-books"
         WORKSPACE_DIR = 'WingWords'
-
-        VERCEL_TOKEN = credentials('VERCEL_DEPLOYMENT_TOKEN')
-        VERCEL_PROJECT_NAME = 'gy-books'
+        VERCEL_DEPLOY_URL = credentials('WINGWORDS_VERCEL_DEPLOY_URL')
     }
 
     stages {
@@ -39,13 +37,19 @@ pipeline {
                 }
             }
         }
-
-        stage('Run Tests') {
+          stage('Run Tests') {
             steps {
                 script {
-                    build job: 'Front/Test/WingWords',
-                          wait: true,
-                          propagate: true
+                    try {
+                        // Llamar al pipeline de test usando la ruta completa
+                        build job: 'Front/Test/WingWords',
+                              wait: true,
+                              propagate: true
+                    } catch (Exception e) {
+                        echo "Error calling test job: ${e.getMessage()}"
+                        echo "Job path: Front/Test/WingWords"
+                        throw e
+                    }
                 }
             }
         }
@@ -66,75 +70,10 @@ pipeline {
             }
         }
 
-        stage('Connect with Vercel') {
+        stage('Deploy to Vercel') {
             steps {
                 script {
-                    echo "🔌 Starting deployment to Vercel..."
-
-                    def response = sh(
-                        script: """curl -s -X POST https://api.vercel.com/v13/deployments \
-                          -H "Authorization: Bearer ${VERCEL_TOKEN}" \
-                          -H "Content-Type: application/json" \
-                          -d '{
-                                "name": "${VERCEL_PROJECT_NAME}",
-                                "gitSource": {
-                                    "type": "github",
-                                    "repoId": "${FORK_REPO}",
-                                    "ref": "main"
-                                }
-                              }'""",
-                        returnStdout: true
-                    ).trim()
-
-                    // Mostrar la respuesta cruda para debug
-                    echo "Vercel response: ${response}"
-
-                    def json = new groovy.json.JsonSlurper().parseText(response)
-
-                    if (json.error) {
-                        error("Vercel deployment failed: ${json.error.message}")
-                    }
-
-                    env.DEPLOYMENT_ID = json.id
-                    env.DEPLOYMENT_URL = json.url
-
-                    echo "Deployment started: ID=${env.DEPLOYMENT_ID}, URL=https://${env.DEPLOYMENT_URL}"
-                }
-            }
-        }
-
-        stage('Deployment') {
-            steps {
-                script {
-                    def maxRetries = 60
-                    def retryCount = 0
-                    def ready = false
-
-                    while (!ready && retryCount < maxRetries) {
-                        sleep 10
-                        def statusResp = sh(
-                            script: """curl -s -H "Authorization: Bearer ${VERCEL_TOKEN}" \
-                                        https://api.vercel.com/v13/deployments/${DEPLOYMENT_ID}""",
-                            returnStdout: true
-                        ).trim()
-
-                        def statusJson = new groovy.json.JsonSlurper().parseText(statusResp)
-                        def state = statusJson.readyState
-
-                        if (state == "READY") {
-                            echo "✅ Deployment READY at https://${DEPLOYMENT_URL}"
-                            ready = true
-                        } else if (state == "ERROR") {
-                            error("❌ Deployment failed! Response: ${statusResp}")
-                        } else {
-                            echo "⏳ Deployment still ${state}... retrying (${retryCount + 1}/${maxRetries})"
-                            retryCount++
-                        }
-                    }
-
-                    if (!ready) {
-                        error("❌ Deployment did not finish in time.")
-                    }
+                    sh "curl -X POST $VERCEL_DEPLOY_URL"
                 }
             }
         }
@@ -150,7 +89,6 @@ pipeline {
                             -H "Authorization: token $GITHUB_TOKEN" \
                             -d '{ "ref": "main" }'
                     """
-                    echo "📦 Release workflow triggered in GitHub Actions."
                 }
             }
         }
