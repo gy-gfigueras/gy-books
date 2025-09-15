@@ -42,14 +42,9 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    try {
-                        build job: 'Front/Test/WingWords',
-                              wait: true,
-                              propagate: true
-                    } catch (Exception e) {
-                        echo "Error calling test job: ${e.getMessage()}"
-                        throw e
-                    }
+                    build job: 'Front/Test/WingWords',
+                          wait: true,
+                          propagate: true
                 }
             }
         }
@@ -73,21 +68,25 @@ pipeline {
         stage('Connect with Vercel') {
             steps {
                 script {
-                    def response = sh(script: """
-                        curl -s -X POST https://api.vercel.com/v13/deployments \
-                          -H "Authorization: Bearer $VERCEL_TOKEN" \
+                    def response = sh(
+                        script: """curl -s -X POST https://api.vercel.com/v13/deployments \
+                          -H "Authorization: Bearer ${VERCEL_TOKEN}" \
                           -H "Content-Type: application/json" \
                           -d '{
-                            "name": "wingwords",
-                            "gitSource": { "type": "github", "repoId": "$FORK_REPO" }
-                          }'
-                    """, returnStdout: true).trim()
+                                "name": "wingwords",
+                                "gitSource": { "type": "github", "repoId": "gy-gfigueras/gy-books" }
+                              }'""",
+                        returnStdout: true
+                    ).trim()
 
-                    def json = new groovy.json.JsonSlurper().parseText(response)
-                    env.DEPLOY_ID = json.id
-                    env.DEPLOY_URL = "https://${json.url}"
+                    // Parse JSON response
+                    def deploymentId = sh(script: "echo '${response}' | jq -r '.id'", returnStdout: true).trim()
+                    def deploymentUrl = sh(script: "echo '${response}' | jq -r '.url'", returnStdout: true).trim()
 
-                    echo "🔌 Connected with Vercel. Deployment started: ID=${env.DEPLOY_ID}, URL=${env.DEPLOY_URL}"
+                    env.DEPLOYMENT_ID = deploymentId
+                    env.DEPLOYMENT_URL = deploymentUrl
+
+                    echo "🔌 Connected with Vercel. Deployment started: ID=${deploymentId}, URL=https://${deploymentUrl}"
                 }
             }
         }
@@ -97,32 +96,30 @@ pipeline {
                 script {
                     def maxRetries = 60
                     def retryCount = 0
-                    def deploymentReady = false
+                    def ready = false
 
-                    while (!deploymentReady && retryCount < maxRetries) {
+                    while (!ready && retryCount < maxRetries) {
                         sleep 10
-                        def statusResp = sh(
-                            script: """curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \\
-                              "https://api.vercel.com/v13/deployments/${env.DEPLOY_ID}" """,
+                        def statusResponse = sh(
+                            script: "curl -s -H 'Authorization: Bearer ${VERCEL_TOKEN}' https://api.vercel.com/v13/deployments/${DEPLOYMENT_ID}",
                             returnStdout: true
                         ).trim()
 
-                        def statusJson = new groovy.json.JsonSlurper().parseText(statusResp)
-                        def state = statusJson.state
+                        def state = sh(script: "echo '${statusResponse}' | jq -r '.readyState'", returnStdout: true).trim()
 
                         if (state == "READY") {
-                            deploymentReady = true
-                            echo "✅ Deployment is ready: ${env.DEPLOY_URL}"
+                            echo "✅ Deployment READY at https://${DEPLOYMENT_URL}"
+                            ready = true
                         } else if (state == "ERROR") {
-                            error("❌ Deployment failed.")
+                            error("❌ Deployment failed! -> ${statusResponse}")
                         } else {
-                            echo "⏳ Deployment still ${state}... retrying (${retryCount+1}/${maxRetries})"
+                            echo "⏳ Deployment still ${state}... retrying (${retryCount + 1}/${maxRetries})"
                             retryCount++
                         }
                     }
 
-                    if (!deploymentReady) {
-                        error("Deployment did not complete within the expected time.")
+                    if (!ready) {
+                        error("❌ Deployment did not finish in time.")
                     }
                 }
             }
@@ -139,6 +136,7 @@ pipeline {
                             -H "Authorization: token $GITHUB_TOKEN" \
                             -d '{ "ref": "main" }'
                     """
+                    echo "📦 Release workflow triggered in GitHub Actions."
                 }
             }
         }
