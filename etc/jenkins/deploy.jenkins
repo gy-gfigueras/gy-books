@@ -12,6 +12,7 @@ pipeline {
         WORKSPACE_DIR = 'WingWords'
 
         VERCEL_TOKEN = credentials('VERCEL_DEPLOYMENT_TOKEN')
+        VERCEL_PROJECT_NAME = 'gy-books'
     }
 
     stages {
@@ -68,25 +69,27 @@ pipeline {
         stage('Connect with Vercel') {
             steps {
                 script {
+                    echo "🔌 Starting deployment to Vercel..."
                     def response = sh(
                         script: """curl -s -X POST https://api.vercel.com/v13/deployments \
                           -H "Authorization: Bearer ${VERCEL_TOKEN}" \
                           -H "Content-Type: application/json" \
                           -d '{
-                                "name": "wingwords",
-                                "gitSource": { "type": "github", "repoId": "gy-gfigueras/gy-books" }
+                                "name": "${VERCEL_PROJECT_NAME}",
+                                "gitSource": {
+                                    "type": "github",
+                                    "repoId": "${FORK_REPO}",
+                                    "ref": "main"
+                                }
                               }'""",
                         returnStdout: true
                     ).trim()
 
-                    // Parse JSON response
-                    def deploymentId = sh(script: "echo '${response}' | jq -r '.id'", returnStdout: true).trim()
-                    def deploymentUrl = sh(script: "echo '${response}' | jq -r '.url'", returnStdout: true).trim()
+                    def json = new groovy.json.JsonSlurper().parseText(response)
+                    env.DEPLOYMENT_ID = json.id
+                    env.DEPLOYMENT_URL = json.url
 
-                    env.DEPLOYMENT_ID = deploymentId
-                    env.DEPLOYMENT_URL = deploymentUrl
-
-                    echo "🔌 Connected with Vercel. Deployment started: ID=${deploymentId}, URL=https://${deploymentUrl}"
+                    echo "Deployment started: ID=${env.DEPLOYMENT_ID}, URL=https://${env.DEPLOYMENT_URL}"
                 }
             }
         }
@@ -100,18 +103,20 @@ pipeline {
 
                     while (!ready && retryCount < maxRetries) {
                         sleep 10
-                        def statusResponse = sh(
-                            script: "curl -s -H 'Authorization: Bearer ${VERCEL_TOKEN}' https://api.vercel.com/v13/deployments/${DEPLOYMENT_ID}",
+                        def statusResp = sh(
+                            script: """curl -s -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+                                        https://api.vercel.com/v13/deployments/${DEPLOYMENT_ID}""",
                             returnStdout: true
                         ).trim()
 
-                        def state = sh(script: "echo '${statusResponse}' | jq -r '.readyState'", returnStdout: true).trim()
+                        def statusJson = new groovy.json.JsonSlurper().parseText(statusResp)
+                        def state = statusJson.readyState
 
                         if (state == "READY") {
                             echo "✅ Deployment READY at https://${DEPLOYMENT_URL}"
                             ready = true
                         } else if (state == "ERROR") {
-                            error("❌ Deployment failed! -> ${statusResponse}")
+                            error("❌ Deployment failed! Response: ${statusResp}")
                         } else {
                             echo "⏳ Deployment still ${state}... retrying (${retryCount + 1}/${maxRetries})"
                             retryCount++
