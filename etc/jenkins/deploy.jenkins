@@ -70,6 +70,7 @@ pipeline {
             steps {
                 script {
                     echo "🔌 Starting deployment to Vercel..."
+
                     def response = sh(
                         script: """curl -s -X POST https://api.vercel.com/v13/deployments \
                           -H "Authorization: Bearer ${VERCEL_TOKEN}" \
@@ -85,7 +86,15 @@ pipeline {
                         returnStdout: true
                     ).trim()
 
+                    // Mostrar la respuesta cruda para debug
+                    echo "Vercel response: ${response}"
+
                     def json = new groovy.json.JsonSlurper().parseText(response)
+
+                    if (json.error) {
+                        error("Vercel deployment failed: ${json.error.message}")
+                    }
+
                     env.DEPLOYMENT_ID = json.id
                     env.DEPLOYMENT_URL = json.url
 
