@@ -1,122 +1,93 @@
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        NVM_DIR       = "${WORKSPACE}/.nvm"
+  environment {
+    WORKSPACE_DIR = 'WingWords'
+    NVM_DIR = "${WORKSPACE}/.nvm"
+  }
 
-        GITHUB_USER   = 'gy-gfigueras'
-        GITHUB_TOKEN  = credentials('FRONT_GITHUB_TOKEN')
+  stages {
+    stage('Install Node') {
+      steps {
+        dir(WORKSPACE_DIR) {
+          sh '''
+            mkdir -p "$NVM_DIR"
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm install 18
 
-        MAIN_REPO     = 'GY-CODING/gy-books'
-        FORK_REPO     = "${GITHUB_USER}/gy-books"
-        WORKSPACE_DIR = 'WingWords'
+            # Crear wrapper para ejecutar npm con Node 18
+            echo '#!/bin/bash' > with-node.sh
+            echo 'export NVM_DIR="$NVM_DIR"' >> with-node.sh
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
+            echo 'nvm use 18 > /dev/null' >> with-node.sh
+            echo 'exec "$@"' >> with-node.sh
+            chmod +x with-node.sh
 
+            echo ">>> Node y npm instalados:"
+            ./with-node.sh node -v
+            ./with-node.sh npm -v
+          '''
+        }
+      }
+    }
+
+    stage('Prepare Workspace') {
+      steps {
+        script {
+          if (fileExists(WORKSPACE_DIR)) {
+            echo "WingWords directory already exists, cleaning..."
+            dir(WORKSPACE_DIR) {
+              sh '''
+                rm -rf .nvm with-node.sh
+              '''
+            }
+          } else {
+            echo "Creating WingWords directory..."
+            sh "mkdir -p $WORKSPACE_DIR"
+          }
+        }
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        dir(WORKSPACE_DIR) {
+          sh './with-node.sh npm install'
+        }
+      }
+    }
+
+    stage('Run Tests') {
+      steps {
+        dir(WORKSPACE_DIR) {
+          sh './with-node.sh npm run test'
+        }
+      }
+    }
+
+    stage('Deploy to Vercel') {
+      environment {
         VERCEL_DEPLOYMENT_TOKEN = credentials('VERCEL_DEPLOYMENT_TOKEN')
+      }
+      steps {
+        dir(WORKSPACE_DIR) {
+          sh '''
+            echo "Instalando vercel-cli..."
+            ./with-node.sh npm install -g vercel
+
+            echo "Ejecutando despliegue en Vercel..."
+            ./with-node.sh vercel --prod --name=gy-books --token=$VERCEL_DEPLOYMENT_TOKEN --yes
+          '''
+        }
+      }
     }
 
-    stages {
-        stage('Prepare Repository') {
-            steps {
-                script {
-                    if (fileExists(WORKSPACE_DIR)) {
-                        echo "Repository already exists, updating..."
-                        dir(WORKSPACE_DIR) {
-                            sh '''
-                                git reset --hard
-                                git clean -fd
-                                git checkout main
-                                git fetch origin
-                                git reset --hard origin/main
-                            '''
-                        }
-                    } else {
-                        echo "Cloning repository..."
-                        sh '''
-                            git clone https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$FORK_REPO.git $WORKSPACE_DIR
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    build job: 'Front/Test/WingWords',
-                          wait: true,
-                          propagate: true
-                }
-            }
-        }
-
-        stage('Sync Fork') {
-            steps {
-                script {
-                    dir(WORKSPACE_DIR) {
-                        sh '''
-                            git remote add upstream https://github.com/$MAIN_REPO.git || true
-                            git fetch upstream
-                            git checkout main
-                            git merge upstream/main --allow-unrelated-histories
-                            git push origin main
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Install Node') {
-            steps {
-                dir(WORKSPACE_DIR) {
-                    sh '''
-                        mkdir -p "$NVM_DIR"
-                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                        nvm install 18
-
-                        # Crear wrapper para usar Node 18
-                        echo '#!/bin/bash' > with-node.sh
-                        echo 'export NVM_DIR="$NVM_DIR"' >> with-node.sh
-                        echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
-                        echo 'nvm use 18 > /dev/null' >> with-node.sh
-                        echo 'exec "$@"' >> with-node.sh
-                        chmod +x with-node.sh
-
-                        echo ">>> Node y npm instalados:"
-                        ./with-node.sh node -v
-                        ./with-node.sh npm -v
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy to Vercel') {
-            steps {
-                dir(WORKSPACE_DIR) {
-                    sh '''
-                        echo "Instalando vercel-cli..."
-                        ./with-node.sh npm install -g vercel
-
-                        echo "Ejecutando despliegue en Vercel..."
-                        ./with-node.sh vercel --prod --token=$VERCEL_DEPLOYMENT_TOKEN --confirm
-                    '''
-                }
-            }
-        }
-
-        stage('Create Release') {
-            steps {
-                script {
-                    def WORKFLOW_FILE = "release.yml"
-
-                    sh """
-                        curl -X POST https://api.github.com/repos/$MAIN_REPO/actions/workflows/$WORKFLOW_FILE/dispatches \\
-                            -H "Accept: application/vnd.github.v3+json" \\
-                            -H "Authorization: token $GITHUB_TOKEN" \\
-                            -d '{ "ref": "main" }'
-                    """
-                }
-            }
-        }
+    stage('Create Release') {
+      steps {
+        echo 'Creando release...'
+        // aquí puedes añadir tu lógica de release (GitHub release, etc.)
+      }
     }
+  }
 }
