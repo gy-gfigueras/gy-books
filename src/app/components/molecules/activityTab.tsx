@@ -47,6 +47,35 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
     </Box>
   ));
 
+  const SkeletonActivityItem = React.memo(() => (
+    <Box
+      sx={{
+        p: 2,
+        mb: 2,
+        height: '100px',
+        background: 'rgba(35, 35, 35, 0.85)',
+        borderRadius: '12px',
+        border: '1px solid #FFFFFF30',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+      }}
+    >
+      <Skeleton
+        variant="rectangular"
+        width={60}
+        height={80}
+        sx={{ borderRadius: 2 }}
+      />
+      <Skeleton
+        variant="text"
+        width="70%"
+        height={24}
+        sx={{ fontFamily: goudi.style.fontFamily }}
+      />
+    </Box>
+  ));
+
   return (
     <Box
       sx={{
@@ -57,37 +86,20 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
       }}
     >
       {isLoading ? (
-        <Box sx={{ maxWidth: 500, mx: 'auto' }}>
-          {[...Array(3)].map((_, i) => (
-            <Box
-              key={i}
-              sx={{
-                p: 2,
-                mb: 2,
-                height: '100px',
-                background: 'rgba(35, 35, 35, 0.85)',
-                borderRadius: '12px',
-                border: '1px solid #FFFFFF30',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2,
-              }}
-            >
-              <Skeleton
-                variant="rectangular"
-                width={60}
-                height={80}
-                sx={{ borderRadius: 2 }}
-              />
-              <Box sx={{ flex: 1 }}>
-                <Skeleton variant="text" width="80%" height={24} />
-                <Skeleton variant="text" width="60%" height={18} />
-              </Box>
-            </Box>
+        <Box sx={{ maxWidth: '100%', mx: 'auto' }}>
+          {[...Array(5)].map((_, i) => (
+            <SkeletonActivityItem key={i} />
           ))}
         </Box>
       ) : activities && activities.length > 0 ? (
-        <Box sx={{ maxHeight: 500, overflowY: 'auto', px: 1 }}>
+        <Box
+          sx={{
+            maxHeight: '70vh',
+            overflowY: 'auto',
+            px: 1,
+            scrollbarColor: ' #8C54FF transparent',
+          }}
+        >
           {activities.map((activity: Activity) => (
             <ActivityItem activity={activity} key={activity.bookId} />
           ))}

@@ -509,6 +509,7 @@ function ProfilePageContent() {
         justifyContent: 'center',
         alignItems: 'flex-start',
         minHeight: '70vh',
+        height: '100%',
         borderRadius: 0,
         boxShadow: 'none',
       }}

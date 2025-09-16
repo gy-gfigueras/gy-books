@@ -27,7 +27,7 @@ export const BooksList: React.FC<BooksListProps> = ({ books, hasMore }) => (
       flexWrap: { xs: 'unset', md: 'wrap' },
       gap: { xs: 1, sm: 2 },
       overflowY: 'auto',
-      maxHeight: { xs: 'calc(100vh - 180px)', md: 560 },
+      maxHeight: '65vh',
       minHeight: 240,
       alignItems: { xs: 'stretch', md: 'center' },
       justifyContent: { xs: 'flex-start', md: 'center' },
@@ -59,8 +59,8 @@ export const BooksList: React.FC<BooksListProps> = ({ books, hasMore }) => (
     ))}
     {!hasMore && books.length > 0 && (
       <Box sx={{ width: '100%', textAlign: 'center', py: 2 }}>
-        <Typography variant="body2" sx={{ color: '#fff' }}>
-          Todos los libros cargados
+        <Typography variant="body2" sx={{ color: '#ffffff30' }}>
+          All books loaded
         </Typography>
       </Box>
     )}
