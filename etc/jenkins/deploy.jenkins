@@ -76,63 +76,38 @@ pipeline {
     }
 
     stage('Deploy to Vercel') {
-      steps {
-        script {
-          dir(WORKSPACE_DIR) {
-            echo "Iniciando despliegue vía API Vercel..."
-
-            // Crear despliegue usando curl
-            def deploymentResponse = sh(
-              script: """
-                curl -s -X POST https://api.vercel.com/v13/deployments \
-                  -H "Authorization: Bearer $VERCEL_DEPLOYMENT_TOKEN" \
-                  -H "Content-Type: application/json" \
-                  -d '{
-                        "name": "gy-books",
-                        "target": "production",
-                        "gitSource": {
-                          "type": "github",
-                          "repoId": "${MAIN_REPO}",
-                          "org": "GY-CODING",
-                          "repo": "gy-books",
-                          "ref": "main"
-                        }
-                      }'
-              """,
-              returnStdout: true
-            ).trim()
-
-            echo "Respuesta inicial de Vercel: ${deploymentResponse}"
-
-            // Extraer deployment ID
-            def json = readJSON text: deploymentResponse
-            def deploymentId = json.id
-            echo "Deployment ID: ${deploymentId}"
-
-            // Polling hasta que el deployment esté listo
-            def status = ""
-            timeout(time: 10, unit: 'MINUTES') {
-              waitUntil {
-                def res = sh(
-                  script: "curl -s -H 'Authorization: Bearer $VERCEL_DEPLOYMENT_TOKEN' https://api.vercel.com/v13/deployments/${deploymentId}",
-                  returnStdout: true
-                ).trim()
-                def info = readJSON text: res
-                status = info.readyState
-                echo "Estado actual del deployment: ${status}"
-                return (status == "READY" || status == "ERROR")
-              }
-            }
-
-            if (status == "ERROR") {
-              error "El despliegue falló en Vercel"
-            } else {
-              echo "Despliegue completado correctamente"
+  environment {
+    VERCEL_DEPLOYMENT_TOKEN = credentials('VERCEL_DEPLOYMENT_TOKEN')
+  }
+  steps {
+    dir(WORKSPACE_DIR) {
+      script {
+        echo "Iniciando despliegue vía API Vercel..."
+        sh(script: '''
+          DEPLOY_PAYLOAD=$(cat <<EOF
+          {
+            "name": "gy-books",
+            "target": "production",
+            "gitSource": {
+              "type": "github",
+              "repoId": "GY-CODING/gy-books",
+              "org": "GY-CODING",
+              "repo": "gy-books",
+              "ref": "main"
             }
           }
-        }
+EOF
+          )
+          curl -s -X POST https://api.vercel.com/v13/deployments \
+            -H "Authorization: Bearer $VERCEL_DEPLOYMENT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$DEPLOY_PAYLOAD"
+        ''', env: [VERCEL_DEPLOYMENT_TOKEN: "${VERCEL_DEPLOYMENT_TOKEN}"])
       }
     }
+  }
+}
+
 
     stage('Create Release') {
       steps {
