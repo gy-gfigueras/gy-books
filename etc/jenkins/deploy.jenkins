@@ -76,37 +76,37 @@ pipeline {
     }
 
     stage('Deploy to Vercel') {
-  environment {
-    VERCEL_DEPLOYMENT_TOKEN = credentials('VERCEL_DEPLOYMENT_TOKEN')
+    steps {
+        dir(WORKSPACE_DIR) {
+            withCredentials([string(credentialsId: 'VERCEL_DEPLOYMENT_TOKEN', variable: 'TOKEN')]) {
+        sh '''
+          echo "Iniciando despliegue vía API Vercel..."
+
+          DEPLOY_PAYLOAD=$(cat <<'EOF'
+{
+  "name": "gy-books",
+  "target": "production",
+  "gitSource": {
+    "type": "github",
+    "repoId": "GY-CODING/gy-books",
+    "org": "GY-CODING",
+    "repo": "gy-books",
+    "ref": "main"
   }
-  steps {
-    dir(WORKSPACE_DIR) {
-      script {
-        echo "Iniciando despliegue vía API Vercel..."
-        sh(script: '''
-          DEPLOY_PAYLOAD=$(cat <<EOF
-          {
-            "name": "gy-books",
-            "target": "production",
-            "gitSource": {
-              "type": "github",
-              "repoId": "GY-CODING/gy-books",
-              "org": "GY-CODING",
-              "repo": "gy-books",
-              "ref": "main"
-            }
-          }
+}
 EOF
           )
+
           curl -s -X POST https://api.vercel.com/v13/deployments \
-            -H "Authorization: Bearer $VERCEL_DEPLOYMENT_TOKEN" \
+            -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
             -d "$DEPLOY_PAYLOAD"
-        ''', env: [VERCEL_DEPLOYMENT_TOKEN: "${VERCEL_DEPLOYMENT_TOKEN}"])
+        '''
       }
     }
   }
 }
+
 
 
     stage('Create Release') {
