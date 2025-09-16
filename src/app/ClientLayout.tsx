@@ -45,10 +45,12 @@ import { UUID } from 'crypto';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import PersonIcon from '@mui/icons-material/Person';
 import { CustomButton } from './components/atoms/customButton';
+import { useStatsPreFetch } from '@/hooks/useStatsPreFetch';
 import { useUser } from '@/hooks/useUser';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   useUser(); // Fetch and store profile in Redux
   const { user, isLoading } = useGyCodingUser();
+  useStatsPreFetch(user?.id); // Pre-fetch stats for current user
   const { count } = useFriendRequestsCount(user?.id as UUID);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

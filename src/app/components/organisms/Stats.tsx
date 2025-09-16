@@ -1,6 +1,8 @@
 import React from 'react';
 import { UUID } from 'crypto';
 import { useStats } from '@/hooks/useStats';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 import AuthorsBarChart from '../molecules/AuthorsBarChart';
 import { Box, Typography } from '@mui/material';
 import DonutChart from '../molecules/DonutChart';
@@ -8,7 +10,18 @@ import { goudi } from '@/utils/fonts/fonts';
 import StatsSkeleton from '../molecules/StatsSkeleton';
 
 export default function StatsComponent({ id }: { id: UUID }) {
-  const { data, isLoading, error } = useStats(id);
+  const storedStats = useSelector((state: RootState) => state.stats);
+  const isCurrentUser = storedStats.userId === id.toString();
+
+  // Use Redux if available for current user, else fetch
+  const { data, isLoading, error } =
+    isCurrentUser && storedStats.data
+      ? {
+          data: storedStats.data,
+          isLoading: storedStats.isLoading,
+          error: storedStats.error ? new Error(storedStats.error) : null,
+        }
+      : useStats(id);
   if (isLoading) return <StatsSkeleton />;
 
   if (error) return <div>Error: {error.message}</div>;
