@@ -13,15 +13,22 @@ export default function StatsComponent({ id }: { id: UUID }) {
   const storedStats = useSelector((state: RootState) => state.stats);
   const isCurrentUser = storedStats.userId === id.toString();
 
-  // Use Redux if available for current user, else fetch
-  const { data, isLoading, error } =
+  // Always call useStats, but prefer Redux data if available
+  const {
+    data: hookData,
+    isLoading: hookLoading,
+    error: hookError,
+  } = useStats(id);
+
+  const data = isCurrentUser && storedStats.data ? storedStats.data : hookData;
+  const isLoading =
+    isCurrentUser && storedStats.data ? storedStats.isLoading : hookLoading;
+  const error =
     isCurrentUser && storedStats.data
-      ? {
-          data: storedStats.data,
-          isLoading: storedStats.isLoading,
-          error: storedStats.error ? new Error(storedStats.error) : null,
-        }
-      : useStats(id);
+      ? storedStats.error
+        ? new Error(storedStats.error)
+        : null
+      : hookError;
   if (isLoading) return <StatsSkeleton />;
 
   if (error) return <div>Error: {error.message}</div>;
