@@ -30,6 +30,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^next/font/google$': '<rootDir>/__mocks__/nextFontGoogleMock.js',
     '^next/image$': '<rootDir>/__mocks__/next-image-mock.js',
+    '^@auth0/nextjs-auth0$': '<rootDir>/__mocks__/auth0Mock.js',
   },
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': [
