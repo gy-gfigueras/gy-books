@@ -5,6 +5,13 @@ module.exports = {
   testEnvironment: 'jsdom',
   testMatch: ['**/?(*.)+(test).[jt]s?(x)'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx,js,jsx}',
+    '!src/**/*.d.ts',
+    '!src/**/__mocks__/**',
+  ],
+  coverageReporters: ['html'],
   testPathIgnorePatterns: [
     '<rootDir>/.nvm/',
     '<rootDir>/.next/',
