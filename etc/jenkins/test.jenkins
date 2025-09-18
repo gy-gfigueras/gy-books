@@ -8,36 +8,27 @@ pipeline {
 
   stages {
     stage('Prepare Workspace') {
-      stage('Checkout') {
-        steps {
-          // Clona el repo en la carpeta WingWords
-          sh '''
-            rm -rf $WORKSPACE_DIR/*
-            git clone $GIT_URL $WORKSPACE_DIR
-          '''
+      steps {
+        sh '''
+          rm -rf $WORKSPACE_DIR/*
+          git clone $GIT_URL $WORKSPACE_DIR
+        '''
+        script {
+          if (fileExists(WORKSPACE_DIR)) {
+            echo "WingWords directory already exists, cleaning..."
+            dir(WORKSPACE_DIR) {
+              sh '''
+                rm -rf .nvm with-node.sh
+              '''
+            }
+          } else {
+            echo "Creating WingWords directory..."
+            sh "mkdir -p $WORKSPACE_DIR"
+          }
         }
       }
-          stage('Prepare Workspace') {
-            steps {
-              sh '''
-                rm -rf $WORKSPACE_DIR/*
-                git clone $GIT_URL $WORKSPACE_DIR
-              '''
-              script {
-                if (fileExists(WORKSPACE_DIR)) {
-                  echo "WingWords directory already exists, cleaning..."
-                  dir(WORKSPACE_DIR) {
-                    sh '''
-                      rm -rf .nvm with-node.sh
-                    '''
-                  }
-                } else {
-                  echo "Creating WingWords directory..."
-                  sh "mkdir -p $WORKSPACE_DIR"
-                }
-              }
-            }
-          }
+    }
+
     stage('Install Node') {
       steps {
         dir(WORKSPACE_DIR) {
