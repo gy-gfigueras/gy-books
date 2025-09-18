@@ -8,6 +8,15 @@ pipeline {
 
   stages {
     stage('Prepare Workspace') {
+      stage('Checkout') {
+        steps {
+          // Clona el repo en la carpeta WingWords
+          sh '''
+            rm -rf $WORKSPACE_DIR/*
+            git clone $GIT_URL $WORKSPACE_DIR
+          '''
+        }
+      }
       steps {
         script {
           if (fileExists(WORKSPACE_DIR)) {
