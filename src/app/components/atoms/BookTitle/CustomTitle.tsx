@@ -7,12 +7,14 @@ interface CustomTitleProps {
   size?: string;
   fontFamily?: string;
   sx?: SxProps;
+  [key: string]: unknown;
 }
 export default function CustomTitle({
   text,
   size,
   fontFamily,
   sx,
+  ...props
 }: CustomTitleProps) {
   return (
     <Typography
@@ -24,6 +26,7 @@ export default function CustomTitle({
         fontFamily: fontFamily || birthStone.style.fontFamily,
         ...sx,
       }}
+      {...props}
     >
       {text}
     </Typography>

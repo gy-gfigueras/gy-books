@@ -38,13 +38,13 @@ import InboxIcon from '@mui/icons-material/Inbox';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFriendRequestsCount } from '@/hooks/useFriendRequestsCount';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
-import FriendRequest from './components/atoms/FriendRequest';
-import AnimatedAlert from './components/atoms/Alert';
+import FriendRequest from './components/atoms/FriendRequest/FriendRequest';
+import AnimatedAlert from './components/atoms/Alert/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { UUID } from 'crypto';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import PersonIcon from '@mui/icons-material/Person';
-import { CustomButton } from './components/atoms/customButton';
+import { CustomButton } from './components/atoms/CustomButton/customButton';
 import { useStatsPreFetch } from '@/hooks/useStatsPreFetch';
 import { useUser } from '@/hooks/useUser';
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {

@@ -9,11 +9,11 @@ import Book from '@/domain/book.model';
 import SearchIcon from '@mui/icons-material/Search';
 import Head from 'next/head';
 import { useDebounce } from '@/hooks/useDebounce';
-import { BookCard } from '../components/atoms/BookCard';
+import { BookCard } from '../components/atoms/BookCard/BookCard';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { birthStone, goudi } from '@/utils/fonts/fonts';
-import LottieAnimation from '../components/atoms/LottieAnimation';
-import CustomTitle from '../components/atoms/CustomTitle';
+import LottieAnimation from '../components/atoms/LottieAnimation/LottieAnimation';
+import CustomTitle from '../components/atoms/BookTitle/CustomTitle';
 
 function BooksContent() {
   const searchParams = useSearchParams();

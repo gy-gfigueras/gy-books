@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Box, Typography, Skeleton } from '@mui/material';
-import { CustomButton } from '@/app/components/atoms/customButton';
+import { CustomButton } from '@/app/components/atoms/CustomButton/customButton';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchIcon from '@mui/icons-material/Launch';
-import { UserImage } from '@/app/components/atoms/UserImage';
+import { UserImage } from '@/app/components/atoms/UserAvatar/UserImage';
 import { cinzel, goudi } from '@/utils/fonts/fonts';
 import { BiographySection } from '../BiographySection/BiographySection';
 

@@ -20,7 +20,7 @@ import { BooksList } from '@/app/profile/components/BooksList/BooksList';
 import { useParams, useSearchParams } from 'next/navigation';
 import { goudi } from '@/utils/fonts/fonts';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
-import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton';
+import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton/ProfileSkeleton';
 import { ProfileHeaderSkeleton } from '@/app/profile/components/ProfileHeader/ProfileHeaderSkeleton';
 import { BooksListSkeleton } from '@/app/profile/components/BooksList/BooksListSkeleton';
 import { getBooksWithPagination } from '@/app/actions/book/fetchApiBook';

@@ -9,7 +9,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import LottieAnimation from '@/app/components/atoms/LottieAnimation';
+import LottieAnimation from '@/app/components/atoms/LottieAnimation/LottieAnimation';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 

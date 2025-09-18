@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Typography, Skeleton } from '@mui/material';
 import { goudi } from '@/utils/fonts/fonts';
 import { Activity } from '@/domain/activity.model';
-import { BookImage } from '../atoms/BookImage';
+import { BookImage } from '../atoms/BookCover/BookImage';
 import { UUID } from 'crypto';
 import { useActivities } from '@/hooks/useActivities';
 
