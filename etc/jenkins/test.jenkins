@@ -10,7 +10,7 @@ pipeline {
     stage('Prepare Workspace') {
       steps {
         sh '''
-          rm -rf $WORKSPACE_DIR/*
+          rm -rf $WORKSPACE_DIR
           git clone $GIT_URL $WORKSPACE_DIR
         '''
         script {
