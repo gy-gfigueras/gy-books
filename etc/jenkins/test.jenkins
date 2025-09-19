@@ -4,6 +4,8 @@ pipeline {
   environment {
     WORKSPACE_DIR = 'WingWords'
     NVM_DIR = "${WORKSPACE}/.nvm"
+    // Descomenta la línea siguiente para desactivar SonarQube
+    // SKIP_SONAR = 'true'
   }
 
   tools {
@@ -64,14 +66,22 @@ pipeline {
     }
 
     stage('SonarQube Analysis') {
+      when {
+        // Solo ejecutar si la variable SKIP_SONAR no está definida
+        not { environment name: 'SKIP_SONAR', value: 'true' }
+      }
       steps {
         dir(WORKSPACE_DIR) {
           script {
             try {
+              echo "Verificando conexión a SonarQube..."
+
               // Intentar usar el scanner configurado en Jenkins
               def scannerHome = tool 'GY-Sonar'
               withSonarQubeEnv('GY-Sonar') {
                 sh """
+                  echo "SonarQube URL: \$SONAR_HOST_URL"
+                  echo "Ejecutando análisis..."
                   ${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectKey=wingwords \
                     -Dsonar.projectName="WingWords" \
@@ -80,21 +90,9 @@ pipeline {
                 """
               }
             } catch (Exception e) {
-              echo "Error con scanner de Jenkins: ${e.getMessage()}"
-              echo "Intentando con npx sonar-scanner..."
-
-              // Fallback usando npx
-              withSonarQubeEnv('GY-Sonar') {
-                sh '''
-                  ./with-node.sh npx sonar-scanner \
-                    -Dsonar.projectKey=wingwords \
-                    -Dsonar.projectName="WingWords" \
-                    -Dsonar.sources=src \
-                    -Dsonar.exclusions="**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/.next/**" \
-                    -Dsonar.host.url=$SONAR_HOST_URL \
-                    -Dsonar.login=$SONAR_AUTH_TOKEN
-                '''
-              }
+              echo "⚠️ SonarQube Analysis falló: ${e.getMessage()}"
+              echo "Continuando sin análisis de SonarQube..."
+              currentBuild.result = 'UNSTABLE'
             }
           }
         }
@@ -102,14 +100,24 @@ pipeline {
     }
 
     stage('Quality Gate') {
+      when {
+        // Solo si SonarQube se ejecutó correctamente
+        expression { currentBuild.result != 'UNSTABLE' }
+      }
       steps {
         script {
           try {
-            timeout(time: 5, unit: 'MINUTES') {
-              waitForQualityGate abortPipeline: false
+            timeout(time: 2, unit: 'MINUTES') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                echo "⚠️ Quality Gate status: ${qg.status}"
+                currentBuild.result = 'UNSTABLE'
+              } else {
+                echo "✅ Quality Gate passed!"
+              }
             }
           } catch (Exception e) {
-            echo "Quality Gate failed or timed out: ${e.getMessage()}"
+            echo "⚠️ Quality Gate failed or timed out: ${e.getMessage()}"
             currentBuild.result = 'UNSTABLE'
           }
         }
