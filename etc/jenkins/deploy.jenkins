@@ -82,6 +82,7 @@ pipeline {
             sh '''
               git remote add upstream https://github.com/$MAIN_REPO.git || true
               git fetch upstream
+              git stash || true
               git checkout main
               git merge upstream/main --allow-unrelated-histories
               git push origin main
@@ -104,8 +105,7 @@ pipeline {
   "target": "production",
   "gitSource": {
     "type": "github",
-    "repoId": "GY-CODING/gy-books",
-    "org": "GY-CODING",
+    "repoId": "gy-gfigueras/gy-books",
     "repo": "gy-books",
     "ref": "main"
   }
