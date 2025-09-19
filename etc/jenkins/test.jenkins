@@ -7,7 +7,7 @@ pipeline {
   }
 
   tools {
-    sonarQubeScanner 'GY-Sonar'   // nombre del scanner configurado en Jenkins
+    SonarRunnerInstallation 'GY-Sonar'
   }
 
   stages {
@@ -66,13 +66,7 @@ pipeline {
       steps {
         dir(WORKSPACE_DIR) {
           withSonarQubeEnv('GY-Sonar') {
-            sh '''
-              ./with-node.sh npx sonar-scanner \
-                -Dsonar.projectKey=wingwords \
-                -Dsonar.sources=src \
-                -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_AUTH_TOKEN
-            '''
+            sh 'sonar-scanner -Dsonar.projectKey=wingwords -Dsonar.sources=src'
           }
         }
       }
