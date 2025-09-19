@@ -6,6 +6,10 @@ pipeline {
     NVM_DIR = "${WORKSPACE}/.nvm"
   }
 
+  tools {
+    sonarQubeScanner 'GY-Sonar'   // nombre del scanner configurado en Jenkins
+  }
+
   stages {
     stage('Prepare Workspace') {
       steps {
@@ -34,7 +38,7 @@ pipeline {
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             nvm install 18
 
-            # Crear wrapper para ejecutar npm con Node 18
+            # Wrapper para usar node/npm
             echo '#!/bin/bash' > with-node.sh
             echo 'export NVM_DIR="$NVM_DIR"' >> with-node.sh
             echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
@@ -54,6 +58,22 @@ pipeline {
       steps {
         dir(WORKSPACE_DIR) {
           sh './with-node.sh npm install'
+        }
+      }
+    }
+
+    stage('SonarQube Analysis') {
+      steps {
+        dir(WORKSPACE_DIR) {
+          withSonarQubeEnv('GY-Sonar') {
+            sh '''
+              ./with-node.sh npx sonar-scanner \
+                -Dsonar.projectKey=wingwords \
+                -Dsonar.sources=src \
+                -Dsonar.host.url=$SONAR_HOST_URL \
+                -Dsonar.login=$SONAR_AUTH_TOKEN
+            '''
+          }
         }
       }
     }
