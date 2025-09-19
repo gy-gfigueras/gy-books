@@ -1,0 +1,26 @@
+# Archivos y directorios que Vercel debe ignorar
+.env.local
+.env*.local
+.DS_Store
+*.log
+node_modules/
+coverage/
+.nyc_output/
+.cache/
+dist/
+
+# Source maps (para evitar errores en producción)
+**/*.map
+**/*.map.js
+
+# Tests
+__tests__/
+__mocks__/
+cypress/
+*.test.*
+*.spec.*
+
+# Development files
+.eslintcache
+.next/
+out/

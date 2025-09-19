@@ -1,12 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: '/Users/gfigueras/projects/gycoding/gy-books',
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Configuración de source maps deshabilitada para producción
+  productionBrowserSourceMaps: false,
+  // External packages para evitar problemas con MongoDB en servidor
+  serverExternalPackages: ['mongodb'],
   images: {
     domains: [
       'api.gycoding.com',
@@ -16,6 +19,9 @@ const nextConfig = {
       'raw.githubusercontent.com',
     ],
   },
+  // Optimizaciones para producción
+  compress: true,
+  poweredByHeader: false,
 };
 
 export default nextConfig;
