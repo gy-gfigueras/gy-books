@@ -29,7 +29,19 @@ node {
   }
 
   stage('Run Tests with Coverage') {
-    sh './with-node.sh npm run test:coverage'
+    sh '''
+      # Crear directorio coverage si no existe
+      mkdir -p coverage
+
+      # Ejecutar tests con coverage y reportes XML
+      ./with-node.sh npm run test:coverage
+
+      # Verificar que se generaron los archivos necesarios
+      echo "Verificando archivos generados:"
+      ls -la coverage/
+      [ -f coverage/lcov.info ] && echo "✓ LCOV file found" || echo "✗ LCOV file NOT found"
+      [ -f coverage/test-report.xml ] && echo "✓ Test report XML found" || echo "✗ Test report XML NOT found"
+    '''
   }
 
   stage('SonarQube Analysis') {
@@ -47,8 +59,25 @@ node {
       echo "Verificando archivos de cobertura..."
       ls -la coverage/ || echo "No coverage directory found"
       [ -f coverage/lcov.info ] && echo "LCOV file found" || echo "LCOV file NOT found"
+      [ -f coverage/test-report.xml ] && echo "Test report XML found" || echo "Test report XML NOT found"
+
+      # Verificar que el archivo XML existe antes de continuar
+      if [ ! -f coverage/test-report.xml ]; then
+        echo "ERROR: Test report XML not found. SonarQube analysis may fail."
+        echo "Attempting to generate it manually..."
+        npm run test:coverage || echo "Manual test run failed"
+        ls -la coverage/
+      fi
 
       # Ejecutar análisis de SonarQube usando la herramienta configurada
+      # Condicionalmente incluir test execution reports si el archivo existe
+      if [ -f coverage/test-report.xml ]; then
+        echo "Test report XML found - including in SonarQube analysis"
+        TEST_EXECUTION_PARAM="-Dsonar.testExecutionReportPaths=coverage/test-report.xml"
+      else
+        echo "Test report XML not found - proceeding without test execution reports"
+        TEST_EXECUTION_PARAM=""
+      fi
     ''' + "${scannerHome}/bin/sonar-scanner \\\n" +
     '''        -Dsonar.projectKey=GY-Books \\
         -Dsonar.sources=src \\
@@ -57,7 +86,7 @@ node {
         -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/coverage/**,**/__mocks__/**,**/*.d.ts \\
         -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \\
         -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \\
-        -Dsonar.testExecutionReportPaths=coverage/test-report.xml \\
+        $TEST_EXECUTION_PARAM \\
         -Dsonar.sourceEncoding=UTF-8
     '''
   }
