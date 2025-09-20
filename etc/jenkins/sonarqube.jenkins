@@ -19,7 +19,6 @@ node {
       echo 'exec "$@"' >> with-node.sh
       chmod +x with-node.sh
 
-      echo ">>> Node y npm instalados:"
       ./with-node.sh node -v
       ./with-node.sh npm -v
     '''
@@ -30,44 +29,23 @@ node {
   }
 
   stage('Run Tests with Coverage') {
-    sh '''
-      echo "Ejecutando tests con cobertura..."
-      ./with-node.sh npm run test:coverage
-    '''
+    sh './with-node.sh npm run test:coverage'
   }
 
   stage('SonarQube Analysis') {
-    def scannerHome = tool 'SonarScanner'
-    withSonarQubeEnv('SonarScanner') {
+    withSonarQubeEnv('GY-Sonar') {
       sh '''#!/bin/bash
-        # Configurar Node.js en el PATH para SonarQube
         export NVM_DIR="${WORKSPACE}/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
         nvm use 18
 
-        echo "Node.js version for SonarQube:"
-        node -v
-        npm -v
-
-        echo "SonarQube URL: $SONAR_HOST_URL"
-        echo "Current directory: $(pwd)"
-        echo "Directory contents:"
-        ls -la
-
-        echo "Source directory contents:"
-        find src -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | head -20
-
-        echo "Checking coverage files:"
+        echo ">>> Verificando reportes generados:"
         ls -la coverage/ || echo "No coverage directory found"
+        [ -f coverage/lcov.info ] && echo "LCOV file found" || echo "LCOV file NOT found"
+        [ -f coverage/test-report.xml ] && echo "JUnit file found" || echo "JUnit file NOT found"
 
-        echo "Coverage lcov.info preview:"
-        head -10 coverage/lcov.info || echo "No lcov.info file found"
-
-        echo "Checking for sonar-project.properties:"
-        cat sonar-project.properties || echo "No sonar-project.properties found"
-
-        # Usar la configuración del archivo sonar-project.properties
-      ''' + "${scannerHome}/bin/sonar-scanner -X"
+        sonar-scanner
+      '''
     }
   }
 

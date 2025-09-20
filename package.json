@@ -15,7 +15,7 @@
     "prepare": "husky install",
     "precommit": "lint-staged",
     "test": "jest --coverage",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
     "test:ci": "jest --coverage --watchAll=false",
     "cypress:open": "cypress open",
@@ -74,6 +74,7 @@
     "husky": "^8.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.0.5",
+    "jest-junit": "^16.0.0",
     "lint-staged": "15.5.0",
     "mongodb": "^6.17.0",
     "prettier": "^3.5.3",
@@ -92,5 +93,17 @@
       "prettier --write"
     ],
     "next-env.d.ts": []
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "text",
+      "cobertura"
+    ],
+    "coverageDirectory": "coverage"
+  },
+  "jest-junit": {
+    "output": "coverage/test-report.xml"
   }
 }
