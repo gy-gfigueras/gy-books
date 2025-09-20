@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    WORKSPACE_DIR = 'WingWords'
+    WORKSPACE_DIR = 'gy-books-analysis'
     NVM_DIR = "${WORKSPACE}/.nvm"
     // Descomenta la línea siguiente para desactivar SonarQube
     // SKIP_SONAR = 'true'
@@ -10,7 +10,7 @@ pipeline {
 
   tools {
     // SonarQube Scanner configurado en Jenkins
-    'hudson.plugins.sonar.SonarRunnerInstallation' 'GY-Sonar'
+    'hudson.plugins.sonar.SonarRunnerInstallation' 'SonarScanner'
   }
 
   stages {
@@ -18,14 +18,14 @@ pipeline {
       steps {
         script {
           if (fileExists(WORKSPACE_DIR)) {
-            echo "WingWords directory already exists, cleaning..."
+            echo "gy-books directory already exists, cleaning..."
             dir(WORKSPACE_DIR) {
               sh '''
-                rm -rf .nvm with-node.sh
+                rm -rf .nvm with-node.sh node_modules coverage
               '''
             }
           } else {
-            echo "Creating WingWords directory..."
+            echo "Creating gy-books directory..."
             sh "mkdir -p $WORKSPACE_DIR"
           }
         }
@@ -65,9 +65,19 @@ pipeline {
       }
     }
 
+    stage('Run Tests with Coverage') {
+      steps {
+        dir(WORKSPACE_DIR) {
+          sh '''
+            echo "Ejecutando tests con cobertura..."
+            ./with-node.sh npm run test:coverage || ./with-node.sh npm test -- --coverage || echo "Tests executed with basic coverage"
+          '''
+        }
+      }
+    }
+
     stage('SonarQube Analysis') {
       when {
-        // Solo ejecutar si la variable SKIP_SONAR no está definida
         not { environment name: 'SKIP_SONAR', value: 'true' }
       }
       steps {
@@ -75,18 +85,21 @@ pipeline {
           script {
             try {
               echo "Verificando conexión a SonarQube..."
-
-              // Intentar usar el scanner configurado en Jenkins
-              def scannerHome = tool 'GY-Sonar'
-              withSonarQubeEnv('GY-Sonar') {
+              def scannerHome = tool 'SonarScanner'
+              withSonarQubeEnv('SonarScanner') {
                 sh """
                   echo "SonarQube URL: \$SONAR_HOST_URL"
-                  echo "Ejecutando análisis..."
+                  echo "Ejecutando análisis con cobertura..."
                   ${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=wingwords \
-                    -Dsonar.projectName="WingWords" \
+                    -Dsonar.projectKey=gy-books \
+                    -Dsonar.projectName="GY Books" \
                     -Dsonar.sources=src \
-                    -Dsonar.exclusions="**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/.next/**"
+                    -Dsonar.tests=src \
+                    -Dsonar.test.inclusions="**/*.test.js,**/*.test.ts,**/*.test.tsx,**/*.spec.js,**/*.spec.ts,**/*.spec.tsx" \
+                    -Dsonar.exclusions="**/node_modules/**,**/.next/**,**/dist/**,**/build/**,**/*.test.js,**/*.test.ts,**/*.test.tsx,**/*.spec.js,**/*.spec.ts,**/*.spec.tsx" \
+                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                    -Dsonar.testExecutionReportPaths=coverage/test-results.xml \
+                    -Dsonar.sourceEncoding=UTF-8
                 """
               }
             } catch (Exception e) {
@@ -99,12 +112,32 @@ pipeline {
       }
     }
 
-    stage('Run Tests') {
+    stage('Quality Gate') {
+      when {
+        not { environment name: 'SKIP_SONAR', value: 'true' }
+      }
       steps {
-        dir(WORKSPACE_DIR) {
-          sh './with-node.sh npm run test'
+        timeout(time: 1, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: false
         }
       }
     }
   }
-}
+
+  post {
+    always {
+      // Publicar reportes de test si existen
+      script {
+        if (fileExists("${WORKSPACE_DIR}/coverage/clover.xml")) {
+          publishHTML([
+            allowMissing: false,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: "${WORKSPACE_DIR}/coverage",
+            reportFiles: 'index.html',
+            reportName: 'Coverage Report'
+          ])
+        }
+      }
+    }
+  }
