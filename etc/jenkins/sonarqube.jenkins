@@ -40,6 +40,15 @@ node {
     def scannerHome = tool 'SonarScanner'
     withSonarQubeEnv('SonarScanner') {
       sh """
+        # Configurar Node.js en el PATH para SonarQube
+        export NVM_DIR="${WORKSPACE}/.nvm"
+        [ -s "\$NVM_DIR/nvm.sh" ] && source "\$NVM_DIR/nvm.sh"
+        nvm use 18
+        
+        echo "Node.js version for SonarQube:"
+        node -v
+        npm -v
+        
         echo "SonarQube URL: \$SONAR_HOST_URL"
         echo "Current directory: \$(pwd)"
         echo "Directory contents:"
