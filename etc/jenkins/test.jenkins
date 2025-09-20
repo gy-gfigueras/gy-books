@@ -133,7 +133,7 @@ pipeline {
             allowMissing: false,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: "${WORKSPACE_DIR}/coverage",
+            reportDir: "${WORKSPACE_DIR}/coverage/index.html,
             reportFiles: 'index.html',
             reportName: 'Coverage Report'
           ])
@@ -141,3 +141,4 @@ pipeline {
       }
     }
   }
+}
