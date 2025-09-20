@@ -34,6 +34,7 @@ pipeline {
           sh """
             cp -r src ${WORKSPACE_DIR}/
             cp -r public ${WORKSPACE_DIR}/ || echo "No public directory found"
+            cp -r .git ${WORKSPACE_DIR}/ || echo "No .git directory found"
             cp package*.json ${WORKSPACE_DIR}/
             cp tsconfig.json ${WORKSPACE_DIR}/ || echo "No tsconfig.json found"
             cp jest.config.* ${WORKSPACE_DIR}/ || echo "No jest config found"
@@ -73,7 +74,11 @@ pipeline {
     stage('Install Dependencies') {
       steps {
         dir(WORKSPACE_DIR) {
-          sh './with-node.sh npm install'
+          sh '''
+            # Deshabilitar husky en CI
+            export HUSKY=0
+            ./with-node.sh npm install
+          '''
         }
       }
     }
