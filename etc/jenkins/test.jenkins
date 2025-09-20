@@ -128,12 +128,12 @@ pipeline {
     always {
       // Publicar reportes de test si existen
       script {
-        if (fileExists("${WORKSPACE_DIR}/coverage/clover.xml")) {
+        if (fileExists("${WORKSPACE_DIR}/coverage/index.html")) {
           publishHTML([
             allowMissing: false,
             alwaysLinkToLastBuild: true,
             keepAll: true,
-            reportDir: "${WORKSPACE_DIR}/coverage/index.html,
+            reportDir: "${WORKSPACE_DIR}/coverage",
             reportFiles: 'index.html',
             reportName: 'Coverage Report'
           ])
