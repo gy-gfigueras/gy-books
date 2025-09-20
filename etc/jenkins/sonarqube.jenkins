@@ -1,18 +1,66 @@
 node {
+  environment {
+    NVM_DIR = "${WORKSPACE}/.nvm"
+  }
+
   stage('SCM') {
     checkout scm
   }
 
+  stage('Install Node.js') {
+    sh '''
+      mkdir -p "$NVM_DIR"
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+      nvm install 18
+
+      # Wrapper para usar node/npm
+      echo '#!/bin/bash' > with-node.sh
+      echo 'export NVM_DIR="$NVM_DIR"' >> with-node.sh
+      echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
+      echo 'nvm use 18 > /dev/null' >> with-node.sh
+      echo 'exec "$@"' >> with-node.sh
+      chmod +x with-node.sh
+
+      echo ">>> Node y npm instalados:"
+      ./with-node.sh node -v
+      ./with-node.sh npm -v
+    '''
+  }
+
+  stage('Install Dependencies') {
+    sh './with-node.sh npm install'
+  }
+
+  stage('Run Tests with Coverage') {
+    sh '''
+      echo "Ejecutando tests con cobertura..."
+      ./with-node.sh npm run test:coverage
+    '''
+  }
+
   stage('SonarQube Analysis') {
-    def scannerHome = tool 'SonarScanner';
+    def scannerHome = tool 'SonarScanner'
     withSonarQubeEnv('SonarScanner') {
       sh """
-        ${scannerHome}/bin/sonar-scanner \
-        -Dsonar.projectKey=gy-books \
-        -Dsonar.projectName="GY Books" \
-        -Dsonar.sources=src \
-        -Dsonar.exclusions="**/node_modules/**,**/.next/**,**/*.test.js,**/*.test.ts,**/*.test.tsx,**/*.spec.js,**/*.spec.ts,**/*.spec.tsx"
+        echo "SonarQube URL: \$SONAR_HOST_URL"
+        echo "Current directory: \$(pwd)"
+        echo "Directory contents:"
+        ls -la
+        echo "Checking coverage files:"
+        ls -la coverage/ || echo "No coverage directory found"
+        echo "Checking for sonar-project.properties:"
+        cat sonar-project.properties || echo "No sonar-project.properties found"
+
+        # Usar la configuración del archivo sonar-project.properties
+        ${scannerHome}/bin/sonar-scanner
       """
+    }
+  }
+
+  stage('Quality Gate') {
+    timeout(time: 1, unit: 'MINUTES') {
+      waitForQualityGate abortPipeline: false
     }
   }
 }

@@ -11,7 +11,7 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/**/__mocks__/**',
   ],
-  coverageReporters: ['html'],
+  coverageReporters: ['html', 'lcov'],
   testPathIgnorePatterns: [
     '<rootDir>/.nvm/',
     '<rootDir>/.next/',
