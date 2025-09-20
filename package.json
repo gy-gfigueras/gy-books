@@ -94,15 +94,6 @@
     ],
     "next-env.d.ts": []
   },
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "text",
-      "cobertura"
-    ],
-    "coverageDirectory": "coverage"
-  },
   "jest-junit": {
     "output": "coverage/test-report.xml"
   }
