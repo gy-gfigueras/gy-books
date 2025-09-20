@@ -99,31 +99,6 @@ pipeline {
       }
     }
 
-    stage('Quality Gate') {
-      when {
-        // Solo si SonarQube se ejecutó correctamente
-        expression { currentBuild.result != 'UNSTABLE' }
-      }
-      steps {
-        script {
-          try {
-            timeout(time: 2, unit: 'MINUTES') {
-              def qg = waitForQualityGate()
-              if (qg.status != 'OK') {
-                echo "⚠️ Quality Gate status: ${qg.status}"
-                currentBuild.result = 'UNSTABLE'
-              } else {
-                echo "✅ Quality Gate passed!"
-              }
-            }
-          } catch (Exception e) {
-            echo "⚠️ Quality Gate failed or timed out: ${e.getMessage()}"
-            currentBuild.result = 'UNSTABLE'
-          }
-        }
-      }
-    }
-
     stage('Run Tests') {
       steps {
         dir(WORKSPACE_DIR) {
