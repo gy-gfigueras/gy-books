@@ -6,7 +6,13 @@ node {
   stage('SonarQube Analysis') {
     def scannerHome = tool 'SonarScanner';
     withSonarQubeEnv('SonarScanner') {
-      sh "${scannerHome}/bin/sonar-scanner"
+      sh """
+        ${scannerHome}/bin/sonar-scanner \
+        -Dsonar.projectKey=gy-books \
+        -Dsonar.projectName="GY Books" \
+        -Dsonar.sources=src \
+        -Dsonar.exclusions="**/node_modules/**,**/.next/**,**/*.test.js,**/*.test.ts,**/*.test.tsx,**/*.spec.js,**/*.spec.ts,**/*.spec.tsx"
+      """
     }
   }
 }
