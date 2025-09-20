@@ -33,6 +33,7 @@ node {
   }
 
   stage('SonarQube Analysis') {
+    def scannerHome = tool 'SonarScanner'
     sh '''#!/bin/bash
       # Configurar Node.js en el PATH para SonarQube
       export NVM_DIR="${WORKSPACE}/.nvm"
@@ -47,16 +48,16 @@ node {
       ls -la coverage/ || echo "No coverage directory found"
       [ -f coverage/lcov.info ] && echo "LCOV file found" || echo "LCOV file NOT found"
 
-      # Ejecutar análisis de SonarQube directamente
-      sonar-scanner \
-        -Dsonar.projectKey=GY-Books \
-        -Dsonar.sources=src \
-        -Dsonar.host.url=https://sonar.gycoding.com \
-        -Dsonar.login=sqp_aaa62f332046007dd83c4211e16452989c16bf67 \
-        -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/coverage/**,**/__mocks__/**,**/*.d.ts \
-        -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-        -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \
-        -Dsonar.testExecutionReportPaths=coverage/test-report.xml \
+      # Ejecutar análisis de SonarQube usando la herramienta configurada
+    ''' + "${scannerHome}/bin/sonar-scanner \\\n" +
+    '''        -Dsonar.projectKey=GY-Books \\
+        -Dsonar.sources=src \\
+        -Dsonar.host.url=https://sonar.gycoding.com \\
+        -Dsonar.login=sqp_aaa62f332046007dd83c4211e16452989c16bf67 \\
+        -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/coverage/**,**/__mocks__/**,**/*.d.ts \\
+        -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \\
+        -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \\
+        -Dsonar.testExecutionReportPaths=coverage/test-report.xml \\
         -Dsonar.sourceEncoding=UTF-8
     '''
   }
