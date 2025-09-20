@@ -4,8 +4,7 @@ node {
   }
 
   stage('Install Node.js') {
-    sh '        -Dsonar.host.url=https://sonar.gycoding.com \\
-        -Dsonar.token=sqp_0581d36131ded780416b790d626d2fb1c4df9bce \\
+    sh '''
       export NVM_DIR="${WORKSPACE}/.nvm"
       mkdir -p "$NVM_DIR"
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
@@ -20,6 +19,7 @@ node {
       echo 'exec "$@"' >> with-node.sh
       chmod +x with-node.sh
 
+      echo ">>> Node y npm instalados:"
       ./with-node.sh node -v
       ./with-node.sh npm -v
     '''
@@ -31,65 +31,44 @@ node {
 
   stage('Run Tests with Coverage') {
     sh '''
-      # Crear directorio coverage si no existe
-      mkdir -p coverage
-
-      # Ejecutar tests con coverage y reportes XML
+      echo "Ejecutando tests con cobertura..."
       ./with-node.sh npm run test:coverage
-
-      # Verificar que se generaron los archivos necesarios
-      echo "Verificando archivos generados:"
-      ls -la coverage/
-      [ -f coverage/lcov.info ] && echo "✓ LCOV file found" || echo "✗ LCOV file NOT found"
-      [ -f coverage/test-report.xml ] && echo "✓ Test report XML found" || echo "✗ Test report XML NOT found"
     '''
   }
 
   stage('SonarQube Analysis') {
     def scannerHome = tool 'SonarScanner'
-    sh '''#!/bin/bash
-      # Configurar Node.js en el PATH para SonarQube
-      export NVM_DIR="${WORKSPACE}/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-      nvm use 18
+    withSonarQubeEnv('SonarScanner') {
+      sh '''#!/bin/bash
+        # Configurar Node.js en el PATH para SonarQube
+        export NVM_DIR="${WORKSPACE}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+        nvm use 18
 
-      echo "Node.js version for SonarQube:"
-      node -v
-      npm -v
+        echo "Node.js version for SonarQube:"
+        node -v
+        npm -v
 
-      echo "Verificando archivos de cobertura..."
-      ls -la coverage/ || echo "No coverage directory found"
-      [ -f coverage/lcov.info ] && echo "LCOV file found" || echo "LCOV file NOT found"
-      [ -f coverage/test-report.xml ] && echo "Test report XML found" || echo "Test report XML NOT found"
+        echo "SonarQube URL: $SONAR_HOST_URL"
+        echo "Current directory: $(pwd)"
+        echo "Directory contents:"
+        ls -la
 
-      # Verificar que el archivo XML existe antes de continuar
-      if [ ! -f coverage/test-report.xml ]; then
-        echo "ERROR: Test report XML not found. SonarQube analysis may fail."
-        echo "Attempting to generate it manually..."
-        npm run test:coverage || echo "Manual test run failed"
-        ls -la coverage/
-      fi
+        echo "Source directory contents:"
+        find src -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | head -20
 
-      # Ejecutar análisis de SonarQube usando la herramienta configurada
-      # Condicionalmente incluir test execution reports si el archivo existe
-      if [ -f coverage/test-report.xml ]; then
-        echo "Test report XML found - including in SonarQube analysis"
-        TEST_EXECUTION_PARAM="-Dsonar.testExecutionReportPaths=coverage/test-report.xml"
-      else
-        echo "Test report XML not found - proceeding without test execution reports"
-        TEST_EXECUTION_PARAM=""
-      fi
-    ''' + "${scannerHome}/bin/sonar-scanner \\\n" +
-    '''        -Dsonar.projectKey=gy-books \\
-        -Dsonar.sources=src \\
-        -Dsonar.host.url=https://sonar.gycoding.com \\
-        -Dsonar.login=sqp_e15c3039759830502652fe564b3cd935ff3d1cf1 \\
-        -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/coverage/**,**/__mocks__/**,**/*.d.ts \\
-        -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \\
-        -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \\
-        $TEST_EXECUTION_PARAM \\
-        -Dsonar.sourceEncoding=UTF-8
-    '''
+        echo "Checking coverage files:"
+        ls -la coverage/ || echo "No coverage directory found"
+
+        echo "Coverage lcov.info preview:"
+        head -10 coverage/lcov.info || echo "No lcov.info file found"
+
+        echo "Checking for sonar-project.properties:"
+        cat sonar-project.properties || echo "No sonar-project.properties found"
+
+        # Usar la configuración del archivo sonar-project.properties
+      ''' + "${scannerHome}/bin/sonar-scanner -X"
+    }
   }
 
   stage('Quality Gate') {
