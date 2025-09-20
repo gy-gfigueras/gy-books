@@ -1,14 +1,11 @@
 node {
-  environment {
-    NVM_DIR = "${WORKSPACE}/.nvm"
-  }
-
   stage('SCM') {
     checkout scm
   }
 
   stage('Install Node.js') {
     sh '''
+      export NVM_DIR="${WORKSPACE}/.nvm"
       mkdir -p "$NVM_DIR"
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
       [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
@@ -16,7 +13,7 @@ node {
 
       # Wrapper para usar node/npm
       echo '#!/bin/bash' > with-node.sh
-      echo 'export NVM_DIR="$NVM_DIR"' >> with-node.sh
+      echo 'export NVM_DIR="${WORKSPACE}/.nvm"' >> with-node.sh
       echo '[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"' >> with-node.sh
       echo 'nvm use 18 > /dev/null' >> with-node.sh
       echo 'exec "$@"' >> with-node.sh
