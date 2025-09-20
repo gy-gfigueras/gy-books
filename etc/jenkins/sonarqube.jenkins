@@ -82,7 +82,7 @@ node {
     '''        -Dsonar.projectKey=GY-Books \\
         -Dsonar.sources=src \\
         -Dsonar.host.url=https://sonar.gycoding.com \\
-        -Dsonar.login=sqp_aaa62f332046007dd83c4211e16452989c16bf67 \\
+        -Dsonar.login=sqp_0581d36131ded780416b790d626d2fb1c4df9bce \\
         -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/coverage/**,**/__mocks__/**,**/*.d.ts \\
         -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \\
         -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \\
