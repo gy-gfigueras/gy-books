@@ -44,13 +44,21 @@ node {
         echo "Current directory: \$(pwd)"
         echo "Directory contents:"
         ls -la
+
+        echo "Source directory contents:"
+        find src -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | head -20
+
         echo "Checking coverage files:"
         ls -la coverage/ || echo "No coverage directory found"
+
+        echo "Coverage lcov.info preview:"
+        head -10 coverage/lcov.info || echo "No lcov.info file found"
+
         echo "Checking for sonar-project.properties:"
         cat sonar-project.properties || echo "No sonar-project.properties found"
 
         # Usar la configuración del archivo sonar-project.properties
-        ${scannerHome}/bin/sonar-scanner
+        ${scannerHome}/bin/sonar-scanner -X
       """
     }
   }
