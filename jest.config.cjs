@@ -12,6 +12,13 @@ module.exports = {
     '!src/**/__mocks__/**',
   ],
   coverageReporters: ['html', 'lcov', 'text', 'cobertura'],
+  reporters: [
+    'default',
+    ['jest-junit', {
+      outputDirectory: 'coverage',
+      outputName: 'test-report.xml',
+    }]
+  ],
   testPathIgnorePatterns: [
     '<rootDir>/.nvm/',
     '<rootDir>/.next/',
