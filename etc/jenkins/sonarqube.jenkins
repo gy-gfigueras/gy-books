@@ -4,7 +4,8 @@ node {
   }
 
   stage('Install Node.js') {
-    sh '''
+    sh '        -Dsonar.host.url=https://sonar.gycoding.com \\
+        -Dsonar.token=sqp_0581d36131ded780416b790d626d2fb1c4df9bce \\
       export NVM_DIR="${WORKSPACE}/.nvm"
       mkdir -p "$NVM_DIR"
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
@@ -79,10 +80,10 @@ node {
         TEST_EXECUTION_PARAM=""
       fi
     ''' + "${scannerHome}/bin/sonar-scanner \\\n" +
-    '''        -Dsonar.projectKey=GY-Books \\
+    '''        -Dsonar.projectKey=gy-books \\
         -Dsonar.sources=src \\
         -Dsonar.host.url=https://sonar.gycoding.com \\
-        -Dsonar.login=sqp_0581d36131ded780416b790d626d2fb1c4df9bce \\
+        -Dsonar.login=sqp_e15c3039759830502652fe564b3cd935ff3d1cf1 \\
         -Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/node_modules/**,**/coverage/**,**/__mocks__/**,**/*.d.ts \\
         -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \\
         -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info \\
