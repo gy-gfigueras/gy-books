@@ -28,6 +28,19 @@ pipeline {
             echo "Creating gy-books directory..."
             sh "mkdir -p $WORKSPACE_DIR"
           }
+
+          // Copiar código fuente al directorio de análisis
+          echo "Copying source code to analysis directory..."
+          sh """
+            cp -r src ${WORKSPACE_DIR}/
+            cp -r public ${WORKSPACE_DIR}/ || echo "No public directory found"
+            cp package*.json ${WORKSPACE_DIR}/
+            cp tsconfig.json ${WORKSPACE_DIR}/ || echo "No tsconfig.json found"
+            cp jest.config.* ${WORKSPACE_DIR}/ || echo "No jest config found"
+            cp next.config.* ${WORKSPACE_DIR}/ || echo "No next config found"
+            cp *.config.* ${WORKSPACE_DIR}/ || echo "No additional configs found"
+            cp sonar-project.properties ${WORKSPACE_DIR}/ || echo "No sonar-project.properties found"
+          """
         }
       }
     }
@@ -89,17 +102,15 @@ pipeline {
               withSonarQubeEnv('SonarScanner') {
                 sh """
                   echo "SonarQube URL: \$SONAR_HOST_URL"
+                  echo "Current directory: \$(pwd)"
+                  echo "Directory contents:"
+                  ls -la
+                  echo "Checking if src directory exists:"
+                  ls -la src/ || echo "src directory not found"
+                  echo "Checking for sonar-project.properties:"
+                  cat sonar-project.properties || echo "No sonar-project.properties found"
                   echo "Ejecutando análisis con cobertura..."
-                  ${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=gy-books \
-                    -Dsonar.projectName="GY Books" \
-                    -Dsonar.sources=src \
-                    -Dsonar.tests=src \
-                    -Dsonar.test.inclusions="**/*.test.js,**/*.test.ts,**/*.test.tsx,**/*.spec.js,**/*.spec.ts,**/*.spec.tsx" \
-                    -Dsonar.exclusions="**/node_modules/**,**/.next/**,**/dist/**,**/build/**,**/*.test.js,**/*.test.ts,**/*.test.tsx,**/*.spec.js,**/*.spec.ts,**/*.spec.tsx" \
-                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-                    -Dsonar.testExecutionReportPaths=coverage/test-results.xml \
-                    -Dsonar.sourceEncoding=UTF-8
+                  ${scannerHome}/bin/sonar-scanner
                 """
               }
             } catch (Exception e) {
