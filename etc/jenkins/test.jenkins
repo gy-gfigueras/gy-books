@@ -96,40 +96,39 @@ pipeline {
       steps {
         dir(WORKSPACE_DIR) {
           script {
-            try {
-              echo "Verificando conexión a SonarQube..."
-              def scannerHome = tool 'SonarScanner'
-              withSonarQubeEnv('SonarScanner') {
-                sh """
-                  echo "SonarQube URL: \$SONAR_HOST_URL"
-                  echo "Current directory: \$(pwd)"
-                  echo "Directory contents:"
-                  ls -la
-                  echo "Checking if src directory exists:"
-                  ls -la src/ || echo "src directory not found"
-                  echo "Checking for sonar-project.properties:"
-                  cat sonar-project.properties || echo "No sonar-project.properties found"
-                  echo "Ejecutando análisis con cobertura..."
-                  ${scannerHome}/bin/sonar-scanner
-                """
-              }
-            } catch (Exception e) {
-              echo "⚠️ SonarQube Analysis falló: ${e.getMessage()}"
-              echo "Continuando sin análisis de SonarQube..."
-              currentBuild.result = 'UNSTABLE'
+            def scannerHome = tool 'SonarScanner'
+            withSonarQubeEnv('SonarScanner') {
+              sh '''#!/bin/bash
+                # Configurar Node.js en el PATH para SonarQube
+                export NVM_DIR="${WORKSPACE}/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+                nvm use 18
+
+                echo "Node.js version for SonarQube:"
+                node -v
+                npm -v
+
+                echo "SonarQube URL: $SONAR_HOST_URL"
+                echo "Current directory: $(pwd)"
+                echo "Directory contents:"
+                ls -la
+
+                echo "Source directory contents:"
+                find src -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | head -20
+
+                echo "Checking coverage files:"
+                ls -la coverage/ || echo "No coverage directory found"
+
+                echo "Coverage lcov.info preview:"
+                head -10 coverage/lcov.info || echo "No lcov.info file found"
+
+                echo "Checking for sonar-project.properties:"
+                cat sonar-project.properties || echo "No sonar-project.properties found"
+
+                # Usar la configuración del archivo sonar-project.properties
+              ''' + "${scannerHome}/bin/sonar-scanner -X"
             }
           }
-        }
-      }
-    }
-
-    stage('Quality Gate') {
-      when {
-        not { environment name: 'SKIP_SONAR', value: 'true' }
-      }
-      steps {
-        timeout(time: 1, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: false
         }
       }
     }
