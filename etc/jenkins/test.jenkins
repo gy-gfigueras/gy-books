@@ -1,4 +1,13 @@
 node {
+  stage('Clean Workspace') {
+    // Limpiar workspace para evitar conflictos
+    sh '''
+      echo "Limpiando workspace..."
+      rm -rf gy-books-analysis .nvm with-node.sh node_modules coverage || echo "Nothing to clean"
+      echo "Workspace cleaned"
+    '''
+  }
+
   stage('SCM') {
     checkout scm
   }
@@ -36,6 +45,12 @@ node {
   stage('Run Tests with Coverage') {
     sh '''
       echo "Ejecutando tests con cobertura..."
+      echo "Current directory: $(pwd)"
+      echo "Checking test files:"
+      find . -name "*.test.ts" -o -name "*.test.tsx" | wc -l
+      echo "Checking if gy-books-analysis exists:"
+      ls -la | grep gy-books || echo "No gy-books-analysis directory found"
+
       export HUSKY=0
       ./with-node.sh npm run test:coverage
     '''
