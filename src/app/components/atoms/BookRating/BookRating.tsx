@@ -67,10 +67,9 @@ export const BookRating = ({
         gap: 2,
         alignItems: { xs: 'center', sm: 'flex-start' },
         width: 'auto',
-        mt: 2,
       }}
     >
-      <Box sx={{ mb: 1 }}>
+      <Box>
         <Button
           variant="outlined"
           color="primary"

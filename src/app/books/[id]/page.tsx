@@ -1,12 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, CircularProgress, IconButton } from '@mui/material';
+import { Box, Typography, IconButton, Chip, Divider } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { useBook } from '@/hooks/useBook';
 import { goudi, cinzel } from '@/utils/fonts/fonts';
-import AuthorCard from '@/app/components/atoms/AuthorCard/AuthorCard';
-import { Author } from '@/domain/book.model';
 import { BookRating } from '@/app/components/atoms/BookRating/BookRating';
 import StarIcon from '@mui/icons-material/Star';
 import { useApiBook } from '@/hooks/useApiBook';
@@ -17,6 +15,7 @@ import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { useApiBookPublic } from '@/hooks/useApiBookPublic';
 import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
+import BookDetailsSkeleton from '@/app/components/molecules/BookDetailsSkeleton';
 export default function BookDetails() {
   const params = useParams();
   const { data: book, isLoading } = useBook(params.id as string);
@@ -28,13 +27,11 @@ export default function BookDetails() {
     setIsUpdatedAddToHallOfFame,
     setIsErrorAddToHallOfFame,
     isErrorAddToHallOfFame,
-    isLoadingAddToHallOfFame,
     isUpdatedAddToHallOfFame,
     handleDeleteBookToHallOfFame,
     setIsLoadingToDeleteHallOfFame,
     setIsUpdatedDeleteToHallOfFame,
     setIsErrorDeleteToHallOfFame,
-    isLoadingDeleteToHallOfFame,
     isUpdatedDeleteToHallOfFame,
     isErrorDeleteToHallOfFame,
   } = useHallOfFame(user?.id || '');
@@ -48,19 +45,7 @@ export default function BookDetails() {
   const { data: apiBookPublic, isLoading: isApiBookLoadingPublic } =
     useApiBookPublic(params.id as string);
   if (isLoading || isApiBookLoading || isApiBookLoadingPublic) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          backgroundColor: '#161616',
-        }}
-      >
-        <CircularProgress sx={{ color: 'white' }} />
-      </Box>
-    );
+    return <BookDetailsSkeleton />;
   }
 
   const handleClick = () => {
@@ -90,14 +75,56 @@ export default function BookDetails() {
         padding: '2rem',
         display: 'flex',
         flexDirection: { xs: 'column', md: 'row' },
-        gap: '2rem',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        gap: ['0rem', '0rem', '6rem'],
+        paddingX: { xs: '1rem', md: '100px' },
       }}
     >
       <Box
         sx={{
-          width: { xs: '100%', md: '40%' },
-          display: 'flex',
+          display: ['flex', 'flex', 'none'],
+          width: '100%',
           justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: goudi.style.fontFamily,
+            fontWeight: '800',
+            fontSize: 32,
+            letterSpacing: '.1rem',
+            marginBottom: '1rem',
+            textAlign: { xs: 'center', md: 'left' },
+          }}
+        >
+          {book?.title}
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            color: '#FFFFFF33',
+            marginBottom: '1rem',
+            textAlign: { xs: 'center', md: 'left' },
+            fontSize: 22,
+            letterSpacing: '.05rem',
+            marginTop: '-1rem',
+            fontFamily: goudi.style.fontFamily,
+          }}
+        >
+          {book?.author.name}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          width: { xs: '100%', md: '300px' },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'start',
         }}
       >
         <Box
@@ -105,13 +132,102 @@ export default function BookDetails() {
           src={bookHasCover ? book?.cover.url : DEFAULT_COVER_IMAGE}
           alt={book?.title}
           sx={{
-            width: '100%',
-            maxWidth: { xs: '100%', md: '400px' },
-            height: { xs: 'auto', md: '700px' },
+            width: ['250px', '250px', '300px'],
+            maxWidth: { xs: '100%', md: '300px' },
+            height: { xs: 'auto', md: '500px' },
             borderRadius: '16px',
             boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
           }}
         />
+        <Divider
+          sx={{ display: ['flex', 'flex', 'none'], marginTop: '1rem' }}
+          textAlign="center"
+        >
+          {book?.series && (
+            <Chip
+              sx={{
+                backgroundColor: '#8C54FF20',
+                color: '#8C54FF',
+                letterSpacing: '.05rem',
+                fontWeight: 'bold',
+                border: '2px solid #8C54FF',
+                fontFamily: goudi.style.fontFamily,
+                height: '32px',
+                fontSize: '16px',
+              }}
+              label={book.series.name}
+            />
+          )}
+        </Divider>
+        <Box display={'flex'} flexDirection="column" alignItems="center" mt={2}>
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'primary.main',
+              justifySelf: { xs: 'center', md: 'left' },
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              fontFamily: cinzel.style.fontFamily,
+              gap: '0.2rem',
+              fontSize: '36px',
+              textShadow: '0 0 20px rgba(140, 84, 255, 0.5)',
+            }}
+          >
+            {apiBookPublic?.averageRating}
+            <StarIcon
+              sx={{
+                color: 'primary.main',
+                fontSize: '38px',
+                marginTop: '-0.2rem',
+              }}
+            />
+          </Typography>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            gap={2}
+            mt={2}
+            flexDirection={'row'}
+          >
+            <BookRating
+              apiBook={apiBook}
+              bookId={book?.id || ''}
+              isRatingLoading={isApiBookLoading}
+              mutate={mutate}
+              isLoggedIn={isLoggedIn}
+            />
+
+            {user && (
+              <IconButton
+                sx={{
+                  color: isOnHallOfFame ? 'gold' : 'gray',
+                  borderRadius: '12px',
+                  fontWeight: 'bold',
+                  backgroundColor: isOnHallOfFame ? '#333300' : 'transparent',
+                  borderColor: isOnHallOfFame ? 'gold' : 'gray',
+                  fontSize: '18px',
+                  fontFamily: goudi.style.fontFamily,
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    backgroundColor: isOnHallOfFame ? '#333300' : '#1a1a1a',
+                    borderColor: isOnHallOfFame ? 'gold' : 'white',
+                    transform: 'scale(1.05)',
+                  },
+                }}
+                onClick={handleClick}
+              >
+                <WorkspacePremiumIcon
+                  sx={{
+                    color: isOnHallOfFame ? 'gold' : 'gray',
+                    fontSize: '32px',
+                  }}
+                />
+              </IconButton>
+            )}
+          </Box>
+        </Box>
       </Box>
       <Box
         sx={{
@@ -134,6 +250,8 @@ export default function BookDetails() {
             sx={{
               fontFamily: goudi.style.fontFamily,
               fontWeight: '800',
+              display: ['none', 'none', 'block'],
+
               fontSize: 48,
               letterSpacing: '.1rem',
               marginBottom: '1rem',
@@ -142,24 +260,12 @@ export default function BookDetails() {
           >
             {book?.title}
           </Typography>
-          {book?.series && (
-            <Typography
-              variant="h5"
-              sx={{
-                color: '#FFFFFF45',
-                fontFamily: goudi.style.fontFamily,
-                fontStyle: 'italic',
-                marginBottom: '1rem',
-                textAlign: { xs: 'center', md: 'left' },
-              }}
-            >
-              ({book.series.name})
-            </Typography>
-          )}
         </Box>
         <Typography
           variant="h6"
           sx={{
+            display: ['none', 'none', 'block'],
+
             color: '#FFFFFF33',
             marginBottom: '1rem',
             textAlign: { xs: 'center', md: 'left' },
@@ -171,77 +277,62 @@ export default function BookDetails() {
         >
           {book?.author.name}
         </Typography>
-
-        <Typography
-          variant="body1"
-          sx={{
-            color: 'primary.main',
-            justifySelf: { xs: 'center', md: 'left' },
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            fontFamily: cinzel.style.fontFamily,
-            gap: '0.2rem',
-            fontSize: '24px',
-          }}
-        >
-          {apiBookPublic?.averageRating}
-          <StarIcon
-            sx={{
-              color: 'primary.main',
-              fontSize: '30px',
-              marginTop: '-0.2rem',
-            }}
-          />
-        </Typography>
         <Box
           sx={{
             display: 'flex',
             flexDirection: ['column', 'column', 'row'],
             gap: ['0rem', '0rem', '1rem'],
-            width: '100%',
+            width: 'auto',
             justifyContent: ['center', 'center', 'start'],
             alignItems: ['center', 'center', 'start'],
           }}
+        ></Box>
+
+        <Divider
+          sx={{
+            display: ['none', 'none', 'block'],
+          }}
+          textAlign="center"
         >
-          <BookRating
-            apiBook={apiBook}
-            bookId={book?.id || ''}
-            isRatingLoading={isApiBookLoading}
-            mutate={mutate}
-            isLoggedIn={isLoggedIn}
-          />
-
-          {user && (
-            <IconButton
-              loading={isLoadingAddToHallOfFame || isLoadingDeleteToHallOfFame}
-              sx={{ marginTop: '1rem' }}
-            >
-              <WorkspacePremiumIcon
-                sx={{
-                  color: isOnHallOfFame ? 'gold' : 'gray',
-                  fontSize: '32px',
-                }}
-                onClick={handleClick}
-              />
-            </IconButton>
+          {book?.series && (
+            <Chip
+              sx={{
+                backgroundColor: '#8C54FF20',
+                color: '#8C54FF',
+                letterSpacing: '.05rem',
+                fontWeight: 'bold',
+                border: '2px solid #8C54FF',
+                fontFamily: goudi.style.fontFamily,
+                height: '32px',
+                fontSize: '16px',
+              }}
+              label={book.series.name}
+            />
           )}
-        </Box>
-
+        </Divider>
+        <Divider
+          variant="middle"
+          sx={{
+            marginTop: '2rem',
+            display: ['flex', 'flex', 'none'],
+            paddingX: ['1.5rem', '1.5rem', '0'],
+          }}
+        />
         <Typography
           variant="body1"
           sx={{
             lineHeight: 1.6,
             marginBottom: '2rem',
+            paddingX: ['1.5rem', '1.5rem', '0'],
             marginTop: '2rem',
             fontSize: 18,
+            color: '#CCCCCC',
             fontFamily: goudi.style.fontFamily,
+            letterSpacing: '.02rem',
+            textAlign: 'justify',
           }}
           dangerouslySetInnerHTML={{ __html: book?.description ?? '' }}
         />
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <AuthorCard author={book?.author as Author} />
-        </Box>
       </Box>
       <AnimatedAlert
         open={isUpdatedAddToHallOfFame}

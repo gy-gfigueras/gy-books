@@ -15,10 +15,10 @@ export function BookCard({ book }: { book: Book }) {
         textDecoration: 'none',
         minWidth: '300px',
         maxWidth: '1000px',
-        height: '280px',
+        height: ['180px', '280px', '280px'],
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: ['start', 'start', 'start'],
         backgroundColor: 'rgba(35, 35, 35, 0.7)',
         backdropFilter: 'blur(10px)',
         borderRadius: '32px',
@@ -36,10 +36,9 @@ export function BookCard({ book }: { book: Book }) {
     >
       <Box
         sx={{
-          width: '180px',
+          width: ['100px', '180px', 'auto'],
           height: '100%',
           borderRadius: '16px',
-          overflow: 'hidden',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         }}
       >

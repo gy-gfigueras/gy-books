@@ -30,25 +30,50 @@ export const BooksListSkeleton: React.FC = () => (
     <Box
       sx={{
         flex: 1,
-        display: { xs: 'grid', sm: 'grid', md: 'flex' },
-        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'none' },
+        display: {
+          xs: 'grid',
+          sm: 'grid',
+          md: 'flex',
+        },
+        gridTemplateColumns: {
+          xs: 'repeat(auto-fit, minmax(140px, 1fr))', // Se ajusta automáticamente: 1 o 2 columnas
+          sm: 'repeat(auto-fit, minmax(160px, 1fr))', // Mínimo 160px por columna en tablet
+          md: 'none',
+        },
         flexWrap: { xs: 'unset', md: 'wrap' },
-        gap: 2,
+        gap: { xs: '8px', sm: '12px', md: 2 },
         overflowY: 'auto',
-        maxHeight: 560,
-        minHeight: 340,
-        alignItems: 'center',
-        justifyContent: 'center',
-        py: 1,
+        maxHeight: '65vh',
+        minHeight: 240,
+        alignItems: { xs: 'stretch', md: 'center' },
+        justifyContent: { xs: 'center', md: 'center' },
+        py: { md: 1 },
+        px: { xs: '4px', sm: '8px', md: 0 },
         background: 'transparent',
       }}
     >
       {[...Array(6)].map((_, i) => (
-        <Skeleton
+        <Box
           key={i}
-          variant="rectangular"
-          sx={{ borderRadius: 3, width: { xs: '100%', md: 140 }, height: 220 }}
-        />
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'stretch',
+          }}
+        >
+          <Skeleton
+            variant="rectangular"
+            sx={{
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: { xs: 'none', md: 140 },
+              height: { xs: '280px', md: 220 }, // Altura ajustada para móvil
+              bgcolor: 'rgba(255, 255, 255, 0.05)',
+            }}
+            animation="wave"
+          />
+        </Box>
       ))}
     </Box>
   </Box>

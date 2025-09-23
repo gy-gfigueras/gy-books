@@ -6,13 +6,14 @@ import { RootState } from '@/store';
 import AuthorsBarChart from '../molecules/AuthorsBarChart';
 import { Box, Typography } from '@mui/material';
 import DonutChart from '../molecules/DonutChart';
+import PageCountKPI from '../molecules/PageCountKPI';
+import RatingStats from '../molecules/RatingStats';
 import { goudi } from '@/utils/fonts/fonts';
 import StatsSkeleton from '../molecules/StatsSkeleton';
 
 export default function StatsComponent({ id }: { id: UUID }) {
   const storedStats = useSelector((state: RootState) => state.stats);
   const isCurrentUser = storedStats.userId === id.toString();
-
   // Always call useStats, but prefer Redux data if available
   const {
     data: hookData,
@@ -87,6 +88,64 @@ export default function StatsComponent({ id }: { id: UUID }) {
           Book status
         </Typography>
         <DonutChart bookStatus={data?.bookStatus} />
+      </Box>
+      <Box
+        sx={{
+          width: '500px',
+          height: '400px',
+          backgroundColor: '#121212',
+          borderRadius: '10px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 2,
+          flexDirection: 'column',
+          gap: 1,
+        }}
+      >
+        <Typography
+          sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
+          variant="h4"
+        >
+          Page Count
+        </Typography>
+        <PageCountKPI
+          totalPages={data?.totalPages || 0}
+          wantToReadPages={data?.wantToReadPages || 0}
+          bookStatus={data?.bookStatus || {}}
+          fontFamily={goudi.style.fontFamily}
+        />
+      </Box>
+      <Box
+        sx={{
+          width: '500px',
+          height: '400px',
+          backgroundColor: '#121212',
+          borderRadius: '10px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 2,
+          flexDirection: 'column',
+          gap: 1,
+        }}
+      >
+        <Typography
+          sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
+          variant="h4"
+        >
+          Rating Stats
+        </Typography>
+        <RatingStats
+          ratings={
+            data?.ratings || {
+              distribution: {},
+              averageRating: 0,
+              totalRatedBooks: 0,
+            }
+          }
+          fontFamily={goudi.style.fontFamily}
+        />
       </Box>
     </Box>
   );

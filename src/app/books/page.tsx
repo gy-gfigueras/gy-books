@@ -146,7 +146,8 @@ function BooksContent() {
             }}
             sx={{
               mb: { xs: 1, sm: 2 },
-              width: { xs: '100%', sm: '60%', md: '60%' },
+              width: { xs: '90%', sm: '60%', md: '60%' },
+              alignSelf: 'center',
               maxWidth: { xs: '100%', sm: '500px' },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {

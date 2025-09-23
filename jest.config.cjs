@@ -14,10 +14,13 @@ module.exports = {
   coverageReporters: ['html', 'lcov', 'text', 'cobertura'],
   reporters: [
     'default',
-    ['jest-junit', {
-      outputDirectory: 'coverage',
-      outputName: 'test-report.xml',
-    }]
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'coverage',
+        outputName: 'test-report.xml',
+      },
+    ],
   ],
   testPathIgnorePatterns: [
     '<rootDir>/.nvm/',
