@@ -127,8 +127,16 @@ pipeline {
                 echo "Coverage lcov.info preview:"
                 head -10 coverage/lcov.info || echo "No lcov.info file found"
 
+                echo "Coverage lcov.info file size:"
+                wc -l coverage/lcov.info || echo "No lcov.info file found"
+
                 echo "Checking for sonar-project.properties:"
                 cat sonar-project.properties || echo "No sonar-project.properties found"
+
+                echo "Verifying coverage path configuration:"
+                echo "sonar.javascript.lcov.reportPaths=coverage/lcov.info"
+                echo "sonar.typescript.lcov.reportPaths=coverage/lcov.info"
+                echo "sonar.coverage.reportPaths=coverage/lcov.info"
 
                 # Usar la configuración del archivo sonar-project.properties
               ''' + "${scannerHome}/bin/sonar-scanner -X"
