@@ -148,17 +148,11 @@ pipeline {
 
   post {
     always {
-      // Publicar reportes de test si existen
+      // Archivar reportes de cobertura si existen
       script {
         if (fileExists("${WORKSPACE_DIR}/coverage/index.html")) {
-          publishHTML([
-            allowMissing: false,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: "${WORKSPACE_DIR}/coverage",
-            reportFiles: 'index.html',
-            reportName: 'Coverage Report'
-          ])
+          archiveArtifacts artifacts: "${WORKSPACE_DIR}/coverage/**", fingerprint: true
+          echo "Coverage report archived successfully"
         }
       }
     }
