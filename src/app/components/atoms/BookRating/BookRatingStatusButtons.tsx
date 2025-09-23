@@ -20,13 +20,13 @@ const BookRatingStatusButtons: React.FC<Props> = ({
         key={opt.value}
         variant={tempStatus === opt.value ? 'contained' : 'outlined'}
         startIcon={React.cloneElement(opt.icon, {
-          sx: { color: tempStatus === opt.value ? '#fff' : '#fff' },
+          sx: { color: tempStatus === opt.value ? '#fff' : '#8C54FF' },
         })}
         onClick={() => setTempStatus(opt.value)}
         sx={{
           borderRadius: 3,
           fontWeight: 'bold',
-          color: tempStatus === opt.value ? '#fff' : 'white',
+          color: tempStatus === opt.value ? '#fff' : '#8C54FF',
           background: tempStatus === opt.value ? '#8C54FF' : 'transparent',
           borderColor: '#8C54FF',
           px: 2,
