@@ -106,18 +106,18 @@ pipeline {
           script {
             def scannerHome = tool 'SonarScanner'
             withSonarQubeEnv('SonarScanner') {
-              sh '''#!/bin/bash
+              sh """#!/bin/bash
                 # Configurar Node.js en el PATH para SonarQube
                 export NVM_DIR="${WORKSPACE}/.nvm"
-                [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+                [ -s "\$NVM_DIR/nvm.sh" ] && source "\$NVM_DIR/nvm.sh"
                 nvm use 18
 
                 echo "Node.js version for SonarQube:"
                 node -v
                 npm -v
 
-                echo "SonarQube URL: $SONAR_HOST_URL"
-                echo "Current directory: $(pwd)"
+                echo "SonarQube URL: \$SONAR_HOST_URL"
+                echo "Current directory: \$(pwd)"
                 echo "Directory contents:"
                 ls -la
 
@@ -137,7 +137,8 @@ pipeline {
                 cat sonar-project.properties || echo "No sonar-project.properties found"
 
                 # Usar la configuración del archivo sonar-project.properties
-              ''' + "${scannerHome}/bin/sonar-scanner -X"
+                ${scannerHome}/bin/sonar-scanner -X
+              """
             }
           }
         }
