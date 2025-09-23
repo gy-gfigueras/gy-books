@@ -120,7 +120,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({
               <StarBorderIcon
                 sx={{
                   ...starSize,
-                  color: disabled ? 'grey.400' : 'grey.400',
+                  color: disabled ? 'grey.400' : 'primary.main',
                 }}
               />
             )}
