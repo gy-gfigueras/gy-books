@@ -34,10 +34,12 @@ pipeline {
           sh """
             cp -r src ${WORKSPACE_DIR}/
             cp -r public ${WORKSPACE_DIR}/ || echo "No public directory found"
+            cp -r __mocks__ ${WORKSPACE_DIR}/ || echo "No __mocks__ directory found"
             cp -r .git ${WORKSPACE_DIR}/ || echo "No .git directory found"
             cp package*.json ${WORKSPACE_DIR}/
             cp tsconfig.json ${WORKSPACE_DIR}/ || echo "No tsconfig.json found"
             cp jest.config.* ${WORKSPACE_DIR}/ || echo "No jest config found"
+            cp jest.setup.js ${WORKSPACE_DIR}/ || echo "No jest.setup.js found"
             cp next.config.* ${WORKSPACE_DIR}/ || echo "No next config found"
             cp *.config.* ${WORKSPACE_DIR}/ || echo "No additional configs found"
             cp sonar-project.properties ${WORKSPACE_DIR}/ || echo "No sonar-project.properties found"
@@ -88,6 +90,7 @@ pipeline {
         dir(WORKSPACE_DIR) {
           sh '''
             echo "Ejecutando tests con cobertura..."
+            export HUSKY=0
             ./with-node.sh npm run test:coverage || ./with-node.sh npm test -- --coverage || echo "Tests executed with basic coverage"
           '''
         }
@@ -126,6 +129,9 @@ pipeline {
 
                 echo "Coverage lcov.info preview:"
                 head -10 coverage/lcov.info || echo "No lcov.info file found"
+
+                echo "Coverage lcov.info file size:"
+                wc -l coverage/lcov.info || echo "No lcov.info file found"
 
                 echo "Checking for sonar-project.properties:"
                 cat sonar-project.properties || echo "No sonar-project.properties found"
