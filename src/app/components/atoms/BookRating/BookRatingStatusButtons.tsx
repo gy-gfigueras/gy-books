@@ -14,7 +14,7 @@ const BookRatingStatusButtons: React.FC<Props> = ({
   setTempStatus,
   fontFamily,
 }) => (
-  <Stack direction="row" flexWrap="wrap" spacing={2} justifyContent="center">
+  <Stack direction="row" spacing={2} justifyContent="center" pb={2}>
     {statusOptions.map((opt: StatusOption) => (
       <Button
         key={opt.value}
@@ -29,7 +29,7 @@ const BookRatingStatusButtons: React.FC<Props> = ({
           color: tempStatus === opt.value ? '#fff' : '#8C54FF',
           background: tempStatus === opt.value ? '#8C54FF' : 'transparent',
           borderColor: '#8C54FF',
-          px: 2,
+          px: 1,
           py: 1,
           minWidth: 0,
           textTransform: 'none',

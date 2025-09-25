@@ -1,4 +1,5 @@
 import React from 'react';
+import { TextField } from '@mui/material';
 import {
   Menu,
   Stack,
@@ -117,20 +118,92 @@ const BookRatingMenu: React.FC<Props> = ({
         />
       </Box>
       <Divider sx={{ borderColor: '#8C54FF30' }} />
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <Typography sx={{ color: '#fff', fontWeight: 'bold', mb: 0.5 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          alignContent: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Typography
+          sx={{
+            color: '#fff',
+            fontWeight: 'bold',
+            mb: 1,
+            fontSize: 20,
+            fontFamily,
+            letterSpacing: '.05rem',
+          }}
+        >
           Dates
         </Typography>
         <Stack direction="row" gap={2}>
-          <input
+          <TextField
             type="date"
             value={state.tempStartDate}
             onChange={(e) => handlers.setTempStartDate(e.target.value)}
+            label="Inicio"
+            InputLabelProps={{ shrink: true }}
+            sx={{
+              background: 'rgba(45,45,45,0.95)',
+              borderRadius: '10px',
+              input: {
+                color: '#fff',
+                fontFamily: fontFamily,
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'transparent',
+                  borderRadius: '16px',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#8C54FF',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#8C54FF',
+                  borderWidth: 2,
+                },
+              },
+              label: {
+                color: '#fff',
+                fontFamily: fontFamily,
+              },
+              minWidth: 120,
+            }}
           />
-          <input
+          <TextField
             type="date"
             value={state.tempEndDate}
             onChange={(e) => handlers.setTempEndDate(e.target.value)}
+            label="Fin"
+            InputLabelProps={{ shrink: true }}
+            sx={{
+              background: 'rgba(45,45,45,0.95)',
+              borderRadius: '10px',
+              input: {
+                color: '#fff',
+                fontFamily: fontFamily,
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'transparent',
+                  borderRadius: '16px',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#8C54FF',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#8C54FF',
+                  borderWidth: 2,
+                },
+              },
+              label: {
+                color: '#fff',
+                fontFamily: fontFamily,
+              },
+              minWidth: 120,
+            }}
           />
         </Stack>
       </Box>

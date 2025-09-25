@@ -34,6 +34,15 @@ jest.mock('@mui/material', () => ({
       {children}
     </button>
   ),
+  TextField: ({ label, value, onChange, ...props }: any) => (
+    <input
+      aria-label={label}
+      value={value}
+      onChange={onChange}
+      data-testid={`textfield-${label?.toLowerCase()}`}
+      {...props}
+    />
+  ),
 }));
 
 // Mock child components
@@ -151,11 +160,10 @@ describe('BookRatingMenu', () => {
     render(<BookRatingMenu {...defaultProps} />);
     expect(screen.getByText('Dates')).toBeInTheDocument();
 
-    const dateInputs = screen.getAllByDisplayValue('2023-01-01');
-    expect(dateInputs).toHaveLength(1);
-
-    const endDateInputs = screen.getAllByDisplayValue('2023-01-31');
-    expect(endDateInputs).toHaveLength(1);
+    const startDateInput = screen.getByLabelText('Inicio');
+    const endDateInput = screen.getByLabelText('Fin');
+    expect(startDateInput).toHaveValue('2023-01-01');
+    expect(endDateInput).toHaveValue('2023-01-31');
   });
 
   it('renders apply button', () => {
@@ -252,20 +260,18 @@ describe('BookRatingMenu', () => {
   it('handles date input changes', () => {
     render(<BookRatingMenu {...defaultProps} />);
 
-    const startDateInput = screen.getByDisplayValue('2023-01-01');
+    const startDateInput = screen.getByLabelText('Inicio');
     fireEvent.change(startDateInput, { target: { value: '2023-02-01' } });
-
     expect(mockHandlers.setTempStartDate).toHaveBeenCalledWith('2023-02-01');
 
-    const endDateInput = screen.getByDisplayValue('2023-01-31');
+    const endDateInput = screen.getByLabelText('Fin');
     fireEvent.change(endDateInput, { target: { value: '2023-02-28' } });
-
     expect(mockHandlers.setTempEndDate).toHaveBeenCalledWith('2023-02-28');
   });
 
   it('uses default fontFamily when not provided', () => {
-    const propsWithoutFont = { ...defaultProps };
-    delete propsWithoutFont.fontFamily;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { fontFamily: _fontFamily, ...propsWithoutFont } = defaultProps;
     render(<BookRatingMenu {...propsWithoutFont} />);
 
     // Should render without errors
@@ -332,8 +338,8 @@ describe('BookRatingMenu', () => {
 
     render(<BookRatingMenu {...props} />);
 
-    expect(screen.getByDisplayValue('2023-06-01')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('2023-06-30')).toBeInTheDocument();
+    expect(screen.getByLabelText('Inicio')).toHaveValue('2023-06-01');
+    expect(screen.getByLabelText('Fin')).toHaveValue('2023-06-30');
 
     const ratingStars = screen.getByTestId('rating-stars');
     expect(ratingStars).toHaveAttribute('data-rating', '5');
@@ -382,8 +388,10 @@ describe('BookRatingMenu', () => {
 
     render(<BookRatingMenu {...props} />);
 
-    const dateInputs = screen.getAllByDisplayValue('');
-    expect(dateInputs.length).toBeGreaterThanOrEqual(2);
+    const startDateInput = screen.getByLabelText('Inicio');
+    const endDateInput = screen.getByLabelText('Fin');
+    expect(startDateInput).toHaveValue('');
+    expect(endDateInput).toHaveValue('');
   });
 
   it('passes correct disabled and loading states', () => {

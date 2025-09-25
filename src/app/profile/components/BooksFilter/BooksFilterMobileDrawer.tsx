@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Drawer,
   Box,
@@ -65,6 +65,16 @@ export const BooksFilterMobileDrawer: React.FC<
   onOrderByChange,
   onOrderDirectionChange,
 }) => {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
   const orderOptions = [
     { label: 'Author', value: 'author' },
     { label: 'Rating', value: 'rating' },
