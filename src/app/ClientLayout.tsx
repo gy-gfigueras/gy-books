@@ -170,6 +170,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
               component="img"
               onClick={toggleDrawer}
               sx={{
+                display: ['flex', 'flex', 'none'],
                 width: '48px',
                 height: '48px',
                 cursor: 'pointer',
@@ -182,13 +183,27 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
               alt="logo"
             />
           ) : (
-            <>
+            <Box
+              suppressHydrationWarning={true}
+              sx={{
+                position: 'fixed',
+                display: ['none', 'none', 'flex'],
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '80px',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                px: 3,
+              }}
+            >
               <Box
                 component="img"
                 sx={{
                   width: '48px',
                   height: '48px',
                   cursor: 'pointer',
+                  display: ['none', 'none', 'none'],
                 }}
                 onClick={() => router.push('/')}
                 src="/gy-logo.png"
@@ -279,7 +294,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 )}
                 {renderProfileOrLogin()}
               </Box>
-            </>
+            </Box>
           )}
         </Box>
 
