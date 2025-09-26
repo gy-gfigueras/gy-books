@@ -1,6 +1,6 @@
 'use client';
 
-import { goudi, birthStone } from '@/utils/fonts/fonts';
+import { lora, birthStone } from '@/utils/fonts/fonts';
 import {
   Box,
   Typography,
@@ -61,7 +61,7 @@ export const Hero = () => {
             variant="h1"
             sx={{
               color: 'white',
-              fontSize: { xs: '3rem', md: '7rem' },
+              fontSize: { xs: '6rem', md: '7rem' },
               fontWeight: '800',
               fontFamily: birthStone.style.fontFamily,
               marginBottom: '1.5rem',
@@ -79,7 +79,7 @@ export const Hero = () => {
               marginBottom: '2.5rem',
               lineHeight: 1.6,
               position: 'relative',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               zIndex: 1,
               textAlign: { xs: 'center', md: 'left' },
             }}
@@ -95,7 +95,7 @@ export const Hero = () => {
               color: 'white',
               padding: '1.2rem 2.5rem',
               fontSize: '1.2rem',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               fontWeight: 'bold',
               letterSpacing: '.3rem',
               borderRadius: '12px',

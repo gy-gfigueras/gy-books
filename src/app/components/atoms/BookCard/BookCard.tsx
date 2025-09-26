@@ -2,7 +2,7 @@ import Book from '@/domain/book.model';
 import { Box, Typography } from '@mui/material';
 import React from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 
 export function BookCard({ book }: { book: Book }) {
   return (
@@ -86,7 +86,7 @@ export function BookCard({ book }: { book: Book }) {
               fontSize: { xs: '18px', md: '28px' },
               letterSpacing: '.05rem',
               fontWeight: '800',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               textAlign: 'left',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -106,7 +106,7 @@ export function BookCard({ book }: { book: Book }) {
                 color: '#FFFFFF45',
                 fontSize: { xs: '16px', md: '22px' },
                 fontWeight: 'thin',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 letterSpacing: '.05rem',
                 textAlign: 'left',
                 fontStyle: 'italic',
@@ -127,7 +127,7 @@ export function BookCard({ book }: { book: Book }) {
             marginTop: { xs: '0px', md: '-10px' },
             letterSpacing: '.05rem',
             width: '100%',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
           }}
           variant="h6"
         >
@@ -140,7 +140,7 @@ export function BookCard({ book }: { book: Book }) {
               color: '#FFFFFF',
               marginTop: '10px',
               fontSize: '16px',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               fontWeight: 'thin',
               flexDirection: 'row',
               alignItems: 'start',
@@ -167,7 +167,7 @@ export function BookCard({ book }: { book: Book }) {
             textAlign: 'left',
             marginTop: '10px',
             position: 'absolute',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             textDecoration: 'none',
             display: 'flex',
             flexDirection: 'row',

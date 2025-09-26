@@ -1,18 +1,13 @@
-import {
-  Inter,
-  Goudy_Bookletter_1911,
-  Birthstone,
-  Cinzel,
-} from 'next/font/google'; // Ya está usando next/font, no requiere cambio aquí
+import { Inter, Birthstone, Cinzel, Lora } from 'next/font/google'; // Ya está usando next/font, no requiere cambio aquí
 
 export const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '700', '800'],
 });
 
-export const goudi = Goudy_Bookletter_1911({
+export const lora = Lora({
   subsets: ['latin'],
-  weight: ['400'],
+  weight: ['400', '700'],
 });
 
 export const birthStone = Birthstone({

@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React from 'react';
 import { Box, Typography, Skeleton } from '@mui/material';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { Activity } from '@/domain/activity.model';
 import { BookImage } from '../atoms/BookCover/BookImage';
 import { UUID } from 'crypto';
@@ -40,7 +40,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
       <BookImage bookId={activity.bookId as string} />
       <Typography
         variant="body1"
-        sx={{ color: '#fff', fontFamily: goudi.style.fontFamily }}
+        sx={{ color: '#fff', fontFamily: lora.style.fontFamily }}
       >
         {activity.message}
       </Typography>
@@ -49,7 +49,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
           variant="body2"
           sx={{
             color: '#AAAAAA',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             marginLeft: 'auto',
           }}
         >
@@ -83,7 +83,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
         variant="text"
         width="70%"
         height={24}
-        sx={{ fontFamily: goudi.style.fontFamily }}
+        sx={{ fontFamily: lora.style.fontFamily }}
       />
     </Box>
   ));
@@ -93,7 +93,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
       sx={{
         mt: 4,
         color: '#FFFFFF',
-        fontFamily: goudi.style.fontFamily,
+        fontFamily: lora.style.fontFamily,
         textAlign: 'center',
       }}
     >
@@ -131,7 +131,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
         >
           <Typography
             variant="body1"
-            sx={{ color: '#fff', fontFamily: goudi.style.fontFamily }}
+            sx={{ color: '#fff', fontFamily: lora.style.fontFamily }}
           >
             No hay actividades disponibles.
           </Typography>

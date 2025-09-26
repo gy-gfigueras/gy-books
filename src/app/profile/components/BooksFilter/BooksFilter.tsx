@@ -18,7 +18,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { EStatus } from '@/utils/constants/EStatus';
 
 interface BooksFilterProps {
@@ -89,7 +89,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           px: 0,
           color: '#fff',
           background: 'rgba(45,45,45,0.95)',
-          fontFamily: goudi.style.fontFamily,
+          fontFamily: lora.style.fontFamily,
           fontWeight: 500,
           fontSize: 15,
           boxShadow: 'none',
@@ -116,7 +116,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
               onOrderByChange(opt.value);
               setOrderMenuAnchor(null);
             }}
-            sx={{ fontFamily: goudi.style.fontFamily }}
+            sx={{ fontFamily: lora.style.fontFamily }}
           >
             {opt.label}
           </MenuItem>
@@ -127,7 +127,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
             onOrderDirectionChange(orderDirection === 'asc' ? 'desc' : 'asc');
             setOrderMenuAnchor(null);
           }}
-          sx={{ fontFamily: goudi.style.fontFamily }}
+          sx={{ fontFamily: lora.style.fontFamily }}
         >
           {orderDirection === 'asc' ? 'Asc' : 'Desc'}{' '}
           {orderDirection === 'asc' ? (
@@ -155,7 +155,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           color: '#fff',
           fontWeight: 500,
           fontSize: 15,
-          fontFamily: goudi.style.fontFamily,
+          fontFamily: lora.style.fontFamily,
           background: 'rgba(45,45,45,0.95)',
           borderRadius: '10px',
           boxShadow: 'none',
@@ -169,7 +169,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           sx={{
             color: '#8C54FF',
             fontWeight: 500,
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
           }}
         >
           {placeholder}
@@ -180,7 +180,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
             value={opt.value ?? opt}
             sx={{ color: '#fff', fontWeight: 500 }}
           >
-            <span style={{ fontFamily: goudi.style.fontFamily }}>
+            <span style={{ fontFamily: lora.style.fontFamily }}>
               {opt.label ?? opt}
             </span>
           </MenuItem>
@@ -280,7 +280,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           mb: { xs: 1, sm: 0 },
           input: {
             color: '#fff',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
           },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {

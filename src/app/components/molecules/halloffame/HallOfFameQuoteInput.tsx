@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, TextField, IconButton } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 
 interface HallOfFameQuoteInputProps {
   quote?: string; // Optional since we're using controlled component
@@ -68,7 +68,7 @@ export const HallOfFameQuoteInput: React.FC<HallOfFameQuoteInputProps> = ({
         '& .MuiInputBase-input': {
           color: 'white',
           fontSize: '20px',
-          fontFamily: goudi.style.fontFamily,
+          fontFamily: lora.style.fontFamily,
           fontStyle: 'italic',
           textAlign: 'center',
         },

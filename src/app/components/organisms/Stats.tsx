@@ -8,7 +8,7 @@ import { Box, Typography } from '@mui/material';
 import DonutChart from '../molecules/DonutChart';
 import PageCountKPI from '../molecules/PageCountKPI';
 import RatingStats from '../molecules/RatingStats';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import StatsSkeleton from '../molecules/StatsSkeleton';
 
 export default function StatsComponent({ id }: { id: UUID }) {
@@ -60,7 +60,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
         }}
       >
         <Typography
-          sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
+          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
           variant="h4"
         >
           Authors read
@@ -82,7 +82,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
         }}
       >
         <Typography
-          sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
+          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
           variant="h4"
         >
           Book status
@@ -104,7 +104,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
         }}
       >
         <Typography
-          sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
+          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
           variant="h4"
         >
           Page Count
@@ -113,7 +113,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
           totalPages={data?.totalPages || 0}
           wantToReadPages={data?.wantToReadPages || 0}
           bookStatus={data?.bookStatus || {}}
-          fontFamily={goudi.style.fontFamily}
+          fontFamily={lora.style.fontFamily}
         />
       </Box>
       <Box
@@ -131,7 +131,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
         }}
       >
         <Typography
-          sx={{ color: 'white', fontFamily: goudi.style.fontFamily }}
+          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
           variant="h4"
         >
           Rating Stats
@@ -144,7 +144,7 @@ export default function StatsComponent({ id }: { id: UUID }) {
               totalRatedBooks: 0,
             }
           }
-          fontFamily={goudi.style.fontFamily}
+          fontFamily={lora.style.fontFamily}
         />
       </Box>
     </Box>

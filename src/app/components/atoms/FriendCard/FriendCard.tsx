@@ -1,5 +1,5 @@
 import React from 'react';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { Friend } from '@/domain/friend.model';
 import { Box, IconButton, Typography } from '@mui/material';
 import Image from 'next/image';
@@ -56,7 +56,7 @@ export default function FriendCard({
           letterSpacing: '0.1rem',
           fontWeight: 'bold',
           color: 'white',
-          fontFamily: goudi.style.fontFamily,
+          fontFamily: lora.style.fontFamily,
         }}
       >
         {friend.username}

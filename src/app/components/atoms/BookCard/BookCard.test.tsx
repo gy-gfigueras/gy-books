@@ -14,9 +14,9 @@ jest.mock('@mui/icons-material', () => ({
 }));
 
 jest.mock('@/utils/fonts/fonts', () => ({
-  goudi: {
+  lora: {
     style: {
-      fontFamily: 'Goudi',
+      fontFamily: 'lora',
     },
   },
 }));

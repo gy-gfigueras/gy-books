@@ -1,6 +1,6 @@
 'use client';
 
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import dynamic from 'next/dynamic';
 import React from 'react';
 
@@ -38,7 +38,7 @@ export default function DocsPage() {
               },
             },
             typography: {
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               fontSize: '18px',
               code: {
                 color: '#facc15', // amarillo suave para código

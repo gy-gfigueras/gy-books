@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Paper, Typography, TextField } from '@mui/material';
 import { CustomButton } from '@/app/components/atoms/CustomButton/customButton';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 
 interface BiographySectionProps {
   biography: string;
@@ -36,7 +36,7 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
               backgroundColor: '#232323',
               borderRadius: '12px',
               border: '2px solid #FFFFFF30',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               '& .MuiOutlinedInput-root': {
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'transparent',
@@ -46,7 +46,7 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
                 },
                 '&.MuiFormLabel-root': {
                   color: 'transparent',
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                 },
               },
               '& .MuiOutlinedInput-notchedOutline': {
@@ -54,16 +54,16 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
               },
               '& .MuiInputBase-input': {
                 color: 'white',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               },
               '& .MuiInputLabel-root': {
                 color: 'white',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               },
               '& .MuiInputLabel-root.Mui-focused': {
                 color: 'white',
                 fontSize: '18px',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               },
             }}
           />
@@ -77,7 +77,7 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
                 height: '44px',
                 paddingTop: '14px',
                 textAlign: 'center',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               }}
               onClick={onSave}
               disabled={isLoading}
@@ -91,7 +91,7 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
                 letterSpacing: '.05rem',
                 minWidth: { xs: 0, md: 'auto' },
                 width: { xs: '50%', md: 'auto' },
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 background: 'rgba(255, 0, 0, 0.43)',
                 boxShadow: '0 4px 14px rgba(255, 0, 0, 0.4)',
                 paddingTop: '14px',
@@ -126,7 +126,7 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
             variant="body2"
             sx={{
               color: '#fff',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               fontSize: 18,
               minHeight: 32,
             }}

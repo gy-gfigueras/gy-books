@@ -5,7 +5,7 @@ import { Box, Container, Typography, Link, IconButton } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LanguageIcon from '@mui/icons-material/Language';
-import { birthStone, cinzel, goudi } from '@/utils/fonts/fonts';
+import { birthStone, cinzel, lora } from '@/utils/fonts/fonts';
 
 export const Footer = () => {
   return (
@@ -49,7 +49,7 @@ export const Footer = () => {
                 maxWidth: '300px',
                 mx: { xs: 'auto', md: 0 },
                 fontSize: '16px',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               }}
             >
               Discover, share, and connect with other readers.
@@ -70,7 +70,7 @@ export const Footer = () => {
                 color: '#FFFFFF80',
                 textDecoration: 'none',
                 fontSize: { xs: '0.9rem', sm: '1.2rem' },
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 '&:hover': {
                   color: '#9333ea',
                 },
@@ -84,7 +84,7 @@ export const Footer = () => {
                 color: '#FFFFFF80',
                 textDecoration: 'none',
                 fontSize: { xs: '0.9rem', sm: '1.2rem' },
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 '&:hover': {
                   color: '#9333ea',
                 },
@@ -98,7 +98,7 @@ export const Footer = () => {
                 color: '#FFFFFF80',
                 textDecoration: 'none',
                 fontSize: { xs: '0.9rem', sm: '1.2rem' },
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 '&:hover': {
                   color: '#9333ea',
                 },
@@ -183,7 +183,7 @@ export const Footer = () => {
             sx={{
               color: '#FFFFFF60',
               fontSize: { xs: '0.8rem', sm: '1rem' },
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
             }}
           >
             GYCODING. All rights reserved.

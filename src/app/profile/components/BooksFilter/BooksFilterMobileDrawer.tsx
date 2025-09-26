@@ -17,7 +17,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import CloseIcon from '@mui/icons-material/Close';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { EStatus } from '@/utils/constants/EStatus';
 
 interface BooksFilterMobileDrawerProps {
@@ -130,7 +130,7 @@ export const BooksFilterMobileDrawer: React.FC<
               fontWeight: 'bold',
               mb: 0.5,
               fontSize: 20,
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               letterSpacing: '.05rem',
             }}
           >
@@ -148,7 +148,7 @@ export const BooksFilterMobileDrawer: React.FC<
               minWidth: 110,
               input: {
                 color: '#fff',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
@@ -181,7 +181,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 color: '#fff',
                 fontWeight: 500,
                 fontSize: 15,
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 background: 'rgba(45,45,45,0.95)',
                 borderRadius: '10px',
                 boxShadow: 'none',
@@ -196,7 +196,7 @@ export const BooksFilterMobileDrawer: React.FC<
                   value={opt.value}
                   sx={{ color: '#fff', fontWeight: 500 }}
                 >
-                  <span style={{ fontFamily: goudi.style.fontFamily }}>
+                  <span style={{ fontFamily: lora.style.fontFamily }}>
                     {opt.label}
                   </span>
                 </MenuItem>
@@ -212,7 +212,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 color: '#fff',
                 fontWeight: 500,
                 fontSize: 15,
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 background: 'rgba(45,45,45,0.95)',
                 borderRadius: '10px',
                 boxShadow: 'none',
@@ -226,7 +226,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 sx={{
                   color: '#8C54FF',
                   fontWeight: 500,
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                 }}
               >
                 Status
@@ -237,7 +237,7 @@ export const BooksFilterMobileDrawer: React.FC<
                   value={opt.value}
                   sx={{ color: '#fff', fontWeight: 500 }}
                 >
-                  <span style={{ fontFamily: goudi.style.fontFamily }}>
+                  <span style={{ fontFamily: lora.style.fontFamily }}>
                     {opt.label}
                   </span>
                 </MenuItem>
@@ -253,7 +253,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 color: '#fff',
                 fontWeight: 500,
                 fontSize: 15,
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 background: 'rgba(45,45,45,0.95)',
                 borderRadius: '10px',
                 boxShadow: 'none',
@@ -267,7 +267,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 sx={{
                   color: '#8C54FF',
                   fontWeight: 500,
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                 }}
               >
                 Author
@@ -278,7 +278,7 @@ export const BooksFilterMobileDrawer: React.FC<
                   value={opt}
                   sx={{ color: '#fff', fontWeight: 500 }}
                 >
-                  <span style={{ fontFamily: goudi.style.fontFamily }}>
+                  <span style={{ fontFamily: lora.style.fontFamily }}>
                     {opt}
                   </span>
                 </MenuItem>
@@ -294,7 +294,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 color: '#fff',
                 fontWeight: 500,
                 fontSize: 15,
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 background: 'rgba(45,45,45,0.95)',
                 borderRadius: '10px',
                 boxShadow: 'none',
@@ -308,7 +308,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 sx={{
                   color: '#8C54FF',
                   fontWeight: 500,
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                 }}
               >
                 Series
@@ -319,7 +319,7 @@ export const BooksFilterMobileDrawer: React.FC<
                   value={opt}
                   sx={{ color: '#fff', fontWeight: 500 }}
                 >
-                  <span style={{ fontFamily: goudi.style.fontFamily }}>
+                  <span style={{ fontFamily: lora.style.fontFamily }}>
                     {opt}
                   </span>
                 </MenuItem>
@@ -333,7 +333,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 color: '#fff',
                 fontWeight: 'bold',
                 fontSize: 18,
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               }}
             >
               Order by
@@ -347,7 +347,7 @@ export const BooksFilterMobileDrawer: React.FC<
                   color: '#fff',
                   fontWeight: 500,
                   fontSize: 15,
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                   background: 'rgba(45,45,45,0.95)',
                   borderRadius: '10px',
                   boxShadow: 'none',
@@ -362,7 +362,7 @@ export const BooksFilterMobileDrawer: React.FC<
                     value={opt.value}
                     sx={{ color: '#fff', fontWeight: 500 }}
                   >
-                    <span style={{ fontFamily: goudi.style.fontFamily }}>
+                    <span style={{ fontFamily: lora.style.fontFamily }}>
                       {opt.label}
                     </span>
                   </MenuItem>
@@ -383,7 +383,7 @@ export const BooksFilterMobileDrawer: React.FC<
                 px: 0,
                 color: '#fff',
                 background: 'rgba(45,45,45,0.95)',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 fontWeight: 500,
                 fontSize: 15,
                 boxShadow: 'none',

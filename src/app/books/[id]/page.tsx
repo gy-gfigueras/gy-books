@@ -4,7 +4,7 @@ import React from 'react';
 import { Box, Typography, IconButton, Chip, Divider } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { useBook } from '@/hooks/useBook';
-import { goudi, cinzel } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { BookRating } from '@/app/components/atoms/BookRating/BookRating';
 import StarIcon from '@mui/icons-material/Star';
 import { useApiBook } from '@/hooks/useApiBook';
@@ -93,7 +93,7 @@ export default function BookDetails() {
         <Typography
           variant="h4"
           sx={{
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             fontWeight: '800',
             fontSize: 32,
             letterSpacing: '.1rem',
@@ -112,7 +112,7 @@ export default function BookDetails() {
             fontSize: 22,
             letterSpacing: '.05rem',
             marginTop: '-1rem',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
           }}
         >
           {book?.author.name}
@@ -151,7 +151,7 @@ export default function BookDetails() {
                 letterSpacing: '.05rem',
                 fontWeight: 'bold',
                 border: '2px solid #8C54FF',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 height: '32px',
                 fontSize: '16px',
               }}
@@ -168,7 +168,7 @@ export default function BookDetails() {
               fontWeight: 'bold',
               display: 'flex',
               alignItems: 'center',
-              fontFamily: cinzel.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               gap: '0.2rem',
               fontSize: '36px',
               textShadow: '0 0 20px rgba(140, 84, 255, 0.5)',
@@ -208,7 +208,7 @@ export default function BookDetails() {
                   backgroundColor: isOnHallOfFame ? '#333300' : 'transparent',
                   borderColor: isOnHallOfFame ? 'gold' : 'gray',
                   fontSize: '18px',
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                   transition: 'all 0.3s ease-in-out',
                   '&:hover': {
                     backgroundColor: isOnHallOfFame ? '#333300' : '#1a1a1a',
@@ -248,7 +248,7 @@ export default function BookDetails() {
           <Typography
             variant="h4"
             sx={{
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               fontWeight: '800',
               display: ['none', 'none', 'block'],
 
@@ -272,7 +272,7 @@ export default function BookDetails() {
             fontSize: 26,
             letterSpacing: '.05rem',
             marginTop: '-1rem',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
           }}
         >
           {book?.author.name}
@@ -302,7 +302,7 @@ export default function BookDetails() {
                 letterSpacing: '.05rem',
                 fontWeight: 'bold',
                 border: '2px solid #8C54FF',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 height: '32px',
                 fontSize: '16px',
               }}
@@ -327,7 +327,7 @@ export default function BookDetails() {
             marginTop: '2rem',
             fontSize: 18,
             color: '#CCCCCC',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             letterSpacing: '.02rem',
             textAlign: 'justify',
           }}

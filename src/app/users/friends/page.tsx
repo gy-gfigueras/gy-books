@@ -11,7 +11,7 @@ import {
   InputAdornment,
   IconButton,
 } from '@mui/material';
-import { birthStone, goudi } from '@/utils/fonts/fonts';
+import { birthStone, lora } from '@/utils/fonts/fonts';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useRouter } from 'next/navigation';
@@ -79,7 +79,7 @@ export default function FriendsPage() {
               width: ['60%', '60%', '60%'],
               backgroundColor: '#232323',
               borderRadius: '16px',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               '& .MuiOutlinedInput-root': {
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'transparent',
@@ -91,7 +91,7 @@ export default function FriendsPage() {
                 },
                 '&.MuiFormLabel-root': {
                   color: 'transparent',
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                 },
               },
               '& .MuiOutlinedInput-notchedOutline': {
@@ -99,16 +99,16 @@ export default function FriendsPage() {
               },
               '& .MuiInputBase-input': {
                 color: 'white',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               },
               '& .MuiInputLabel-root': {
                 color: 'white',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               },
               '& .MuiInputLabel-root.Mui-focused': {
                 color: 'white',
                 fontSize: '22px',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               },
             }}
             slotProps={{
@@ -116,12 +116,12 @@ export default function FriendsPage() {
                 style: {
                   width: '100%',
                   color: 'white',
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                   fontSize: '20px',
 
                   fieldSet: {
                     borderColor: 'white',
-                    fontFamily: goudi.style.fontFamily,
+                    fontFamily: lora.style.fontFamily,
                   },
                 },
               },
@@ -166,7 +166,7 @@ export default function FriendsPage() {
         ) : filteredFriends.length === 0 ? (
           <Typography
             sx={{
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               color: 'white',
               fontSize: '1.5rem',
               mt: 2,

@@ -29,7 +29,7 @@ import ProfileSkeleton from '../components/atoms/ProfileSkeleton/ProfileSkeleton
 import { getBooksWithPagination } from '../actions/book/fetchApiBook';
 import Book from '@/domain/book.model';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { useFriends } from '@/hooks/useFriends';
 import { useBiography } from '@/hooks/useBiography';
 import AnimatedAlert from '../components/atoms/Alert/Alert';
@@ -551,7 +551,7 @@ function ProfilePageContent() {
               '.MuiTab-root': {
                 color: '#fff',
                 fontWeight: 'bold',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 fontSize: 20,
                 textTransform: 'none',
                 minWidth: 120,
@@ -617,7 +617,7 @@ function ProfilePageContent() {
               sx={{
                 mt: 4,
                 color: '#fff',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 textAlign: 'center',
               }}
             >
@@ -631,7 +631,7 @@ function ProfilePageContent() {
               sx={{
                 mt: 4,
                 color: '#FFFFFF',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 textAlign: 'center',
               }}
             >
@@ -645,7 +645,7 @@ function ProfilePageContent() {
               sx={{
                 mt: 4,
                 color: '#FFFFFF',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 textAlign: 'center',
               }}
             >

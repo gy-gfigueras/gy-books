@@ -3,7 +3,7 @@ import * as React from 'react';
 import { User } from '@/domain/user.model';
 import Image from 'next/image';
 import Link from 'next/link';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 interface ProfileProps {
@@ -108,7 +108,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       paddingX: '20px',
-                      fontFamily: goudi.style.fontFamily,
+                      fontFamily: lora.style.fontFamily,
                       fontSize: '18px',
                       borderRadius: '8px',
                       transition: 'background-color 0.3s ease',
@@ -126,7 +126,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         textDecoration: 'none',
                         color: 'white',
                         fontWeight: 'bold',
-                        fontFamily: goudi.style.fontFamily,
+                        fontFamily: lora.style.fontFamily,
                       }}
                       href={'/profile'}
                       onClick={() => {
@@ -149,7 +149,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       paddingX: '20px',
-                      fontFamily: goudi.style.fontFamily,
+                      fontFamily: lora.style.fontFamily,
                       borderRadius: '8px',
                       transition: 'background-color 0.3s ease',
                       '&:hover': {
@@ -162,7 +162,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         textDecoration: 'none',
                         color: '#FFF',
                         fontWeight: 'bold',
-                        fontFamily: goudi.style.fontFamily,
+                        fontFamily: lora.style.fontFamily,
                         fontSize: '18px',
                         display: 'flex',
                         width: '100%',
@@ -188,7 +188,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       paddingX: '20px',
-                      fontFamily: goudi.style.fontFamily,
+                      fontFamily: lora.style.fontFamily,
                       borderRadius: '8px',
                       transition: 'background-color 0.3s ease',
                       '&:hover': {
@@ -201,7 +201,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         textDecoration: 'none',
                         color: '#FF5252',
                         fontWeight: 'bold',
-                        fontFamily: goudi.style.fontFamily,
+                        fontFamily: lora.style.fontFamily,
                         fontSize: '18px',
                         display: 'flex',
                         width: '100%',

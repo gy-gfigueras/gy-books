@@ -5,7 +5,7 @@ import { CustomButton } from '@/app/components/atoms/CustomButton/customButton';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { UserImage } from '@/app/components/atoms/UserAvatar/UserImage';
-import { cinzel, goudi } from '@/utils/fonts/fonts';
+import { cinzel, lora } from '@/utils/fonts/fonts';
 import { BiographySection } from '../BiographySection/BiographySection';
 
 interface ProfileHeaderProps {
@@ -84,7 +84,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           sx={{
             color: '#fff',
             fontWeight: 'bold',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             mb: 0,
             fontSize: { xs: 30, sm: 32, md: 40 },
           }}
@@ -96,7 +96,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             variant="body1"
             sx={{
               color: '#ffffff50',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               fontSize: { xs: 17, sm: 16, md: 22 },
               mb: 1,
               marginTop: { xs: -1, md: 0 },
@@ -139,7 +139,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   color: '#FFFFFF',
                   fontWeight: 'bold',
                   fontSize: { xs: 14, sm: 15, md: 20 },
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                   display: 'flex',
                   alignItems: 'center',
                 }}
@@ -155,7 +155,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 color: '#FFFFFF',
                 fontWeight: 'bold',
                 fontSize: { xs: 14, sm: 15, md: 20 },
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 display: 'flex',
                 alignItems: 'center',
               }}
@@ -202,7 +202,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             letterSpacing: '.05rem',
             minWidth: { xs: 0, md: 170 },
             width: { xs: '50%', md: '200px' },
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             fontSize: { xs: 10, md: 15 },
           }}
           variant="contained"
@@ -218,7 +218,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             letterSpacing: '.05rem',
             minWidth: { xs: 0, md: 170 },
             width: { xs: '50%', md: '200px' },
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             fontSize: { xs: 11, md: 15 },
           }}
           onClick={onEditProfile}

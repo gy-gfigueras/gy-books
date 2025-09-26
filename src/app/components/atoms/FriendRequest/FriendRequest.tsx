@@ -1,5 +1,5 @@
 import React from 'react';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { User } from '@/domain/friend.model';
 import { Box, Typography, IconButton } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
@@ -60,7 +60,7 @@ export default function FriendRequest({
           letterSpacing: '0.1rem',
           fontWeight: 'bold',
           color: 'white',
-          fontFamily: goudi.style.fontFamily,
+          fontFamily: lora.style.fontFamily,
           fontSize: { xs: 16, md: 20 },
         }}
       >

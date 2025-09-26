@@ -18,7 +18,7 @@ import {
 import { BooksFilter } from '@/app/profile/components/BooksFilter/BooksFilter';
 import { BooksList } from '@/app/profile/components/BooksList/BooksList';
 import { useParams, useSearchParams } from 'next/navigation';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
 import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton/ProfileSkeleton';
 import { ProfileHeaderSkeleton } from '@/app/profile/components/ProfileHeader/ProfileHeaderSkeleton';
@@ -533,7 +533,7 @@ function ProfilePageContent() {
               '.MuiTab-root': {
                 color: '#fff',
                 fontWeight: 'bold',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 fontSize: 20,
                 textTransform: 'none',
                 minWidth: 120,
@@ -548,7 +548,7 @@ function ProfilePageContent() {
               sx={{
                 fontSize: { xs: 15, md: 20 },
                 letterSpacing: '.05rem',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               }}
               label="Books"
             />
@@ -556,7 +556,7 @@ function ProfilePageContent() {
               sx={{
                 fontSize: { xs: 15, md: 20 },
                 letterSpacing: '.05rem',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               }}
               label="Hall of Fame"
             />
@@ -564,7 +564,7 @@ function ProfilePageContent() {
               sx={{
                 fontSize: { xs: 15, md: 20 },
                 letterSpacing: '.05rem',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               }}
               label="Stats"
             />
@@ -572,7 +572,7 @@ function ProfilePageContent() {
               sx={{
                 fontSize: { xs: 15, md: 20 },
                 letterSpacing: '.05rem',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
               }}
               label="Activity"
             />
@@ -614,7 +614,7 @@ function ProfilePageContent() {
               sx={{
                 mt: 4,
                 color: '#fff',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 textAlign: 'center',
               }}
             >
@@ -629,7 +629,7 @@ function ProfilePageContent() {
               sx={{
                 mt: 4,
                 color: '#FFFFFF',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 textAlign: 'center',
               }}
             >
@@ -644,7 +644,7 @@ function ProfilePageContent() {
               sx={{
                 mt: 4,
                 color: '#FFFFFF',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 textAlign: 'center',
               }}
             >

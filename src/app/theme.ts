@@ -1,4 +1,4 @@
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
@@ -27,45 +27,45 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: goudi.style.fontFamily,
+    fontFamily: lora.style.fontFamily,
     h1: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     h2: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     h3: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     h4: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     h5: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     h6: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     subtitle1: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     subtitle2: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     body1: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     body2: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     button: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     caption: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
     overline: {
-      fontFamily: goudi.style.fontFamily,
+      fontFamily: lora.style.fontFamily,
     },
   },
 });

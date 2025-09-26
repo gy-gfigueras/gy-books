@@ -34,7 +34,7 @@ import { getMenuItems } from '@/utils/constants/MenuItems';
 import { User } from '@/domain/user.model';
 import { useRouter } from 'next/navigation';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import InboxIcon from '@mui/icons-material/Inbox';
 import CloseIcon from '@mui/icons-material/Close';
 import { useFriendRequestsCount } from '@/hooks/useFriendRequestsCount';
@@ -127,7 +127,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
             letterSpacing: '0.1rem',
             height: '10px',
             py: '1.3rem',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
           }}
         >
           Login
@@ -170,7 +170,6 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
               component="img"
               onClick={toggleDrawer}
               sx={{
-                display: ['flex', 'flex', 'none'],
                 width: '48px',
                 height: '48px',
                 cursor: 'pointer',
@@ -203,7 +202,6 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                   width: '48px',
                   height: '48px',
                   cursor: 'pointer',
-                  display: ['none', 'none', 'none'],
                 }}
                 onClick={() => router.push('/')}
                 src="/gy-logo.png"
@@ -230,7 +228,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                     letterSpacing: '0.1rem',
                     height: '10px',
                     py: '1.3rem',
-                    fontFamily: goudi.style.fontFamily,
+                    fontFamily: lora.style.fontFamily,
                     '&:hover': {
                       borderColor: '#a855f7',
                       backgroundColor: 'rgba(147, 51, 234, 0.1)',
@@ -252,7 +250,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                     letterSpacing: '0.1rem',
                     height: '10px',
                     py: '1.3rem',
-                    fontFamily: goudi.style.fontFamily,
+                    fontFamily: lora.style.fontFamily,
                     '&:hover': {
                       borderColor: '#a855f7',
                       backgroundColor: 'rgba(147, 51, 234, 0.1)',
@@ -348,7 +346,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 sx={{
                   color: '#fff',
                   fontWeight: 'bold',
-                  fontFamily: goudi.style.fontFamily,
+                  fontFamily: lora.style.fontFamily,
                   fontSize: { xs: 16, md: 20 },
                 }}
               >
@@ -412,7 +410,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                   <Typography
                     sx={{
                       color: '#fff',
-                      fontFamily: goudi.style.fontFamily,
+                      fontFamily: lora.style.fontFamily,
                       textAlign: 'center',
                     }}
                   >
@@ -517,7 +515,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                     primary={item.text}
                     sx={{
                       fontWeight: 'bold',
-                      fontFamily: goudi.style.fontFamily,
+                      fontFamily: lora.style.fontFamily,
                     }}
                   />
                 </ListItem>

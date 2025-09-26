@@ -12,7 +12,7 @@ import { ApiBook } from '@/domain/apiBook.model';
 jest.mock('@/hooks/useUser');
 jest.mock('@/hooks/useRemoveBook');
 jest.mock('@/utils/fonts/fonts', () => ({
-  goudi: { style: { fontFamily: 'Goudi' } },
+  lora: { style: { fontFamily: 'lora' } },
 }));
 jest.mock('@mui/material/styles', () => ({
   useTheme: () => ({

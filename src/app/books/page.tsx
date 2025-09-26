@@ -11,7 +11,7 @@ import Head from 'next/head';
 import { useDebounce } from '@/hooks/useDebounce';
 import { BookCard } from '../components/atoms/BookCard/BookCard';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { birthStone, goudi } from '@/utils/fonts/fonts';
+import { birthStone, lora } from '@/utils/fonts/fonts';
 import LottieAnimation from '../components/atoms/LottieAnimation/LottieAnimation';
 import CustomTitle from '../components/atoms/BookTitle/CustomTitle';
 
@@ -130,7 +130,7 @@ function BooksContent() {
               ),
               style: {
                 color: 'white',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 fontSize: '18px',
                 backgroundColor: '#232323',
                 borderRadius: '16px',
@@ -140,7 +140,7 @@ function BooksContent() {
             InputLabelProps={{
               style: {
                 color: 'white',
-                fontFamily: goudi.style.fontFamily,
+                fontFamily: lora.style.fontFamily,
                 fontSize: '20px',
               },
             }}

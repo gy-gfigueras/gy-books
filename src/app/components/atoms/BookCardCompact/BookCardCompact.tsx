@@ -3,7 +3,7 @@ import { Box, Typography, Chip, Rating, Skeleton } from '@mui/material';
 import Book from '@/domain/book.model';
 import { useRouter } from 'next/navigation';
 import { Library } from '@/domain/library.model';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 
 interface BookCardCompactProps {
   book: Book;
@@ -202,7 +202,7 @@ export const BookCardCompact = ({
               color: '#FFFFFF',
               fontWeight: '800',
               fontSize: '1.1rem',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               letterSpacing: '.05rem',
               lineHeight: 1.3,
               display: '-webkit-box',
@@ -217,7 +217,7 @@ export const BookCardCompact = ({
             sx={{
               color: 'rgba(255, 255, 255, 0.7)',
               fontSize: '1rem',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               letterSpacing: '.05rem',
               fontWeight: '500',
             }}
@@ -256,7 +256,7 @@ export const BookCardCompact = ({
               backgroundColor: 'rgba(147, 51, 234, 0.1)',
               color: 'primary.main',
               fontSize: '.85rem',
-              fontFamily: goudi.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               letterSpacing: '.05rem',
               fontWeight: '800',
               height: '24px',

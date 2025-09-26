@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import Link from 'next/link';
 export const CTASection = () => {
   return (
@@ -32,7 +32,7 @@ export const CTASection = () => {
           position: 'relative',
           fontSize: 40,
           zIndex: 1,
-          fontFamily: goudi.style.fontFamily,
+          fontFamily: lora.style.fontFamily,
           letterSpacing: '.05rem',
         }}
       >
@@ -45,7 +45,7 @@ export const CTASection = () => {
           fontSize: '1.4rem',
           lineHeight: 1.6,
           position: 'relative',
-          fontFamily: goudi.style.fontFamily,
+          fontFamily: lora.style.fontFamily,
           letterSpacing: '.05rem',
           zIndex: 1,
         }}
@@ -63,7 +63,7 @@ export const CTASection = () => {
             color: 'white',
             padding: '1.2rem 2.5rem',
             fontSize: '1.2rem',
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             fontWeight: 'bold',
             letterSpacing: '.3rem',
             borderRadius: '12px',

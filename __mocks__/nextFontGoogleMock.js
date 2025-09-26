@@ -5,4 +5,5 @@ module.exports = {
   }),
   Birthstone: () => ({ style: { fontFamily: 'Birthstone' } }),
   Cinzel: () => ({ style: { fontFamily: 'Cinzel' } }),
+  Lora: () => ({ style: { fontFamily: 'Lora' } }),
 };

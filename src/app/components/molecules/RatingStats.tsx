@@ -2,7 +2,7 @@ import React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { Box, Typography } from '@mui/material';
 import { Star } from '@mui/icons-material';
-import { birthStone } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 
 interface RatingStatsProps {
   ratings: {
@@ -13,7 +13,7 @@ interface RatingStatsProps {
   fontFamily: string;
 }
 
-const RatingStats: React.FC<RatingStatsProps> = ({ ratings, fontFamily }) => {
+const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
   // Crear array de ratings de 0.5 a 5 con incrementos de 0.5
   const ratingLevels = [];
   for (let i = 0.5; i <= 5; i += 0.5) {
@@ -70,10 +70,9 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings, fontFamily }) => {
           <Typography
             sx={{
               color: '#8C54FF',
-              fontFamily: birthStone.style.fontFamily,
+              fontFamily: lora.style.fontFamily,
               fontSize: '1.5rem',
               fontWeight: 'bold',
-              marginTop: '-0.3rem',
             }}
           >
             {ratings.averageRating.toFixed(1)}
@@ -82,7 +81,7 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings, fontFamily }) => {
         <Typography
           sx={{
             color: 'rgba(255, 255, 255, 0.7)',
-            fontFamily: fontFamily,
+            fontFamily: lora.style.fontFamily,
             fontSize: '1.1rem',
           }}
         >

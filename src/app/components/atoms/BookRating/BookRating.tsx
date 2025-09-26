@@ -4,7 +4,7 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { goudi } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useUser } from '@/hooks/useUser';
@@ -87,7 +87,7 @@ export const BookRating = ({
             borderColor: isBookSaved ? '#8C54FF' : '#8C54FF40',
             fontWeight: 'bold',
             fontSize: 20,
-            fontFamily: goudi.style.fontFamily,
+            fontFamily: lora.style.fontFamily,
             letterSpacing: '.05rem',
             borderRadius: '12px',
             background: isBookSaved ? '#8C54FF' : 'rgba(140,84,255,0.05)',
@@ -126,7 +126,7 @@ export const BookRating = ({
           isBookSaved={!!isBookSaved}
           isLoading={isLoading}
           isSubmitting={isSubmitting}
-          fontFamily={goudi.style.fontFamily}
+          fontFamily={lora.style.fontFamily}
           handleDeleteBook={localHandleDeleteBook}
         />
         <BookRatingDrawer
@@ -137,7 +137,7 @@ export const BookRating = ({
           isBookSaved={!!isBookSaved}
           isLoading={isLoading}
           isSubmitting={isSubmitting}
-          fontFamily={goudi.style.fontFamily}
+          fontFamily={lora.style.fontFamily}
           handleDeleteBook={localHandleDeleteBook}
         />
       </Box>
