@@ -44,6 +44,18 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
       >
         {activity.message}
       </Typography>
+      {activity.formattedDate && (
+        <Typography
+          variant="body2"
+          sx={{
+            color: '#AAAAAA',
+            fontFamily: goudi.style.fontFamily,
+            marginLeft: 'auto',
+          }}
+        >
+          {activity.formattedDate}
+        </Typography>
+      )}
     </Box>
   ));
 

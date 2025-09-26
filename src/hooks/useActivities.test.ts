@@ -31,10 +31,14 @@ describe('useActivities', () => {
     {
       bookId: 'book-123',
       message: 'User added a new book',
+      date: '2024-01-15T10:00:00Z',
+      formattedDate: '15/01/2024',
     },
     {
       bookId: 'book-456',
       message: 'User rated a book 5 stars',
+      date: '2024-01-10T08:30:00Z',
+      formattedDate: '10/01/2024',
     },
   ];
 
@@ -98,6 +102,7 @@ describe('useActivities', () => {
 
     expect(result.current.data).toHaveLength(1);
     expect(result.current.data?.[0].bookId).toBe('book-123');
+    expect(result.current.data?.[0].formattedDate).toBe('15/01/2024');
   });
 
   it('should sort activities by date (most recent first)', () => {
@@ -123,7 +128,9 @@ describe('useActivities', () => {
     const { result } = renderHook(() => useActivities(mockUserId));
 
     expect(result.current.data?.[0].bookId).toBe('book-123'); // Newer first
+    expect(result.current.data?.[0].formattedDate).toBe('15/01/2024');
     expect(result.current.data?.[1].bookId).toBe('book-456'); // Older second
+    expect(result.current.data?.[1].formattedDate).toBe('10/01/2024');
   });
 
   it('should extract bookId from message correctly', () => {
@@ -149,7 +156,9 @@ describe('useActivities', () => {
     const { result } = renderHook(() => useActivities(mockUserId));
 
     expect(result.current.data?.[0].bookId).toBe('book-123');
+    expect(result.current.data?.[0].formattedDate).toBe('15/01/2024');
     expect(result.current.data?.[1].bookId).toBe(''); // No brackets found
+    expect(result.current.data?.[1].formattedDate).toBe('14/01/2024');
   });
 
   it('should clean message by removing bookId prefix', () => {
@@ -171,6 +180,7 @@ describe('useActivities', () => {
     const { result } = renderHook(() => useActivities(mockUserId));
 
     expect(result.current.data?.[0].message).toBe('User added a book');
+    expect(result.current.data?.[0].formattedDate).toBe('15/01/2024');
   });
 
   it('should return error when fetch fails', () => {

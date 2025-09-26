@@ -30,6 +30,12 @@ export function useActivities(id?: UUID): useActivitiesProps {
       .map((activity: any) => ({
         bookId: activity.message.match(/\[(.*?)\]/)?.[1] || '', // Extraer el ID del mensaje
         message: activity.message.replace(/\[.*?\]\s*/, ''),
+        date: activity.date,
+        formattedDate: new Date(activity.date).toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }),
       })) || undefined;
 
   return {
