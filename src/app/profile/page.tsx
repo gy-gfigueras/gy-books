@@ -9,10 +9,9 @@ import React, {
   Suspense,
 } from 'react';
 import { ProfileHeader } from './components/ProfileHeader/ProfileHeader';
-import { ProfileHeaderSkeleton } from './components/ProfileHeader/ProfileHeaderSkeleton';
+import { ProfilePageSkeleton } from './components/ProfilePageSkeleton';
 import { BooksFilter } from './components/BooksFilter/BooksFilter';
 import { BooksList } from './components/BooksList/BooksList';
-import { BooksListSkeleton } from './components/BooksList/BooksListSkeleton';
 import {
   Box,
   Container,
@@ -442,43 +441,7 @@ function ProfilePageContent() {
   ]);
 
   if (isLoading) {
-    return (
-      <Container
-        maxWidth="xl"
-        sx={{
-          mt: { xs: 0, md: 6 },
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          minHeight: '70vh',
-          borderRadius: 0,
-          boxShadow: 'none',
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: '100%', md: '100%' },
-            maxWidth: 1200,
-            mx: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-          }}
-        >
-          <ProfileHeaderSkeleton />
-          <Box
-            sx={{
-              mt: 6,
-              display: 'flex',
-              flexDirection: { xs: 'column', md: 'row' },
-              gap: 4,
-            }}
-          >
-            <BooksListSkeleton />
-          </Box>
-        </Box>
-      </Container>
-    );
+    return <ProfilePageSkeleton />;
   }
 
   if (!user) {
