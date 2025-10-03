@@ -16,10 +16,59 @@ import { ESeverity } from '@/utils/constants/ESeverity';
 import { useApiBookPublic } from '@/hooks/useApiBookPublic';
 import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 import BookDetailsSkeleton from '@/app/components/molecules/BookDetailsSkeleton';
+import { EditionSelector } from '@/app/components/molecules/EditionSelector/EditionSelector';
+import { Edition } from '@/domain/book.model';
+import { useEditionSelection } from '@/hooks/useEditionSelection';
+
 export default function BookDetails() {
   const params = useParams();
   const { data: book, isLoading } = useBook(params.id as string);
   const { data: user } = useUser();
+  const {
+    data: apiBook,
+    isLoading: isApiBookLoading,
+    mutate,
+  } = useApiBook(params.id as string);
+  const { data: apiBookPublic, isLoading: isApiBookLoadingPublic } =
+    useApiBookPublic(params.id as string);
+
+  // Estados para notificaciones de edición
+  const [editionNotification, setEditionNotification] = React.useState<{
+    open: boolean;
+    success: boolean;
+    message: string;
+  }>({
+    open: false,
+    success: false,
+    message: '',
+  });
+
+  // Gestión de selección de ediciones con hook personalizado
+  const {
+    selectedEdition,
+    setSelectedEdition,
+    displayTitle,
+    displayImage,
+    isSaving,
+  } = useEditionSelection({
+    editions: book?.editions || [],
+    apiBook: apiBook || undefined,
+    defaultCoverUrl: book?.cover?.url || DEFAULT_COVER_IMAGE,
+    defaultTitle: book?.title || '',
+    onEditionSaved: (success, message) => {
+      setEditionNotification({
+        open: true,
+        success,
+        message,
+      });
+
+      // Si fue exitoso, revalidar los datos del libro
+      if (success && mutate) {
+        mutate();
+      }
+    },
+  });
+
   const {
     data: hallOfFame,
     handleAddBookToHallOfFame,
@@ -37,13 +86,13 @@ export default function BookDetails() {
   } = useHallOfFame(user?.id || '');
   const isOnHallOfFame = hallOfFame?.books.some((b) => b.id === book?.id);
   const isLoggedIn = !!user;
-  const {
-    data: apiBook,
-    isLoading: isApiBookLoading,
-    mutate,
-  } = useApiBook(params.id as string);
-  const { data: apiBookPublic, isLoading: isApiBookLoadingPublic } =
-    useApiBookPublic(params.id as string);
+
+  // Extraer todas las ediciones disponibles
+  const allEditions: Edition[] = React.useMemo(() => {
+    if (!book?.editions) return [];
+    return book.editions;
+  }, [book]);
+
   if (isLoading || isApiBookLoading || isApiBookLoadingPublic) {
     return <BookDetailsSkeleton />;
   }
@@ -64,8 +113,6 @@ export default function BookDetails() {
       handleAddBookToHallOfFame(book?.id || '');
     }
   };
-
-  const bookHasCover = book?.cover.url && book.cover.url !== '';
 
   return (
     <Box
@@ -101,7 +148,7 @@ export default function BookDetails() {
             textAlign: { xs: 'center', md: 'left' },
           }}
         >
-          {book?.title}
+          {displayTitle}
         </Typography>
         <Typography
           variant="h6"
@@ -129,8 +176,8 @@ export default function BookDetails() {
       >
         <Box
           component="img"
-          src={bookHasCover ? book?.cover.url : DEFAULT_COVER_IMAGE}
-          alt={book?.title}
+          src={displayImage}
+          alt={displayTitle}
           sx={{
             width: ['250px', '250px', '300px'],
             maxWidth: { xs: '100%', md: '300px' },
@@ -197,6 +244,7 @@ export default function BookDetails() {
               isRatingLoading={isApiBookLoading}
               mutate={mutate}
               isLoggedIn={isLoggedIn}
+              selectedEdition={selectedEdition}
             />
 
             {user && (
@@ -227,6 +275,14 @@ export default function BookDetails() {
               </IconButton>
             )}
           </Box>
+
+          {/* Edition Selector */}
+          <EditionSelector
+            editions={allEditions}
+            selectedEdition={selectedEdition}
+            onEditionChange={setSelectedEdition}
+            disabled={isSaving}
+          />
         </Box>
       </Box>
       <Box
@@ -258,7 +314,7 @@ export default function BookDetails() {
               textAlign: { xs: 'center', md: 'left' },
             }}
           >
-            {book?.title}
+            {displayTitle}
           </Typography>
         </Box>
         <Typography
@@ -357,6 +413,18 @@ export default function BookDetails() {
         onClose={() => setIsErrorDeleteToHallOfFame(false)}
         message="Error deleting book from Hall of Fame."
         severity={ESeverity.ERROR}
+      />
+
+      {/* Nueva notificación para cambios de edición */}
+      <AnimatedAlert
+        open={editionNotification.open}
+        onClose={() =>
+          setEditionNotification((prev) => ({ ...prev, open: false }))
+        }
+        message={editionNotification.message}
+        severity={
+          editionNotification.success ? ESeverity.SUCCESS : ESeverity.ERROR
+        }
       />
     </Box>
   );
