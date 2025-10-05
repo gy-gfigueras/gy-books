@@ -117,6 +117,9 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                 background: 'rgba(35, 35, 35, 0.6)',
                 borderRadius: '12px',
                 overflow: 'hidden',
+                flexShrink: 0,
+                flexWrap: 'nowrap',
+                maxWidth: ['100%', '200px'],
                 '.MuiOutlinedInput-notchedOutline': {
                   border: 0,
                 },
@@ -127,7 +130,8 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
-                  paddingRight: '32px !important', // Espacio para la flecha
+                  paddingRight: '32px !important',
+                  maxWidth: 'calc(100% - 32px)',
                 },
               }}
               MenuProps={{

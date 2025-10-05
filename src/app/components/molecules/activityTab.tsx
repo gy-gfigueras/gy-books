@@ -40,7 +40,11 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
       <BookImage bookId={activity.bookId as string} />
       <Typography
         variant="body1"
-        sx={{ color: '#fff', fontFamily: lora.style.fontFamily }}
+        sx={{
+          color: '#fff',
+          fontFamily: lora.style.fontFamily,
+          fontSize: ['12px', '14px'],
+        }}
       >
         {activity.message}
       </Typography>

@@ -45,6 +45,12 @@ export function useEditionSelection({
   const userEditionId = apiBook?.userData?.editionId;
   const hasUserSelectedEdition = Boolean(userEditionId);
 
+  // Estados válidos para guardar ediciones
+  const validStatuses = [EStatus.WANT_TO_READ, EStatus.READING, EStatus.READ];
+  const hasValidStatus =
+    apiBook?.userData?.status &&
+    validStatuses.includes(apiBook.userData.status);
+
   // Efecto para inicializar la edición seleccionada basándose en userData
   useEffect(() => {
     if (!userEditionId || !editions.length) {
@@ -58,32 +64,22 @@ export function useEditionSelection({
     }
   }, [userEditionId, editions]);
 
-  // Función para manejar el cambio de edición con guardado automático
+  // Función para manejar el cambio de edición sin auto-guardado
   const handleEditionChange = async (newEdition: Edition | null) => {
     if (!user || isSaving) return;
 
+    // Si no hay libro guardado o no está en estado válido, solo cambiar visualización
+    if (!apiBook?.userData || !hasValidStatus) {
+      setSelectedEdition(newEdition);
+      return;
+    }
+
+    // Solo llegar aquí si el libro está guardado Y en estado válido
     setIsSaving(true);
 
     try {
-      // Si el usuario no tiene el libro guardado y selecciona una edición, guardarlo automáticamente
-      const shouldAutoSave = !apiBook?.userData && newEdition;
-
-      if (shouldAutoSave) {
-        const formData = new FormData();
-        formData.append('bookId', apiBook?.id || '');
-        formData.append('rating', '0');
-        formData.append('status', EStatus.WANT_TO_READ);
-        formData.append('startDate', '');
-        formData.append('endDate', '');
-        formData.append('progress', '0');
-        formData.append('editionId', newEdition.id.toString());
-
-        await rateBook(formData, user.username, undefined);
-
-        setSelectedEdition(newEdition);
-        onEditionSaved?.(true, 'Book saved with selected edition!');
-      } else if (apiBook?.userData && newEdition) {
-        // Si ya tiene el libro guardado, actualizar la edición
+      if (apiBook?.userData && newEdition && hasValidStatus) {
+        // Actualizar la edición en la base de datos
         const formData = new FormData();
         formData.append('bookId', apiBook.id);
         formData.append('rating', (apiBook.userData.rating || 0).toString());
@@ -121,6 +117,9 @@ export function useEditionSelection({
     );
   }, [selectedEdition, defaultTitle, defaultCoverUrl]);
 
+  // Determinar si estamos en modo preview (no guardado o sin estado válido)
+  const isPreviewMode = !apiBook?.userData || !hasValidStatus;
+
   return {
     selectedEdition,
     setSelectedEdition: handleEditionChange,
@@ -128,5 +127,6 @@ export function useEditionSelection({
     displayImage,
     hasUserSelectedEdition,
     isSaving,
+    isPreviewMode,
   };
 }
