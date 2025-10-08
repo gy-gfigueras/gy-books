@@ -2,16 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (req: NextRequest) => {
   try {
-    const profileId = req.nextUrl.pathname.split('/')[4]; // [id]
+    const profileId = req.nextUrl.pathname.split('/')[4];
     const currentPage = 0;
-    const size = 30;
+    const size = 50;
 
     const apiUrl = `${process.env.GY_API}/books/${profileId}/list?page=${currentPage}&size=${size}`;
     const headers = { 'Content-Type': 'application/json' };
-
-    console.log(
-      `[STATS-DEBUG] Fetching page: ${currentPage}, size: ${size}, URL: ${apiUrl}`
-    );
 
     const response = await fetch(apiUrl, { headers, method: 'GET' });
     if (!response.ok) {

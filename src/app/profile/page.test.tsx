@@ -515,7 +515,7 @@ describe('ProfilePage', () => {
       expect(mockGetBooksWithPagination).toHaveBeenCalledWith(
         mockUser.id,
         0,
-        5
+        50
       );
     });
   });
@@ -535,7 +535,7 @@ describe('ProfilePage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('loading')).toBeInTheDocument();
+      expect(screen.getByTestId('books-list-skeleton')).toBeInTheDocument();
     });
   });
 

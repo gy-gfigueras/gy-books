@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { GET_BOOK_BY_ID_QUERY } from '@/utils/constants/Query';
+import { GET_BOOKS_BY_IDS_QUERY } from '@/utils/constants/Query';
 import { mapHardcoverToBook } from '@/mapper/BookToMO.mapper';
 import Book from '@/domain/book.model';
 
@@ -10,7 +10,7 @@ export const GET = async (req: NextRequest) => {
   try {
     const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
     const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
-    const profileId = req.nextUrl.pathname.split('/')[4]; // [id]
+    const profileId = req.nextUrl.pathname.split('/')[4];
 
     if (!HARDCOVER_API_TOKEN || !HARDCOVER_API_URL) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
@@ -18,7 +18,7 @@ export const GET = async (req: NextRequest) => {
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '0', 10);
-    const size = parseInt(searchParams.get('size') || '10', 10);
+    const size = parseInt(searchParams.get('size') || '50', 10);
 
     const apiUrl = `${process.env.GY_API}/books/${profileId}/list?page=${page}&size=${size}`;
     const headers = {
@@ -44,57 +44,86 @@ export const GET = async (req: NextRequest) => {
       hasMore: RATINGS_DATA.length === size,
     };
 
-    for (const book of RATINGS_DATA) {
-      try {
-        const bookResponse = await fetch(HARDCOVER_API_URL!, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `${HARDCOVER_API_TOKEN}`,
-          },
-          body: JSON.stringify({
-            query: GET_BOOK_BY_ID_QUERY,
-            variables: {
-              id: parseInt(book.id),
-            },
-          }),
-        });
+    if (RATINGS_DATA.length === 0) {
+      return NextResponse.json(LIBRARY);
+    }
 
-        if (!bookResponse.ok) {
-          console.error(
-            `Error fetching book ${book.bookId}:`,
-            await bookResponse.text()
-          );
+    const bookIds = RATINGS_DATA.map((book: { id: string }) =>
+      parseInt(book.id)
+    ).filter((id: number) => !isNaN(id));
+
+    if (bookIds.length === 0) {
+      return NextResponse.json(LIBRARY);
+    }
+
+    const booksResponse = await fetch(HARDCOVER_API_URL!, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${HARDCOVER_API_TOKEN}`,
+      },
+      body: JSON.stringify({
+        query: GET_BOOKS_BY_IDS_QUERY,
+        variables: {
+          ids: bookIds,
+        },
+      }),
+    });
+
+    if (!booksResponse.ok) {
+      console.error(
+        'Error fetching books in batch:',
+        await booksResponse.text()
+      );
+      throw new Error(`Failed to fetch books data`);
+    }
+
+    const booksData = await booksResponse.json();
+
+    if (!booksData.data?.books) {
+      console.error('Invalid response structure:', booksData);
+      return NextResponse.json(LIBRARY);
+    }
+
+    const booksMap = new Map();
+    booksData.data.books.forEach((book: { id: number }) => {
+      booksMap.set(book.id.toString(), book);
+    });
+
+    for (const userBook of RATINGS_DATA) {
+      try {
+        const bookData = booksMap.get(userBook.id);
+
+        if (!bookData) {
+          console.warn(`Book data not found for ID: ${userBook.id}`);
           continue;
         }
 
-        const bookData = await bookResponse.json();
-
         const MAPPED_BOOK: Book = {
-          ...mapHardcoverToBook(bookData.data.books_by_pk),
-          id: book.id,
-          rating: book.userData.rating,
-          series: bookData.data.books_by_pk.book_series?.[0]?.series
+          ...mapHardcoverToBook(bookData),
+          id: userBook.id,
+          rating: userBook.userData.rating,
+          series: bookData.book_series?.[0]?.series
             ? {
-                id: bookData.data.books_by_pk.book_series[0].series.id,
-                name: bookData.data.books_by_pk.book_series[0].series.name,
+                id: bookData.book_series[0].series.id,
+                name: bookData.book_series[0].series.name,
               }
             : null,
-          status: book.userData.status,
+          status: userBook.userData.status,
           userData: {
-            userId: book.userData.userId,
-            status: book.userData.status,
-            rating: book.userData.rating,
-            startDate: book.userData.startDate,
-            endDate: book.userData.endDate,
-            progress: book.userData.progress,
-            editionId: book.userData.editionId,
+            userId: userBook.userData.userId,
+            status: userBook.userData.status,
+            rating: userBook.userData.rating,
+            startDate: userBook.userData.startDate,
+            endDate: userBook.userData.endDate,
+            progress: userBook.userData.progress,
+            editionId: userBook.userData.editionId,
           },
         };
 
         LIBRARY.books.push(MAPPED_BOOK);
       } catch (error) {
-        console.error(`Error processing book ${book.bookId}:`, error);
+        console.error(`Error processing book ${userBook.id}:`, error);
       }
     }
 

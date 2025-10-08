@@ -10,7 +10,7 @@ export const GET = async (req: NextRequest) => {
   try {
     const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
     const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
-    const profileId = req.nextUrl.pathname.split('/')[4]; // [id]
+    const profileId = req.nextUrl.pathname.split('/')[4];
 
     if (!HARDCOVER_API_TOKEN || !HARDCOVER_API_URL) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
@@ -18,7 +18,7 @@ export const GET = async (req: NextRequest) => {
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '0', 10);
-    const size = parseInt(searchParams.get('size') || '10', 10);
+    const size = parseInt(searchParams.get('size') || '50', 10);
 
     const apiUrl = `${process.env.GY_API}/books/${profileId}/list?page=${page}&size=${size}`;
     const headers = {

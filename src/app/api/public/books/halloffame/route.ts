@@ -3,7 +3,8 @@ import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
 import Book from '@/domain/book.model';
-import fetchBookById from '@/app/actions/book/fetchBookById';
+import { GET_BOOKS_BY_IDS_QUERY } from '@/utils/constants/Query';
+import { mapHardcoverToBook } from '@/mapper/BookToMO.mapper';
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -46,20 +47,66 @@ export const GET = async (req: NextRequest) => {
 
       if (hallOfFame.books && hallOfFame.books.length > 0) {
         const rawBooks = hallOfFame.books;
+        const bookIds = rawBooks
+          .map((id: string) => parseInt(id))
+          .filter((id: number) => !isNaN(id));
 
-        const fetchedBooks: (Book | null)[] = await Promise.all(
-          rawBooks.map(async (bookId: string) => {
-            try {
-              const fetchedBook = await fetchBookById(bookId);
-              return fetchedBook || null;
-            } catch (err) {
-              console.error(`Error fetching book ${bookId}:`, err);
-              return null;
+        if (bookIds.length > 0) {
+          try {
+            const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
+            const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
+
+            if (!HARDCOVER_API_URL || !HARDCOVER_API_TOKEN) {
+              throw new Error('Missing Hardcover API configuration');
             }
-          })
-        );
 
-        books = fetchedBooks.filter((book): book is Book => book !== null);
+            const booksResponse = await fetch(HARDCOVER_API_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: HARDCOVER_API_TOKEN,
+              },
+              body: JSON.stringify({
+                query: GET_BOOKS_BY_IDS_QUERY,
+                variables: { ids: bookIds },
+              }),
+            });
+
+            if (booksResponse.ok) {
+              const booksData = await booksResponse.json();
+
+              if (booksData.data?.books) {
+                books = booksData.data.books.map(
+                  (bookData: {
+                    id: number;
+                    book_series?: Array<{
+                      series?: { id: number; name: string };
+                    }>;
+                  }) => {
+                    const mappedBook = mapHardcoverToBook(bookData);
+                    return {
+                      ...mappedBook,
+                      id: bookData.id.toString(),
+                      series: bookData.book_series?.[0]?.series
+                        ? {
+                            id: bookData.book_series[0].series.id,
+                            name: bookData.book_series[0].series.name,
+                          }
+                        : null,
+                    };
+                  }
+                );
+              }
+            } else {
+              console.error(
+                'Error fetching Hall of Fame books:',
+                await booksResponse.text()
+              );
+            }
+          } catch (err) {
+            console.error('Error in batch Hall of Fame request:', err);
+          }
+        }
       }
 
       hallOfFame = {

@@ -474,7 +474,7 @@ describe('UserProfilePage', () => {
       expect(mockGetBooksWithPagination).toHaveBeenCalledWith(
         mockUser.id,
         0,
-        10
+        50
       );
     });
   });
@@ -550,7 +550,7 @@ describe('UserProfilePage', () => {
       expect(mockGetBooksWithPagination).toHaveBeenCalledWith(
         mockUser.id,
         0,
-        10 // Public profile uses 10 items per page instead of 5
+        50 // Updated to use 50 items per page for better performance
       );
     });
   });

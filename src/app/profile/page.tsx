@@ -12,6 +12,7 @@ import { ProfileHeader } from './components/ProfileHeader/ProfileHeader';
 import { ProfilePageSkeleton } from './components/ProfilePageSkeleton';
 import { BooksFilter } from './components/BooksFilter/BooksFilter';
 import { BooksList } from './components/BooksList/BooksList';
+import { BooksListSkeleton } from './components/BooksList/BooksListSkeleton';
 import {
   Box,
   Container,
@@ -292,7 +293,7 @@ function ProfilePageContent() {
       const res = await getBooksWithPagination(
         user?.id as UUID,
         currentPage,
-        5
+        50
       );
       if (res && Array.isArray(res.books) && res.books.length > 0) {
         setBooks((prev) => {
@@ -562,7 +563,6 @@ function ProfilePageContent() {
                 onOrderDirectionChange={handleOrderDirectionChange}
               />
               <BooksList books={filteredBooks} hasMore={hasMore} />
-              {/* Loader y sentinel para paginación infinita */}
               <Box
                 ref={sentinelRef}
                 sx={{
@@ -573,7 +573,7 @@ function ProfilePageContent() {
                   width: '100%',
                 }}
               >
-                {loading && <CircularProgress size={28} />}
+                {loading && <BooksListSkeleton />}
               </Box>
             </Box>
           )}

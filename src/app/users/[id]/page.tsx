@@ -292,7 +292,7 @@ function ProfilePageContent() {
       const res = await getBooksWithPagination(
         params.id as UUID,
         currentPage,
-        10
+        50
       );
       if (res && Array.isArray(res.books) && res.books.length > 0) {
         setBooks((prev) => {

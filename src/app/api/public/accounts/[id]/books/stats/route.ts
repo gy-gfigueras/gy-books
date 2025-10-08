@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { GET_STATS } from '@/utils/constants/Query';
+import { GET_MULTIPLE_STATS } from '@/utils/constants/Query';
 import { calculateStats } from '@/utils/functions/mapStats';
 import { EStatus } from '@/utils/constants/EStatus';
 
 const HARDCOVER_API_URL = process.env.HARDCOVER_API_URL;
 const HARDCOVER_API_TOKEN = process.env.HARDCOVER_API_TOKEN;
 const GY_API = process.env.GY_API;
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 
 async function fetchUserBooksPage(profileId: string, page: number) {
   const url = `${GY_API}/books/${profileId}/list?page=${page}&size=${PAGE_SIZE}`;
@@ -28,13 +28,12 @@ async function fetchUserBooksPage(profileId: string, page: number) {
   return data;
 }
 
-async function fetchBookStats(
-  bookId: number,
-  retryCount = 0
-): Promise<unknown> {
+async function fetchMultipleBookStats(bookIds: number[]): Promise<unknown> {
+  if (bookIds.length === 0) return { data: { books: [] } };
+
   const requestBody = {
-    query: GET_STATS,
-    variables: { id: bookId },
+    query: GET_MULTIPLE_STATS,
+    variables: { ids: bookIds },
   };
 
   const res = await fetch(HARDCOVER_API_URL!, {
@@ -46,26 +45,49 @@ async function fetchBookStats(
     body: JSON.stringify(requestBody),
   });
 
-  if (res.status === 429) {
-    // Rate limited - implement exponential backoff
-    if (retryCount < 3) {
-      const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      return fetchBookStats(bookId, retryCount + 1);
-    } else {
-      console.warn(`⚠️ Max retries reached for book ${bookId}, skipping`);
-      return null; // Skip this book instead of failing
-    }
-  }
-
   if (!res.ok) {
-    const text = await res.text();
-    console.error(`❌ HARDCOVER API Error (${res.status}):`, text);
-    throw new Error(text);
+    const errorText = await res.text();
+    console.error(`❌ Hardcover API Error (${res.status}):`, errorText);
+    throw new Error(errorText);
   }
 
-  const data = await res.json();
-  return data;
+  return res.json();
+}
+
+async function processWantToReadBooks(
+  wantToReadBooks: number[]
+): Promise<number> {
+  if (wantToReadBooks.length === 0) return 0;
+
+  console.log(
+    `🚀 Processing ${wantToReadBooks.length} want to read books in batch...`
+  );
+
+  try {
+    const booksData = await fetchMultipleBookStats(wantToReadBooks);
+
+    if (!booksData || typeof booksData !== 'object' || !('data' in booksData)) {
+      console.warn('⚠️ Invalid response structure for want to read books');
+      return 0;
+    }
+
+    const data = booksData as { data?: { books?: Array<{ pages?: number }> } };
+
+    if (!data.data?.books || !Array.isArray(data.data.books)) {
+      console.warn('⚠️ No want to read books found in batch response');
+      return 0;
+    }
+
+    const totalPages = data.data.books.reduce((sum, book) => {
+      return sum + (book.pages || 0);
+    }, 0);
+
+    console.log(`✅ Want to read books: ${totalPages} total pages`);
+    return totalPages;
+  } catch (err) {
+    console.error(`❌ Error processing want to read books:`, err);
+    return 0;
+  }
 }
 
 async function processBooksInBatches(
@@ -73,64 +95,40 @@ async function processBooksInBatches(
   authors: Record<string, number>,
   stats: { totalPages: number; totalBooks: number }
 ) {
-  const CONCURRENCY = 2; // Reduced from 5 to 2
-  let idx = 0;
+  try {
+    console.log(`🎯 Processing ${bookIds.length} books in a single batch...`);
+    const booksData = await fetchMultipleBookStats(bookIds);
 
-  while (idx < bookIds.length) {
-    const batch = bookIds.slice(idx, idx + CONCURRENCY);
+    if (!booksData || typeof booksData !== 'object' || !('data' in booksData)) {
+      console.warn('⚠️ Invalid response structure from batch request');
+      return;
+    }
 
-    await Promise.all(
-      batch.map(async (bookId) => {
-        try {
-          console.log(`🎯 Processing book ${bookId}...`);
-          const bookData = await fetchBookStats(bookId);
+    const data = booksData as { data?: { books?: unknown[] } };
 
-          if (!bookData) {
-            console.warn(`⚠️ Book ${bookId} skipped due to rate limiting`);
-            return;
-          }
+    if (!data.data?.books || !Array.isArray(data.data.books)) {
+      console.warn('⚠️ No books found in batch response');
+      return;
+    }
 
-          if (
-            !bookData ||
-            typeof bookData !== 'object' ||
-            !('data' in bookData)
-          ) {
-            console.warn(
-              `⚠️ Book ${bookId} has invalid data structure:`,
-              bookData
-            );
-            await sendLog(ELevel.WARN, 'BOOK_STATS_EMPTY', {
-              bookId,
-              bookData,
-            });
-            return;
-          }
+    console.log(`✅ Successfully fetched ${data.data.books.length} books`);
 
-          const data = bookData as { data?: { books_by_pk?: unknown } };
-
-          if (!data.data?.books_by_pk) {
-            console.warn(`⚠️ Book ${bookId} missing books_by_pk:`, data.data);
-            await sendLog(ELevel.WARN, 'BOOKS_BY_PK_MISSING', {
-              bookId,
-              bookData,
-            });
-            return;
-          }
-
-          calculateStats(bookData, authors, stats);
-        } catch (err) {
-          console.error(`❌ Error processing book ${bookId}:`, err);
-          await sendLog(ELevel.ERROR, 'BOOK_STATS_ERROR', {
-            bookId,
-            error: (err as Error).message,
-          });
-        }
-      })
-    );
-
-    idx += CONCURRENCY;
-
-    await new Promise((r) => setTimeout(r, 500));
+    // Procesar todos los libros obtenidos
+    for (const book of data.data.books) {
+      try {
+        // Simular la estructura que espera calculateStats
+        const bookData = { data: { books_by_pk: book } };
+        calculateStats(bookData, authors, stats);
+      } catch (err) {
+        console.error(`❌ Error processing book:`, err);
+      }
+    }
+  } catch (err) {
+    console.error(`❌ Error in batch processing:`, err);
+    await sendLog(ELevel.ERROR, 'BATCH_BOOK_STATS_ERROR', {
+      error: (err as Error).message,
+      bookIds: bookIds.length,
+    });
   }
 }
 
@@ -232,22 +230,8 @@ export const GET = async (
     // 2. Procesar libros leídos en paralelo (concurrencia limitada)
     await processBooksInBatches(readBooks, authors, stats);
 
-    // 2.5. Procesar libros want to read para contar páginas
-    console.log('🚀 Starting to process want to read books...');
-    for (const bookId of wantToReadBooks) {
-      try {
-        const bookData = await fetchBookStats(bookId);
-        if (bookData && typeof bookData === 'object' && 'data' in bookData) {
-          const data = bookData as {
-            data?: { books_by_pk?: { pages?: number } };
-          };
-          const pages = data.data?.books_by_pk?.pages || 0;
-          wantToReadPages += pages;
-        }
-      } catch (err) {
-        console.error(`❌ Error processing want to read book ${bookId}:`, err);
-      }
-    }
+    // 2.5. Procesar libros want to read para contar páginas en batch
+    wantToReadPages = await processWantToReadBooks(wantToReadBooks);
 
     // 3. Calcular la media de ratings
     if (allRatings.length > 0) {

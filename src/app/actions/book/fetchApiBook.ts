@@ -7,7 +7,6 @@ import { auth0 } from '@/lib/auth0';
 import { ApiBook } from '@/domain/apiBook.model';
 import { UUID } from 'crypto';
 
-// Función para traer un libro específico
 export default async function getApiBook(
   bookId: string
 ): Promise<ApiBook | null> {
@@ -18,7 +17,6 @@ export default async function getApiBook(
     const cookieStore = await cookies();
     const cookieHeader = cookieStore.toString();
 
-    // Verificar si el usuario está autenticado
     const session = await auth0.getSession();
     const isAuthenticated = !!session?.user;
 
@@ -32,7 +30,6 @@ export default async function getApiBook(
     };
 
     if (isAuthenticated) {
-      // Usar ruta privada con autenticación
       url = `${protocol}://${host}/api/auth/books/${bookId}`;
       fetchOptions.headers = {
         ...fetchOptions.headers,
@@ -40,14 +37,12 @@ export default async function getApiBook(
       };
       fetchOptions.credentials = 'include';
     } else {
-      // Usar ruta pública sin autenticación
       url = `${protocol}://${host}/api/public/books/${bookId}`;
     }
 
     const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
-      // Si la ruta privada falla y el usuario está autenticado, intentar con la ruta pública
       if (isAuthenticated && response.status >= 500) {
         const publicUrl = `${protocol}://${host}/api/public/books/${bookId}`;
         const publicResponse = await fetch(publicUrl, {
@@ -75,7 +70,6 @@ export default async function getApiBook(
       return null;
     }
 
-    // Asegurar que la respuesta tenga la estructura correcta
     return data as ApiBook;
   } catch (error: any) {
     console.error('Server Action - Error details:', error);
@@ -83,11 +77,10 @@ export default async function getApiBook(
   }
 }
 
-// Nueva función para traer todos los libros con paginación
 export async function getBooksWithPagination(
   profileId: UUID,
   page: number = 0,
-  size: number = 10
+  size: number = 50
 ): Promise<{ books: any[]; hasMore: boolean } | null> {
   try {
     const headersList = await headers();
