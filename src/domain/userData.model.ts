@@ -8,6 +8,7 @@ export interface UserData {
   endDate: string;
   progress?: number;
   editionId?: string;
+  review?: string;
 }
 
 export function formatProgress(progress: number) {

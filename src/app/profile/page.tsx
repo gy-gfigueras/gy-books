@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
 
@@ -562,19 +563,23 @@ function ProfilePageContent() {
                 onOrderByChange={handleOrderByChange}
                 onOrderDirectionChange={handleOrderDirectionChange}
               />
-              <BooksList books={filteredBooks} hasMore={hasMore} />
-              <Box
-                ref={sentinelRef}
-                sx={{
-                  display: hasMore ? 'flex' : 'none',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  minHeight: 60,
-                  width: '100%',
-                }}
-              >
-                {loading && <BooksListSkeleton />}
-              </Box>
+
+              {loading ? (
+                <Box
+                  ref={sentinelRef}
+                  sx={{
+                    display: hasMore ? 'flex' : 'none',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: 60,
+                    width: '100%',
+                  }}
+                >
+                  {loading && <BooksListSkeleton />}
+                </Box>
+              ) : (
+                <BooksList books={filteredBooks} hasMore={hasMore} />
+              )}
             </Box>
           )}
           {tab === 1 && (

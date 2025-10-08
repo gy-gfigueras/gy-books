@@ -22,6 +22,7 @@ export default async function rateBook(
     const endDate = formData.get('endDate') as string;
     const status = formData.get('status') as string;
     const progress = formData.get('progress') as string;
+    const review = formData.get('review') as string;
     const editionId = formData.get('editionId') as string;
 
     if (!bookId) {
@@ -59,6 +60,7 @@ export default async function rateBook(
           endDate: endDate || '',
           status: status,
           progress: progress,
+          review: review || '',
           editionId: finalEditionId || undefined,
         }),
         credentials: 'include',

@@ -117,6 +117,7 @@ export const GET = async (req: NextRequest) => {
             startDate: userBook.userData.startDate,
             endDate: userBook.userData.endDate,
             progress: userBook.userData.progress,
+            review: userBook.userData.review,
             editionId: userBook.userData.editionId,
           },
         };

@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RatingStars from '../RatingStars/RatingStars';
 import BookRatingStatusButtons from './BookRatingStatusButtons';
 import BookRatingProgressInput from './BookRatingProgressInput';
+import BookRatingReviewInput from './BookRatingReviewInput';
 import { BookRatingState, BookRatingHandlers } from './types';
 
 interface Props {
@@ -83,6 +84,14 @@ const BookRatingDrawer: React.FC<Props> = ({
               disabled={isLoading || isSubmitting}
               isLoading={isLoading}
             />
+            <Box sx={{ mt: 2 }}>
+              <BookRatingReviewInput
+                tempReview={state.tempReview}
+                setTempReview={handlers.setTempReview}
+                fontFamily={fontFamily}
+                isLoading={isLoading || isSubmitting}
+              />
+            </Box>
             {isBookSaved && handleDeleteBook && (
               <IconButton
                 sx={{

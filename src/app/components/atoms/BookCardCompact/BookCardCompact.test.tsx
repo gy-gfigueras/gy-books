@@ -3,6 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import { BookCardCompact, BookCardCompactSkeleton } from './BookCardCompact';
 import Book from '@/domain/book.model';
 import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
+import { EStatus } from '@/utils/constants/EStatus';
 
 // Mock Next.js router
 const mockPush = jest.fn();
@@ -100,6 +101,115 @@ jest.mock('@mui/material', () => ({
       data-animation={animation}
       {...props}
     />
+  ),
+  IconButton: ({
+    children,
+    size,
+    onClick,
+    ...props
+  }: React.PropsWithChildren<{
+    size?: string;
+    onClick?: (e: React.MouseEvent) => void;
+    [key: string]: unknown;
+  }>) => (
+    <button
+      data-testid="icon-button"
+      data-size={size}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </button>
+  ),
+  Tooltip: ({
+    children,
+    title,
+    ...props
+  }: React.PropsWithChildren<{
+    title?: string;
+    arrow?: boolean;
+    placement?: string;
+    [key: string]: unknown;
+  }>) => (
+    <div data-testid="tooltip" data-title={title} {...props}>
+      {children}
+    </div>
+  ),
+  Dialog: ({
+    children,
+    open,
+    maxWidth,
+    fullWidth,
+    onClick,
+    ...props
+  }: React.PropsWithChildren<{
+    open?: boolean;
+    onClose?: () => void;
+    maxWidth?: string;
+    fullWidth?: boolean;
+    onClick?: (e: React.MouseEvent) => void;
+    [key: string]: unknown;
+  }>) =>
+    open ? (
+      <div
+        data-testid="dialog"
+        data-max-width={maxWidth}
+        data-full-width={fullWidth}
+        onClick={onClick}
+        {...props}
+      >
+        {children}
+      </div>
+    ) : null,
+  DialogTitle: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<{
+    [key: string]: unknown;
+  }>) => (
+    <div data-testid="dialog-title" {...props}>
+      {children}
+    </div>
+  ),
+  DialogContent: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<{
+    [key: string]: unknown;
+  }>) => (
+    <div data-testid="dialog-content" {...props}>
+      {children}
+    </div>
+  ),
+  DialogActions: ({
+    children,
+    ...props
+  }: React.PropsWithChildren<{
+    [key: string]: unknown;
+  }>) => (
+    <div data-testid="dialog-actions" {...props}>
+      {children}
+    </div>
+  ),
+  Button: ({
+    children,
+    onClick,
+    ...props
+  }: React.PropsWithChildren<{
+    onClick?: (e: React.MouseEvent) => void;
+    [key: string]: unknown;
+  }>) => (
+    <button data-testid="button" onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+}));
+
+// Mock Material-UI icons
+jest.mock('@mui/icons-material/Assistant', () => ({
+  __esModule: true,
+  default: (props: { [key: string]: unknown }) => (
+    <div data-testid="AssistantIcon" {...props} />
   ),
 }));
 
@@ -474,6 +584,81 @@ describe('BookCardCompact', () => {
         '[data-testid="skeleton-text"]'
       );
       expect(textSkeletons.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Review Icon', () => {
+    it('shows review icon when book has user data with review', () => {
+      const bookWithReview: Book = {
+        ...mockBook,
+        userData: {
+          userId: 'user123',
+          status: EStatus.READ,
+          rating: 4,
+          startDate: '',
+          endDate: '',
+          progress: 1,
+          review: 'This is a great book!',
+        },
+      };
+
+      const { container } = render(<BookCardCompact book={bookWithReview} />);
+
+      // Check that AssistantIcon is rendered
+      const assistantIcon = container.querySelector(
+        '[data-testid="AssistantIcon"]'
+      );
+      expect(assistantIcon).toBeTruthy();
+    });
+
+    it('does not show review icon when book has no review', () => {
+      const bookWithoutReview: Book = {
+        ...mockBook,
+        userData: {
+          userId: 'user123',
+          status: EStatus.READ,
+          rating: 4,
+          startDate: '',
+          endDate: '',
+          progress: 1,
+        },
+      };
+
+      const { container } = render(
+        <BookCardCompact book={bookWithoutReview} />
+      );
+
+      // Check that AssistantIcon is not rendered
+      const assistantIcon = container.querySelector(
+        '[data-testid="AssistantIcon"]'
+      );
+      expect(assistantIcon).toBeFalsy();
+    });
+
+    it('shows review icon even when no rating but has review', () => {
+      const bookWithReviewNoRating: Book = {
+        ...mockBook,
+        rating: undefined,
+        userData: {
+          userId: 'user123',
+          status: EStatus.READ,
+          rating: 0,
+          startDate: '',
+          endDate: '',
+          progress: 1,
+          review: 'Great story!',
+        },
+      };
+
+      const { container } = render(
+        <BookCardCompact book={bookWithReviewNoRating} />
+      );
+
+      // Check that AssistantIcon is rendered
+      const assistantIcon = container.querySelector(
+        '[data-testid="AssistantIcon"]'
+      );
+      expect(assistantIcon).toBeTruthy();
     });
   });
 });

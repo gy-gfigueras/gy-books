@@ -85,6 +85,7 @@ async function handler(
           startDate: BODY.startDate,
           endDate: BODY.endDate,
           progress: progressNumber,
+          review: BODY.review,
           editionId: BODY.editionId,
         },
       };

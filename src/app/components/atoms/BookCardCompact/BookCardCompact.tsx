@@ -1,5 +1,19 @@
-import React from 'react';
-import { Box, Typography, Chip, Rating, Skeleton } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Chip,
+  Rating,
+  Skeleton,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@mui/material';
+import AssistantIcon from '@mui/icons-material/Assistant';
 import Book from '@/domain/book.model';
 import { useRouter } from 'next/navigation';
 import { Library } from '@/domain/library.model';
@@ -123,7 +137,16 @@ export const BookCardCompact = ({
   small = false,
 }: BookCardCompactProps) => {
   const router = useRouter();
-  const { title, coverUrl } = useBookDisplay(book, '/placeholder-book.jpg');
+  const { title, coverUrl } = useBookDisplay(book);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+
+  // Debug log temporal
+  console.log(
+    'BookCardCompact - book:',
+    book.title,
+    'userData:',
+    book.userData
+  );
 
   const handleClick = () => {
     if (onClick) {
@@ -227,7 +250,7 @@ export const BookCardCompact = ({
             {book.author.name}
           </Typography>
           {book.rating !== undefined && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Rating
                 value={book.rating}
                 precision={0.5}
@@ -242,6 +265,32 @@ export const BookCardCompact = ({
                   },
                 }}
               />
+            </Box>
+          )}
+
+          {book.userData?.review && (
+            <Box
+              sx={{
+                display: 'flex',
+                position: 'absolute',
+                right: '0.8em',
+                top: '80%',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+              }}
+            >
+              <Tooltip title="See review" arrow placement="top">
+                <IconButton
+                  size="medium"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setReviewModalOpen(true);
+                  }}
+                >
+                  <AssistantIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Box>
           )}
         </Box>
@@ -271,6 +320,70 @@ export const BookCardCompact = ({
           />
         )}
       </Box>
+
+      {/* Modal para mostrar la review */}
+      <Dialog
+        open={reviewModalOpen}
+        onClose={(e, reason) => {
+          if (reason !== 'backdropClick') {
+            setReviewModalOpen(false);
+          }
+        }}
+        maxWidth="sm"
+        fullWidth
+        onClick={(e) => e.stopPropagation()}
+        PaperProps={{
+          sx: {
+            backdropFilter: 'blur(10px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.66)',
+            color: '#FFFFFF',
+            borderRadius: '16px',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: '#FFFFFF',
+            fontFamily: lora.style.fontFamily,
+            fontWeight: '800',
+            fontSize: '1.25rem',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          {title} review
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontFamily: lora.style.fontFamily,
+              lineHeight: 1.6,
+              fontSize: '1rem',
+            }}
+          >
+            {book.userData?.review}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 1 }}>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              setReviewModalOpen(false);
+            }}
+            sx={{
+              color: 'primary.main',
+              fontFamily: lora.style.fontFamily,
+              fontWeight: '600',
+              '&:hover': {
+                backgroundColor: 'rgba(147, 51, 234, 0.1)',
+              },
+            }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

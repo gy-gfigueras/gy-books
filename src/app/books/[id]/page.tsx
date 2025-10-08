@@ -188,7 +188,7 @@ export default function BookDetails() {
         />
         <Divider
           sx={{ display: ['flex', 'flex', 'none'], marginTop: '1rem' }}
-          textAlign="center"
+          textAlign="left"
         >
           {book?.series && (
             <Chip

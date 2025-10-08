@@ -15,6 +15,7 @@ export function useBookRatingState(props: BookRatingProps) {
   const [tempStartDate, setTempStartDate] = useState<string>('');
   const [tempEndDate, setTempEndDate] = useState<string>('');
   const [tempProgress, setTempProgress] = useState<number>(0);
+  const [tempReview, setTempReview] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProgressPercent, setIsProgressPercent] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -26,6 +27,7 @@ export function useBookRatingState(props: BookRatingProps) {
       setTempStatus(apiBook.userData.status ?? EStatus.WANT_TO_READ);
       setTempStartDate(apiBook.userData.startDate || '');
       setTempEndDate(apiBook.userData.endDate || '');
+      setTempReview(apiBook.userData.review || '');
       setTempProgress(
         formatProgress(apiBook.userData.progress || 0) as unknown as number
       );
@@ -38,6 +40,7 @@ export function useBookRatingState(props: BookRatingProps) {
       setTempStatus(EStatus.RATE);
       setTempStartDate('');
       setTempEndDate('');
+      setTempReview('');
     }
     if (apiBook?.userData?.status === EStatus.READ) {
       apiBook.userData.progress = 1;
@@ -59,6 +62,7 @@ export function useBookRatingState(props: BookRatingProps) {
       formData.append('startDate', tempStartDate);
       formData.append('endDate', tempEndDate);
       formData.append('progress', progressValue as unknown as string);
+      formData.append('review', tempReview);
       const statusToSave = tempStatus;
       formData.append('status', statusToSave.toString());
 
@@ -76,6 +80,7 @@ export function useBookRatingState(props: BookRatingProps) {
         setTempStatus(updatedApiBook.userData.status ?? EStatus.WANT_TO_READ);
         setTempStartDate(updatedApiBook.userData.startDate || '');
         setTempEndDate(updatedApiBook.userData.endDate || '');
+        setTempReview(updatedApiBook.userData.review || '');
         setTempProgress(
           formatProgress(
             updatedApiBook.userData.progress || 0
@@ -101,6 +106,7 @@ export function useBookRatingState(props: BookRatingProps) {
       tempStartDate,
       tempEndDate,
       tempProgress,
+      tempReview,
       isSubmitting,
       isProgressPercent,
     },
@@ -110,6 +116,7 @@ export function useBookRatingState(props: BookRatingProps) {
       setTempStartDate,
       setTempEndDate,
       setTempProgress,
+      setTempReview,
       setIsProgressPercent,
       handleApply,
     },

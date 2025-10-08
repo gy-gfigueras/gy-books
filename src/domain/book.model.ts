@@ -52,6 +52,7 @@ export default interface Book {
   author: Author;
   description: string;
   rating?: number;
+  review?: string;
   status?: EStatus;
   editions?: Edition[];
   userData?: UserData;

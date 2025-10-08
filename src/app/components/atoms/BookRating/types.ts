@@ -22,6 +22,7 @@ export interface BookRatingState {
   tempProgress: number;
   isSubmitting: boolean;
   isProgressPercent: boolean;
+  tempReview: string;
 }
 
 export interface BookRatingHandlers {
@@ -31,5 +32,6 @@ export interface BookRatingHandlers {
   setTempEndDate: (date: string) => void;
   setTempProgress: (progress: number) => void;
   setIsProgressPercent: (isPercent: boolean) => void;
+  setTempReview: (review: string) => void;
   handleApply: () => Promise<void>;
 }
