@@ -15,7 +15,6 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { UUID } from 'crypto';
 import React, { Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import AnimatedAlert from '../components/atoms/Alert/Alert';
@@ -27,10 +26,9 @@ import { ProfileHeader } from './components/ProfileHeader/ProfileHeader';
 import { ProfilePageSkeleton } from './components/ProfilePageSkeleton';
 
 // Hooks del perfil
-import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 import { useProfileBiography } from './hooks/useProfileBiography';
 import { useProfileFilters } from './hooks/useProfileFilters';
-import { useProfilePagination } from './hooks/useProfilePagination';
+import useMergedBooksIncremental from '@/hooks/books/useMergedBooksIncremental';
 
 // Helpers
 import { HallOfFameSkeleton } from '../components/molecules/HallOfFameSkeleton';
@@ -57,9 +55,8 @@ function ProfilePageContent() {
 
   // Hooks personalizados para el perfil
   const filters = useProfileFilters();
-  const { books, hasMore, loading, loadMoreBooks } = useProfilePagination(
-    user?.id as UUID
-  );
+  const { data: books, isLoading: loading, isDone } = useMergedBooksIncremental(user?.id as string, 50);
+  const hasMore = !isDone;
   const {
     biography,
     isEditingBiography,
@@ -73,13 +70,6 @@ function ProfilePageContent() {
     setIsUpdatedBiography,
     setIsErrorBiography,
   } = useProfileBiography(user);
-
-  // Hook para paginación infinita
-  useInfiniteScroll({
-    hasMore,
-    loading,
-    loadMore: loadMoreBooks,
-  });
 
   // Generar opciones de filtros desde los libros
   const filterOptions = React.useMemo(() => {

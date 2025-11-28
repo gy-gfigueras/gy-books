@@ -44,9 +44,9 @@ export class ProfileBookHelpers {
         !filters.author || (book.author && book.author.name === filters.author);
       const seriesOk =
         !filters.series ||
-        (book.series && book.series[0]?.name === filters.series);
+        (book.series && book.series.length > 0 && book.series[0]?.name === filters.series);
       const ratingOk =
-        !filters.rating ||
+        filters.rating === 0 ||
         (typeof book.userData?.rating === 'number' &&
           book.userData.rating >= filters.rating);
 
