@@ -1,28 +1,26 @@
-import React, { useState } from 'react';
+import HardcoverBook from '@/domain/HardcoverBook';
+import { useBookDisplay } from '@/hooks/useBookDisplay';
+import { lora } from '@/utils/fonts/fonts';
+import AssistantIcon from '@mui/icons-material/Assistant';
 import {
   Box,
-  Typography,
+  Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   Rating,
   Skeleton,
-  IconButton,
   Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
+  Typography,
 } from '@mui/material';
-import AssistantIcon from '@mui/icons-material/Assistant';
-import Book from '@/domain/book.model';
 import { useRouter } from 'next/navigation';
-import { Library } from '@/domain/library.model';
-import { lora } from '@/utils/fonts/fonts';
-import { useBookDisplay } from '@/hooks/useBookDisplay';
+import { useState } from 'react';
 
 interface BookCardCompactProps {
-  book: Book;
-  library?: Library;
+  book: HardcoverBook;
   onClick?: () => void;
   small?: boolean;
 }
@@ -140,14 +138,6 @@ export const BookCardCompact = ({
   const { title, coverUrl } = useBookDisplay(book);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
-  // Debug log temporal
-  console.log(
-    'BookCardCompact - book:',
-    book.title,
-    'userData:',
-    book.userData
-  );
-
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -249,10 +239,10 @@ export const BookCardCompact = ({
           >
             {book.author.name}
           </Typography>
-          {book.rating !== undefined && (
+          {book.userData?.rating !== undefined && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Rating
-                value={book.rating}
+                value={book.userData.rating}
                 precision={0.5}
                 readOnly
                 size="small"
@@ -298,9 +288,9 @@ export const BookCardCompact = ({
         {/* Autor */}
 
         {/* Series */}
-        {book.series && (
+        {book.series && book.series.length > 0 && book.series[0]?.name && (
           <Chip
-            label={book.series.name}
+            label={book.series[0].name}
             size="small"
             sx={{
               alignSelf: 'flex-start',

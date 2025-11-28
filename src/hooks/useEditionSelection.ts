@@ -1,17 +1,16 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Edition } from '@/domain/book.model';
-import { ApiBook } from '@/domain/apiBook.model';
+import rateBook from '@/app/actions/book/rateBook';
+import { Edition } from '@/domain/HardcoverBook';
+import { useUser } from '@/hooks/useUser';
 import {
   findEditionById,
   getDisplayDataFromEdition,
 } from '@/utils/bookEditionHelpers';
-import rateBook from '@/app/actions/book/rateBook';
-import { useUser } from '@/hooks/useUser';
-import { EStatus } from '@/utils/constants/EStatus';
+import type { Book } from '@gycoding/nebula';
+import { useEffect, useMemo, useState } from 'react';
 
 interface UseEditionSelectionProps {
   editions: Edition[];
-  apiBook: ApiBook | undefined;
+  Book: Book | undefined;
   defaultCoverUrl: string;
   defaultTitle: string;
   onEditionSaved?: (success: boolean, message: string) => void;
@@ -24,6 +23,7 @@ interface UseEditionSelectionReturn {
   displayImage: string;
   hasUserSelectedEdition: boolean;
   isSaving: boolean;
+  isPreviewMode: boolean;
 }
 
 /**
@@ -32,7 +32,7 @@ interface UseEditionSelectionReturn {
  */
 export function useEditionSelection({
   editions,
-  apiBook,
+  Book,
   defaultCoverUrl,
   defaultTitle,
   onEditionSaved,
@@ -42,34 +42,41 @@ export function useEditionSelection({
   const [isSaving, setIsSaving] = useState(false);
 
   // Determinar si el usuario ya tiene una edición seleccionada en sus datos
-  const userEditionId = apiBook?.userData?.editionId;
+  const userEditionId = Book?.userData?.editionId;
   const hasUserSelectedEdition = Boolean(userEditionId);
 
   // Estados válidos para guardar ediciones
-  const validStatuses = [EStatus.WANT_TO_READ, EStatus.READING, EStatus.READ];
+  const validStatuses = ['WANT_TO_READ', 'READING', 'READ'];
   const hasValidStatus =
-    apiBook?.userData?.status &&
-    validStatuses.includes(apiBook.userData.status);
+    Book?.userData?.status &&
+    validStatuses.includes(Book.userData.status.toUpperCase());
 
   // Efecto para inicializar la edición seleccionada basándose en userData
   useEffect(() => {
     if (!userEditionId || !editions.length) {
-      setSelectedEdition(null);
+      // Solo setear null si actualmente no es null (evitar re-renders innecesarios)
+      if (selectedEdition !== null) {
+        setSelectedEdition(null);
+      }
       return;
     }
 
     const userEdition = findEditionById(editions, userEditionId);
     if (userEdition) {
-      setSelectedEdition(userEdition);
+      // Solo actualizar si cambió
+      if (selectedEdition?.id !== userEdition.id) {
+        setSelectedEdition(userEdition);
+      }
     }
-  }, [userEditionId, editions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userEditionId, editions.length]); // Usar editions.length en lugar de editions completo
 
   // Función para manejar el cambio de edición sin auto-guardado
   const handleEditionChange = async (newEdition: Edition | null) => {
     if (!user || isSaving) return;
 
     // Si no hay libro guardado o no está en estado válido, solo cambiar visualización
-    if (!apiBook?.userData || !hasValidStatus) {
+    if (!Book?.userData || !hasValidStatus) {
       setSelectedEdition(newEdition);
       return;
     }
@@ -78,21 +85,18 @@ export function useEditionSelection({
     setIsSaving(true);
 
     try {
-      if (apiBook?.userData && newEdition && hasValidStatus) {
+      if (Book?.userData && newEdition && hasValidStatus) {
         // Actualizar la edición en la base de datos
         const formData = new FormData();
-        formData.append('bookId', apiBook.id);
-        formData.append('rating', (apiBook.userData.rating || 0).toString());
-        formData.append('status', apiBook.userData.status);
-        formData.append('startDate', apiBook.userData.startDate || '');
-        formData.append('endDate', apiBook.userData.endDate || '');
-        formData.append(
-          'progress',
-          (apiBook.userData.progress || 0).toString()
-        );
+        formData.append('bookId', Book.id);
+        formData.append('rating', (Book.userData.rating || 0).toString());
+        formData.append('status', Book.userData.status);
+        formData.append('startDate', Book.userData.startDate || '');
+        formData.append('endDate', Book.userData.endDate || '');
+        formData.append('progress', (Book.userData.progress || 0).toString());
         formData.append('editionId', newEdition.id.toString());
 
-        await rateBook(formData, user.username, apiBook.userData);
+        await rateBook(formData, user.username, Book.userData);
 
         setSelectedEdition(newEdition);
         onEditionSaved?.(true, 'Edition updated successfully!');
@@ -118,7 +122,7 @@ export function useEditionSelection({
   }, [selectedEdition, defaultTitle, defaultCoverUrl]);
 
   // Determinar si estamos en modo preview (no guardado o sin estado válido)
-  const isPreviewMode = !apiBook?.userData || !hasValidStatus;
+  const isPreviewMode = !Book?.userData || !hasValidStatus;
 
   return {
     selectedEdition,

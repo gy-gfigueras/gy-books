@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import Book from '@/domain/book.model';
-import { mapHardcoverToBook } from '@/mapper/BookToMO.mapper';
+import HardcoverBook from '@/domain/HardcoverBook';
 
-export default async function fetchBookById(id: string): Promise<Book> {
+export default async function fetchBookById(
+  id: string
+): Promise<HardcoverBook> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const url = `${baseUrl}/api/public/hardcover/${id}`;
+    const url = `${baseUrl}/api/hardcover/${id}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -25,9 +26,8 @@ export default async function fetchBookById(id: string): Promise<Book> {
 
     const data = await response.json();
 
-    const mappedBook = mapHardcoverToBook(data);
-
-    return mappedBook;
+    // La API ya devuelve el libro mapeado, no necesitamos mapearlo de nuevo
+    return data as HardcoverBook;
   } catch (error: any) {
     console.error('💥 fetchBookById - Error details:', error);
     throw new Error(`Failed to fetch books: ${error.message}`);

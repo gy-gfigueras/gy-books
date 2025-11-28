@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { auth0 } from '@/lib/auth0';
-import { NextResponse, NextRequest } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { ApiBook } from '@/domain/apiBook.model';
+import { sendLog } from '@/utils/logs/logHelper';
+import { Book, UserData } from '@gycoding/nebula';
+import { NextRequest, NextResponse } from 'next/server';
 
 async function handler(
   request: NextRequest,
@@ -46,16 +46,6 @@ async function handler(
         method: 'GET',
       });
 
-      if (gyCodingResponse.status === 404) {
-        return NextResponse.json(
-          {
-            id: ID,
-            averageRating: 0,
-            userData: null,
-          },
-          { status: 200 }
-        );
-      }
       if (!gyCodingResponse.ok) {
         const errorText = await gyCodingResponse.text();
         console.error('GET Error Response:', {
@@ -69,31 +59,30 @@ async function handler(
         throw new Error(`GyCoding API Error: ${errorText}`);
       }
 
-      const API_BOOK = await gyCodingResponse.json();
-      return NextResponse.json(API_BOOK as ApiBook);
+      const book = await gyCodingResponse.json();
+      return NextResponse.json(book as Book);
     }
 
     if (request.method === 'PATCH') {
       const BODY = await request.json();
+      console.log('[DEBUG] /api/auth/books/[id] PATCH received BODY:', BODY);
 
-      const progressNumber = parseFloat(BODY.progress as string);
+      // El body ya viene con { userData: { ...campos cambiados } }
+      // Solo necesitamos parsear progress si existe
+      const USER_DATA: Partial<UserData> = { ...BODY.userData };
 
-      const USER_DATA = {
-        userData: {
-          rating: BODY.rating,
-          status: BODY.status,
-          startDate: BODY.startDate,
-          endDate: BODY.endDate,
-          progress: progressNumber,
-          review: BODY.review,
-          editionId: BODY.editionId,
-        },
-      };
+      if (USER_DATA.progress !== undefined) {
+        USER_DATA.progress = parseFloat(USER_DATA.progress as any);
+      }
+
+      console.log('[DEBUG] /api/auth/books/[id] PATCH sending to backend:', {
+        body: JSON.stringify({ userData: USER_DATA }),
+      });
 
       const gyCodingResponse = await fetch(API_URL, {
         headers: HEADERS,
         method: 'PATCH',
-        body: JSON.stringify(USER_DATA),
+        body: JSON.stringify({ userData: USER_DATA }),
       });
 
       if (!gyCodingResponse.ok) {
@@ -105,8 +94,12 @@ async function handler(
       }
 
       const BOOK_RATING_DATA = await gyCodingResponse.json();
+      console.log(
+        '[DEBUG] /api/auth/books/[id] PATCH received BOOK_RATING_DATA:',
+        BOOK_RATING_DATA
+      );
       return NextResponse.json({
-        bookRatingData: BOOK_RATING_DATA as ApiBook,
+        bookRatingData: BOOK_RATING_DATA as Book,
       });
     }
 

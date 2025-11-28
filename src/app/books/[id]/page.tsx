@@ -1,36 +1,55 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React from 'react';
-import { Box, Typography, IconButton, Chip, Divider } from '@mui/material';
-import { useParams } from 'next/navigation';
-import { useBook } from '@/hooks/useBook';
-import { lora } from '@/utils/fonts/fonts';
-import { BookRating } from '@/app/components/atoms/BookRating/BookRating';
-import StarIcon from '@mui/icons-material/Star';
-import { useApiBook } from '@/hooks/useApiBook';
-import { useUser } from '@/hooks/useUser';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import { useHallOfFame } from '@/hooks/useHallOfFame';
 import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
+import { BookRating } from '@/app/components/atoms/BookRating/BookRating';
+import { useHallOfFame } from '@/hooks/useHallOfFame';
+import { useUser } from '@/hooks/useUser';
 import { ESeverity } from '@/utils/constants/ESeverity';
-import { useApiBookPublic } from '@/hooks/useApiBookPublic';
-import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
+import { lora } from '@/utils/fonts/fonts';
+import StarIcon from '@mui/icons-material/Star';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import { Box, Chip, Divider, IconButton, Typography } from '@mui/material';
+import { useParams } from 'next/navigation';
+import React from 'react';
+// replaced individual api hooks by useMergedBook
 import BookDetailsSkeleton from '@/app/components/molecules/BookDetailsSkeleton';
 import { EditionSelector } from '@/app/components/molecules/EditionSelector/EditionSelector';
-import { Edition } from '@/domain/book.model';
+import { Edition } from '@/domain/HardcoverBook';
+import useMergedBook from '@/hooks/books/useMergedBook';
 import { useEditionSelection } from '@/hooks/useEditionSelection';
+import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 
 export default function BookDetails() {
   const params = useParams();
-  const { data: book, isLoading } = useBook(params.id as string);
   const { data: user } = useUser();
   const {
-    data: apiBook,
-    isLoading: isApiBookLoading,
+    data: mergedBook,
+    isLoading: isMergedLoading,
     mutate,
-  } = useApiBook(params.id as string);
-  const { data: apiBookPublic, isLoading: isApiBookLoadingPublic } =
-    useApiBookPublic(params.id as string);
+  } = useMergedBook(params.id as string);
+
+  const book = mergedBook;
+  const Book = mergedBook;
+  const BookPublic = mergedBook;
+
+  // Normalizar datos para manejar tanto estructura HardcoverBook como ApiBook
+  const authorName = React.useMemo(() => {
+    if (!book) return '';
+    // Si es string (ApiBook)
+    if (typeof book.author === 'string') return book.author;
+    // Si es objeto (HardcoverBook)
+    return book.author?.name || '';
+  }, [book]);
+
+  const coverUrl = React.useMemo(() => {
+    if (!book) return DEFAULT_COVER_IMAGE;
+    // HardcoverBook usa cover.url
+    if (book.cover?.url) return book.cover.url;
+    // ApiBook usa image
+    if ((book as any).image) return (book as any).image;
+    return DEFAULT_COVER_IMAGE;
+  }, [book]);
 
   // Estados para notificaciones de edición
   const [editionNotification, setEditionNotification] = React.useState<{
@@ -52,8 +71,8 @@ export default function BookDetails() {
     isSaving,
   } = useEditionSelection({
     editions: book?.editions || [],
-    apiBook: apiBook || undefined,
-    defaultCoverUrl: book?.cover?.url || DEFAULT_COVER_IMAGE,
+    Book: Book || undefined,
+    defaultCoverUrl: coverUrl,
     defaultTitle: book?.title || '',
     onEditionSaved: (success, message) => {
       setEditionNotification({
@@ -84,7 +103,10 @@ export default function BookDetails() {
     isUpdatedDeleteToHallOfFame,
     isErrorDeleteToHallOfFame,
   } = useHallOfFame(user?.id || '');
-  const isOnHallOfFame = hallOfFame?.books.some((b) => b.id === book?.id);
+  const isOnHallOfFame = hallOfFame?.books.some((b) => {
+    const id = typeof b === 'string' ? b : b.id;
+    return id === book?.id;
+  });
   const isLoggedIn = !!user;
 
   // Extraer todas las ediciones disponibles
@@ -93,7 +115,7 @@ export default function BookDetails() {
     return book.editions;
   }, [book]);
 
-  if (isLoading || isApiBookLoading || isApiBookLoadingPublic) {
+  if (isMergedLoading) {
     return <BookDetailsSkeleton />;
   }
 
@@ -162,7 +184,7 @@ export default function BookDetails() {
             fontFamily: lora.style.fontFamily,
           }}
         >
-          {book?.author.name}
+          {authorName}
         </Typography>
       </Box>
       <Box
@@ -190,7 +212,7 @@ export default function BookDetails() {
           sx={{ display: ['flex', 'flex', 'none'], marginTop: '1rem' }}
           textAlign="left"
         >
-          {book?.series && (
+          {book?.series && book.series.length > 0 && (
             <Chip
               sx={{
                 backgroundColor: '#8C54FF20',
@@ -202,7 +224,7 @@ export default function BookDetails() {
                 height: '32px',
                 fontSize: '16px',
               }}
-              label={book.series.name}
+              label={book.series[0]?.name}
             />
           )}
         </Divider>
@@ -221,7 +243,9 @@ export default function BookDetails() {
               textShadow: '0 0 20px rgba(140, 84, 255, 0.5)',
             }}
           >
-            {apiBookPublic?.averageRating}
+            {BookPublic?.averageRating
+              ? BookPublic.averageRating.toFixed(1)
+              : '0.0'}
             <StarIcon
               sx={{
                 color: 'primary.main',
@@ -239,10 +263,10 @@ export default function BookDetails() {
             flexDirection={'row'}
           >
             <BookRating
-              apiBook={apiBook}
+              apiBook={Book as any}
               bookId={book?.id || ''}
-              isRatingLoading={isApiBookLoading}
-              mutate={mutate}
+              isRatingLoading={isMergedLoading}
+              mutate={mutate as any}
               isLoggedIn={isLoggedIn}
               selectedEdition={selectedEdition}
             />
@@ -331,7 +355,7 @@ export default function BookDetails() {
             fontFamily: lora.style.fontFamily,
           }}
         >
-          {book?.author.name}
+          {authorName}
         </Typography>
         <Box
           sx={{
@@ -350,7 +374,7 @@ export default function BookDetails() {
           }}
           textAlign="center"
         >
-          {book?.series && (
+          {book?.series && book.series.length > 0 && (
             <Chip
               sx={{
                 backgroundColor: '#8C54FF20',
@@ -362,7 +386,7 @@ export default function BookDetails() {
                 height: '32px',
                 fontSize: '16px',
               }}
-              label={book.series.name}
+              label={book.series[0]?.name}
             />
           )}
         </Divider>

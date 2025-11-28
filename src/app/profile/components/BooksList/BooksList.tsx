@@ -1,10 +1,11 @@
+'use client';
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { BookCardCompact } from '@/app/components/atoms/BookCardCompact/BookCardCompact';
-import Book from '@/domain/book.model';
+import HardcoverBook from '@/domain/HardcoverBook';
 
 interface BooksListProps {
-  books: Book[];
+  books: HardcoverBook[];
   hasMore: boolean;
 }
 
@@ -29,7 +30,7 @@ export const BooksList: React.FC<BooksListProps> = ({ books, hasMore }) => (
       overflowY: 'auto',
       maxHeight: '65vh',
       minHeight: 240,
-      alignItems: { xs: 'stretch', md: 'center' },
+      alignItems: { xs: 'stretch', md: 'flex-start' },
       justifyContent: { xs: 'flex-start', md: 'center' },
       py: { md: 1 },
       background: 'transparent',
@@ -48,7 +49,7 @@ export const BooksList: React.FC<BooksListProps> = ({ books, hasMore }) => (
           boxSizing: 'border-box',
           display: 'flex',
           justifyContent: { xs: 'center', md: 'center' },
-          alignItems: { xs: 'stretch', md: 'center' },
+          alignItems: { xs: 'stretch', md: 'flex-start' },
           px: { xs: 0, sm: 1, md: 0 },
           py: { xs: 0.5, md: 0 },
           height: { xs: 'auto', md: '100%' },

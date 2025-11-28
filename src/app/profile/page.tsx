@@ -10,12 +10,14 @@ import { BooksList } from './components/BooksList/BooksList';
 import { BooksListSkeleton } from './components/BooksList/BooksListSkeleton';
 import {
   Box,
+  CircularProgress,
   Container,
-  Typography,
   Tab,
   Tabs,
-  CircularProgress,
+  Typography,
 } from '@mui/material';
+import { UUID } from 'crypto';
+import React, { Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { User } from '@/domain/user.model';
@@ -44,7 +46,9 @@ const ActivityTab = React.lazy(
   () => import('../components/molecules/activityTab')
 );
 import StatsSkeleton from '../components/molecules/StatsSkeleton';
+import { EBookStatus } from '@gycoding/nebula';
 import { HallOfFameSkeleton } from '../components/molecules/HallOfFameSkeleton';
+import useProfileFilters from './hooks/useProfileFilters';
 
 function ProfilePageContent() {
   const user = useSelector(
@@ -207,18 +211,35 @@ function ProfilePageContent() {
                 onOrderDirectionChange={filters.handleOrderDirectionChange}
               />
 
-              {loading ? (
+              {loading && books.length === 0 ? (
                 <Box
-                  ref={sentinelRef}
                   sx={{
-                    display: hasMore ? 'flex' : 'none',
+                    display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
                     minHeight: 60,
                     width: '100%',
                   }}
                 >
-                  {loading && <BooksListSkeleton />}
+                  <BooksListSkeleton />
+                </Box>
+              ) : books.length === 0 ? (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: 200,
+                    width: '100%',
+                  }}
+                >
+                  <Typography
+                    sx={{ font: lora.style.fontFamily }}
+                    color="white"
+                    variant="h6"
+                  >
+                    You don&apos;t have any books in your library yet
+                  </Typography>
                 </Box>
               ) : books.length === 0 ? (
                 <Box
@@ -240,6 +261,14 @@ function ProfilePageContent() {
                 </Box>
               ) : (
                 <BooksList books={filteredBooks} hasMore={hasMore} />
+              )}
+
+              {booksError && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography color="error">
+                    Error loading books: {booksError.message}
+                  </Typography>
+                </Box>
               )}
             </Box>
           )}
@@ -267,7 +296,9 @@ function ProfilePageContent() {
               }}
             >
               <Suspense fallback={<StatsSkeleton />}>
-                {user && <Stats id={user.id} />}
+                {user && (
+                  <Stats id={user.id} books={books} booksLoading={loading} />
+                )}
               </Suspense>
             </Box>
           )}

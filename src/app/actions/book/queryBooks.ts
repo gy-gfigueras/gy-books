@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import Book from '@/domain/book.model';
+import HardcoverBook from '@/domain/HardcoverBook';
+import { Book } from '@gycoding/nebula';
 
 interface ApiResponse {
-  books: Book[];
+  books: HardcoverBook[];
 }
 
 export default async function queryBooks(formData: FormData): Promise<Book[]> {

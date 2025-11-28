@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
 import { headers } from 'next/headers';
 import { cookies } from 'next/headers';
 import { auth0 } from '@/lib/auth0';
-import { ApiBook } from '@/domain/apiBook.model';
-import { UUID } from 'crypto';
 
-export default async function getApiBook(
-  bookId: string
-): Promise<ApiBook | null> {
+import { Book } from '@gycoding/nebula';
+
+export default async function getApiBook(bookId: string): Promise<Book | null> {
   try {
     const headersList = await headers();
     const host = headersList.get('host') || 'localhost:3000';
@@ -55,7 +54,7 @@ export default async function getApiBook(
 
         if (publicResponse.ok) {
           const publicData = await publicResponse.json();
-          return publicData as ApiBook;
+          return publicData as Book;
         }
       }
 
@@ -70,7 +69,7 @@ export default async function getApiBook(
       return null;
     }
 
-    return data as ApiBook;
+    return data as Book;
   } catch (error: any) {
     console.error('Server Action - Error details:', error);
     throw new Error(`Failed to get book status: ${error.message}`);
@@ -78,16 +77,16 @@ export default async function getApiBook(
 }
 
 export async function getBooksWithPagination(
-  profileId: UUID,
+  profileId: string,
   page: number = 0,
   size: number = 50
-): Promise<{ books: any[]; hasMore: boolean } | null> {
+): Promise<{ books: Book[] } | null> {
   try {
     const headersList = await headers();
     const host = headersList.get('host') || 'localhost:3000';
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
-    const url = `${protocol}://${host}/api/public/accounts/${profileId}/books?page=${page}&size=${size}`;
+    const url = `${protocol}://${host}/api/public/books/${profileId}/books?page=${page}&size=${size}`;
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: {
@@ -104,11 +103,10 @@ export async function getBooksWithPagination(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: Book[] = await response.json();
 
     return {
-      books: data.books || [],
-      hasMore: data.hasMore || false,
+      books: data,
     };
   } catch (error: any) {
     console.error('Server Action - Error details:', error);
