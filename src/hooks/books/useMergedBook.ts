@@ -47,7 +47,9 @@ export function useMergedBook(id?: string): Result {
 
   const { data, error, isLoading, mutate } = useSWR(id ? id : null, fetcher, {
     revalidateOnFocus: false,
+    revalidateOnReconnect: false,
     shouldRetryOnError: false,
+    dedupingInterval: 60000, // Cache por 60 segundos
   });
 
   return {

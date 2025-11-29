@@ -5,7 +5,7 @@ import { cookies, headers } from 'next/headers';
 
 export default async function updateBiography(
   biography: string
-): Promise<string> {
+): Promise<void> {
   if (!biography) throw new Error('No biography provided in formData');
 
   const headersList = await headers();
@@ -15,8 +15,6 @@ export default async function updateBiography(
   const cookieHeader = cookieStore.toString();
 
   const urlPrivate = `${protocol}://${host}/api/auth/books/profiles/biography`;
-
-  // --- DEBUG: Log info before private fetch ---
 
   let privateRes: Response;
   try {
@@ -30,18 +28,19 @@ export default async function updateBiography(
       credentials: 'include',
       cache: 'no-store',
     });
-    const privateText = await privateRes.clone().text();
 
     if (privateRes.ok) {
-      return privateText;
+      return;
     }
+
+    const privateText = await privateRes.text();
     if (privateRes.status !== 401) {
       throw new Error(
         `Private fetch failed. Status: ${privateRes.status} - ${privateText}`
       );
     }
-    // Si es 401, sigue al endpoint público
-    return privateText as string;
+    // Si es 401, lanzar error
+    throw new Error('Unauthorized');
   } catch (error) {
     console.warn('[DEBUG] Error in private fetch:', error);
     throw error;

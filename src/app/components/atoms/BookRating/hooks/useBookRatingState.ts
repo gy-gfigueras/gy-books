@@ -77,6 +77,24 @@ export function useBookRatingState(props: BookRatingProps) {
         user.username,
         apiBook?.userData
       );
+
+      // Actualización optimista: preservar datos de Hardcover, solo actualizar userData
+      if (mutate && updatedApiBook) {
+        await mutate(
+          (currentData) => {
+            if (!currentData) return updatedApiBook;
+            // Preservar toda la estructura de HardcoverBook, solo actualizar userData
+            return {
+              ...currentData,
+              userData: updatedApiBook.userData,
+              averageRating:
+                updatedApiBook.averageRating ?? currentData.averageRating,
+            };
+          },
+          { revalidate: false }
+        );
+      }
+
       if (updatedApiBook && updatedApiBook.userData) {
         setTempRating(updatedApiBook.userData.rating || 0);
         setTempStatus(
@@ -91,9 +109,7 @@ export function useBookRatingState(props: BookRatingProps) {
           ) as unknown as number
         );
       }
-      if (mutate) {
-        await mutate(updatedApiBook, { revalidate: false });
-      }
+
       setAnchorEl(null);
       setDrawerOpen(false);
     } catch (error) {

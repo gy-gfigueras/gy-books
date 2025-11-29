@@ -1,4 +1,5 @@
-import { renderHook, act } from '@testing-library/react';
+import { User } from '@/domain/user.model';
+import { act, renderHook } from '@testing-library/react';
 import { useBiography } from './useBiography';
 
 // Mock the updateBiography function
@@ -18,6 +19,14 @@ const mockUpdateBiography = updateBiography as jest.MockedFunction<
 const mockMutate = mutate as jest.MockedFunction<typeof mutate>;
 
 describe('useBiography', () => {
+  const mockUser: User = {
+    id: 'user-123',
+    name: 'Test User',
+    email: 'test@example.com',
+    picture: 'https://example.com/pic.jpg',
+    biography: 'Original biography',
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -33,65 +42,106 @@ describe('useBiography', () => {
     expect(typeof result.current.setIsError).toBe('function');
   });
 
-  it('should handle successful biography update', async () => {
-    const mockBiography = 'This is my new biography';
-    const formData = new FormData();
-    formData.append('biography', mockBiography);
+  it('should handle successful biography update with optimistic update', async () => {
+    const newBiography = 'This is my new biography';
 
-    mockUpdateBiography.mockResolvedValue(mockBiography);
+    mockUpdateBiography.mockResolvedValue(undefined);
+    mockMutate.mockImplementation(async (key, updateFn, options) => {
+      // Simulate optimistic data
+      if (
+        options?.optimisticData &&
+        typeof options.optimisticData === 'function'
+      ) {
+        options.optimisticData(mockUser);
+      }
+      // Execute the update function
+      if (typeof updateFn === 'function') {
+        await updateFn(mockUser);
+      }
+      return mockUser;
+    });
 
     const { result } = renderHook(() => useBiography());
 
-    let returnValue: string | undefined;
     await act(async () => {
-      returnValue = await result.current.handleUpdateBiography(formData);
+      await result.current.handleUpdateBiography(newBiography);
     });
 
-    expect(returnValue).toBe(mockBiography);
-    expect(mockUpdateBiography).toHaveBeenCalledWith(mockBiography);
-    expect(mockMutate).toHaveBeenCalledWith('/api/auth/get');
+    expect(mockUpdateBiography).toHaveBeenCalledWith(newBiography);
+    expect(mockMutate).toHaveBeenCalledWith(
+      '/api/auth/get',
+      expect.any(Function),
+      expect.objectContaining({
+        optimisticData: expect.any(Function),
+        rollbackOnError: true,
+        revalidate: true,
+        populateCache: true,
+      })
+    );
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isUpdated).toBe(true);
     expect(result.current.isError).toBe(false);
   });
 
-  it('should handle biography update error', async () => {
+  it('should handle biography update error with rollback', async () => {
     const mockError = new Error('Failed to update biography');
-    const formData = new FormData();
-    formData.append('biography', 'Test biography');
+    const newBiography = 'Test biography';
 
     mockUpdateBiography.mockRejectedValue(mockError);
+    mockMutate.mockImplementation(async (key, updateFn, options) => {
+      // Simulate optimistic data
+      if (
+        options?.optimisticData &&
+        typeof options.optimisticData === 'function'
+      ) {
+        options.optimisticData(mockUser);
+      }
+      // Execute the update function which will throw
+      if (typeof updateFn === 'function') {
+        await updateFn(mockUser);
+      }
+      return mockUser;
+    });
 
     const { result } = renderHook(() => useBiography());
 
-    let returnValue: string | undefined;
     await act(async () => {
-      returnValue = await result.current.handleUpdateBiography(formData);
+      await result.current.handleUpdateBiography(newBiography);
     });
 
-    expect(returnValue).toBeUndefined();
-    expect(mockUpdateBiography).toHaveBeenCalledWith('Test biography');
-    expect(mockMutate).not.toHaveBeenCalled();
+    expect(mockUpdateBiography).toHaveBeenCalledWith(newBiography);
+    expect(mockMutate).toHaveBeenCalledWith(
+      '/api/auth/get',
+      expect.any(Function),
+      expect.objectContaining({
+        rollbackOnError: true,
+      })
+    );
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isUpdated).toBe(false);
     expect(result.current.isError).toBe(true);
   });
 
   it('should set loading to true during update', async () => {
-    const formData = new FormData();
-    formData.append('biography', 'Test biography');
+    const newBiography = 'Test biography';
 
     // Mock a delayed response
     mockUpdateBiography.mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve('success'), 100))
+      () => new Promise((resolve) => setTimeout(() => resolve(undefined), 100))
     );
+    mockMutate.mockImplementation(async (updateFn) => {
+      if (typeof updateFn === 'function') {
+        await updateFn(mockUser);
+      }
+      return mockUser;
+    });
 
     const { result } = renderHook(() => useBiography());
 
     // Start the async operation without awaiting immediately
-    let updatePromise: Promise<string | undefined>;
+    let updatePromise: Promise<void>;
     act(() => {
-      updatePromise = result.current.handleUpdateBiography(formData);
+      updatePromise = result.current.handleUpdateBiography(newBiography);
     });
 
     // Check loading state during operation
@@ -108,38 +158,24 @@ describe('useBiography', () => {
   });
 
   it('should handle empty biography', async () => {
-    const formData = new FormData();
-    formData.append('biography', '');
+    const emptyBiography = '';
 
-    mockUpdateBiography.mockResolvedValue('');
+    mockUpdateBiography.mockResolvedValue(undefined);
+    mockMutate.mockImplementation(async (key, updateFn) => {
+      if (typeof updateFn === 'function') {
+        await updateFn(mockUser);
+      }
+      return mockUser;
+    });
 
     const { result } = renderHook(() => useBiography());
 
-    let returnValue: string | undefined;
     await act(async () => {
-      returnValue = await result.current.handleUpdateBiography(formData);
+      await result.current.handleUpdateBiography(emptyBiography);
     });
 
-    expect(returnValue).toBe('');
     expect(mockUpdateBiography).toHaveBeenCalledWith('');
-    expect(mockMutate).toHaveBeenCalledWith('/api/auth/get');
-    expect(result.current.isUpdated).toBe(true);
-  });
-
-  it('should handle FormData without biography field', async () => {
-    const formData = new FormData();
-    // No biography field added
-
-    mockUpdateBiography.mockResolvedValue('');
-
-    const { result } = renderHook(() => useBiography());
-
-    await act(async () => {
-      const returnValue = await result.current.handleUpdateBiography(formData);
-      expect(returnValue).toBe('');
-    });
-
-    expect(mockUpdateBiography).toHaveBeenCalledWith(null);
+    expect(mockMutate).toHaveBeenCalled();
     expect(result.current.isUpdated).toBe(true);
   });
 
@@ -156,10 +192,15 @@ describe('useBiography', () => {
   });
 
   it('should reset error state on successful update', async () => {
-    const formData = new FormData();
-    formData.append('biography', 'Test biography');
+    const newBiography = 'Test biography';
 
-    mockUpdateBiography.mockResolvedValue('success');
+    mockUpdateBiography.mockResolvedValue(undefined);
+    mockMutate.mockImplementation(async (key, updateFn) => {
+      if (typeof updateFn === 'function') {
+        await updateFn(mockUser);
+      }
+      return mockUser;
+    });
 
     const { result } = renderHook(() => useBiography());
 
@@ -171,7 +212,7 @@ describe('useBiography', () => {
 
     // Then do successful update
     await act(async () => {
-      await result.current.handleUpdateBiography(formData);
+      await result.current.handleUpdateBiography(newBiography);
     });
 
     expect(result.current.isError).toBe(false);
@@ -180,18 +221,74 @@ describe('useBiography', () => {
 
   it('should call updateBiography with correct biography text', async () => {
     const biographyText = 'This is a detailed biography about the user.';
-    const formData = new FormData();
-    formData.append('biography', biographyText);
 
-    mockUpdateBiography.mockResolvedValue(biographyText);
+    mockUpdateBiography.mockResolvedValue(undefined);
+    mockMutate.mockImplementation(async (key, updateFn) => {
+      if (typeof updateFn === 'function') {
+        await updateFn(mockUser);
+      }
+      return mockUser;
+    });
 
     const { result } = renderHook(() => useBiography());
 
     await act(async () => {
-      await result.current.handleUpdateBiography(formData);
+      await result.current.handleUpdateBiography(biographyText);
     });
 
     expect(mockUpdateBiography).toHaveBeenCalledTimes(1);
     expect(mockUpdateBiography).toHaveBeenCalledWith(biographyText);
+  });
+
+  it('should handle error when no user data in cache', async () => {
+    const newBiography = 'Test biography';
+
+    mockMutate.mockImplementation(async (key, updateFn) => {
+      if (typeof updateFn === 'function') {
+        // Simulate no user in cache
+        await updateFn(undefined);
+      }
+      return undefined;
+    });
+
+    const { result } = renderHook(() => useBiography());
+
+    await act(async () => {
+      await result.current.handleUpdateBiography(newBiography);
+    });
+
+    expect(result.current.isError).toBe(true);
+    expect(result.current.isUpdated).toBe(false);
+  });
+
+  it('should update optimistic data correctly', async () => {
+    const newBiography = 'Updated biography';
+    let optimisticResult: User | undefined;
+
+    mockUpdateBiography.mockResolvedValue(undefined);
+    mockMutate.mockImplementation(async (key, updateFn, options) => {
+      // Capture the optimistic data
+      if (
+        options?.optimisticData &&
+        typeof options.optimisticData === 'function'
+      ) {
+        optimisticResult = options.optimisticData(mockUser);
+      }
+      if (typeof updateFn === 'function') {
+        await updateFn(mockUser);
+      }
+      return mockUser;
+    });
+
+    const { result } = renderHook(() => useBiography());
+
+    await act(async () => {
+      await result.current.handleUpdateBiography(newBiography);
+    });
+
+    expect(optimisticResult).toEqual({
+      ...mockUser,
+      biography: newBiography,
+    });
   });
 });

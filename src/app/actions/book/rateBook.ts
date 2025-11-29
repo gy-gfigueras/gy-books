@@ -36,53 +36,35 @@ export default async function rateBook(
     // RELAJADO: Confiamos en que el frontend o el backend manejen la lógica de negocio.
     // Si llega un editionId, lo enviamos.
 
-    // Construir solo los campos que han cambiado
-    const newUserData: Record<string, any> = {};
+    // Construir userData completo con todos los campos (actuales o nuevos)
+    const newUserData: Record<string, any> = {
+      status: status || oldUserData?.status || EBookStatus.WANT_TO_READ,
+      rating:
+        ratingNumber !== undefined ? ratingNumber : oldUserData?.rating || 0,
+      startDate: startDate || oldUserData?.startDate || '',
+      endDate: endDate || oldUserData?.endDate || '',
+      review: review || oldUserData?.review || '',
+    };
 
-    // Solo agregar campos que realmente tienen valor o han cambiado
-    if (status && status !== oldUserData?.status) {
-      newUserData.status = status;
-    }
-
-    if (ratingNumber !== undefined && ratingNumber !== oldUserData?.rating) {
-      newUserData.rating = ratingNumber;
-    }
-
-    if (startDate && startDate !== oldUserData?.startDate) {
-      newUserData.startDate = startDate;
-    }
-
-    if (endDate && endDate !== oldUserData?.endDate) {
-      newUserData.endDate = endDate;
-    }
-
-    if (review && review !== oldUserData?.review) {
-      newUserData.review = review;
-    }
-
-    if (editionId && editionId !== oldUserData?.editionId) {
+    // EditionId: enviar el nuevo si existe, o mantener el anterior
+    if (editionId) {
       newUserData.editionId = editionId;
+    } else if (oldUserData?.editionId) {
+      newUserData.editionId = oldUserData.editionId;
     }
 
-    // Progress: solo enviar si cambió y tiene sentido según el status
-    const progressNumber = progress ? parseFloat(progress) : undefined;
-    if (
-      progressNumber !== undefined &&
-      progressNumber !== oldUserData?.progress
-    ) {
-      // Si el status es WANT_TO_READ, progress debe ser 0
-      if (
-        status === EBookStatus.WANT_TO_READ ||
-        newUserData.status === EBookStatus.WANT_TO_READ
-      ) {
-        newUserData.progress = 0;
-      } else {
-        newUserData.progress = progressNumber;
-      }
-    }
+    // Progress: calcular según el status
+    const progressNumber = progress
+      ? parseFloat(progress)
+      : oldUserData?.progress || 0;
 
-    if (Object.keys(newUserData).length === 0) {
-      throw new Error('No changes to update');
+    // Si el status es WANT_TO_READ, progress debe ser 0
+    if (newUserData.status === EBookStatus.WANT_TO_READ) {
+      newUserData.progress = 0;
+    } else if (newUserData.status === EBookStatus.READ) {
+      newUserData.progress = 1;
+    } else {
+      newUserData.progress = progressNumber;
     }
 
     // Definir protocol, host y cookieHeader si no existen

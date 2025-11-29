@@ -24,14 +24,10 @@ export default function BookDetails() {
   const params = useParams();
   const { data: user } = useUser();
   const {
-    data: mergedBook,
+    data: book,
     isLoading: isMergedLoading,
     mutate,
   } = useMergedBook(params.id as string);
-
-  const book = mergedBook;
-  const Book = mergedBook;
-  const BookPublic = mergedBook;
 
   // Normalizar datos para manejar tanto estructura HardcoverBook como ApiBook
   const authorName = React.useMemo(() => {
@@ -71,7 +67,7 @@ export default function BookDetails() {
     isSaving,
   } = useEditionSelection({
     editions: book?.editions || [],
-    Book: Book || undefined,
+    Book: book || undefined,
     defaultCoverUrl: coverUrl,
     defaultTitle: book?.title || '',
     onEditionSaved: (success, message) => {
@@ -243,9 +239,7 @@ export default function BookDetails() {
               textShadow: '0 0 20px rgba(140, 84, 255, 0.5)',
             }}
           >
-            {BookPublic?.averageRating
-              ? BookPublic.averageRating.toFixed(1)
-              : '0.0'}
+            {book?.averageRating ? book.averageRating.toFixed(1) : '0.0'}
             <StarIcon
               sx={{
                 color: 'primary.main',
@@ -263,7 +257,7 @@ export default function BookDetails() {
             flexDirection={'row'}
           >
             <BookRating
-              apiBook={Book as any}
+              apiBook={book as any}
               bookId={book?.id || ''}
               isRatingLoading={isMergedLoading}
               mutate={mutate as any}
