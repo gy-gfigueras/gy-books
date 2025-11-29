@@ -7,11 +7,12 @@ jest.mock('next/headers', () => ({
 jest.mock('./fetchBookById', () => jest.fn());
 jest.mock('./activities/setActivity', () => ({ setActivity: jest.fn() }));
 
-import { headers, cookies } from 'next/headers';
-import fetchBookById from './fetchBookById';
-import { setActivity } from './activities/setActivity';
 import { EStatus } from '@/utils/constants/EStatus';
 import { EActivity } from '@/utils/constants/formatActivity';
+import { EBookStatus } from '@gycoding/nebula';
+import { cookies, headers } from 'next/headers';
+import { setActivity } from './activities/setActivity';
+import fetchBookById from './fetchBookById';
 
 describe('rateBook', () => {
   let originalFetch: typeof global.fetch;
@@ -132,7 +133,7 @@ describe('rateBook', () => {
     formData.set('startDate', '2023-01-01');
     formData.set('endDate', '2023-01-02');
     await rateBook(formData, username, {
-      status: EStatus.READING, // previous status is READING
+      status: EBookStatus.READING, // previous status is READING
       progress: 50, // diferente al nuevo (100)
       rating: 3,
       userId: 'user-id',
