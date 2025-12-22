@@ -76,11 +76,8 @@ export default function BookDetails() {
         success,
         message,
       });
-
-      // Si fue exitoso, revalidar los datos del libro
-      if (success && mutate) {
-        mutate();
-      }
+      // No necesitamos llamar a mutate() aquí porque useEditionSelection
+      // ya maneja la actualización optimista del estado local
     },
   });
 

@@ -86,6 +86,9 @@ export function useEditionSelection({
 
     try {
       if (Book?.userData && newEdition && hasValidStatus) {
+        // Actualizar localmente primero (optimista)
+        setSelectedEdition(newEdition);
+
         // Actualizar la edición en la base de datos
         const formData = new FormData();
         formData.append('bookId', Book.id);
@@ -98,7 +101,6 @@ export function useEditionSelection({
 
         await rateBook(formData, user.username, Book.userData);
 
-        setSelectedEdition(newEdition);
         onEditionSaved?.(true, 'Edition updated successfully!');
       } else {
         // Solo cambiar la selección visual sin guardar
