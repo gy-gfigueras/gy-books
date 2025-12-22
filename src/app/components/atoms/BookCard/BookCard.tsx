@@ -3,14 +3,21 @@ import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Box, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+
+const MotionBox = motion(Box);
 
 export function BookCard({ book }: { book: HardcoverBook }) {
   const { title, coverUrl } = useBookDisplay(book);
   return (
-    <Box
+    <MotionBox
       component="a"
       href={`/books/${book.id}`}
       key={book.id}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ scale: 1.02, y: -6 }}
+      transition={{ duration: 0.3 }}
       sx={{
         width: '100%',
         textDecoration: 'none',
@@ -20,18 +27,19 @@ export function BookCard({ book }: { book: HardcoverBook }) {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: ['start', 'start', 'start'],
-        backgroundColor: 'rgba(35, 35, 35, 0.7)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '32px',
+        background:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        backdropFilter: 'blur(15px)',
+        borderRadius: '24px',
         padding: '16px',
         overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(147, 51, 234, 0.25)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
         transition: 'all 0.3s ease',
         '&:hover': {
-          transform: 'translateY(-5px)',
-          backgroundColor: 'rgba(35, 35, 35, 0.8)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          border: '1px solid rgba(147, 51, 234, 0.4)',
+          boxShadow:
+            '0 12px 32px rgba(147, 51, 234, 0.2), 0 0 40px rgba(147, 51, 234, 0.1)',
         },
       }}
     >
@@ -189,6 +197,6 @@ export function BookCard({ book }: { book: HardcoverBook }) {
           <ArrowForwardIcon sx={{ fontSize: '14px', marginLeft: '5px' }} />
         </Typography>
       </Box>
-    </Box>
+    </MotionBox>
   );
 }

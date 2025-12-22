@@ -32,7 +32,10 @@ export default function FriendRequest({
         alignItems: 'center',
         justifyContent: 'left',
         gap: '1.5rem',
-        backgroundColor: '#232323',
+        background:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(147, 51, 234, 0.2)',
         borderRadius: '16px',
         padding: '1rem',
         width: { xs: '100%', md: '100%' },
@@ -40,6 +43,11 @@ export default function FriendRequest({
         minWidth: { xs: '200px', md: '400px' },
         position: 'relative',
         textDecoration: 'none',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          border: '1px solid rgba(147, 51, 234, 0.4)',
+          boxShadow: '0 4px 12px rgba(147, 51, 234, 0.2)',
+        },
       }}
     >
       <Image

@@ -88,7 +88,10 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           borderRadius: '10px',
           px: 0,
           color: '#fff',
-          background: 'rgba(45,45,45,0.95)',
+          background:
+            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(147, 51, 234, 0.3)',
           fontFamily: lora.style.fontFamily,
           fontWeight: 500,
           fontSize: 15,
@@ -98,6 +101,11 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           gap: 0.5,
+          '&:hover': {
+            background:
+              'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)',
+            border: '1px solid rgba(147, 51, 234, 0.5)',
+          },
         }}
         onClick={(e) => setOrderMenuAnchor(e.currentTarget)}
       >
@@ -156,12 +164,18 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           fontWeight: 500,
           fontSize: 15,
           fontFamily: lora.style.fontFamily,
-          background: 'rgba(45,45,45,0.95)',
+          background:
+            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(147, 51, 234, 0.3)',
           borderRadius: '10px',
           boxShadow: 'none',
           minHeight: 40,
           '.MuiOutlinedInput-notchedOutline': { border: 0 },
-          '& .MuiSvgIcon-root': { color: '#8C54FF' },
+          '& .MuiSvgIcon-root': { color: '#9333ea' },
+          '&:hover': {
+            border: '1px solid rgba(147, 51, 234, 0.5)',
+          },
         }}
       >
         <MenuItem
@@ -273,7 +287,10 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
         variant="outlined"
         size="small"
         sx={{
-          background: 'rgba(45,45,45,0.95)',
+          background:
+            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(147, 51, 234, 0.3)',
           borderRadius: '10px',
           minWidth: 110,
           flex: 2,
@@ -285,13 +302,13 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
               borderColor: 'transparent',
-              borderRadius: '16px',
+              borderRadius: '10px',
             },
             '&:hover fieldset': {
-              borderColor: 'white',
+              borderColor: 'rgba(147, 51, 234, 0.5)',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#8C54FF',
+              borderColor: '#9333ea',
               borderWidth: 2,
             },
           },
@@ -299,7 +316,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon sx={{ color: '#8C54FF' }} />
+              <SearchIcon sx={{ color: '#9333ea' }} />
             </InputAdornment>
           ),
         }}

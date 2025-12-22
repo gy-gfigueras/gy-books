@@ -20,8 +20,10 @@ import CircleIcon from '@mui/icons-material/Circle';
 import StarIcon from '@mui/icons-material/Star';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { UUID } from 'crypto';
-import Image from 'next/image';
 import React, { useMemo } from 'react';
+import { motion } from 'framer-motion';
+
+const MotionBox = motion(Box);
 
 interface ActivityTabProps {
   id: UUID;
@@ -54,9 +56,11 @@ const ProgressBadge: React.FC<{ progress: number }> = ({ progress }) => (
       gap: 0.5,
       px: 1,
       py: 0.5,
-      borderRadius: '6px',
-      background: 'rgba(140, 84, 255, 0.2)',
-      color: '#8C54FF',
+      borderRadius: '8px',
+      background:
+        'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+      border: '1px solid rgba(147, 51, 234, 0.4)',
+      color: '#c084fc',
     }}
   >
     <BarChartIcon sx={{ fontSize: 14 }} />
@@ -101,8 +105,7 @@ const RatingBadge: React.FC<{ rating: number }> = ({ rating }) => (
 
 const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
   const { data: activities, isLoading, uniqueBookIds } = useActivities(id);
-  const { data: books, isLoading: booksLoading } =
-    useHardcoverBatch(uniqueBookIds);
+  const { data: books } = useHardcoverBatch(uniqueBookIds);
 
   // Crear un mapa de bookId -> imagen para acceso rápido
   const booksMap = useMemo(() => {
@@ -115,51 +118,57 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
     );
   }, [books]);
 
-  const ActivityItem = React.memo(({ activity }: { activity: Activity }) => {
-    const bookImage = activity.bookId ? booksMap.get(activity.bookId) : null;
-    const activityType = getActivityType(activity.message);
-    const ActivityIconComponent = getActivityIconComponent(activityType);
-    const activityColor = getActivityColor(activityType);
-    const progress = extractProgress(activity.message);
-    const rating = extractRating(activity.message);
-    const displayMessage = cleanMessage(activity.message);
+  // Mover ActivityItem fuera y memoizarlo con useCallback
+  const ActivityItem = React.useCallback(
+    ({ activity, index }: { activity: Activity; index: number }) => {
+      const bookImage = activity.bookId ? booksMap.get(activity.bookId) : null;
+      const activityType = getActivityType(activity.message);
+      const ActivityIconComponent = getActivityIconComponent(activityType);
+      const activityColor = getActivityColor(activityType);
+      const progress = extractProgress(activity.message);
+      const rating = extractRating(activity.message);
+      const displayMessage = cleanMessage(activity.message);
 
-    return (
-      <Box
-        component="a"
-        href={`/books/${activity.bookId}`}
-        key={activity.bookId}
-        role="link"
-        aria-label={`Go to book ${activity.bookId}`}
-        sx={{
-          p: 1.5,
-          mb: 2,
-          background: 'rgba(35, 35, 35, 0.85)',
-          borderRadius: '12px',
-          border: '1px solid #FFFFFF30',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 1.5,
-          textDecoration: 'none',
-          transition: 'all 0.2s',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-          '&:hover': {
-            background: 'rgba(60, 60, 60, 0.95)',
-            transform: 'translateY(-2px)',
-            boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
-          },
-        }}
-        tabIndex={0}
-      >
-        {/* Book Cover */}
-        {booksLoading || !bookImage ? (
-          <Skeleton
-            variant="rectangular"
-            width={60}
-            height={90}
-            sx={{ borderRadius: 1, flexShrink: 0 }}
-          />
-        ) : (
+      return (
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.4,
+            delay: index * 0.05,
+            ease: [0.4, 0, 0.2, 1],
+          }}
+          component="a"
+          href={`/books/${activity.bookId}`}
+          role="link"
+          aria-label={`Go to book ${activity.bookId}`}
+          sx={{
+            p: 1.5,
+            mb: 2,
+            background:
+              'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            backdropFilter: 'blur(16px)',
+            borderRadius: '16px',
+            border: '1px solid rgba(147, 51, 234, 0.3)',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 1.5,
+            textDecoration: 'none',
+            transition: 'all 0.2s',
+            boxShadow:
+              '0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(147, 51, 234, 0.15)',
+            '&:hover': {
+              background:
+                'linear-gradient(145deg, rgba(147, 51, 234, 0.18) 0%, rgba(168, 85, 247, 0.12) 100%)',
+              border: '1px solid rgba(147, 51, 234, 0.5)',
+              transform: 'translateY(-2px)',
+              boxShadow:
+                '0 8px 16px rgba(147, 51, 234, 0.25), 0 4px 8px rgba(0, 0, 0, 0.3)',
+            },
+          }}
+          tabIndex={0}
+        >
+          {/* Book Cover */}
           <Box
             sx={{
               position: 'relative',
@@ -168,88 +177,110 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
               flexShrink: 0,
               borderRadius: 1,
               overflow: 'hidden',
+              backgroundColor: 'rgba(147, 51, 234, 0.1)',
             }}
           >
-            <Image
-              src={bookImage}
-              alt="Book cover"
-              fill
-              sizes="60px"
-              style={{ objectFit: 'cover' }}
-            />
-          </Box>
-        )}
-
-        {/* Activity Content */}
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            alignItems: 'flex-start',
-            textAlign: 'left',
-            justifyContent: 'center',
-          }}
-        >
-          {/* Activity Icon and Date */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'flex-start',
-              gap: 0.75,
-            }}
-          >
-            <ActivityIconComponent
-              sx={{
-                fontSize: 14,
-                color: activityColor,
-              }}
-            />
-            {activity.formattedDate && (
-              <Typography
-                variant="body2"
+            {!bookImage && (
+              <Skeleton
+                variant="rectangular"
+                width={70}
+                height={100}
                 sx={{
-                  color: '#AAAAAA',
-                  fontFamily: lora.style.fontFamily,
-                  fontSize: 12,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  borderRadius: 1,
                 }}
-              >
-                {activity.formattedDate}
-              </Typography>
+              />
+            )}
+            {bookImage && (
+              <Box
+                component="img"
+                src={bookImage}
+                alt="Book cover"
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+              />
             )}
           </Box>
 
-          {/* Activity Message */}
-          <Typography
-            variant="body1"
+          {/* Activity Content */}
+          <Box
             sx={{
-              color: '#fff',
-              fontFamily: lora.style.fontFamily,
-              fontSize: 14,
-              lineHeight: 1.5,
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              alignItems: 'flex-start',
+              textAlign: 'left',
+              justifyContent: 'center',
             }}
           >
-            {displayMessage}
-          </Typography>
+            {/* Activity Icon and Date */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                gap: 0.75,
+              }}
+            >
+              <ActivityIconComponent
+                sx={{
+                  fontSize: 14,
+                  color: activityColor,
+                }}
+              />
+              {activity.formattedDate && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#AAAAAA',
+                    fontFamily: lora.style.fontFamily,
+                    fontSize: 12,
+                  }}
+                >
+                  {activity.formattedDate}
+                </Typography>
+              )}
+            </Box>
 
-          {/* Progress or Rating Badge */}
-          {progress !== null && <ProgressBadge progress={progress} />}
-          {rating !== null && <RatingBadge rating={rating} />}
-        </Box>
-      </Box>
-    );
-  });
+            {/* Activity Message */}
+            <Typography
+              variant="body1"
+              sx={{
+                color: '#fff',
+                fontFamily: lora.style.fontFamily,
+                fontSize: 14,
+                lineHeight: 1.5,
+              }}
+            >
+              {displayMessage}
+            </Typography>
+
+            {/* Progress or Rating Badge */}
+            {progress !== null && <ProgressBadge progress={progress} />}
+            {rating !== null && <RatingBadge rating={rating} />}
+          </Box>
+        </MotionBox>
+      );
+    },
+    [booksMap]
+  );
 
   const SkeletonActivityItem = React.memo(() => (
     <Box
       sx={{
         p: 1.5,
         mb: 2,
-        background: 'rgba(35, 35, 35, 0.85)',
-        borderRadius: '12px',
-        border: '1px solid #FFFFFF30',
+        background:
+          'linear-gradient(145deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        backdropFilter: 'blur(16px)',
+        borderRadius: '16px',
+        border: '1px solid rgba(147, 51, 234, 0.2)',
         display: 'flex',
         alignItems: 'flex-start',
         gap: 1.5,
@@ -307,12 +338,21 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
             maxHeight: '70vh',
             overflowY: 'auto',
             px: 1,
-            scrollbarColor: ' #8C54FF transparent',
+            scrollbarColor: '#9333ea transparent',
+            '&::-webkit-scrollbar': { width: 8 },
+            '&::-webkit-scrollbar-track': {
+              background: 'rgba(147, 51, 234, 0.1)',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+              borderRadius: 4,
+            },
           }}
         >
           {activities.map((activity: Activity, index: number) => (
             <ActivityItem
               activity={activity}
+              index={index}
               key={`${activity.bookId || 'activity'}-${index}-${activity.date ? new Date(activity.date).getTime() : Date.now()}`}
             />
           ))}

@@ -4,8 +4,11 @@ export function HallOfFameSkeleton() {
   return (
     <Box
       sx={{
-        backgroundColor: '#1A1A1A',
-        borderRadius: '16px',
+        background:
+          'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 50%, rgba(126, 34, 206, 0.1) 100%)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(147, 51, 234, 0.3)',
+        borderRadius: '20px',
         padding: '2rem',
         width: '100%',
         maxWidth: '900px',
@@ -15,6 +18,8 @@ export function HallOfFameSkeleton() {
         alignItems: 'center',
         gap: '2rem',
         userSelect: 'none',
+        boxShadow:
+          '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
       }}
     >
       {/* Skeleton for carousel container */}
@@ -60,8 +65,8 @@ export function HallOfFameSkeleton() {
         sx={{
           maxWidth: '800px',
           borderRadius: '12px',
-          bgcolor: '#232323',
-          border: '2px solid #FFFFFF30',
+          bgcolor: 'rgba(147, 51, 234, 0.15)',
+          border: '2px solid rgba(147, 51, 234, 0.3)',
         }}
       />
     </Box>

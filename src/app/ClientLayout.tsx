@@ -27,6 +27,7 @@ import {
   Typography,
   CircularProgress,
 } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getTheme } from '@/styles/theme';
 import Profile from './components/organisms/Profile';
 import { ETheme } from '@/utils/constants/theme.enum';
@@ -47,11 +48,25 @@ import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import PersonIcon from '@mui/icons-material/Person';
 import { CustomButton } from './components/atoms/CustomButton/customButton';
 import { useUser } from '@/hooks/useUser';
+
+// Create motion components
+const MotionBox = motion(Box);
+const MotionIconButton = motion(IconButton);
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const [isHydrated, setIsHydrated] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
+
+  // Scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useUser(); // Fetch and store profile in Redux
@@ -123,14 +138,23 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
     return (
       <a href="/auth/login" style={{ textDecoration: 'none' }}>
         <CustomButton
+          component={motion.button}
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.95 }}
           sx={{
-            backgroundColor: 'primary.main',
+            background:
+              'linear-gradient(135deg, #9333ea 0%, #a855f7 50%, #7e22ce 100%)',
             color: 'white',
             fontSize: '14px',
             letterSpacing: '0.1rem',
             height: '10px',
             py: '1.3rem',
             fontFamily: lora.style.fontFamily,
+            boxShadow: '0 4px 15px rgba(147, 51, 234, 0.4)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 6px 20px rgba(147, 51, 234, 0.6)',
+            },
           }}
         >
           Login
@@ -148,24 +172,32 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
-          backgroundColor: '#161616',
+          backgroundColor: '#000000',
         }}
       >
         <Box
           suppressHydrationWarning={true}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
           sx={{
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             height: '80px',
-            backgroundColor: 'rgba(22, 22, 22, 0.8)',
+            backgroundColor: scrolled
+              ? 'rgba(10, 10, 10, 0.9)'
+              : 'rgba(10, 10, 10, 0.8)',
             backdropFilter: 'blur(10px)',
+            borderBottom: scrolled
+              ? '1px solid rgba(147, 51, 234, 0.3)'
+              : '1px solid transparent',
+            boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.5)' : 'none',
             zIndex: 1000,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             px: 3,
+            transition: 'all 0.3s ease',
           }}
         >
           {!isHydrated ? (
@@ -174,22 +206,23 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
               sx={{
                 width: '48px',
                 height: '48px',
+                filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
               }}
               src="/gy-logo.png"
               alt="logo"
             />
           ) : isMobile ? (
-            <Box
+            <MotionBox
               component="img"
               onClick={toggleDrawer}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
               sx={{
                 width: '48px',
                 height: '48px',
                 cursor: 'pointer',
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.1)',
-                },
+                filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
+                transition: 'filter 0.3s ease',
               }}
               src="/gy-logo.png"
               alt="logo"
@@ -209,17 +242,23 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 px: 3,
               }}
             >
-              <Box
-                component="img"
-                sx={{
-                  width: '48px',
-                  height: '48px',
-                  cursor: 'pointer',
-                }}
-                onClick={() => router.push('/')}
-                src="/gy-logo.png"
-                alt="logo"
-              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <MotionBox
+                  component="img"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                  sx={{
+                    width: '48px',
+                    height: '48px',
+                    cursor: 'pointer',
+                    filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
+                    transition: 'filter 0.3s ease',
+                  }}
+                  onClick={() => router.push('/')}
+                  src="/gy-logo.png"
+                  alt="logo"
+                />
+              </Box>
               <Box
                 sx={{
                   display: 'flex',
@@ -231,6 +270,9 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                 }}
               >
                 <CustomButton
+                  component={motion.button}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                   variant="outlined"
                   onClick={() => router.push('/books')}
                   sx={{
@@ -242,10 +284,11 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                     height: '10px',
                     py: '1.3rem',
                     fontFamily: lora.style.fontFamily,
+                    transition: 'all 0.3s ease',
                     '&:hover': {
                       borderColor: '#a855f7',
-                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                      transform: 'translateY(-2px)',
+                      backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                      boxShadow: '0 4px 15px rgba(147, 51, 234, 0.3)',
                     },
                   }}
                   startIcon={<LocalLibraryIcon />}
@@ -253,6 +296,9 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                   Library
                 </CustomButton>
                 <CustomButton
+                  component={motion.button}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                   variant="outlined"
                   onClick={() => router.push('/users/search')}
                   sx={{
@@ -264,10 +310,11 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                     height: '10px',
                     py: '1.3rem',
                     fontFamily: lora.style.fontFamily,
+                    transition: 'all 0.3s ease',
                     '&:hover': {
                       borderColor: '#a855f7',
-                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                      transform: 'translateY(-2px)',
+                      backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                      boxShadow: '0 4px 15px rgba(147, 51, 234, 0.3)',
                     },
                   }}
                   startIcon={<PersonIcon />}
@@ -275,33 +322,47 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
                   Users
                 </CustomButton>
                 {user && (
-                  <IconButton sx={{}} onClick={toggleFriendRequests}>
+                  <MotionIconButton
+                    whileHover={{ scale: 1.1, rotate: 10 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={toggleFriendRequests}
+                  >
                     <InboxIcon
                       sx={{
                         fontSize: '28px',
                         color: isLoadingRequests ? 'gray' : '#FFF',
                         position: 'relative',
+                        filter: 'drop-shadow(0 0 4px rgba(147, 51, 234, 0.3))',
                       }}
                     />
                     {count > 0 && (
-                      <Box
+                      <MotionBox
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 500,
+                          damping: 15,
+                        }}
                         sx={{
                           position: 'absolute',
                           top: 0,
                           right: 0,
                           width: '20px',
                           height: '20px',
-                          backgroundColor: 'primary.main',
+                          background:
+                            'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
                           color: 'white',
                           borderRadius: '50%',
                           padding: '4px',
                           fontSize: '12px',
+                          boxShadow: '0 2px 8px rgba(147, 51, 234, 0.6)',
                         }}
                       >
                         {count}
-                      </Box>
+                      </MotionBox>
                     )}
-                  </IconButton>
+                  </MotionIconButton>
                 )}
                 {renderProfileOrLogin()}
               </Box>
@@ -326,114 +387,135 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
         )}
 
         {/* Pestaña flotante de solicitudes de amistad */}
-        {friendRequestsOpen && (
-          <Box
-            onClick={(e) => e.stopPropagation()}
-            sx={{
-              position: 'fixed',
-              top: '80px',
-              right: { xs: '10px', md: '20px' },
-              left: { xs: '10px', md: 'auto' },
-              width: { xs: 'auto', md: '500px' },
-              maxHeight: { xs: '70vh', md: '500px' },
-              zIndex: 999,
-              backgroundColor: 'rgba(22, 22, 22, 0.95)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-              overflow: 'hidden',
-            }}
-          >
-            <Box
+        <AnimatePresence>
+          {friendRequestsOpen && (
+            <MotionBox
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                p: 2,
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                position: 'fixed',
+                top: '80px',
+                right: { xs: '10px', md: '20px' },
+                left: { xs: '10px', md: 'auto' },
+                width: { xs: 'auto', md: '500px' },
+                maxHeight: { xs: '70vh', md: '500px' },
+                zIndex: 999,
+                background:
+                  'linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(30, 10, 40, 0.98) 100%)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '12px',
+                border: '1px solid rgba(147, 51, 234, 0.3)',
+                boxShadow:
+                  '0 8px 32px rgba(147, 51, 234, 0.3), 0 0 80px rgba(147, 51, 234, 0.1)',
+                overflow: 'hidden',
               }}
             >
-              <Typography
-                variant="h6"
+              <Box
                 sx={{
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  fontFamily: lora.style.fontFamily,
-                  fontSize: { xs: 16, md: 20 },
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  p: 2,
+                  borderBottom: '1px solid rgba(147, 51, 234, 0.3)',
+                  background:
+                    'linear-gradient(90deg, rgba(147, 51, 234, 0.1) 0%, transparent 100%)',
                 }}
               >
-                Friend Requests
-              </Typography>
-              <IconButton
-                onClick={toggleFriendRequests}
-                sx={{ color: '#fff' }}
-                size="small"
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-
-            <Box
-              sx={{
-                maxHeight: '600px',
-                overflowY: 'auto',
-                p: 2,
-                '&::-webkit-scrollbar': {
-                  width: '6px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '3px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: 'rgba(255, 255, 255, 0.3)',
-                  borderRadius: '3px',
-                },
-                '&::-webkit-scrollbar-thumb:hover': {
-                  background: 'rgba(255, 255, 255, 0.5)',
-                },
-              }}
-            >
-              {isLoadingRequests || isLoadingUsers ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-                  <CircularProgress sx={{ color: '#fff' }} />
-                </Box>
-              ) : friendRequestsWithUsers &&
-                friendRequestsWithUsers.length > 0 ? (
-                friendRequestsWithUsers.map((requestWithUser) => (
-                  <Box key={requestWithUser.id} sx={{ mb: 2, width: '100%' }}>
-                    <FriendRequest
-                      user={requestWithUser.user || null}
-                      handleManageRequest={handleManageRequest}
-                      isLoadingManageRequest={isLoadingManageRequest}
-                      requestId={requestWithUser.id}
-                    />
-                  </Box>
-                ))
-              ) : (
-                <Box
+                <Typography
+                  variant="h6"
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    p: 3,
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    fontFamily: lora.style.fontFamily,
+                    fontSize: { xs: 16, md: 20 },
+                    textShadow: '0 0 10px rgba(147, 51, 234, 0.5)',
                   }}
                 >
-                  <Typography
+                  Friend Requests
+                </Typography>
+                <MotionIconButton
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleFriendRequests}
+                  sx={{ color: '#fff' }}
+                  size="small"
+                >
+                  <CloseIcon />
+                </MotionIconButton>
+              </Box>
+
+              <Box
+                sx={{
+                  maxHeight: '600px',
+                  overflowY: 'auto',
+                  p: 2,
+                  '&::-webkit-scrollbar': {
+                    width: '6px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: 'rgba(147, 51, 234, 0.1)',
+                    borderRadius: '3px',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background:
+                      'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                    borderRadius: '3px',
+                  },
+                  '&::-webkit-scrollbar-thumb:hover': {
+                    background:
+                      'linear-gradient(135deg, #a855f7 0%, #c084fc 100%)',
+                  },
+                }}
+              >
+                {isLoadingRequests || isLoadingUsers ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                    <CircularProgress sx={{ color: '#fff' }} />
+                  </Box>
+                ) : friendRequestsWithUsers &&
+                  friendRequestsWithUsers.length > 0 ? (
+                  friendRequestsWithUsers.map((requestWithUser, index) => (
+                    <MotionBox
+                      key={requestWithUser.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.3 }}
+                      sx={{ mb: 2, width: '100%' }}
+                    >
+                      <FriendRequest
+                        user={requestWithUser.user || null}
+                        handleManageRequest={handleManageRequest}
+                        isLoadingManageRequest={isLoadingManageRequest}
+                        requestId={requestWithUser.id}
+                      />
+                    </MotionBox>
+                  ))
+                ) : (
+                  <Box
                     sx={{
-                      color: '#fff',
-                      fontFamily: lora.style.fontFamily,
-                      textAlign: 'center',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      p: 3,
                     }}
                   >
-                    No friend requests
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          </Box>
-        )}
+                    <Typography
+                      sx={{
+                        color: '#fff',
+                        fontFamily: lora.style.fontFamily,
+                        textAlign: 'center',
+                      }}
+                    >
+                      No friend requests
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </MotionBox>
+          )}
+        </AnimatePresence>
 
         <Drawer
           anchor="left"
@@ -441,131 +523,246 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
           onClose={toggleDrawer}
           sx={{
             '& .MuiDrawer-paper': {
-              backgroundColor: '#161616',
+              background:
+                'linear-gradient(180deg, rgba(10, 10, 10, 0.98) 0%, rgba(30, 10, 40, 0.98) 100%)',
+              backdropFilter: 'blur(20px)',
               color: 'white',
-              width: 280,
+              width: 300,
+              borderRight: '1px solid rgba(147, 51, 234, 0.3)',
             },
           }}
         >
-          <Box sx={{ p: 3 }}>
+          <Box
+            sx={{
+              p: 3,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {/* Header del drawer */}
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                mb: 3,
+                mb: 4,
+                pb: 2,
+                borderBottom: '1px solid rgba(147, 51, 234, 0.2)',
               }}
             >
-              <Box
-                component="img"
-                sx={{
-                  width: '48px',
-                  height: '48px',
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  router.push('/');
-                  toggleDrawer();
-                }}
-                src="/gy-logo.png"
-                alt="logo"
-              />
-              {user && (
-                <IconButton
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <MotionBox
+                  component="img"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                  sx={{
+                    width: '48px',
+                    height: '48px',
+                    cursor: 'pointer',
+                    filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
+                  }}
+                  onClick={() => {
+                    router.push('/');
+                    toggleDrawer();
+                  }}
+                  src="/gy-logo.png"
+                  alt="logo"
+                />
+              </Box>
+              <MotionIconButton
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={toggleDrawer}
+                sx={{ color: '#fff' }}
+              >
+                <CloseIcon />
+              </MotionIconButton>
+            </Box>
+
+            {/* Menu Items */}
+            <List sx={{ flex: 1, py: 0 }}>
+              {menuItems.map((item, index) => (
+                <MotionBox
+                  key={item.text}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.08, duration: 0.3 }}
+                >
+                  <ListItem
+                    onClick={() => {
+                      router.push(item.route);
+                      toggleDrawer();
+                    }}
+                    sx={{
+                      color: 'white',
+                      cursor: 'pointer',
+                      mb: 1.5,
+                      borderRadius: '12px',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      background: 'rgba(147, 51, 234, 0.05)',
+                      border: '1px solid rgba(147, 51, 234, 0.15)',
+                      '&:hover': {
+                        background:
+                          'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                        border: '1px solid rgba(147, 51, 234, 0.4)',
+                        transform: 'translateX(8px) scale(1.02)',
+                        boxShadow: '0 4px 20px rgba(147, 51, 234, 0.3)',
+                      },
+                      py: 1.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        color: '#a855f7',
+                        minWidth: '45px',
+                        filter: 'drop-shadow(0 0 4px rgba(147, 51, 234, 0.4))',
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.text}
+                      sx={{
+                        '& .MuiListItemText-primary': {
+                          fontWeight: 600,
+                          fontFamily: lora.style.fontFamily,
+                          fontSize: 16,
+                          letterSpacing: '0.02em',
+                        },
+                      }}
+                    />
+                  </ListItem>
+                </MotionBox>
+              ))}
+            </List>
+
+            {/* Friend Requests Button */}
+            {user && (
+              <MotionBox
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <ListItem
                   onClick={() => {
                     toggleFriendRequests();
                     toggleDrawer();
                   }}
-                  sx={{ color: '#fff' }}
-                >
-                  <InboxIcon sx={{ fontSize: '24px' }} />
-                  {count > 0 && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        width: '18px',
-                        height: '18px',
-                        backgroundColor: 'primary.main',
-                        color: 'white',
-                        borderRadius: '50%',
-                        padding: '2px',
-                        fontSize: '10px',
-                      }}
-                    >
-                      {count}
-                    </Box>
-                  )}
-                </IconButton>
-              )}
-            </Box>
-
-            <List>
-              {menuItems.map((item) => (
-                <ListItem
-                  key={item.text}
-                  onClick={() => {
-                    router.push(item.route);
-                    toggleDrawer();
-                  }}
                   sx={{
-                    color: item.color,
+                    color: 'white',
                     cursor: 'pointer',
+                    mb: 2,
+                    borderRadius: '12px',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    background:
+                      count > 0
+                        ? 'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%)'
+                        : 'rgba(147, 51, 234, 0.05)',
+                    border: `1px solid ${count > 0 ? 'rgba(147, 51, 234, 0.4)' : 'rgba(147, 51, 234, 0.15)'}`,
                     '&:hover': {
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      borderRadius: '8px',
+                      background:
+                        'linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(168, 85, 247, 0.25) 100%)',
+                      border: '1px solid rgba(147, 51, 234, 0.5)',
+                      transform: 'translateX(8px) scale(1.02)',
+                      boxShadow: '0 4px 20px rgba(147, 51, 234, 0.4)',
                     },
-                    mb: 1,
+                    py: 1.5,
                   }}
                 >
                   <ListItemIcon
-                    sx={{ color: item.color || 'white', minWidth: '40px' }}
+                    sx={{
+                      color: '#a855f7',
+                      minWidth: '45px',
+                      filter: 'drop-shadow(0 0 4px rgba(147, 51, 234, 0.4))',
+                      position: 'relative',
+                    }}
                   >
-                    {item.icon}
+                    <InboxIcon />
+                    {count > 0 && (
+                      <MotionBox
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 500,
+                          damping: 15,
+                        }}
+                        sx={{
+                          position: 'absolute',
+                          top: -4,
+                          right: -4,
+                          width: '20px',
+                          height: '20px',
+                          background:
+                            'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                          color: 'white',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          boxShadow: '0 2px 8px rgba(147, 51, 234, 0.6)',
+                        }}
+                      >
+                        {count}
+                      </MotionBox>
+                    )}
                   </ListItemIcon>
                   <ListItemText
-                    primary={item.text}
+                    primary="Friend Requests"
                     sx={{
-                      fontWeight: 'bold',
-                      fontFamily: lora.style.fontFamily,
+                      '& .MuiListItemText-primary': {
+                        fontWeight: 600,
+                        fontFamily: lora.style.fontFamily,
+                        fontSize: 16,
+                        letterSpacing: '0.02em',
+                      },
                     }}
                   />
                 </ListItem>
-              ))}
-            </List>
+              </MotionBox>
+            )}
+
+            {/* Logout Button */}
+            {user && (
+              <MotionBox
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.3 }}
+              >
+                <a href="/auth/logout" style={{ textDecoration: 'none' }}>
+                  <Button
+                    component={motion.button}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    variant="outlined"
+                    fullWidth
+                    sx={{
+                      py: 1.5,
+                      borderRadius: '12px',
+                      borderColor: 'rgba(239, 68, 68, 0.5)',
+                      color: '#ef4444',
+                      fontFamily: lora.style.fontFamily,
+                      fontSize: 16,
+                      fontWeight: 600,
+                      letterSpacing: '0.02em',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        borderColor: '#ef4444',
+                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)',
+                      },
+                    }}
+                    startIcon={<LogoutIcon />}
+                  >
+                    Logout
+                  </Button>
+                </a>
+              </MotionBox>
+            )}
           </Box>
-          {user && (
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                p: 3,
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <a href="/auth/logout" style={{ textDecoration: 'none' }}>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  sx={(theme) => ({
-                    fontSize: ['12px', '14px'],
-                    transition: '0.3s',
-                    '&:hover': {
-                      background: 'red',
-                      color: theme.palette.text.primary,
-                    },
-                  })}
-                  startIcon={<LogoutIcon />}
-                >
-                  Logout
-                </Button>
-              </a>
-            </Box>
-          )}
         </Drawer>
 
         <Box suppressHydrationWarning={true} sx={{ mt: '80px' }}>

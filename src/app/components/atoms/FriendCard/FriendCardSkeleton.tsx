@@ -10,7 +10,10 @@ export default function FriendCardSkeleton() {
         alignItems: 'center',
         justifyContent: 'left',
         gap: '1.5rem',
-        backgroundColor: '#232323',
+        background:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(147, 51, 234, 0.2)',
         borderRadius: '16px',
         padding: '1rem',
         width: '25%',

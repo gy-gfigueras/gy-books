@@ -62,13 +62,21 @@ export const HallOfFameQuoteInput: React.FC<HallOfFameQuoteInputProps> = ({
       }}
       fullWidth
       sx={{
-        backgroundColor: '#232323',
+        background:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
         borderRadius: '12px',
         textAlign: 'center',
-        border: '2px solid #FFFFFF30',
+        border: '2px solid rgba(147, 51, 234, 0.3)',
         '& .MuiOutlinedInput-root': {
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: 'transparent',
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'rgba(147, 51, 234, 0.5)',
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#9333ea',
           },
         },
         '& .MuiInputBase-input': {

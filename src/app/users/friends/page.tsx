@@ -11,9 +11,13 @@ import {
   InputAdornment,
   IconButton,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import { birthStone, lora } from '@/utils/fonts/fonts';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+
+const MotionBox = motion(Box);
+const MotionIconButton = motion(IconButton);
 import { useRouter } from 'next/navigation';
 import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
@@ -42,13 +46,17 @@ export default function FriendsPage() {
 
   return (
     <>
-      <Box
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '1rem',
+          pt: 4,
         }}
       >
         <CustomTitle
@@ -56,7 +64,10 @@ export default function FriendsPage() {
           size="6rem"
           fontFamily={birthStone.style.fontFamily}
           sx={{
-            color: 'white',
+            background: 'linear-gradient(135deg, #ffffff 0%, #a855f7 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
           }}
         />
         <Box
@@ -76,39 +87,32 @@ export default function FriendsPage() {
             variant="outlined"
             sx={{
               mb: '8px',
-              width: ['60%', '60%', '60%'],
-              backgroundColor: '#232323',
+              width: ['90%', '70%', '60%'],
+              maxWidth: '600px',
+              backgroundColor: 'rgba(147, 51, 234, 0.05)',
+              backdropFilter: 'blur(10px)',
               borderRadius: '16px',
               fontFamily: lora.style.fontFamily,
               '& .MuiOutlinedInput-root': {
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'transparent',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'white',
+                minHeight: '56px',
+                '& fieldset': {
+                  borderColor: 'rgba(147, 51, 234, 0.3)',
                   borderRadius: '16px',
-                  borderWidth: '1px',
+                  borderWidth: '2px',
                 },
-                '&.MuiFormLabel-root': {
-                  color: 'transparent',
-                  fontFamily: lora.style.fontFamily,
+                '&:hover fieldset': {
+                  borderColor: 'rgba(147, 51, 234, 0.5)',
                 },
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'transparent',
+                '&.Mui-focused fieldset': {
+                  borderColor: '#9333ea',
+                  borderWidth: '2px',
+                  boxShadow: '0 0 20px rgba(147, 51, 234, 0.3)',
+                },
               },
               '& .MuiInputBase-input': {
                 color: 'white',
                 fontFamily: lora.style.fontFamily,
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white',
-                fontFamily: lora.style.fontFamily,
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white',
-                fontSize: '22px',
-                fontFamily: lora.style.fontFamily,
+                fontSize: '18px',
               },
             }}
             slotProps={{
@@ -130,7 +134,7 @@ export default function FriendsPage() {
                   <InputAdornment position="start">
                     <SearchIcon
                       sx={{
-                        color: 'white',
+                        color: 'rgba(255, 255, 255, 0.6)',
                       }}
                     />
                   </InputAdornment>
@@ -138,25 +142,32 @@ export default function FriendsPage() {
               },
             }}
           />
-          <IconButton
+          <MotionIconButton
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.9 }}
             onClick={() => {
               router.push('/users/search');
             }}
             sx={{
-              borderRadius: '16px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(147, 51, 234, 0.15)',
+              border: '1px solid rgba(147, 51, 234, 0.3)',
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '1rem',
               marginTop: '-5px',
+              transition: 'all 0.3s ease',
               '&:hover': {
-                backgroundColor: '#232323',
+                backgroundColor: 'rgba(147, 51, 234, 0.25)',
+                border: '1px solid rgba(147, 51, 234, 0.5)',
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.4)',
               },
             }}
           >
-            <PersonAddIcon sx={{ fontSize: '32px', color: 'white' }} />
-          </IconButton>
+            <PersonAddIcon sx={{ fontSize: '32px', color: '#a855f7' }} />
+          </MotionIconButton>
         </Box>
 
         {isLoading || !data ? (
@@ -196,7 +207,7 @@ export default function FriendsPage() {
           severity={ESeverity.ERROR}
           message="Error deleting friend."
         />
-      </Box>
+      </MotionBox>
     </>
   );
 }

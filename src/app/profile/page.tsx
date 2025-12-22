@@ -55,7 +55,11 @@ function ProfilePageContent() {
 
   // Hooks personalizados para el perfil
   const filters = useProfileFilters();
-  const { data: books, isLoading: loading, isDone } = useMergedBooksIncremental(user?.id as string, 50);
+  const {
+    data: books,
+    isLoading: loading,
+    isDone,
+  } = useMergedBooksIncremental(user?.id as string, 50);
   const hasMore = !isDone;
   const {
     biography,
@@ -112,6 +116,7 @@ function ProfilePageContent() {
         height: '100%',
         borderRadius: 0,
         boxShadow: 'none',
+        paddingTop: { xs: 2, md: 4 },
       }}
     >
       <Box

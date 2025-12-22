@@ -6,7 +6,7 @@ const BookDetailsSkeleton: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#161616',
+        backgroundColor: '#000000',
         padding: '2rem',
         display: 'flex',
         flexDirection: { xs: 'column', md: 'row' },

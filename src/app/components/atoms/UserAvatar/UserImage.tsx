@@ -21,8 +21,8 @@ export const UserImage = ({ user }: { user: User }) => {
       height={size}
       style={{
         borderRadius: '50%',
-        border: '3px solid #8C54FF',
-        backgroundColor: '#232323',
+        border: '3px solid #9333ea',
+        backgroundColor: 'rgba(147, 51, 234, 0.1)',
         marginLeft: isMd ? '16px' : '0',
         marginBottom: isMd ? '0' : '16px',
         alignSelf: isMd ? 'flex-start' : 'center',

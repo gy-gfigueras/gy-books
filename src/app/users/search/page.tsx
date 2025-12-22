@@ -10,7 +10,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import SearchIcon from '@mui/icons-material/Search';
+
+const MotionBox = motion(Box);
+const MotionIconButton = motion(IconButton);
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { birthStone, lora } from '@/utils/fonts/fonts';
@@ -68,13 +72,17 @@ function BooksContent() {
 
   return (
     <>
-      <Box
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
         sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '1rem',
+          pt: 4,
         }}
       >
         <CustomTitle
@@ -82,7 +90,10 @@ function BooksContent() {
           size="6rem"
           fontFamily={birthStone.style.fontFamily}
           sx={{
-            color: 'white',
+            background: 'linear-gradient(135deg, #ffffff 0%, #a855f7 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
           }}
         />
         <Box
@@ -104,39 +115,32 @@ function BooksContent() {
             variant="outlined"
             sx={{
               mb: '8px',
-              width: ['60%', '60%', '60%'],
-              backgroundColor: '#232323',
+              width: ['90%', '70%', '60%'],
+              maxWidth: '600px',
+              backgroundColor: 'rgba(147, 51, 234, 0.05)',
+              backdropFilter: 'blur(10px)',
               borderRadius: '16px',
               fontFamily: lora.style.fontFamily,
               '& .MuiOutlinedInput-root': {
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'transparent',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'white',
+                minHeight: '56px',
+                '& fieldset': {
+                  borderColor: 'rgba(147, 51, 234, 0.3)',
                   borderRadius: '16px',
-                  borderWidth: '1px',
+                  borderWidth: '2px',
                 },
-                '&.MuiFormLabel-root': {
-                  color: 'transparent',
-                  fontFamily: lora.style.fontFamily,
+                '&:hover fieldset': {
+                  borderColor: 'rgba(147, 51, 234, 0.5)',
                 },
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'transparent',
+                '&.Mui-focused fieldset': {
+                  borderColor: '#9333ea',
+                  borderWidth: '2px',
+                  boxShadow: '0 0 20px rgba(147, 51, 234, 0.3)',
+                },
               },
               '& .MuiInputBase-input': {
                 color: 'white',
                 fontFamily: lora.style.fontFamily,
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white',
-                fontFamily: lora.style.fontFamily,
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white',
-                fontSize: '22px',
-                fontFamily: lora.style.fontFamily,
+                fontSize: '18px',
               },
             }}
             slotProps={{
@@ -158,7 +162,7 @@ function BooksContent() {
                   <InputAdornment position="start">
                     <SearchIcon
                       sx={{
-                        color: 'white',
+                        color: 'rgba(255, 255, 255, 0.6)',
                       }}
                     />
                   </InputAdornment>
@@ -181,21 +185,38 @@ function BooksContent() {
             alignItems: 'center',
             alignContent: 'start',
             padding: '25px',
-            scrollbarColor: ' #8C54FF transparent',
+            scrollbarColor: '#9333ea transparent',
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'rgba(147, 51, 234, 0.1)',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+              borderRadius: '4px',
+            },
           }}
         >
           {users.map((user) => (
-            <Box
+            <MotionBox
               component="a"
               href={`/users/${user.id}`}
               key={user.username}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.02, y: -4 }}
+              transition={{ duration: 0.3 }}
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'left',
                 gap: '1.5rem',
-                backgroundColor: '#232323',
+                background:
+                  'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(147, 51, 234, 0.2)',
                 borderRadius: '16px',
                 padding: '1rem',
                 width: { xs: '90%', md: '25%' },
@@ -203,6 +224,11 @@ function BooksContent() {
                 minWidth: { xs: '200px', md: '400px' },
                 position: 'relative',
                 textDecoration: 'none',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                '&:hover': {
+                  border: '1px solid rgba(147, 51, 234, 0.4)',
+                  boxShadow: '0 8px 20px rgba(147, 51, 234, 0.2)',
+                },
               }}
             >
               <Image
@@ -230,7 +256,9 @@ function BooksContent() {
                 {user.username}
               </Typography>
               {!user.isFriend && (
-                <IconButton
+                <MotionIconButton
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={(event) => {
                     event.stopPropagation();
                     event.preventDefault();
@@ -239,22 +267,31 @@ function BooksContent() {
                   sx={{
                     width: '50px',
                     height: '50px',
-                    borderRadius: '16px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(147, 51, 234, 0.15)',
+                    color: '#a855f7',
+                    border: '1px solid rgba(147, 51, 234, 0.3)',
                     fontFamily: lora.style.fontFamily,
                     fontSize: '16px',
                     letterSpacing: '0.1rem',
                     position: 'absolute',
                     right: '1rem',
                     zIndex: 1000,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(147, 51, 234, 0.25)',
+                      border: '1px solid rgba(147, 51, 234, 0.5)',
+                      boxShadow: '0 4px 12px rgba(147, 51, 234, 0.4)',
+                    },
                   }}
                 >
                   <PersonAddIcon />
-                </IconButton>
+                </MotionIconButton>
               )}
-            </Box>
+            </MotionBox>
           ))}
         </Box>
-      </Box>
+      </MotionBox>
       <AnimatedAlert
         open={open}
         message={'Request sent'}

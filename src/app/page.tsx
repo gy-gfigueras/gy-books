@@ -3,6 +3,7 @@
 import React from 'react';
 import { Box, Container } from '@mui/material';
 import { Hero } from './components/organisms/Hero';
+import { FeaturesGrid } from './components/organisms/FeaturesGrid';
 import { CTASection } from './components/organisms/CTASection';
 import { Footer } from './components/organisms/Footer';
 
@@ -11,7 +12,7 @@ export default function Home() {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#161616',
+        backgroundColor: '#0A0A0A',
         position: 'relative',
         overflow: 'hidden',
         width: '100%',
@@ -25,7 +26,7 @@ export default function Home() {
           right: 0,
           bottom: 0,
           background:
-            'radial-gradient(circle at center, rgba(147, 51, 234, 0.1) 0%, transparent 70%)',
+            'radial-gradient(circle at center, rgba(147, 51, 234, 0.08) 0%, transparent 70%)',
           pointerEvents: 'none',
         },
       }}
@@ -40,11 +41,11 @@ export default function Home() {
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          gap: { xs: 4, sm: 6, md: 8 },
-          py: { xs: 4, sm: 6, md: 8 },
+          gap: { xs: 6, sm: 8, md: 10 },
         }}
       >
         <Hero />
+        <FeaturesGrid />
         <CTASection />
       </Container>
       <Box sx={{ mt: 'auto' }}>

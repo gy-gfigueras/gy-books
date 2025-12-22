@@ -79,13 +79,15 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
           <Grow {...TransitionProps}>
             <Paper
               sx={{
-                backgroundColor: '#232323',
+                background:
+                  'linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(26, 26, 26, 0.98) 100%)',
+                backdropFilter: 'blur(20px)',
                 color: 'white',
                 borderRadius: '16px',
                 marginTop: '8px',
                 width: '233px',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)',
-                border: '1px solid rgba(147, 51, 234, 0.1)',
+                boxShadow: '0px 8px 32px rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(147, 51, 234, 0.3)',
                 overflow: 'hidden',
               }}
             >

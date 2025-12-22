@@ -33,16 +33,19 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
             sx={{
               mb: '8px',
               width: '100%',
-              backgroundColor: '#232323',
+              background:
+                'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+              backdropFilter: 'blur(10px)',
               borderRadius: '12px',
-              border: '2px solid #FFFFFF30',
+              border: '2px solid rgba(147, 51, 234, 0.3)',
               fontFamily: lora.style.fontFamily,
               '& .MuiOutlinedInput-root': {
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'transparent',
+                  borderColor: 'rgba(147, 51, 234, 0.5)',
                 },
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                   borderRadius: '12px',
+                  borderColor: '#9333ea',
                 },
                 '&.MuiFormLabel-root': {
                   color: 'transparent',
@@ -115,9 +118,11 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
         <Paper
           elevation={0}
           sx={{
-            border: '2px solid #FFFFFF30',
+            border: '2px solid rgba(147, 51, 234, 0.4)',
             borderRadius: '12px',
-            background: 'rgba(35, 35, 35, 0.85)',
+            background:
+              'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            backdropFilter: 'blur(10px)',
             p: 1.5,
             mb: 1,
           }}

@@ -6,12 +6,15 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import AuthorsBarChart from '../molecules/AuthorsBarChart';
 import { Box, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import DonutChart from '../molecules/DonutChart';
 import PageCountKPI from '../molecules/PageCountKPI';
 import RatingStats from '../molecules/RatingStats';
 import { lora } from '@/utils/fonts/fonts';
 import StatsSkeleton from '../molecules/StatsSkeleton';
 import type HardcoverBook from '@/domain/HardcoverBook';
+
+const MotionBox = motion(Box);
 
 interface StatsComponentProps {
   id: UUID;
@@ -82,18 +85,26 @@ export default function StatsComponent({
         alignItems: 'center',
       }}
     >
-      <Box
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
         sx={{
           width: '500px',
           height: '400px',
-          backgroundColor: '#121212',
-          borderRadius: '10px',
+          background:
+            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(147, 51, 234, 0.3)',
+          borderRadius: '20px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           padding: 2,
           flexDirection: 'column',
           gap: 1,
+          boxShadow:
+            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
         }}
       >
         <Typography
@@ -103,19 +114,27 @@ export default function StatsComponent({
           Authors read
         </Typography>
         <AuthorsBarChart authors={data?.authors} />
-      </Box>
-      <Box
+      </MotionBox>
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
         sx={{
           width: '500px',
           height: '400px',
-          backgroundColor: '#121212',
-          borderRadius: '10px',
+          background:
+            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(147, 51, 234, 0.3)',
+          borderRadius: '20px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           padding: 2,
           flexDirection: 'column',
           gap: 1,
+          boxShadow:
+            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
         }}
       >
         <Typography
@@ -125,19 +144,27 @@ export default function StatsComponent({
           Book status
         </Typography>
         <DonutChart bookStatus={data?.bookStatus} />
-      </Box>
-      <Box
+      </MotionBox>
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
         sx={{
           width: '500px',
           height: '400px',
-          backgroundColor: '#121212',
-          borderRadius: '10px',
+          background:
+            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(147, 51, 234, 0.3)',
+          borderRadius: '20px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           padding: 2,
           flexDirection: 'column',
           gap: 1,
+          boxShadow:
+            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
         }}
       >
         <Typography
@@ -152,19 +179,27 @@ export default function StatsComponent({
           bookStatus={data?.bookStatus || {}}
           fontFamily={lora.style.fontFamily}
         />
-      </Box>
-      <Box
+      </MotionBox>
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4, ease: [0.4, 0, 0.2, 1] }}
         sx={{
           width: '500px',
           height: '400px',
-          backgroundColor: '#121212',
-          borderRadius: '10px',
+          background:
+            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(147, 51, 234, 0.3)',
+          borderRadius: '20px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           padding: 2,
           flexDirection: 'column',
           gap: 1,
+          boxShadow:
+            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
         }}
       >
         <Typography
@@ -183,7 +218,7 @@ export default function StatsComponent({
           }
           fontFamily={lora.style.fontFamily}
         />
-      </Box>
+      </MotionBox>
     </Box>
   );
 }

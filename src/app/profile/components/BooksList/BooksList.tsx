@@ -34,16 +34,20 @@ export const BooksList: React.FC<BooksListProps> = ({ books, hasMore }) => (
       justifyContent: { xs: 'flex-start', md: 'center' },
       py: { md: 1 },
       background: 'transparent',
-      scrollbarColor: '#8C54FF #232323',
-      '&::-webkit-scrollbar': { width: 10 },
-      '&::-webkit-scrollbar-thumb': { background: '#FFFFFF', borderRadius: 6 },
+      scrollbarColor: '#9333ea transparent',
+      '&::-webkit-scrollbar': { width: 8 },
+      '&::-webkit-scrollbar-track': { background: 'rgba(147, 51, 234, 0.1)' },
+      '&::-webkit-scrollbar-thumb': {
+        background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+        borderRadius: 4,
+      },
     }}
   >
     {books.map((book) => (
       <Box
         key={book.id}
         sx={{
-          minWidth: { xs: 'unset', md: 140 },
+          minWidth: { xs: 'unset', md: 200 },
           maxWidth: { xs: 'unset', md: 220 },
           width: { xs: '100%', sm: '100%', md: 'auto' },
           boxSizing: 'border-box',

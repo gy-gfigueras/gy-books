@@ -137,17 +137,23 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: '#232323',
+                    background:
+                      'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+                    backdropFilter: 'blur(20px)',
                     borderRadius: '12px',
-                    border: '1px solid #FFFFFF20',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+                    border: '1px solid rgba(147, 51, 234, 0.3)',
+                    boxShadow: '0 8px 32px rgba(147, 51, 234, 0.3)',
                     maxHeight: '300px',
                     overflowY: 'auto',
-                    scrollbarColor: '#8C54FF #232323',
-                    '&::-webkit-scrollbar': { width: 10 },
+                    scrollbarColor: '#9333ea transparent',
+                    '&::-webkit-scrollbar': { width: 8 },
+                    '&::-webkit-scrollbar-track': {
+                      background: 'rgba(147, 51, 234, 0.1)',
+                    },
                     '&::-webkit-scrollbar-thumb': {
-                      background: '#FFFFFF',
-                      borderRadius: 6,
+                      background:
+                        'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                      borderRadius: 4,
                     },
                     '.MuiMenuItem-root': {
                       color: '#FFFFFF',
@@ -286,17 +292,23 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      backgroundColor: '#232323',
+                      background:
+                        'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+                      backdropFilter: 'blur(20px)',
                       borderRadius: '12px',
-                      border: '1px solid #FFFFFF20',
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+                      border: '1px solid rgba(147, 51, 234, 0.3)',
+                      boxShadow: '0 8px 32px rgba(147, 51, 234, 0.3)',
                       maxHeight: '200px',
                       overflowY: 'auto',
-                      scrollbarColor: '#8C54FF #232323',
-                      '&::-webkit-scrollbar': { width: 10 },
+                      scrollbarColor: '#9333ea transparent',
+                      '&::-webkit-scrollbar': { width: 8 },
+                      '&::-webkit-scrollbar-track': {
+                        background: 'rgba(147, 51, 234, 0.1)',
+                      },
                       '&::-webkit-scrollbar-thumb': {
-                        background: '#FFFFFF',
-                        borderRadius: 6,
+                        background:
+                          'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                        borderRadius: 4,
                       },
                       '.MuiMenuItem-root': {
                         color: '#FFFFFF',
