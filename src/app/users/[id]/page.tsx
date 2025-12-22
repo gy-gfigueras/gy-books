@@ -1,41 +1,32 @@
 'use client';
 
 import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton/ProfileSkeleton';
-import { BooksFilter } from '@/app/profile/components/BooksFilter/BooksFilter';
-import { BooksList } from '@/app/profile/components/BooksList/BooksList';
-import { BooksListSkeleton } from '@/app/profile/components/BooksList/BooksListSkeleton';
 import { ProfileHeader } from '@/app/profile/components/ProfileHeader/ProfileHeader';
-import { ProfileHeaderSkeleton } from '@/app/profile/components/ProfileHeader/ProfileHeaderSkeleton';
 import useMergedBooksIncremental from '@/hooks/books/useMergedBooksIncremental';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
-import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { UUID } from 'crypto';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { Suspense, useCallback, useEffect, useState } from 'react';
-const ActivityTab = React.lazy(
-  () => import('@/app/components/molecules/activityTab')
-);
-const HallOfFame = React.lazy(
-  () => import('@/app/components/molecules/HallOfFame')
-);
-const Stats = React.lazy(() => import('@/app/components/organisms/Stats'));
+import { useParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { useProfileFilters } from './hooks/useProfileFilters';
+import { useProfileTabs } from './hooks/useProfileTabs';
+import { useFilteredBooks } from './hooks/useFilteredBooks';
+import { ProfileTabsNavigation } from './components/ProfileTabsNavigation/ProfileTabsNavigation';
+import { BooksTab } from './components/BooksTab/BooksTab';
+import { ProfileTabContent } from './components/ProfileTabContent/ProfileTabContent';
+import { UserProfileSkeleton } from './components/UserProfileSkeleton/UserProfileSkeleton';
 
 function ProfilePageContent() {
   const params = useParams();
-  const { data: user, isLoading } = useAccountsUser(params.id as string);
   const userId = params.id as string;
-  const [tab, setTab] = React.useState(0);
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const { data: user, isLoading } = useAccountsUser(userId);
+
+  // Custom hooks
+  const filters = useProfileFilters(userId);
+  const { activeTab, handleTabChange } = useProfileTabs();
+
+  // Books data
   const {
     data: books = [],
     isLoading: loading,
@@ -43,30 +34,17 @@ function ProfilePageContent() {
   } = useMergedBooksIncremental(params.id as UUID, 50);
   const hasMore = !isDone;
 
-  // Obtener los filtros del URL al cargar la página
-  const urlStatus = searchParams.get('status');
-  const urlAuthor = searchParams.get('author');
-  const urlSeries = searchParams.get('series');
-  const urlRating = searchParams.get('rating');
-  const urlSearch = searchParams.get('search') || '';
-  const urlOrderBy = searchParams.get('orderBy') || 'rating';
-  const urlOrderDirection = searchParams.get('orderDirection') || 'desc';
-
-  const [statusFilter, setStatusFilter] = React.useState<EBookStatus | null>(
-    urlStatus && Object.values(EBookStatus).includes(urlStatus as EBookStatus)
-      ? (urlStatus as EBookStatus)
-      : null
-  );
-  const [authorFilter, setAuthorFilter] = useState(urlAuthor || '');
-  const [seriesFilter, setSeriesFilter] = useState(urlSeries || '');
-  const [ratingFilter, setRatingFilter] = useState(
-    urlRating ? Number(urlRating) : 0
-  );
-  const [search, setSearch] = useState(urlSearch);
-  const [orderBy, setOrderBy] = useState<string>(urlOrderBy);
-  const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>(
-    urlOrderDirection as 'asc' | 'desc'
-  );
+  // Filtered books and options
+  const { authorOptions, seriesOptions, filteredBooks } = useFilteredBooks({
+    books,
+    statusFilter: filters.statusFilter,
+    authorFilter: filters.authorFilter,
+    seriesFilter: filters.seriesFilter,
+    ratingFilter: filters.ratingFilter,
+    search: filters.search,
+    orderBy: filters.orderBy,
+    orderDirection: filters.orderDirection,
+  });
 
   const statusOptions = [
     { label: 'Reading', value: EBookStatus.READING },
@@ -74,354 +52,12 @@ function ProfilePageContent() {
     { label: 'Want to read', value: EBookStatus.WANT_TO_READ },
   ];
 
-  // Actualizar todos los filtros en la URL
-  const updateUrl = useCallback(
-    (filters: {
-      status?: EBookStatus | null;
-      author?: string;
-      series?: string;
-      rating?: number;
-      search?: string;
-      orderBy?: string;
-      orderDirection?: 'asc' | 'desc';
-    }) => {
-      const paramsUrl = new URLSearchParams(searchParams.toString());
-      if (filters.status) {
-        paramsUrl.set('status', filters.status);
-      } else {
-        paramsUrl.delete('status');
-      }
-      if (filters.author) {
-        paramsUrl.set('author', filters.author);
-      } else {
-        paramsUrl.delete('author');
-      }
-      if (filters.series) {
-        paramsUrl.set('series', filters.series);
-      } else {
-        paramsUrl.delete('series');
-      }
-      if (filters.rating && filters.rating > 0) {
-        paramsUrl.set('rating', String(filters.rating));
-      } else {
-        paramsUrl.delete('rating');
-      }
-      if (filters.search) {
-        paramsUrl.set('search', filters.search);
-      } else {
-        paramsUrl.delete('search');
-      }
-      if (filters.orderBy) {
-        paramsUrl.set('orderBy', filters.orderBy);
-      } else {
-        paramsUrl.delete('orderBy');
-      }
-      if (filters.orderDirection) {
-        paramsUrl.set('orderDirection', filters.orderDirection);
-      } else {
-        paramsUrl.delete('orderDirection');
-      }
-      router.replace(`/users/${userId}?${paramsUrl.toString()}`, {
-        scroll: false,
-      });
-    },
-    [searchParams, router, userId]
-  );
-  // Handlers para ordenamiento
-  const handleOrderByChange = useCallback(
-    (newOrderBy: string) => {
-      setOrderBy(newOrderBy);
-      updateUrl({
-        status: statusFilter,
-        author: authorFilter,
-        series: seriesFilter,
-        rating: ratingFilter,
-        search,
-        orderBy: newOrderBy,
-        orderDirection,
-      });
-    },
-    [
-      statusFilter,
-      authorFilter,
-      seriesFilter,
-      ratingFilter,
-      search,
-      orderDirection,
-      updateUrl,
-    ]
-  );
-  const handleOrderDirectionChange = useCallback(
-    (newDirection: 'asc' | 'desc') => {
-      setOrderDirection(newDirection);
-      updateUrl({
-        status: statusFilter,
-        author: authorFilter,
-        series: seriesFilter,
-        rating: ratingFilter,
-        search,
-        orderBy,
-        orderDirection: newDirection,
-      });
-    },
-    [
-      statusFilter,
-      authorFilter,
-      seriesFilter,
-      ratingFilter,
-      search,
-      orderBy,
-      updateUrl,
-    ]
-  );
-  // Handler para el buscador
-  const handleSearchChange = useCallback(
-    (newSearch: string) => {
-      setSearch(newSearch);
-      updateUrl({
-        status: statusFilter,
-        author: authorFilter,
-        series: seriesFilter,
-        rating: ratingFilter,
-        search: newSearch,
-      });
-    },
-    [statusFilter, authorFilter, seriesFilter, ratingFilter, updateUrl]
-  );
-
-  // Handlers para cada filtro
-  const handleStatusFilterChange = useCallback(
-    (newStatus: EBookStatus | null) => {
-      setStatusFilter(newStatus);
-      updateUrl({
-        status: newStatus,
-        author: authorFilter,
-        series: seriesFilter,
-        rating: ratingFilter,
-      });
-    },
-    [authorFilter, seriesFilter, ratingFilter, updateUrl]
-  );
-  const handleAuthorFilterChange = useCallback(
-    (newAuthor: string) => {
-      setAuthorFilter(newAuthor);
-      updateUrl({
-        status: statusFilter,
-        author: newAuthor,
-        series: seriesFilter,
-        rating: ratingFilter,
-      });
-    },
-    [statusFilter, seriesFilter, ratingFilter, updateUrl]
-  );
-  const handleSeriesFilterChange = useCallback(
-    (newSeries: string) => {
-      setSeriesFilter(newSeries);
-      updateUrl({
-        status: statusFilter,
-        author: authorFilter,
-        series: newSeries,
-        rating: ratingFilter,
-      });
-    },
-    [statusFilter, authorFilter, ratingFilter, updateUrl]
-  );
-  const handleRatingFilterChange = useCallback(
-    (newRating: number) => {
-      setRatingFilter(newRating);
-      updateUrl({
-        status: statusFilter,
-        author: authorFilter,
-        series: seriesFilter,
-        rating: newRating,
-      });
-    },
-    [statusFilter, authorFilter, seriesFilter, updateUrl]
-  );
-
-  // Sincronizar el estado con los search params cuando cambien (solo para navegación del navegador)
-  useEffect(() => {
-    const currentUrlStatus = searchParams.get('status');
-    const newStatus =
-      currentUrlStatus &&
-      Object.values(EBookStatus).includes(currentUrlStatus as EBookStatus)
-        ? (currentUrlStatus as EBookStatus)
-        : null;
-    if (newStatus !== statusFilter) {
-      setStatusFilter(newStatus);
-    }
-    const currentUrlAuthor = searchParams.get('author') || '';
-    if (currentUrlAuthor !== authorFilter) {
-      setAuthorFilter(currentUrlAuthor);
-    }
-    const currentUrlSeries = searchParams.get('series') || '';
-    if (currentUrlSeries !== seriesFilter) {
-      setSeriesFilter(currentUrlSeries);
-    }
-    const currentUrlRating = searchParams.get('rating');
-    const newRating = currentUrlRating ? Number(currentUrlRating) : 0;
-    if (newRating !== ratingFilter) {
-      setRatingFilter(newRating);
-    }
-    const currentUrlSearch = searchParams.get('search') || '';
-    if (currentUrlSearch !== search) {
-      setSearch(currentUrlSearch);
-    }
-  }, [
-    searchParams,
-    statusFilter,
-    authorFilter,
-    seriesFilter,
-    ratingFilter,
-    search,
-  ]);
-
-  // The incremental hook handles loading pages and appending them.
-  // booksError is used below if needed.
-
-  // Opciones únicas de autor y saga/serie
-  const authorOptions = React.useMemo(() => {
-    const set = new Set<string>();
-    books.forEach((b) => {
-      if (b.author && b.author.name && b.author.name.trim() !== '')
-        set.add(b.author.name);
-    });
-    return Array.from(set).sort();
-  }, [books]);
-  const seriesOptions = React.useMemo(() => {
-    const set = new Set<string>();
-    books.forEach((b) => {
-      if (
-        b.series &&
-        b.series.length > 0 &&
-        b.series[0]?.name &&
-        b.series[0].name.trim() !== ''
-      )
-        set.add(b.series[0].name);
-    });
-    return Array.from(set).sort();
-  }, [books]);
-
-  // Filtrar y ordenar libros
-  const filteredBooks = React.useMemo(() => {
-    let result = books.filter((book) => {
-      const statusOk = !statusFilter || book.status === statusFilter;
-      const authorOk =
-        !authorFilter || (book.author && book.author.name === authorFilter);
-      const seriesOk =
-        !seriesFilter ||
-        (book.series &&
-          book.series.length > 0 &&
-          book.series[0]?.name === seriesFilter);
-      const ratingOk =
-        !ratingFilter ||
-        (typeof book.userData?.rating === 'number' &&
-          book.userData.rating >= ratingFilter);
-      const searchOk =
-        !search ||
-        (book.title &&
-          book.title.toLowerCase().includes(search.toLowerCase())) ||
-        (book.author &&
-          book.author.name &&
-          book.author.name.toLowerCase().includes(search.toLowerCase())) ||
-        (book.series &&
-          book.series.length > 0 &&
-          book.series[0]?.name?.toLowerCase().includes(search.toLowerCase()));
-      return statusOk && authorOk && seriesOk && ratingOk && searchOk;
-    });
-
-    // Solo ordenar si hay orderBy
-    if (orderBy) {
-      result = result.sort((a, b) => {
-        let aValue: string | number = '';
-        let bValue: string | number = '';
-        switch (orderBy) {
-          case 'author':
-            aValue = a.author?.name || '';
-            bValue = b.author?.name || '';
-            break;
-          case 'series':
-            aValue = a.series?.[0]?.name || '';
-            bValue = b.series?.[0]?.name || '';
-            break;
-          case 'rating':
-            aValue =
-              typeof a.userData?.rating === 'number' ? a.userData.rating : 0;
-            bValue =
-              typeof b.userData?.rating === 'number' ? b.userData.rating : 0;
-            break;
-          case 'title':
-            aValue = a.title || '';
-            bValue = b.title || '';
-            break;
-        }
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
-          if (orderDirection === 'asc') {
-            return aValue.localeCompare(bValue);
-          } else {
-            return bValue.localeCompare(aValue);
-          }
-        } else {
-          if (orderDirection === 'asc') {
-            return (aValue as number) - (bValue as number);
-          } else {
-            return (bValue as number) - (aValue as number);
-          }
-        }
-      });
-    }
-    return result;
-  }, [
-    books,
-    statusFilter,
-    authorFilter,
-    seriesFilter,
-    ratingFilter,
-    search,
-    orderBy,
-    orderDirection,
-  ]);
-
+  // Loading state
   if (isLoading) {
-    return (
-      <Container
-        maxWidth="xl"
-        sx={{
-          mt: { xs: 0, md: 6 },
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          minHeight: '70vh',
-          borderRadius: 0,
-          boxShadow: 'none',
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: '100%', md: '100%' },
-            maxWidth: 1200,
-            mx: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-          }}
-        >
-          <ProfileHeaderSkeleton canEdit={false} />
-          <Box
-            sx={{
-              mt: 6,
-              display: 'flex',
-              flexDirection: { xs: 'column', md: 'row' },
-              gap: 4,
-            }}
-          >
-            <BooksListSkeleton />
-          </Box>
-        </Box>
-      </Container>
-    );
+    return <UserProfileSkeleton />;
   }
 
+  // No user found
   if (!user) {
     return (
       <Container maxWidth="xl" sx={{ mt: 6 }}>
@@ -431,6 +67,31 @@ function ProfilePageContent() {
       </Container>
     );
   }
+
+  // Books tab content
+  const booksTabContent = (
+    <BooksTab
+      filteredBooks={filteredBooks}
+      hasMore={hasMore}
+      statusOptions={statusOptions}
+      statusFilter={filters.statusFilter}
+      authorOptions={authorOptions}
+      seriesOptions={seriesOptions}
+      authorFilter={filters.authorFilter}
+      seriesFilter={filters.seriesFilter}
+      ratingFilter={filters.ratingFilter}
+      search={filters.search}
+      orderBy={filters.orderBy}
+      orderDirection={filters.orderDirection}
+      onStatusChange={filters.handleStatusFilterChange}
+      onAuthorChange={filters.handleAuthorFilterChange}
+      onSeriesChange={filters.handleSeriesFilterChange}
+      onRatingChange={filters.handleRatingFilterChange}
+      onSearchChange={filters.handleSearchChange}
+      onOrderByChange={filters.handleOrderByChange}
+      onOrderDirectionChange={filters.handleOrderDirectionChange}
+    />
+  );
 
   return (
     <Container
@@ -455,6 +116,7 @@ function ProfilePageContent() {
           alignItems: 'stretch',
         }}
       >
+        {/* Profile Header */}
         <ProfileHeader
           user={user}
           friendsCount={0}
@@ -468,145 +130,21 @@ function ProfilePageContent() {
           onBiographyCancel={() => {}}
           canEdit={false}
         />
+
+        {/* Tabs Navigation and Content */}
         <Box sx={{ mt: 6 }}>
-          <Tabs
-            value={tab}
-            onChange={(_, v) => setTab(v)}
-            textColor="primary"
-            indicatorColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            allowScrollButtonsMobile
-            sx={{
-              borderBottom: '1px solid #FFFFFF30',
-              background: 'transparent',
-              '.MuiTab-root': {
-                color: '#fff',
-                fontWeight: 'bold',
-                fontFamily: lora.style.fontFamily,
-                fontSize: 20,
-                textTransform: 'none',
-                minWidth: 120,
-              },
-              '.Mui-selected': { color: '#FFFFFF' },
-              '& .MuiTabs-scrollButtons': {
-                color: '#fff',
-              },
-            }}
-          >
-            <Tab
-              sx={{
-                fontSize: { xs: 15, md: 20 },
-                letterSpacing: '.05rem',
-                fontFamily: lora.style.fontFamily,
-              }}
-              label="Books"
-            />
-            <Tab
-              sx={{
-                fontSize: { xs: 15, md: 20 },
-                letterSpacing: '.05rem',
-                fontFamily: lora.style.fontFamily,
-              }}
-              label="Hall of Fame"
-            />
-            <Tab
-              sx={{
-                fontSize: { xs: 15, md: 20 },
-                letterSpacing: '.05rem',
-                fontFamily: lora.style.fontFamily,
-              }}
-              label="Stats"
-            />
-            <Tab
-              sx={{
-                fontSize: { xs: 15, md: 20 },
-                letterSpacing: '.05rem',
-                fontFamily: lora.style.fontFamily,
-              }}
-              label="Activity"
-            />
-          </Tabs>
-          {tab === 0 && (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-                mt: 4,
-                width: '100%',
-              }}
-            >
-              <BooksFilter
-                statusOptions={statusOptions}
-                statusFilter={statusFilter}
-                authorOptions={authorOptions}
-                seriesOptions={seriesOptions}
-                authorFilter={authorFilter}
-                seriesFilter={seriesFilter}
-                ratingFilter={ratingFilter}
-                search={search}
-                onStatusChange={handleStatusFilterChange}
-                onAuthorChange={handleAuthorFilterChange}
-                onSeriesChange={handleSeriesFilterChange}
-                onRatingChange={handleRatingFilterChange}
-                onSearchChange={handleSearchChange}
-                orderBy={orderBy}
-                orderDirection={orderDirection}
-                onOrderByChange={handleOrderByChange}
-                onOrderDirectionChange={handleOrderDirectionChange}
-              />
-              <BooksList books={filteredBooks} hasMore={hasMore} />
-            </Box>
-          )}
-          {tab === 1 && (
-            <Box
-              sx={{
-                mt: 4,
-                color: '#fff',
-                fontFamily: lora.style.fontFamily,
-                textAlign: 'center',
-              }}
-            >
-              <Suspense fallback={<CircularProgress />}>
-                {' '}
-                <HallOfFame userId={user.id} />
-              </Suspense>
-            </Box>
-          )}
-          {tab === 2 && user?.id && (
-            <Box
-              sx={{
-                mt: 4,
-                color: '#FFFFFF',
-                fontFamily: lora.style.fontFamily,
-                textAlign: 'center',
-              }}
-            >
-              <Suspense fallback={<CircularProgress />}>
-                {' '}
-                <Stats
-                  id={user?.id as UUID}
-                  books={books}
-                  booksLoading={loading}
-                />
-              </Suspense>
-            </Box>
-          )}
-          {tab === 3 && (
-            <Box
-              sx={{
-                mt: 4,
-                color: '#FFFFFF',
-                fontFamily: lora.style.fontFamily,
-                textAlign: 'center',
-              }}
-            >
-              <Suspense fallback={<CircularProgress />}>
-                <ActivityTab id={user?.id} />
-              </Suspense>
-            </Box>
-          )}
+          <ProfileTabsNavigation
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+          />
+
+          <ProfileTabContent
+            activeTab={activeTab}
+            userId={user.id as UUID}
+            books={books}
+            booksLoading={loading}
+            booksTabContent={booksTabContent}
+          />
         </Box>
       </Box>
     </Container>
