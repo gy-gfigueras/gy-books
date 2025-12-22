@@ -20,8 +20,8 @@ import CircleIcon from '@mui/icons-material/Circle';
 import StarIcon from '@mui/icons-material/Star';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { UUID } from 'crypto';
-import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const MotionBox = motion(Box);
 
@@ -48,36 +48,38 @@ const getActivityIconComponent = (type: ActivityType) => {
 };
 
 // Progress Badge Component
-const ProgressBadge: React.FC<{ progress: number }> = ({ progress }) => (
-  <Box
-    sx={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: 0.5,
-      px: 1,
-      py: 0.5,
-      borderRadius: '8px',
-      background:
-        'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
-      border: '1px solid rgba(147, 51, 234, 0.4)',
-      color: '#c084fc',
-    }}
-  >
-    <BarChartIcon sx={{ fontSize: 14 }} />
-    <Typography
+const ProgressBadge: React.FC<{ progress: number }> = React.memo(
+  ({ progress }) => (
+    <Box
       sx={{
-        fontSize: 12,
-        fontWeight: 600,
-        fontFamily: lora.style.fontFamily,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 0.5,
+        px: 1,
+        py: 0.5,
+        borderRadius: '8px',
+        background:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+        border: '1px solid rgba(147, 51, 234, 0.4)',
+        color: '#c084fc',
       }}
     >
-      {progress}%
-    </Typography>
-  </Box>
+      <BarChartIcon sx={{ fontSize: 14 }} />
+      <Typography
+        sx={{
+          fontSize: 12,
+          fontWeight: 600,
+          fontFamily: lora.style.fontFamily,
+        }}
+      >
+        {progress}%
+      </Typography>
+    </Box>
+  )
 );
 
 // Rating Badge Component
-const RatingBadge: React.FC<{ rating: number }> = ({ rating }) => (
+const RatingBadge: React.FC<{ rating: number }> = React.memo(({ rating }) => (
   <Box
     sx={{
       display: 'inline-flex',
@@ -101,221 +103,279 @@ const RatingBadge: React.FC<{ rating: number }> = ({ rating }) => (
       {rating.toFixed(1)}
     </Typography>
   </Box>
-);
+));
 
+// Book Cover Component with lazy loading
+const BookCover: React.FC<{
+  imageUrl: string | null;
+  bookId: string;
+  onLoad: () => void;
+}> = React.memo(({ imageUrl, onLoad }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  const handleLoad = () => {
+    setLoaded(true);
+    onLoad();
+  };
+
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        width: 70,
+        height: 100,
+        flexShrink: 0,
+        borderRadius: 1,
+        overflow: 'hidden',
+        backgroundColor: 'rgba(147, 51, 234, 0.1)',
+      }}
+    >
+      {imageUrl && (
+        <Box
+          component="img"
+          src={imageUrl}
+          alt="Book cover"
+          onLoad={handleLoad}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: loaded ? 1 : 0,
+            transition: 'opacity 0.3s ease-in-out',
+          }}
+        />
+      )}
+    </Box>
+  );
+});
+
+// Activity Item Component
+const ActivityItem: React.FC<{
+  activity: Activity;
+  index: number;
+  bookImage: string | null;
+  onImageLoad: () => void;
+}> = React.memo(({ activity, index, bookImage, onImageLoad }) => {
+  const activityType = getActivityType(activity.message);
+  const ActivityIconComponent = getActivityIconComponent(activityType);
+  const activityColor = getActivityColor(activityType);
+  const progress = extractProgress(activity.message);
+  const rating = extractRating(activity.message);
+  const displayMessage = cleanMessage(activity.message);
+
+  return (
+    <MotionBox
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.05,
+        ease: [0.4, 0, 0.2, 1],
+      }}
+      component="a"
+      href={`/books/${activity.bookId}`}
+      role="link"
+      aria-label={`Go to book ${activity.bookId}`}
+      sx={{
+        p: 1.5,
+        mb: 2,
+        background:
+          'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+        backdropFilter: 'blur(16px)',
+        borderRadius: '16px',
+        border: '1px solid rgba(147, 51, 234, 0.3)',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 1.5,
+        textDecoration: 'none',
+        transition: 'all 0.2s',
+        boxShadow:
+          '0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(147, 51, 234, 0.15)',
+        '&:hover': {
+          background:
+            'linear-gradient(145deg, rgba(147, 51, 234, 0.18) 0%, rgba(168, 85, 247, 0.12) 100%)',
+          border: '1px solid rgba(147, 51, 234, 0.5)',
+          transform: 'translateY(-2px)',
+          boxShadow:
+            '0 8px 16px rgba(147, 51, 234, 0.25), 0 4px 8px rgba(0, 0, 0, 0.3)',
+        },
+      }}
+      tabIndex={0}
+    >
+      <BookCover
+        imageUrl={bookImage}
+        bookId={activity.bookId || ''}
+        onLoad={onImageLoad}
+      />
+
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          alignItems: 'flex-start',
+          textAlign: 'left',
+          justifyContent: 'center',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            gap: 0.75,
+          }}
+        >
+          <ActivityIconComponent
+            sx={{
+              fontSize: 14,
+              color: activityColor,
+            }}
+          />
+          {activity.formattedDate && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: '#AAAAAA',
+                fontFamily: lora.style.fontFamily,
+                fontSize: 12,
+              }}
+            >
+              {activity.formattedDate}
+            </Typography>
+          )}
+        </Box>
+
+        <Typography
+          variant="body1"
+          sx={{
+            color: '#fff',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 14,
+            lineHeight: 1.5,
+          }}
+        >
+          {displayMessage}
+        </Typography>
+
+        {progress !== null && <ProgressBadge progress={progress} />}
+        {rating !== null && <RatingBadge rating={rating} />}
+      </Box>
+    </MotionBox>
+  );
+});
+
+// Skeleton Loading Component
+const SkeletonActivityItem: React.FC = React.memo(() => (
+  <Box
+    sx={{
+      p: 1.5,
+      mb: 2,
+      background:
+        'linear-gradient(145deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+      backdropFilter: 'blur(16px)',
+      borderRadius: '16px',
+      border: '1px solid rgba(147, 51, 234, 0.2)',
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 1.5,
+    }}
+  >
+    <Skeleton
+      variant="rectangular"
+      width={70}
+      height={100}
+      sx={{ borderRadius: 1, flexShrink: 0 }}
+    />
+    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+        <Skeleton variant="circular" width={14} height={14} />
+        <Skeleton variant="text" width={80} height={12} />
+      </Box>
+      <Skeleton variant="text" width="100%" height={14} />
+      <Skeleton variant="text" width="80%" height={14} />
+      <Skeleton
+        variant="rectangular"
+        width={60}
+        height={24}
+        sx={{ borderRadius: '6px' }}
+      />
+    </Box>
+  </Box>
+));
+
+// Empty State Component
+const EmptyState: React.FC = React.memo(() => (
+  <Box
+    sx={{
+      mt: 6,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: 2,
+    }}
+  >
+    <Box
+      sx={{
+        fontSize: 80,
+        background: 'linear-gradient(135deg, #8C54FF, #B388FF)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+      }}
+    >
+      🕐
+    </Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <Typography
+        variant="h5"
+        sx={{
+          color: '#fff',
+          fontFamily: lora.style.fontFamily,
+          fontWeight: 700,
+        }}
+      >
+        No Activity Yet
+      </Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          color: '#AAAAAA',
+          fontFamily: lora.style.fontFamily,
+        }}
+      >
+        Your reading activities will appear here
+      </Typography>
+    </Box>
+  </Box>
+));
+
+// Main Component
 const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
-  const { data: activities, isLoading, uniqueBookIds } = useActivities(id);
-  const { data: books } = useHardcoverBatch(uniqueBookIds);
+  const { data: activities, isLoading } = useActivities(id);
+  const { data: books } = useHardcoverBatch(
+    (activities?.map((a) => a.bookId).filter(Boolean) as string[]) || []
+  );
+  const [setLoadedCount] = useState(0);
 
   // Crear un mapa de bookId -> imagen para acceso rápido
   const booksMap = useMemo(() => {
     if (!books) return new Map<string, string>();
     return new Map(
-      books.map((book: HardcoverBook) => {
-        const imageUrl = book.cover?.url || '/placeholder-book.png';
-        return [String(book.id), imageUrl];
-      })
+      books.map((book: HardcoverBook) => [
+        String(book.id),
+        book.cover?.url || '/placeholder-book.png',
+      ])
     );
   }, [books]);
 
-  // Mover ActivityItem fuera y memoizarlo con useCallback
-  const ActivityItem = React.useCallback(
-    ({ activity, index }: { activity: Activity; index: number }) => {
-      const bookImage = activity.bookId ? booksMap.get(activity.bookId) : null;
-      const activityType = getActivityType(activity.message);
-      const ActivityIconComponent = getActivityIconComponent(activityType);
-      const activityColor = getActivityColor(activityType);
-      const progress = extractProgress(activity.message);
-      const rating = extractRating(activity.message);
-      const displayMessage = cleanMessage(activity.message);
+  const handleImageLoad = () => {
+    setLoadedCount((prev) => prev + 1);
+  };
 
-      return (
-        <MotionBox
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.4,
-            delay: index * 0.05,
-            ease: [0.4, 0, 0.2, 1],
-          }}
-          component="a"
-          href={`/books/${activity.bookId}`}
-          role="link"
-          aria-label={`Go to book ${activity.bookId}`}
-          sx={{
-            p: 1.5,
-            mb: 2,
-            background:
-              'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
-            backdropFilter: 'blur(16px)',
-            borderRadius: '16px',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 1.5,
-            textDecoration: 'none',
-            transition: 'all 0.2s',
-            boxShadow:
-              '0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(147, 51, 234, 0.15)',
-            '&:hover': {
-              background:
-                'linear-gradient(145deg, rgba(147, 51, 234, 0.18) 0%, rgba(168, 85, 247, 0.12) 100%)',
-              border: '1px solid rgba(147, 51, 234, 0.5)',
-              transform: 'translateY(-2px)',
-              boxShadow:
-                '0 8px 16px rgba(147, 51, 234, 0.25), 0 4px 8px rgba(0, 0, 0, 0.3)',
-            },
-          }}
-          tabIndex={0}
-        >
-          {/* Book Cover */}
-          <Box
-            sx={{
-              position: 'relative',
-              width: 70,
-              height: 100,
-              flexShrink: 0,
-              borderRadius: 1,
-              overflow: 'hidden',
-              backgroundColor: 'rgba(147, 51, 234, 0.1)',
-            }}
-          >
-            {!bookImage && (
-              <Skeleton
-                variant="rectangular"
-                width={70}
-                height={100}
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  borderRadius: 1,
-                }}
-              />
-            )}
-            {bookImage && (
-              <Box
-                component="img"
-                src={bookImage}
-                alt="Book cover"
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-              />
-            )}
-          </Box>
-
-          {/* Activity Content */}
-          <Box
-            sx={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1,
-              alignItems: 'flex-start',
-              textAlign: 'left',
-              justifyContent: 'center',
-            }}
-          >
-            {/* Activity Icon and Date */}
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
-                gap: 0.75,
-              }}
-            >
-              <ActivityIconComponent
-                sx={{
-                  fontSize: 14,
-                  color: activityColor,
-                }}
-              />
-              {activity.formattedDate && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: '#AAAAAA',
-                    fontFamily: lora.style.fontFamily,
-                    fontSize: 12,
-                  }}
-                >
-                  {activity.formattedDate}
-                </Typography>
-              )}
-            </Box>
-
-            {/* Activity Message */}
-            <Typography
-              variant="body1"
-              sx={{
-                color: '#fff',
-                fontFamily: lora.style.fontFamily,
-                fontSize: 14,
-                lineHeight: 1.5,
-              }}
-            >
-              {displayMessage}
-            </Typography>
-
-            {/* Progress or Rating Badge */}
-            {progress !== null && <ProgressBadge progress={progress} />}
-            {rating !== null && <RatingBadge rating={rating} />}
-          </Box>
-        </MotionBox>
-      );
-    },
-    [booksMap]
-  );
-
-  const SkeletonActivityItem = React.memo(() => (
-    <Box
-      sx={{
-        p: 1.5,
-        mb: 2,
-        background:
-          'linear-gradient(145deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
-        backdropFilter: 'blur(16px)',
-        borderRadius: '16px',
-        border: '1px solid rgba(147, 51, 234, 0.2)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 1.5,
-      }}
-    >
-      {/* Cover Skeleton */}
-      <Skeleton
-        variant="rectangular"
-        width={60}
-        height={90}
-        sx={{ borderRadius: 1, flexShrink: 0 }}
-      />
-
-      {/* Content Skeleton */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-        {/* Icon and Date Skeleton */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-          <Skeleton variant="circular" width={14} height={14} />
-          <Skeleton variant="text" width={80} height={12} />
-        </Box>
-
-        {/* Message Skeleton */}
-        <Skeleton variant="text" width="100%" height={14} />
-        <Skeleton variant="text" width="80%" height={14} />
-
-        {/* Badge Skeleton */}
-        <Skeleton
-          variant="rectangular"
-          width={60}
-          height={24}
-          sx={{ borderRadius: '6px' }}
-        />
-      </Box>
-    </Box>
-  ));
+  // Show skeleton only while initial loading
+  const showSkeleton = isLoading;
 
   return (
     <Box
@@ -326,81 +386,73 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
         textAlign: 'center',
       }}
     >
-      {isLoading ? (
-        <Box sx={{ maxWidth: '100%', mx: 'auto' }}>
-          {[...Array(5)].map((_, i) => (
-            <SkeletonActivityItem key={i} />
-          ))}
-        </Box>
-      ) : activities && activities.length > 0 ? (
-        <Box
-          sx={{
-            maxHeight: '70vh',
-            overflowY: 'auto',
-            px: 1,
-            scrollbarColor: '#9333ea transparent',
-            '&::-webkit-scrollbar': { width: 8 },
-            '&::-webkit-scrollbar-track': {
-              background: 'rgba(147, 51, 234, 0.1)',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-              borderRadius: 4,
-            },
-          }}
-        >
-          {activities.map((activity: Activity, index: number) => (
-            <ActivityItem
-              activity={activity}
-              index={index}
-              key={`${activity.bookId || 'activity'}-${index}-${activity.date ? new Date(activity.date).getTime() : Date.now()}`}
-            />
-          ))}
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            mt: 6,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2,
-          }}
-        >
-          <Box
-            sx={{
-              fontSize: 80,
-              background: 'linear-gradient(135deg, #8C54FF, #B388FF)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
+      <AnimatePresence mode="wait">
+        {showSkeleton ? (
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            🕐
-          </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Typography
-              variant="h5"
+            <Box sx={{ maxWidth: '100%', mx: 'auto' }}>
+              {[...Array(5)].map((_, i) => (
+                <SkeletonActivityItem key={i} />
+              ))}
+            </Box>
+          </motion.div>
+        ) : activities && activities.length > 0 ? (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <Box
               sx={{
-                color: '#fff',
-                fontFamily: lora.style.fontFamily,
-                fontWeight: 700,
+                maxHeight: '70vh',
+                overflowY: 'auto',
+                px: 1,
+                scrollbarColor: '#9333ea transparent',
+                '&::-webkit-scrollbar': { width: 8 },
+                '&::-webkit-scrollbar-track': {
+                  background: 'rgba(147, 51, 234, 0.1)',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background:
+                    'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                  borderRadius: 4,
+                },
               }}
             >
-              No Activity Yet
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: '#AAAAAA',
-                fontFamily: lora.style.fontFamily,
-              }}
-            >
-              Your reading activities will appear here
-            </Typography>
-          </Box>
-        </Box>
-      )}
+              {activities.map((activity: Activity, index: number) => (
+                <ActivityItem
+                  key={`${activity.bookId || 'activity'}-${index}-${activity.date ? new Date(activity.date).getTime() : Date.now()}`}
+                  activity={activity}
+                  index={index}
+                  bookImage={
+                    activity.bookId
+                      ? booksMap.get(activity.bookId) || null
+                      : null
+                  }
+                  onImageLoad={handleImageLoad}
+                />
+              ))}
+            </Box>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <EmptyState />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Box>
   );
 };

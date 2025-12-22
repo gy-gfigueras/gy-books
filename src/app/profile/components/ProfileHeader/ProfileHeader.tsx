@@ -109,7 +109,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       {canEdit && (
         <Box
           component={'a'}
-          href={'/users/friends'}
+          href={'/users/community?tab=1'}
           sx={{
             display: 'flex',
             flexDirection: 'row',

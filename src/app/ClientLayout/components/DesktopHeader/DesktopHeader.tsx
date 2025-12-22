@@ -110,7 +110,7 @@ export const DesktopHeader = ({
           whileHover={{ scale: 1.05, y: -2 }}
           whileTap={{ scale: 0.95 }}
           variant="outlined"
-          onClick={() => router.push('/users/search')}
+          onClick={() => router.push('/users/community')}
           sx={{
             borderColor: '#9333ea',
             backgroundColor: 'transparent',
@@ -129,7 +129,7 @@ export const DesktopHeader = ({
           }}
           startIcon={<PersonIcon />}
         >
-          Users
+          Community
         </CustomButton>
 
         {/* Friend Requests */}

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { auth0 } from './lib/auth0';
 
 // Rutas que requieren autenticación
-const protectedRoutes = ['/profile', '/users/friends'];
+const protectedRoutes = ['/profile', '/users/community'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

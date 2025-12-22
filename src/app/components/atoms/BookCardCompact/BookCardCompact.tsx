@@ -162,6 +162,8 @@ export const BookCardCompact = ({
       }}
       initial={{ opacity: 0, y: 30, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ scale: 1.05, y: -4 }}
+      whileTap={{ scale: 0.98 }}
       transition={{
         duration: 0.6,
         ease: [0.4, 0, 0.2, 1],

@@ -24,19 +24,14 @@ export const getMenuItems = (user: User | null): MenuItem[] => {
         route: '/books',
       },
       {
-        text: 'Users',
+        text: 'Community',
         icon: React.createElement(MenuIcons.Users),
-        route: '/users/search',
+        route: '/users/community',
       },
       {
         text: 'Profile',
         icon: React.createElement(MenuIcons.Profile),
         route: '/profile',
-      },
-      {
-        text: 'Friends',
-        icon: React.createElement(MenuIcons.Friends),
-        route: '/users/friends',
       },
     ];
   }

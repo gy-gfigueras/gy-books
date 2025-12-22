@@ -4,7 +4,6 @@ import { User } from '@/domain/user.model';
 import Image from 'next/image';
 import Link from 'next/link';
 import { lora } from '@/utils/fonts/fonts';
-import GroupIcon from '@mui/icons-material/Group';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 interface ProfileProps {
   user?: User;
@@ -140,45 +139,6 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                         sx={{ fontSize: '24px', color: '#FFF' }}
                       />
                     </Link>
-                  </Box>
-
-                  <Box
-                    id="friends-menu-item"
-                    sx={{
-                      fontWeight: 'bold',
-                      height: '40px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      paddingX: '20px',
-                      fontFamily: lora.style.fontFamily,
-                      borderRadius: '8px',
-                      transition: 'background-color 0.3s ease',
-                      '&:hover': {
-                        backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                      },
-                    }}
-                  >
-                    <a
-                      style={{
-                        textDecoration: 'none',
-                        color: '#FFF',
-                        fontWeight: 'bold',
-                        fontFamily: lora.style.fontFamily,
-                        fontSize: '18px',
-                        display: 'flex',
-                        width: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                      href={'/users/friends'}
-                      onClick={() => {
-                        handleClose(new Event('click'));
-                      }}
-                    >
-                      Friends
-                      <GroupIcon sx={{ fontSize: '24px', color: '#FFF' }} />
-                    </a>
                   </Box>
 
                   <Box

@@ -203,7 +203,7 @@ export const CTASection = () => {
           variants={fadeIn}
           transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <Link style={{ textDecoration: 'none' }} href="/users/search">
+          <Link style={{ textDecoration: 'none' }} href="/users/community">
             <Button
               variant="contained"
               size="large"

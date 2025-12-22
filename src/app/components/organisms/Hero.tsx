@@ -205,7 +205,7 @@ export const Hero = () => {
           <Button
             variant="outlined"
             size="large"
-            onClick={() => router.push('/users/search')}
+            onClick={() => router.push('/users/community')}
             startIcon={<GroupsIcon />}
             sx={{
               borderColor: '#9333ea',
