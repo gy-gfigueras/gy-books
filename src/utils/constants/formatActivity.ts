@@ -5,7 +5,8 @@ export default function formatActivity(
   username: string,
   book: HardcoverBook,
   progress?: number,
-  rating?: number
+  rating?: number,
+  review?: string
 ): string {
   const formatProgress =
     progress! <= 1 ? `${progress! * 100}%` : `${progress} pages`;
@@ -16,6 +17,7 @@ export default function formatActivity(
     [EActivity.BOOK_READ]: `[${book.id}] ${username} has finished reading "${book.title}" by ${book.author.name}.`,
     [EActivity.BOOK_RATED]: `[${book.id}] ${username} has given a rating of ${rating} stars to "${book.title}" by ${book.author.name}.`,
     [EActivity.BOOK_WANT_TO_READ]: `[${book.id}] ${username} has added "${book.title}" by ${book.author.name} to their want to read list.`,
+    [EActivity.BOOK_REVIEWED]: `[${book.id}] ${username} has reviewed "${book.title}" by ${book.author.name}: "${review || ''}".`,
   };
 
   return activityMap[activity] || 'Unknown activity';
@@ -27,4 +29,5 @@ export enum EActivity {
   BOOK_READ = 'book.read',
   BOOK_RATED = 'book.rated',
   BOOK_WANT_TO_READ = 'book.wantToRead',
+  BOOK_REVIEWED = 'book.reviewed',
 }
