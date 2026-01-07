@@ -45,8 +45,9 @@ interface BooksFilterProps {
   orderDirection: 'asc' | 'desc';
   onOrderByChange: (orderBy: string) => void;
   onOrderDirectionChange: (direction: 'asc' | 'desc') => void;
-  view: ViewType;
-  onViewChange: (view: ViewType) => void;
+  view?: ViewType;
+  onViewChange?: (view: ViewType) => void;
+  isOwnProfile?: boolean;
 }
 
 export const BooksFilter: React.FC<BooksFilterProps> = ({
@@ -69,6 +70,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
   onOrderDirectionChange,
   view,
   onViewChange,
+  isOwnProfile = true,
 }) => {
   // Opciones de ordenamiento
   const orderOptions = [
@@ -407,8 +409,14 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           )}
         </Box>
 
-        {/* BooksViewToggle aquí */}
-        <BooksViewToggle view={view} onViewChange={onViewChange} />
+        {/* BooksViewToggle aquí - solo si view y onViewChange están presentes */}
+        {onViewChange && view !== undefined && (
+          <BooksViewToggle
+            view={view}
+            onViewChange={onViewChange}
+            isOwnProfile={isOwnProfile}
+          />
+        )}
       </Box>
 
       {/* Animated Collapsible Content */}

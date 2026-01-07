@@ -14,18 +14,27 @@ export type ViewType = 'grid' | 'list' | 'timeline' | 'calendar';
 interface BooksViewToggleProps {
   view: ViewType;
   onViewChange: (view: ViewType) => void;
+  isOwnProfile?: boolean;
 }
 
 export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
   view,
   onViewChange,
+  isOwnProfile = true,
 }) => {
-  const views: { type: ViewType; icon: React.ReactElement; label: string }[] = [
+  const allViews: {
+    type: ViewType;
+    icon: React.ReactElement;
+    label: string;
+  }[] = [
     { type: 'grid', icon: <GridViewIcon />, label: 'Grid View' },
     { type: 'list', icon: <ViewListIcon />, label: 'List View' },
     { type: 'timeline', icon: <TimelineIcon />, label: 'Timeline View' },
     { type: 'calendar', icon: <CalendarMonthIcon />, label: 'Calendar View' },
   ];
+
+  // Solo mostrar grid y list en perfiles públicos
+  const views = isOwnProfile ? allViews : allViews.slice(0, 2);
 
   return (
     <Box

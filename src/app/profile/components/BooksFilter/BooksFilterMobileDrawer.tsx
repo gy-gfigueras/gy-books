@@ -41,8 +41,9 @@ interface BooksFilterMobileDrawerProps {
   orderDirection: 'asc' | 'desc';
   onOrderByChange: (orderBy: string) => void;
   onOrderDirectionChange: (direction: 'asc' | 'desc') => void;
-  view: ViewType;
-  onViewChange: (view: ViewType) => void;
+  view?: ViewType;
+  onViewChange?: (view: ViewType) => void;
+  isOwnProfile?: boolean;
 }
 
 export const BooksFilterMobileDrawer: React.FC<
@@ -69,6 +70,7 @@ export const BooksFilterMobileDrawer: React.FC<
   onOrderDirectionChange,
   view,
   onViewChange,
+  isOwnProfile = true,
 }) => {
   useEffect(() => {
     if (open) {
@@ -152,10 +154,16 @@ export const BooksFilterMobileDrawer: React.FC<
             Filters
           </Typography>
 
-          {/* View Toggle */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-            <BooksViewToggle view={view} onViewChange={onViewChange} />
-          </Box>
+          {/* BooksViewToggle - solo si view y onViewChange están presentes */}
+          {onViewChange && view !== undefined && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+              <BooksViewToggle
+                view={view}
+                onViewChange={onViewChange}
+                isOwnProfile={isOwnProfile}
+              />
+            </Box>
+          )}
           <TextField
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}

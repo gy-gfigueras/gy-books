@@ -1,7 +1,11 @@
 import { Box } from '@mui/material';
 import { BooksFilter } from '@/app/profile/components/BooksFilter/BooksFilter';
-import { BooksList } from '@/app/profile/components/BooksList/BooksList';
+import {
+  BooksList,
+  ViewType,
+} from '@/app/profile/components/BooksList/BooksList';
 import { EBookStatus, Book } from '@gycoding/nebula';
+import { useState } from 'react';
 
 interface BooksTabProps {
   filteredBooks: Book[];
@@ -50,6 +54,8 @@ export const BooksTab = ({
   onOrderByChange,
   onOrderDirectionChange,
 }: BooksTabProps) => {
+  const [view, setView] = useState<ViewType>('grid');
+
   return (
     <Box
       sx={{
@@ -78,8 +84,11 @@ export const BooksTab = ({
         orderDirection={orderDirection}
         onOrderByChange={onOrderByChange}
         onOrderDirectionChange={onOrderDirectionChange}
+        view={view}
+        onViewChange={setView}
+        isOwnProfile={false}
       />
-      <BooksList books={filteredBooks} hasMore={hasMore} />
+      <BooksList books={filteredBooks} hasMore={hasMore} view={view} />
     </Box>
   );
 };
