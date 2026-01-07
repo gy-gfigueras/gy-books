@@ -247,68 +247,38 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
 
   // Toolbar personalizado
   const CustomToolbar = useCallback((toolbar: ToolbarProps) => {
-    const prevMonth = subMonths(toolbar.date, 1);
-    const nextMonth = addMonths(toolbar.date, 1);
-
     return (
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          gap: 2,
-          mb: 3,
-          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          mb: { xs: 2, md: 3 },
+          px: { xs: 0, md: 1 },
         }}
       >
         {/* Botón anterior */}
-        <Tooltip title={format(prevMonth, 'MMMM yyyy')} arrow>
-          <IconButton
-            onClick={() => toolbar.onNavigate('PREV')}
-            sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
-              color: '#a855f7',
-              width: 40,
-              height: 40,
-              '&:hover': {
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(168, 85, 247, 0.25) 100%)',
-                transform: 'scale(1.1)',
-              },
-              transition: 'all 0.3s ease',
-            }}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-        </Tooltip>
-
-        {/* Mes y año actual */}
-        <Box
+        <IconButton
+          onClick={() => toolbar.onNavigate('PREV')}
           sx={{
-            minWidth: 200,
-            textAlign: 'center',
-            py: 1.5,
-            px: 3,
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
-            backdropFilter: 'blur(16px)',
-            border: '2px solid rgba(147, 51, 234, 0.3)',
-            borderRadius: '12px',
-            boxShadow: '0 4px 16px rgba(147, 51, 234, 0.2)',
+            color: 'rgba(255, 255, 255, 0.7)',
+            '&:hover': {
+              color: '#a855f7',
+              background: 'rgba(147, 51, 234, 0.1)',
+            },
           }}
         >
+          <ChevronLeftIcon />
+        </IconButton>
+
+        {/* Mes y año actual - más minimalista */}
+        <Box sx={{ textAlign: 'center' }}>
           <Typography
             sx={{
               color: '#fff',
               fontFamily: lora.style.fontFamily,
-              fontSize: 20,
-              fontWeight: 'bold',
-              background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              fontSize: { xs: 18, md: 20 },
+              fontWeight: 600,
               textTransform: 'capitalize',
             }}
           >
@@ -317,28 +287,18 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
         </Box>
 
         {/* Botón siguiente */}
-        <Tooltip title={format(nextMonth, 'MMMM yyyy')} arrow>
-          <IconButton
-            onClick={() => toolbar.onNavigate('NEXT')}
-            sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
+        <IconButton
+          onClick={() => toolbar.onNavigate('NEXT')}
+          sx={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            '&:hover': {
               color: '#a855f7',
-              width: 40,
-              height: 40,
-              '&:hover': {
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(168, 85, 247, 0.25) 100%)',
-                transform: 'scale(1.1)',
-              },
-              transition: 'all 0.3s ease',
-            }}
-          >
-            <ChevronRightIcon />
-          </IconButton>
-        </Tooltip>
+              background: 'rgba(147, 51, 234, 0.1)',
+            },
+          }}
+        >
+          <ChevronRightIcon />
+        </IconButton>
       </Box>
     );
   }, []);
@@ -407,134 +367,159 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
         px: 2,
       }}
     >
-      {/* Header con stats */}
+      {/* Header con stats - más compacto */}
       <MotionBox
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         sx={{
-          mb: 4,
+          mb: { xs: 2, md: 3 },
           textAlign: 'center',
         }}
       >
-        <Typography
-          sx={{
-            color: '#fff',
-            fontFamily: lora.style.fontFamily,
-            fontSize: { xs: 24, md: 32 },
-            fontWeight: 'bold',
-            mb: 1,
-            background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Reading Calendar
-        </Typography>
-        <Typography
-          sx={{
-            color: 'rgba(255, 255, 255, 0.7)',
-            fontFamily: lora.style.fontFamily,
-            fontSize: 14,
-            mb: 3,
-          }}
-        >
-          Track your reading journey through time
-        </Typography>
-
-        {/* Quick stats */}
+        {/* Quick stats - más minimalista */}
         <Box
           sx={{
             display: 'flex',
-            gap: 2,
+            gap: { xs: 1.5, md: 2 },
             justifyContent: 'center',
             flexWrap: 'wrap',
-            mb: 3,
+            mb: 2,
           }}
         >
-          <Chip
-            icon={<CheckCircleIcon />}
-            label={`${stats.completed} completed`}
-            size="small"
-            sx={{
-              background: 'rgba(16, 185, 129, 0.2)',
-              color: '#10b981',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              fontFamily: lora.style.fontFamily,
-              fontWeight: 600,
-              '& .MuiChip-icon': { color: '#10b981' },
-            }}
-          />
-          {stats.reading > 0 && (
-            <Chip
-              icon={<AutoStoriesIcon />}
-              label={`${stats.reading} reading`}
-              size="small"
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography
               sx={{
-                background: 'rgba(59, 130, 246, 0.2)',
-                color: '#3b82f6',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
+                color: '#fff',
                 fontFamily: lora.style.fontFamily,
-                fontWeight: 600,
-                '& .MuiChip-icon': { color: '#3b82f6' },
+                fontSize: { xs: 20, md: 24 },
+                fontWeight: 'bold',
+                lineHeight: 1,
               }}
-            />
+            >
+              {stats.completed}
+            </Typography>
+            <Typography
+              sx={{
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontFamily: lora.style.fontFamily,
+                fontSize: { xs: 10, md: 11 },
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                mt: 0.5,
+              }}
+            >
+              Finished
+            </Typography>
+          </Box>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography
+              sx={{
+                color: '#fff',
+                fontFamily: lora.style.fontFamily,
+                fontSize: { xs: 20, md: 24 },
+                fontWeight: 'bold',
+                lineHeight: 1,
+              }}
+            >
+              {stats.totalPages.toLocaleString()}
+            </Typography>
+            <Typography
+              sx={{
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontFamily: lora.style.fontFamily,
+                fontSize: { xs: 10, md: 11 },
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                mt: 0.5,
+              }}
+            >
+              Pages
+            </Typography>
+          </Box>
+          {stats.reading > 0 && (
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography
+                sx={{
+                  color: '#fff',
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: { xs: 20, md: 24 },
+                  fontWeight: 'bold',
+                  lineHeight: 1,
+                }}
+              >
+                {stats.reading}
+              </Typography>
+              <Typography
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: { xs: 10, md: 11 },
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  mt: 0.5,
+                }}
+              >
+                Reading
+              </Typography>
+            </Box>
           )}
-          <Chip
-            label={`${stats.totalPages.toLocaleString()} pages`}
-            size="small"
-            sx={{
-              background: 'rgba(147, 51, 234, 0.2)',
-              color: '#a855f7',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
-              fontFamily: lora.style.fontFamily,
-              fontWeight: 600,
-            }}
-          />
         </Box>
       </MotionBox>
 
       {/* Calendario */}
       <Paper
         sx={{
-          p: { xs: 1, md: 3 },
-          background:
-            'linear-gradient(145deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
-          borderRadius: '20px',
-          minHeight: 600,
+          p: { xs: 0.5, md: 2 },
+          background: {
+            xs: 'transparent',
+            md: 'linear-gradient(145deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+          },
+          backdropFilter: { xs: 'none', md: 'blur(16px)' },
+          border: { xs: 'none', md: '1px solid rgba(147, 51, 234, 0.3)' },
+          borderRadius: { xs: '12px', md: '20px' },
+          minHeight: { xs: 'auto', md: 600 },
           '& .rbc-calendar': {
             fontFamily: lora.style.fontFamily,
           },
           '& .rbc-header': {
-            padding: '12px',
-            fontWeight: 700,
-            fontSize: '14px',
-            color: '#a855f7',
-            borderBottom: '2px solid rgba(147, 51, 234, 0.3)',
-            background: 'rgba(147, 51, 234, 0.1)',
+            padding: { xs: '6px 2px', md: '10px' },
+            fontWeight: 600,
+            fontSize: { xs: '11px', md: '13px' },
+            color: 'rgba(255, 255, 255, 0.5)',
+            borderBottom: 'none',
+            background: 'transparent',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
           },
           '& .rbc-today': {
-            background: 'rgba(147, 51, 234, 0.15)',
+            background: 'rgba(147, 51, 234, 0.1)',
           },
           '& .rbc-off-range-bg': {
-            background: 'rgba(0, 0, 0, 0.2)',
-          },
-          '& .rbc-month-view': {
-            border: '1px solid rgba(147, 51, 234, 0.2)',
-            borderRadius: '12px',
-            overflow: 'hidden',
             background: 'rgba(0, 0, 0, 0.3)',
           },
+          '& .rbc-month-view': {
+            border: {
+              xs: '1px solid rgba(147, 51, 234, 0.15)',
+              md: '1px solid rgba(147, 51, 234, 0.2)',
+            },
+            borderRadius: { xs: '8px', md: '12px' },
+            overflow: 'hidden',
+            background: { xs: 'rgba(0, 0, 0, 0.3)', md: 'rgba(0, 0, 0, 0.3)' },
+          },
           '& .rbc-day-bg': {
-            borderColor: 'rgba(147, 51, 234, 0.15)',
+            borderColor: 'rgba(147, 51, 234, 0.2)',
+            background: 'rgba(0, 0, 0, 0.2)',
           },
           '& .rbc-date-cell': {
-            padding: '8px',
+            padding: { xs: '4px', md: '6px' },
             '& a': {
               color: 'rgba(255, 255, 255, 0.8)',
-              fontWeight: 600,
+              fontWeight: 500,
+              fontSize: { xs: '13px', md: '14px' },
             },
           },
           '& .rbc-event': {
@@ -575,7 +560,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             textTransform: 'capitalize',
           },
           '& .rbc-month-row': {
-            minHeight: '80px',
+            minHeight: { xs: '60px', md: '80px' },
           },
         }}
       >
@@ -584,7 +569,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: '100%', minHeight: 600 }}
+          style={{ height: '100%', minHeight: 500 }}
           views={['month']}
           view={view}
           onView={setView}
