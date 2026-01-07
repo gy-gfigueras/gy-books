@@ -3,149 +3,277 @@ import { Box, Skeleton } from '@mui/material';
 
 interface ProfileHeaderSkeletonProps {
   canEdit?: boolean;
+  isExpanded?: boolean;
 }
 
 export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
   canEdit = true,
-}) => (
-  <Box
-    sx={{
-      display: 'flex',
-      flexDirection: { xs: 'column', md: 'row' },
-      gap: { xs: 2, md: 6 },
-      minHeight: { xs: 0, md: 200 },
-      width: '100%',
-      px: { xs: 1, md: 0 },
-      py: { xs: 2, md: 0 },
-      alignItems: { xs: 'center', md: 'flex-start' },
-      boxSizing: 'border-box',
-    }}
-  >
+  isExpanded = false,
+}) => {
+  if (!isExpanded) {
+    // Versión colapsada - similar a ProfileHeader colapsado
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          py: 1.5,
+          px: 2,
+          background:
+            'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(147, 51, 234, 0.25)',
+          borderRadius: '16px',
+        }}
+      >
+        {/* Avatar pequeño 50px */}
+        <Skeleton
+          variant="circular"
+          sx={{
+            width: 50,
+            height: 50,
+            flexShrink: 0,
+            bgcolor: 'rgba(147, 51, 234, 0.15)',
+          }}
+        />
+
+        {/* Username + chips */}
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            flexWrap: 'wrap',
+          }}
+        >
+          {/* Username skeleton */}
+          <Skeleton
+            variant="text"
+            sx={{
+              width: 150,
+              height: 28,
+              bgcolor: 'rgba(147, 51, 234, 0.15)',
+            }}
+          />
+
+          {/* Friends chip skeleton */}
+          {canEdit && (
+            <Skeleton
+              variant="rounded"
+              width={120}
+              height={32}
+              sx={{
+                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                borderRadius: '16px',
+              }}
+            />
+          )}
+
+          {/* Stats skeletons */}
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Skeleton
+              variant="rounded"
+              width={80}
+              height={28}
+              sx={{
+                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                borderRadius: '12px',
+              }}
+            />
+            <Skeleton
+              variant="rounded"
+              width={80}
+              height={28}
+              sx={{
+                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                borderRadius: '12px',
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Icono expandir */}
+        <Skeleton
+          variant="circular"
+          sx={{
+            width: 24,
+            height: 24,
+            bgcolor: 'rgba(147, 51, 234, 0.15)',
+          }}
+        />
+      </Box>
+    );
+  }
+
+  // Versión expandida - diseño completo
+  return (
     <Box
       sx={{
-        width: { xs: 90, sm: 120, md: 160 },
-        height: { xs: 90, sm: 120, md: 160 },
-        alignSelf: { xs: 'center', md: 'flex-start' },
+        position: 'relative',
+        background:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(147, 51, 234, 0.25)',
+        borderRadius: '16px',
+        p: 3,
       }}
     >
+      {/* Botón colapsar */}
       <Skeleton
         variant="circular"
         sx={{
-          width: '100%',
-          height: '100%',
-          bgcolor: 'rgba(255, 255, 255, 0.1)',
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          width: 32,
+          height: 32,
+          bgcolor: 'rgba(147, 51, 234, 0.15)',
         }}
       />
-    </Box>
-    <Box
-      sx={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        gap: 2,
-        width: { xs: '100%', md: 'auto' },
-        alignItems: { xs: 'center', md: 'flex-start' },
-        textAlign: { xs: 'center', md: 'left' },
-      }}
-    >
+
       <Box
         sx={{
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
-          gap: 2,
-          alignItems: 'center',
-          justifyContent: 'center',
+          gap: { xs: 3, md: 4 },
+          alignItems: { xs: 'center', md: 'flex-start' },
         }}
       >
+        {/* Avatar grande */}
         <Skeleton
-          variant="text"
+          variant="circular"
           sx={{
-            width: { xs: 180, md: 220 },
-            height: { xs: 40, sm: 44, md: 56 },
-            bgcolor: 'rgba(255, 255, 255, 0.1)',
+            width: { xs: 120, md: 160 },
+            height: { xs: 120, md: 160 },
+            bgcolor: 'rgba(147, 51, 234, 0.15)',
+            border: '3px solid rgba(147, 51, 234, 0.3)',
           }}
         />
-        <Skeleton
-          variant="text"
-          sx={{
-            width: { xs: 140, md: 180 },
-            height: { xs: 20, md: 28 },
-            bgcolor: 'rgba(255, 255, 255, 0.1)',
-          }}
-        />
-      </Box>
-      {/* Friends count only if canEdit */}
-      {canEdit && (
+
+        {/* Info section */}
         <Box
           sx={{
+            flex: 1,
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 1,
-            marginTop: '-10px',
+            flexDirection: 'column',
+            gap: 2,
+            alignItems: { xs: 'center', md: 'flex-start' },
+            width: { xs: '100%', md: 'auto' },
           }}
         >
-          <Skeleton
-            variant="text"
+          {/* Username + Friends */}
+          <Box
             sx={{
-              width: 100,
-              height: { xs: 20, md: 24 },
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Skeleton
+              variant="text"
+              sx={{
+                width: 200,
+                height: { xs: 36, md: 48 },
+                bgcolor: 'rgba(147, 51, 234, 0.15)',
+              }}
+            />
+            {canEdit && (
+              <Skeleton
+                variant="rounded"
+                width={120}
+                height={32}
+                sx={{
+                  bgcolor: 'rgba(147, 51, 234, 0.15)',
+                  borderRadius: '16px',
+                }}
+              />
+            )}
+          </Box>
+
+          {/* Biography skeleton */}
+          <Skeleton
+            variant="rectangular"
+            sx={{
+              width: { xs: '100%', md: 500 },
+              height: 80,
+              borderRadius: '12px',
+              bgcolor: 'rgba(147, 51, 234, 0.08)',
             }}
           />
+
+          {/* Stats skeletons */}
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'wrap',
+              justifyContent: { xs: 'center', md: 'flex-start' },
+            }}
+          >
+            <Skeleton
+              variant="rounded"
+              width={100}
+              height={36}
+              sx={{
+                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                borderRadius: '12px',
+              }}
+            />
+            <Skeleton
+              variant="rounded"
+              width={100}
+              height={36}
+              sx={{
+                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                borderRadius: '12px',
+              }}
+            />
+            <Skeleton
+              variant="rounded"
+              width={100}
+              height={36}
+              sx={{
+                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                borderRadius: '12px',
+              }}
+            />
+          </Box>
         </Box>
-      )}
-      {/* Biography skeleton */}
-      <Box sx={{ width: { xs: '100%', sm: 340, md: 400 }, maxWidth: '100%' }}>
-        <Skeleton
-          variant="rectangular"
-          sx={{
-            width: '100%',
-            height: 75,
-            borderRadius: '12px',
-            bgcolor: 'rgba(255, 255, 255, 0.05)',
-          }}
-        />
+
+        {/* Edit buttons */}
+        {canEdit && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'row', md: 'column' },
+              gap: 1,
+              alignItems: 'center',
+            }}
+          >
+            <Skeleton
+              variant="rounded"
+              sx={{
+                width: { xs: 140, md: 160 },
+                height: 40,
+                borderRadius: '10px',
+                bgcolor: 'rgba(147, 51, 234, 0.2)',
+              }}
+            />
+            <Skeleton
+              variant="rounded"
+              sx={{
+                width: { xs: 140, md: 160 },
+                height: 40,
+                borderRadius: '10px',
+                bgcolor: 'rgba(147, 51, 234, 0.2)',
+              }}
+            />
+          </Box>
+        )}
       </Box>
     </Box>
-    {/* Edit buttons only if canEdit */}
-    {canEdit && (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'row', md: 'column' },
-          gap: { xs: 2, md: 1 },
-          alignItems: 'center',
-          justifyContent: { xs: 'center', md: 'flex-end' },
-          mx: { xs: 'auto', md: 0 },
-          mt: { xs: 2, md: 0 },
-          width: { xs: '100%', md: 'auto' },
-          height: '100%',
-          position: { xs: 'static', md: 'relative' },
-          marginTop: { xs: 0, md: '42px' },
-        }}
-      >
-        <Skeleton
-          variant="rectangular"
-          sx={{
-            width: { xs: '50%', md: '200px' },
-            height: { xs: 36, md: 40 },
-            borderRadius: '8px',
-            bgcolor: 'rgba(140, 84, 255, 0.2)',
-          }}
-        />
-        <Skeleton
-          variant="rectangular"
-          sx={{
-            width: { xs: '50%', md: '200px' },
-            height: { xs: 36, md: 40 },
-            borderRadius: '8px',
-            bgcolor: 'rgba(140, 84, 255, 0.2)',
-          }}
-        />
-      </Box>
-    )}
-  </Box>
-);
+  );
+};

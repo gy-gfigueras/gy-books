@@ -4,7 +4,12 @@ import React, { useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { BooksFilterMobileDrawer } from './BooksFilterMobileDrawer';
+import { ActiveFiltersChips } from './ActiveFiltersChips';
+import { BooksViewToggle, ViewType } from '../BooksViewToggle/BooksViewToggle';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import {
   Select,
   MenuItem,
@@ -18,6 +23,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { AnimatePresence, motion } from 'framer-motion';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
 
@@ -39,6 +45,8 @@ interface BooksFilterProps {
   orderDirection: 'asc' | 'desc';
   onOrderByChange: (orderBy: string) => void;
   onOrderDirectionChange: (direction: 'asc' | 'desc') => void;
+  view: ViewType;
+  onViewChange: (view: ViewType) => void;
 }
 
 export const BooksFilter: React.FC<BooksFilterProps> = ({
@@ -59,6 +67,8 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
   orderDirection,
   onOrderByChange,
   onOrderDirectionChange,
+  view,
+  onViewChange,
 }) => {
   // Opciones de ordenamiento
   const orderOptions = [
@@ -71,6 +81,71 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
   const [orderMenuAnchor, setOrderMenuAnchor] = useState<null | HTMLElement>(
     null
   );
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
+
+  // Active filters calculation
+  const activeFilters = [
+    statusFilter && {
+      type: 'status',
+      label: `Status: ${statusOptions.find((o) => o.value === statusFilter)?.label}`,
+      value: statusFilter,
+    },
+    authorFilter && {
+      type: 'author',
+      label: `Author: ${authorFilter}`,
+      value: authorFilter,
+    },
+    seriesFilter && {
+      type: 'series',
+      label: `Series: ${seriesFilter}`,
+      value: seriesFilter,
+    },
+    ratingFilter > 0 && {
+      type: 'rating',
+      label: `Rating: ${ratingFilter}+`,
+      value: ratingFilter,
+    },
+    search && { type: 'search', label: `"${search}"`, value: search },
+  ].filter(Boolean);
+
+  // Count active filters
+  const activeFiltersCount = [
+    statusFilter,
+    authorFilter !== '',
+    seriesFilter !== '',
+    ratingFilter > 0,
+    search !== '',
+  ].filter(Boolean).length;
+
+  // Handle remove individual filter
+  const handleRemoveFilter = (type: string) => {
+    switch (type) {
+      case 'status':
+        onStatusChange(null);
+        break;
+      case 'author':
+        onAuthorChange('');
+        break;
+      case 'series':
+        onSeriesChange('');
+        break;
+      case 'rating':
+        onRatingChange(0);
+        break;
+      case 'search':
+        onSearchChange('');
+        break;
+    }
+  };
+
+  // Handle clear all filters
+  const handleClearAll = () => {
+    onStatusChange(null);
+    onAuthorChange('');
+    onSeriesChange('');
+    onRatingChange(0);
+    onSearchChange('');
+  };
   // Mobile Drawer state
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -258,79 +333,186 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           orderDirection={orderDirection}
           onOrderByChange={onOrderByChange}
           onOrderDirectionChange={onOrderDirectionChange}
+          view={view}
+          onViewChange={onViewChange}
         />
       </>
     );
   }
-  // Desktop view (unchanged)
+  // Desktop view
   return (
     <Box
       sx={{
         width: '100%',
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        alignItems: { xs: 'stretch', sm: 'center' },
-        justifyContent: 'flex-start',
-        gap: { xs: 1, sm: 2, md: 3 },
+        flexDirection: 'column',
+        gap: 2,
         px: { xs: 0.5, sm: 1, md: 2 },
         mb: 2,
-        borderRadius: '10px',
-        minHeight: 48,
-        maxWidth: { xs: '100%', md: 1000 },
+        maxWidth: { xs: '100%', md: 1200 },
         mx: 'auto',
       }}
     >
-      <TextField
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="Search books..."
-        variant="outlined"
-        size="small"
+      {/* Collapsible Filters Toggle Button + BooksViewToggle */}
+      <Box
         sx={{
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
-          borderRadius: '10px',
-          minWidth: 110,
-          flex: 2,
-          mb: { xs: 1, sm: 0 },
-          input: {
-            color: '#fff',
-            fontFamily: lora.style.fontFamily,
-          },
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: 'transparent',
-              borderRadius: '10px',
-            },
-            '&:hover fieldset': {
-              borderColor: 'rgba(147, 51, 234, 0.5)',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#9333ea',
-              borderWidth: 2,
-            },
-          },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+          mb: filtersExpanded ? 2 : 0,
         }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon sx={{ color: '#9333ea' }} />
-            </InputAdornment>
-          ),
-        }}
-      />
-      {renderSelect(ratingFilter, onRatingChange, ratingOptions, 'Rating')}
-      {renderSelect(
-        statusFilter ?? '',
-        onStatusChange,
-        statusOptions,
-        'Status'
-      )}
-      {renderSelect(authorFilter, onAuthorChange, authorOptions, 'Author')}
-      {renderSelect(seriesFilter, onSeriesChange, seriesOptions, 'Series')}
-      {renderOrderButton()}
+      >
+        {/* Botón de collapse filtros */}
+        <Box
+          onClick={() => setFiltersExpanded(!filtersExpanded)}
+          sx={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            px: 2,
+            py: 1.5,
+            background:
+              'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(147, 51, 234, 0.3)',
+            borderRadius: '12px',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              border: '1px solid rgba(147, 51, 234, 0.5)',
+              background:
+                'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)',
+            },
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <FilterAltIcon sx={{ color: '#a855f7' }} />
+            <Box
+              component="span"
+              sx={{
+                color: '#fff',
+                fontFamily: lora.style.fontFamily,
+                fontWeight: 600,
+              }}
+            >
+              Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+            </Box>
+          </Box>
+          {filtersExpanded ? (
+            <ExpandLessIcon sx={{ color: '#a855f7' }} />
+          ) : (
+            <ExpandMoreIcon sx={{ color: '#a855f7' }} />
+          )}
+        </Box>
+
+        {/* BooksViewToggle aquí */}
+        <BooksViewToggle view={view} onViewChange={onViewChange} />
+      </Box>
+
+      {/* Animated Collapsible Content */}
+      <AnimatePresence initial={false}>
+        {filtersExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            <Box
+              sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}
+            >
+              {/* Search Bar - Full Width */}
+              <TextField
+                value={search}
+                onChange={(e) => onSearchChange(e.target.value)}
+                placeholder="Search books..."
+                variant="outlined"
+                size="small"
+                fullWidth
+                sx={{
+                  background:
+                    'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(147, 51, 234, 0.3)',
+                  borderRadius: '10px',
+                  input: {
+                    color: '#fff',
+                    fontFamily: lora.style.fontFamily,
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: 'transparent',
+                      borderRadius: '10px',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(147, 51, 234, 0.5)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#9333ea',
+                      borderWidth: 2,
+                    },
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: '#9333ea' }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              {/* Active Filters Chips */}
+              {activeFilters.length > 0 && (
+                <ActiveFiltersChips
+                  activeFilters={activeFilters}
+                  onRemove={handleRemoveFilter}
+                  onClearAll={handleClearAll}
+                />
+              )}
+
+              {/* Filter Controls - Inline */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  flexWrap: 'wrap',
+                }}
+              >
+                {renderSelect(
+                  ratingFilter,
+                  onRatingChange,
+                  ratingOptions,
+                  'Rating'
+                )}
+                {renderSelect(
+                  statusFilter ?? '',
+                  onStatusChange,
+                  statusOptions,
+                  'Status'
+                )}
+                {renderSelect(
+                  authorFilter,
+                  onAuthorChange,
+                  authorOptions,
+                  'Author'
+                )}
+                {renderSelect(
+                  seriesFilter,
+                  onSeriesChange,
+                  seriesOptions,
+                  'Series'
+                )}
+                {renderOrderButton()}
+              </Box>
+            </Box>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Box>
   );
 };

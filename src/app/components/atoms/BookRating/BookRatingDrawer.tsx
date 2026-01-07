@@ -6,7 +6,6 @@ import {
   IconButton,
   Stack,
   Typography,
-  Divider,
   Button,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -60,25 +59,86 @@ const BookRatingDrawer: React.FC<Props> = ({
         sx: {
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
-          pb: 2,
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
-          minHeight: 380,
+          background: 'rgba(17, 24, 39, 0.95)',
+          backdropFilter: 'blur(24px)',
+          borderTop: '1px solid rgba(147, 51, 234, 0.15)',
+          maxHeight: '85vh',
+          overflowY: 'auto',
         },
       }}
     >
-      <Box sx={{ p: 3, position: 'relative' }}>
-        <IconButton
-          onClick={onClose}
-          sx={{ position: 'absolute', top: 8, right: 8, color: '#fff' }}
+      <Box sx={{ p: 3 }}>
+        {/* Drag indicator */}
+        <Box
+          sx={{
+            width: 40,
+            height: 4,
+            borderRadius: 2,
+            background: 'rgba(147, 51, 234, 0.3)',
+            margin: '0 auto 16px',
+          }}
+        />
+
+        {/* Header */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+          }}
         >
-          <CloseIcon />
-        </IconButton>
-        <Stack spacing={2} alignItems="stretch" sx={{ mt: 2 }}>
+          <Typography
+            sx={{
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: 18,
+              fontFamily,
+            }}
+          >
+            Book Details
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {isBookSaved && handleDeleteBook && (
+              <IconButton
+                onClick={handleDeleteBook}
+                size="small"
+                sx={{
+                  color: '#ef4444',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                }}
+              >
+                <DeleteIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            )}
+            <IconButton
+              onClick={onClose}
+              size="small"
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                background: 'rgba(255, 255, 255, 0.05)',
+              }}
+            >
+              <CloseIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Box>
+        </Box>
+
+        <Stack spacing={3}>
+          {/* Rating Section */}
           <Box>
-            <Typography sx={{ color: '#fff', fontWeight: 'bold', mb: 0.5 }}>
+            <Typography
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: 12,
+                fontWeight: 500,
+                mb: 1.5,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                fontFamily,
+              }}
+            >
               Rating
             </Typography>
             <RatingStars
@@ -95,25 +155,21 @@ const BookRatingDrawer: React.FC<Props> = ({
                 isLoading={isLoading || isSubmitting}
               />
             </Box>
-            {isBookSaved && handleDeleteBook && (
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  top: 55,
-                  padding: '10px',
-                  background: 'rgba(255, 83, 83, 0.1)',
-                  borderRadius: '16px',
-                  right: 10,
-                }}
-                onClick={handleDeleteBook}
-              >
-                <DeleteIcon sx={{ color: '#ff5353' }} />
-              </IconButton>
-            )}
           </Box>
-          <Divider sx={{ borderColor: '#8C54FF30' }} />
-          <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
-            <Typography sx={{ color: '#fff', fontWeight: 'bold', mb: 0.5 }}>
+
+          {/* Status Section */}
+          <Box>
+            <Typography
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: 12,
+                fontWeight: 500,
+                mb: 1.5,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                fontFamily,
+              }}
+            >
               Status
             </Typography>
             <BookRatingStatusButtons
@@ -121,103 +177,125 @@ const BookRatingDrawer: React.FC<Props> = ({
               setTempStatus={handlers.setTempStatus}
               fontFamily={fontFamily}
             />
-            <BookRatingProgressInput
-              tempProgress={state.tempProgress}
-              setTempProgress={handlers.setTempProgress}
-              isProgressPercent={state.isProgressPercent}
-              setIsProgressPercent={handlers.setIsProgressPercent}
-              fontFamily={fontFamily}
-            />
+            <Box sx={{ mt: 2 }}>
+              <BookRatingProgressInput
+                tempProgress={state.tempProgress}
+                setTempProgress={handlers.setTempProgress}
+                isProgressPercent={state.isProgressPercent}
+                setIsProgressPercent={handlers.setIsProgressPercent}
+                fontFamily={fontFamily}
+              />
+            </Box>
           </Box>
-          <Divider sx={{ borderColor: '#8C54FF30' }} />
-          <Box sx={{ display: 'flex', gap: 2, mb: '10px' }}>
-            <TextField
-              type="date"
-              value={state.tempStartDate}
-              onChange={(e) => handlers.setTempStartDate(e.target.value)}
-              label="Start"
-              InputLabelProps={{ shrink: true }}
+
+          {/* Dates Section */}
+          <Box>
+            <Typography
               sx={{
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
-                borderRadius: '10px',
-                input: {
-                  color: '#fff',
-                  fontFamily: fontFamily,
-                },
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'transparent',
-                    borderRadius: '10px',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(147, 51, 234, 0.5)',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#9333ea',
-                    borderWidth: 2,
-                  },
-                },
-                label: {
-                  color: '#fff',
-                  fontFamily: fontFamily,
-                },
-                minWidth: 120,
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: 12,
+                fontWeight: 500,
+                mb: 1.5,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                fontFamily,
               }}
-            />
-            <TextField
-              type="date"
-              value={state.tempEndDate}
-              onChange={(e) => handlers.setTempEndDate(e.target.value)}
-              label="End"
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
-                borderRadius: '10px',
-                input: {
-                  color: '#fff',
-                  fontFamily: fontFamily,
-                },
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'transparent',
-                    borderRadius: '10px',
+            >
+              Reading Period
+            </Typography>
+            <Stack direction="row" gap={2}>
+              <TextField
+                type="date"
+                value={state.tempStartDate}
+                onChange={(e) => handlers.setTempStartDate(e.target.value)}
+                label="Start"
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  flex: 1,
+                  '& .MuiOutlinedInput-root': {
+                    background: 'rgba(147, 51, 234, 0.05)',
+                    '& fieldset': {
+                      borderColor: 'rgba(147, 51, 234, 0.2)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(147, 51, 234, 0.3)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#9333ea',
+                    },
                   },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(147, 51, 234, 0.5)',
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontSize: 14,
+                    fontFamily,
                   },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#9333ea',
-                    borderWidth: 2,
+                  input: {
+                    color: '#fff',
+                    fontSize: 14,
+                    fontFamily,
                   },
-                },
-                label: {
-                  color: '#fff',
-                  fontFamily: fontFamily,
-                },
-                minWidth: 120,
-              }}
-            />
+                }}
+              />
+              <TextField
+                type="date"
+                value={state.tempEndDate}
+                onChange={(e) => handlers.setTempEndDate(e.target.value)}
+                label="End"
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  flex: 1,
+                  '& .MuiOutlinedInput-root': {
+                    background: 'rgba(147, 51, 234, 0.05)',
+                    '& fieldset': {
+                      borderColor: 'rgba(147, 51, 234, 0.2)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(147, 51, 234, 0.3)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#9333ea',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontSize: 14,
+                    fontFamily,
+                  },
+                  input: {
+                    color: '#fff',
+                    fontSize: 14,
+                    fontFamily,
+                  },
+                }}
+              />
+            </Stack>
           </Box>
+
+          {/* Apply Button */}
           <Button
             variant="contained"
-            color="primary"
+            fullWidth
             onClick={handlers.handleApply}
             disabled={isSubmitting}
             sx={{
-              borderRadius: 3,
-              fontWeight: 'bold',
-              fontSize: 18,
-              mt: 2,
+              py: 1.5,
+              borderRadius: '10px',
               textTransform: 'none',
+              fontSize: 15,
+              fontWeight: 600,
+              fontFamily,
+              background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
+              boxShadow: 'none',
+              '&:active': {
+                transform: 'scale(0.98)',
+              },
+              '&.Mui-disabled': {
+                background: 'rgba(147, 51, 234, 0.2)',
+                color: 'rgba(255, 255, 255, 0.3)',
+              },
             }}
           >
-            Apply
+            Apply Changes
           </Button>
         </Stack>
       </Box>

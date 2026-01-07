@@ -1,12 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
-import { Box, Typography, Skeleton } from '@mui/material';
-import { CustomButton } from '@/app/components/atoms/CustomButton/customButton';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Skeleton,
+  Chip,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 import EditIcon from '@mui/icons-material/Edit';
 import LaunchIcon from '@mui/icons-material/Launch';
+import PeopleIcon from '@mui/icons-material/People';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { UserImage } from '@/app/components/atoms/UserAvatar/UserImage';
-import { cinzel, lora } from '@/utils/fonts/fonts';
+import { lora } from '@/utils/fonts/fonts';
 import { BiographySection } from '../BiographySection/BiographySection';
+import { UserProfileBook } from '@/domain/user.model';
+import { BooksStatsDisplay } from './BooksStatsDisplay';
 
 interface ProfileHeaderProps {
   user: any;
@@ -20,6 +32,8 @@ interface ProfileHeaderProps {
   onBiographySave: () => void;
   onBiographyCancel: () => void;
   canEdit?: boolean;
+  books?: UserProfileBook[];
+  isLoadingBooks?: boolean;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -34,200 +48,409 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   onBiographySave,
   onBiographyCancel,
   canEdit = true,
-}) => (
-  <Box
-    sx={{
-      display: 'flex',
-      flexDirection: { xs: 'column', md: 'row' },
-      gap: { xs: 2, md: 6 },
-      minHeight: { xs: 0, md: 200 },
-      width: '100%',
-      px: { xs: 1, md: 0 },
-      py: { xs: 2, md: 0 },
-      alignItems: { xs: 'center', md: 'flex-start' },
-      boxSizing: 'border-box',
-    }}
-  >
-    <Box
-      sx={{
-        width: { xs: 90, sm: 120, md: 160 },
-        height: { xs: 90, sm: 120, md: 160 },
-        alignSelf: { xs: 'center', md: 'flex-start' },
-      }}
-    >
-      <UserImage user={user} />
-    </Box>
-    <Box
-      sx={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        gap: 2,
-        width: { xs: '100%', md: 'auto' },
-        alignItems: { xs: 'center', md: 'flex-start' },
-        textAlign: { xs: 'center', md: 'left' },
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: 2,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          id="profile-username"
-          variant="h3"
-          sx={{
-            color: '#fff',
-            fontWeight: 'bold',
-            fontFamily: lora.style.fontFamily,
-            mb: 0,
-            fontSize: { xs: 30, sm: 32, md: 40 },
-          }}
-        >
-          {user.username}
-        </Typography>
-        {user?.email && (
-          <Typography
-            variant="body1"
-            sx={{
-              color: '#ffffff50',
-              fontFamily: lora.style.fontFamily,
-              fontSize: { xs: 17, sm: 16, md: 22 },
-              mb: 1,
-              marginTop: { xs: -1, md: 0 },
-              fontStyle: 'italic',
-            }}
-          >{`(${user?.email})`}</Typography>
-        )}
-      </Box>
-      {/* Friends count only if canEdit (profile owner) */}
-      {canEdit && (
+  books = [],
+  isLoadingBooks = false,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <>
+      {/* Versión Mini (Colapsada) */}
+      {!isExpanded && (
         <Box
-          component={'a'}
-          href={'/users/community?tab=1'}
           sx={{
             display: 'flex',
-            flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: 1,
-            marginTop: '-10px',
-            textDecoration: 'none',
+            gap: 2,
+            py: 1.5,
+            px: 2,
+            background:
+              'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(147, 51, 234, 0.25)',
+            borderRadius: '16px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              border: '1px solid rgba(147, 51, 234, 0.4)',
+              background:
+                'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            },
           }}
+          onClick={() => setIsExpanded(true)}
         >
-          {!isLoadingFriends && (
-            <>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                  fontSize: { xs: 14, sm: 15, md: 18 },
-                  fontFamily: cinzel.style.fontFamily,
-                }}
-              >
-                {`${friendsCount}`}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                  fontSize: { xs: 14, sm: 15, md: 20 },
-                  fontFamily: lora.style.fontFamily,
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                {'friends'}
-              </Typography>
-            </>
-          )}
-          {isLoadingFriends && (
+          {/* Avatar pequeño 50px */}
+          <Box
+            sx={{
+              width: 50,
+              height: 50,
+              flexShrink: 0,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              border: '2px solid rgba(147, 51, 234, 0.4)',
+              '& img': {
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              },
+            }}
+          >
+            <UserImage user={user} compact />
+          </Box>
+
+          {/* Username + Friends inline */}
+          <Box
+            sx={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              flexWrap: 'wrap',
+            }}
+          >
             <Typography
-              variant="body2"
               sx={{
-                color: '#FFFFFF',
-                fontWeight: 'bold',
-                fontSize: { xs: 14, sm: 15, md: 20 },
+                color: '#fff',
+                fontSize: 20,
+                fontWeight: 700,
                 fontFamily: lora.style.fontFamily,
-                display: 'flex',
-                alignItems: 'center',
               }}
             >
-              <Skeleton
-                data-testid="friends-skeleton"
-                variant="text"
-                width={80}
-                sx={{ bgcolor: '#ffffff20', display: 'inline-block' }}
-              />
+              {user.username}
             </Typography>
-          )}
+
+            {/* Friends Chip con skeleton */}
+            {canEdit &&
+              (isLoadingFriends ? (
+                <Skeleton
+                  variant="rounded"
+                  width={120}
+                  height={32}
+                  sx={{
+                    bgcolor: 'rgba(147, 51, 234, 0.15)',
+                    borderRadius: '16px',
+                  }}
+                />
+              ) : (
+                <Chip
+                  icon={<PeopleIcon />}
+                  label={`${friendsCount} friends`}
+                  size="small"
+                  sx={{
+                    background:
+                      'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                    color: '#e9d5ff',
+                    border: '1px solid rgba(147, 51, 234, 0.4)',
+                    fontFamily: lora.style.fontFamily,
+                    '& .MuiChip-icon': { color: '#a855f7' },
+                  }}
+                />
+              ))}
+
+            {/* Stats inline compactos con skeleton */}
+            {isLoadingBooks ? (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Skeleton
+                  variant="rounded"
+                  width={80}
+                  height={28}
+                  sx={{
+                    bgcolor: 'rgba(147, 51, 234, 0.15)',
+                    borderRadius: '12px',
+                  }}
+                />
+                <Skeleton
+                  variant="rounded"
+                  width={80}
+                  height={28}
+                  sx={{
+                    bgcolor: 'rgba(147, 51, 234, 0.15)',
+                    borderRadius: '12px',
+                  }}
+                />
+              </Box>
+            ) : (
+              books &&
+              books.length > 0 && <BooksStatsDisplay books={books} compact />
+            )}
+          </Box>
+
+          {/* Icono expandir */}
+          <ExpandMoreIcon sx={{ color: '#a855f7', fontSize: 24 }} />
         </Box>
       )}
-      <BiographySection
-        biography={biography}
-        isEditing={isEditingBiography && canEdit}
-        isLoading={isLoadingBiography}
-        onChange={onBiographyChange}
-        onSave={onBiographySave}
-        onCancel={onBiographyCancel}
-        canEdit={canEdit}
-      />
-    </Box>
-    {/* Edit buttons only if canEdit */}
-    {canEdit && (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'row', md: 'column' },
-          gap: { xs: 2, md: 1 },
-          alignItems: 'center',
-          justifyContent: { xs: 'center', md: 'flex-end' },
-          mx: { xs: 'auto', md: 0 },
-          mt: { xs: 2, md: 0 },
-          width: { xs: '100%', md: 'auto' },
-          height: '100%',
-          position: { xs: 'static', md: 'relative' },
-          marginTop: { xs: 0, md: '42px' },
-        }}
-      >
-        <CustomButton
-          sx={{
-            letterSpacing: '.05rem',
-            minWidth: { xs: 0, md: 170 },
-            width: { xs: '50%', md: '200px' },
-            fontFamily: lora.style.fontFamily,
-            fontSize: { xs: 10, md: 15 },
-          }}
-          variant="contained"
-          endIcon={<LaunchIcon />}
-          variantComponent="link"
-          href="https://accounts.gycoding.com"
-          target="_blank"
-        >
-          Edit Account
-        </CustomButton>
-        <CustomButton
-          sx={{
-            letterSpacing: '.05rem',
-            minWidth: { xs: 0, md: 170 },
-            width: { xs: '50%', md: '200px' },
-            fontFamily: lora.style.fontFamily,
-            fontSize: { xs: 11, md: 15 },
-          }}
-          onClick={onEditProfile}
-          variant="contained"
-          endIcon={<EditIcon />}
-        >
-          Edit Profile
-        </CustomButton>
-      </Box>
-    )}
-  </Box>
-);
+
+      {/* Versión Expandida */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            <Box
+              sx={{
+                position: 'relative',
+                background:
+                  'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(147, 51, 234, 0.25)',
+                borderRadius: '16px',
+                p: 2,
+              }}
+            >
+              {/* Botón de colapsar en la esquina superior izquierda */}
+              <IconButton
+                onClick={() => setIsExpanded(false)}
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  color: '#a855f7',
+                  zIndex: 10,
+                  background: 'rgba(147, 51, 234, 0.1)',
+                  '&:hover': {
+                    background: 'rgba(147, 51, 234, 0.2)',
+                  },
+                }}
+              >
+                <ExpandLessIcon />
+              </IconButton>
+
+              {/* Contenido original del ProfileHeader */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  gap: { xs: 6, md: '80px' },
+                  alignItems: { xs: 'center', md: 'flex-start' },
+                  py: 2,
+                  width: '100%',
+                  px: { xs: 1, md: 0 },
+                  boxSizing: 'border-box',
+                  position: 'relative',
+                }}
+              >
+                {/* Avatar más pequeño */}
+                <Box
+                  sx={{
+                    width: { xs: 70, sm: 90, md: 120 },
+                    height: { xs: 70, sm: 90, md: 120 },
+                    flexShrink: 0,
+                    position: 'relative',
+                    zIndex: 1,
+                  }}
+                >
+                  <UserImage user={user} />
+                </Box>
+
+                {/* Info condensada */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    minWidth: 0,
+                    width: { xs: '100%', md: 'auto' },
+                    alignItems: { xs: 'center', md: 'flex-start' },
+                    textAlign: { xs: 'center', md: 'left' },
+                  }}
+                >
+                  {/* Username + Friends badge en la misma línea */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      flexWrap: 'wrap',
+                      justifyContent: { xs: 'center', md: 'flex-start' },
+                    }}
+                  >
+                    <Typography
+                      id="profile-username"
+                      variant="h4"
+                      sx={{
+                        fontSize: { xs: 24, sm: 28, md: 32 },
+                        fontWeight: 'bold',
+                        color: '#fff',
+                        fontFamily: lora.style.fontFamily,
+                      }}
+                    >
+                      {user.username}
+                    </Typography>
+                    {canEdit && !isLoadingFriends && (
+                      <Chip
+                        component="a"
+                        href="/users/community?tab=1"
+                        icon={<PeopleIcon />}
+                        label={`${friendsCount} friends`}
+                        size="small"
+                        clickable
+                        sx={{
+                          background:
+                            'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                          color: '#e9d5ff',
+                          border: '1px solid rgba(147, 51, 234, 0.4)',
+                          fontFamily: lora.style.fontFamily,
+                          fontWeight: 600,
+                          fontSize: { xs: '0.75rem', md: '0.8125rem' },
+                          '& .MuiChip-icon': { color: '#a855f7' },
+                          '&:hover': {
+                            background:
+                              'linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(168, 85, 247, 0.3) 100%)',
+                            border: '1px solid rgba(147, 51, 234, 0.6)',
+                          },
+                        }}
+                      />
+                    )}
+                    {canEdit && isLoadingFriends && (
+                      <Skeleton
+                        data-testid="friends-skeleton"
+                        variant="rectangular"
+                        width={100}
+                        height={24}
+                        sx={{ bgcolor: '#ffffff20', borderRadius: '16px' }}
+                      />
+                    )}
+                  </Box>
+
+                  {/* Email más sutil */}
+                  {user?.email && (
+                    <Typography
+                      sx={{
+                        color: 'rgba(255,255,255,0.5)',
+                        fontSize: { xs: 13, md: 15 },
+                        fontStyle: 'italic',
+                        fontFamily: lora.style.fontFamily,
+                      }}
+                    >
+                      {user.email}
+                    </Typography>
+                  )}
+
+                  {/* Biography compacta */}
+                  <BiographySection
+                    biography={biography}
+                    isEditing={isEditingBiography && canEdit}
+                    isLoading={isLoadingBiography}
+                    onChange={onBiographyChange}
+                    onSave={onBiographySave}
+                    onCancel={onBiographyCancel}
+                    canEdit={canEdit}
+                    compact
+                  />
+
+                  {/* Stats inline - visible para todos */}
+                  {isLoadingBooks && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        flexWrap: 'wrap',
+                        mt: 0.5,
+                      }}
+                    >
+                      <Skeleton
+                        variant="text"
+                        width={120}
+                        height={20}
+                        sx={{
+                          bgcolor: 'rgba(147, 51, 234, 0.15)',
+                          borderRadius: '4px',
+                        }}
+                      />
+                      <Box sx={{ color: 'rgba(255,255,255,0.3)' }}>•</Box>
+                      <Skeleton
+                        variant="text"
+                        width={100}
+                        height={20}
+                        sx={{
+                          bgcolor: 'rgba(147, 51, 234, 0.15)',
+                          borderRadius: '4px',
+                        }}
+                      />
+                      <Box sx={{ color: 'rgba(255,255,255,0.3)' }}>•</Box>
+                      <Skeleton
+                        variant="text"
+                        width={140}
+                        height={20}
+                        sx={{
+                          bgcolor: 'rgba(147, 51, 234, 0.15)',
+                          borderRadius: '4px',
+                        }}
+                      />
+                    </Box>
+                  )}
+                  {!isLoadingBooks && books && books.length > 0 && (
+                    <BooksStatsDisplay books={books} />
+                  )}
+                </Box>
+
+                {/* Botones compactos */}
+                {canEdit && (
+                  <Box
+                    sx={{
+                      display: { xs: 'flex', sm: 'flex' },
+                      gap: 1,
+                      flexShrink: 0,
+                      position: { xs: 'static', md: 'absolute' },
+                      top: { md: 16 },
+                      right: { md: 0 },
+                      justifyContent: 'center',
+                      mt: { xs: 1, md: 0 },
+                    }}
+                  >
+                    <Tooltip title="Edit Account" placement="top">
+                      <IconButton
+                        component="a"
+                        href="https://accounts.gycoding.com"
+                        target="_blank"
+                        sx={{
+                          background:
+                            'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(147, 51, 234, 0.4)',
+                          color: '#e9d5ff',
+                          '&:hover': {
+                            background:
+                              'linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(168, 85, 247, 0.3) 100%)',
+                            border: '1px solid rgba(147, 51, 234, 0.6)',
+                          },
+                        }}
+                      >
+                        <LaunchIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Profile" placement="top">
+                      <IconButton
+                        onClick={onEditProfile}
+                        sx={{
+                          background:
+                            'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(147, 51, 234, 0.4)',
+                          color: '#e9d5ff',
+                          '&:hover': {
+                            background:
+                              'linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(168, 85, 247, 0.3) 100%)',
+                            border: '1px solid rgba(147, 51, 234, 0.6)',
+                          },
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};

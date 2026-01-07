@@ -95,7 +95,7 @@ function ProfilePageContent() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        minHeight: '70vh',
+        minHeight: 'calc(100vh - 64px)',
         height: '100%',
         borderRadius: 0,
         boxShadow: 'none',
@@ -110,6 +110,7 @@ function ProfilePageContent() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'stretch',
+          height: '100%',
         }}
       >
         <ProfileHeader
@@ -117,30 +118,50 @@ function ProfilePageContent() {
           friendsCount={friendsCount}
           isLoadingFriends={isLoadingFriends}
           onEditProfile={handleEditBiography}
-          biography={biography || user?.biography || ''}
+          biography={biography}
           isEditingBiography={isEditingBiography}
           isLoadingBiography={isLoadingBiography}
           onBiographyChange={handleBiographyChange}
           onBiographySave={handleBiographySave}
           onBiographyCancel={handleCancelBiography}
+          books={books}
+          isLoadingBooks={loading}
         />
-        <Box sx={{ mt: 0 }}>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            mt: 0,
+            minHeight: 0,
+          }}
+        >
           <ProfileTabsNavigation tab={tab} onTabChange={setTab} />
-          <ProfileTabContent
-            tab={tab}
-            userId={user.id}
-            books={books}
-            booksLoading={loading}
+          <Box
+            sx={{
+              flex: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
           >
-            <BooksTab
+            <ProfileTabContent
+              tab={tab}
+              userId={user.id}
               books={books}
-              filteredBooks={filteredBooks}
-              loading={loading}
-              hasMore={hasMore}
-              filterOptions={filterOptions}
-              filters={filters}
-            />
-          </ProfileTabContent>
+              booksLoading={loading}
+            >
+              <BooksTab
+                books={books}
+                filteredBooks={filteredBooks}
+                loading={loading}
+                hasMore={hasMore}
+                filterOptions={filterOptions}
+                filters={filters}
+              />
+            </ProfileTabContent>
+          </Box>
         </Box>
       </Box>
       <AnimatedAlert

@@ -7,7 +7,12 @@ import { motion } from 'framer-motion';
 
 const MotionBox = motion(Box);
 
-export function BookCard({ book }: { book: HardcoverBook }) {
+interface BookCardProps {
+  book: HardcoverBook;
+  compact?: boolean;
+}
+
+export function BookCard({ book, compact = false }: BookCardProps) {
   const { title, coverUrl } = useBookDisplay(book);
   return (
     <MotionBox
@@ -21,9 +26,11 @@ export function BookCard({ book }: { book: HardcoverBook }) {
       sx={{
         width: '100%',
         textDecoration: 'none',
-        minWidth: '300px',
-        maxWidth: '1000px',
-        height: ['180px', '280px', '280px'],
+        minWidth: 0,
+        maxWidth: '100%',
+        height: compact
+          ? ['120px', '150px', '180px']
+          : ['180px', '280px', '280px'],
         display: 'flex',
         flexDirection: 'row',
         justifyContent: ['start', 'start', 'start'],
@@ -31,7 +38,7 @@ export function BookCard({ book }: { book: HardcoverBook }) {
           'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
         backdropFilter: 'blur(15px)',
         borderRadius: '24px',
-        padding: '16px',
+        padding: compact ? '12px' : '16px',
         overflow: 'hidden',
         border: '1px solid rgba(147, 51, 234, 0.25)',
         boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
@@ -45,7 +52,10 @@ export function BookCard({ book }: { book: HardcoverBook }) {
     >
       <Box
         sx={{
-          width: ['100px', '180px', 'auto'],
+          width: compact
+            ? ['70px', '90px', '110px']
+            : ['100px', '140px', '180px'],
+          flexShrink: 0,
           height: '100%',
           borderRadius: '16px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
@@ -69,13 +79,14 @@ export function BookCard({ book }: { book: HardcoverBook }) {
       </Box>
       <Box
         sx={{
-          width: { xs: '60%', md: '85%' },
+          flex: 1,
+          minWidth: 0,
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'start',
           alignItems: 'start',
-          padding: '25px',
+          padding: compact ? { xs: '8px', md: '12px' } : '25px',
           position: 'relative',
         }}
       >
@@ -92,18 +103,17 @@ export function BookCard({ book }: { book: HardcoverBook }) {
           <Typography
             sx={{
               color: 'white',
-              fontSize: { xs: '18px', md: '28px' },
+              fontSize: compact
+                ? { xs: '14px', md: '18px' }
+                : { xs: '18px', md: '28px' },
               letterSpacing: '.05rem',
               fontWeight: '800',
               fontFamily: lora.style.fontFamily,
               textAlign: 'left',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
-              whiteSpace: { xs: 'normal', md: 'nowrap' },
+              whiteSpace: 'nowrap',
               width: '100%',
-              display: '-webkit-box',
-              WebkitLineClamp: { xs: 4, md: 1 },
-              WebkitBoxOrient: 'vertical',
             }}
             variant="h6"
           >
@@ -113,7 +123,9 @@ export function BookCard({ book }: { book: HardcoverBook }) {
             <Typography
               sx={{
                 color: '#FFFFFF45',
-                fontSize: { xs: '16px', md: '22px' },
+                fontSize: compact
+                  ? { xs: '12px', md: '14px' }
+                  : { xs: '16px', md: '22px' },
                 fontWeight: 'thin',
                 fontFamily: lora.style.fontFamily,
                 letterSpacing: '.05rem',
@@ -130,7 +142,9 @@ export function BookCard({ book }: { book: HardcoverBook }) {
         <Typography
           sx={{
             color: '#FFFFFF31',
-            fontSize: { xs: '14px', md: '20px' },
+            fontSize: compact
+              ? { xs: '11px', md: '14px' }
+              : { xs: '14px', md: '20px' },
             fontWeight: 'bold',
             textAlign: 'left',
             marginTop: { xs: '0px', md: '-10px' },
@@ -142,7 +156,7 @@ export function BookCard({ book }: { book: HardcoverBook }) {
         >
           {book.author.name}
         </Typography>
-        {book.description && (
+        {book.description && !compact && (
           <Typography
             sx={{
               display: { xs: 'none', md: '-webkit-box' },

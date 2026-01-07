@@ -2,7 +2,9 @@ import HardcoverBook from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
 import AssistantIcon from '@mui/icons-material/Assistant';
-import { motion } from 'framer-motion';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { motion, AnimatePresence } from 'framer-motion';
+import { EBookStatus } from '@gycoding/nebula';
 
 const MotionBox = motion(Box);
 import {
@@ -18,6 +20,7 @@ import {
   Skeleton,
   Tooltip,
   Typography,
+  LinearProgress,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -25,7 +28,6 @@ import { useState } from 'react';
 interface BookCardCompactProps {
   book: HardcoverBook;
   onClick?: () => void;
-  small?: boolean;
 }
 
 export const BookCardCompactSkeleton = () => {
@@ -135,14 +137,11 @@ export const BookCardCompactSkeleton = () => {
   );
 };
 
-export const BookCardCompact = ({
-  book,
-  onClick,
-  small = false,
-}: BookCardCompactProps) => {
+export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
   const router = useRouter();
   const { title, coverUrl } = useBookDisplay(book);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
     if (onClick) {
@@ -152,6 +151,36 @@ export const BookCardCompact = ({
     }
   };
 
+  // Status badge configuration
+  const statusConfig = {
+    [EBookStatus.READING]: {
+      label: 'Reading',
+      color: '#3b82f6',
+      bg: 'rgba(59, 130, 246, 0.9)',
+    },
+    [EBookStatus.READ]: {
+      label: 'Read',
+      color: '#10b981',
+      bg: 'rgba(16, 185, 129, 0.9)',
+    },
+    [EBookStatus.WANT_TO_READ]: {
+      label: 'Want to Read',
+      color: '#f59e0b',
+      bg: 'rgba(245, 158, 11, 0.9)',
+    },
+  };
+
+  const currentStatus = book.userData?.status || EBookStatus.WANT_TO_READ;
+  const statusInfo = statusConfig[currentStatus];
+
+  // Calculate progress if reading
+  const progress =
+    currentStatus === EBookStatus.READING &&
+    book.userData?.pagesRead &&
+    book.totalPages
+      ? Math.round((book.userData.pagesRead / book.totalPages) * 100)
+      : null;
+
   return (
     <MotionBox
       component="a"
@@ -160,9 +189,11 @@ export const BookCardCompact = ({
         e.preventDefault();
         handleClick();
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       initial={{ opacity: 0, y: 30, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ scale: 1.05, y: -4 }}
+      whileHover={{ scale: 1.03, y: -4 }}
       whileTap={{ scale: 0.98 }}
       transition={{
         duration: 0.6,
@@ -170,10 +201,10 @@ export const BookCardCompact = ({
         delay: 0.05,
       }}
       sx={{
-        width: small ? { xs: '100%', sm: '200px' } : 'auto',
-        minWidth: small ? { xs: '0', sm: '200px' } : 'auto',
-        maxWidth: small ? { xs: '170px', sm: '200px' } : 'auto',
-        margin: small ? { xs: '0 auto', sm: '0' } : 'auto',
+        width: 'auto',
+        minWidth: 'auto',
+        maxWidth: 'auto',
+        margin: 'auto',
         textDecoration: 'none',
         display: 'flex',
         flexDirection: 'column',
@@ -187,8 +218,107 @@ export const BookCardCompact = ({
         overflow: 'hidden',
         boxShadow:
           '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '4px',
+          background:
+            'linear-gradient(90deg, #9333ea 0%, #a855f7 50%, #7e22ce 100%)',
+          opacity: 0,
+          transform: 'scaleX(0)',
+          transformOrigin: 'left',
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          zIndex: 10,
+        },
+        '&:hover': {
+          boxShadow: `0 16px 40px ${statusInfo.color}40, 0 8px 16px rgba(0, 0, 0, 0.5)`,
+          border: `1px solid ${statusInfo.color}60`,
+        },
+        '&:hover::before': {
+          opacity: 1,
+          transform: 'scaleX(1)',
+        },
       }}
     >
+      {/* Status Badge */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          zIndex: 20,
+        }}
+      >
+        <Chip
+          label={statusInfo.label}
+          size="small"
+          sx={{
+            height: 24,
+            background: `${statusInfo.bg}`,
+            backdropFilter: 'blur(10px)',
+            color: '#fff',
+            fontFamily: lora.style.fontFamily,
+            fontWeight: 700,
+            fontSize: '0.7rem',
+            letterSpacing: '0.05em',
+            border: `1px solid ${statusInfo.color}`,
+            boxShadow: `0 4px 12px ${statusInfo.color}60`,
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+            '& .MuiChip-label': {
+              px: 1.5,
+            },
+          }}
+        />
+      </Box>
+
+      {/* Review Button - Badge Style */}
+      {book.userData?.review && (
+        <Box
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setReviewModalOpen(true);
+          }}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            left: 8,
+            zIndex: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            padding: '4px 10px',
+            background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+            backdropFilter: 'blur(10px)',
+            color: '#fff',
+            fontSize: '11px',
+            fontWeight: 600,
+            letterSpacing: '0.3px',
+            textTransform: 'uppercase',
+            boxShadow: '0 4px 16px rgba(147, 51, 234, 0.6)',
+            border: '1px solid rgba(168, 85, 247, 0.4)',
+            borderRadius: '20px',
+            cursor: 'pointer',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #7e22ce 0%, #9333ea 100%)',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 24px rgba(147, 51, 234, 0.8)',
+            },
+            '&:active': {
+              transform: 'translateY(0)',
+            },
+          }}
+        >
+          <AssistantIcon sx={{ fontSize: 14 }} />
+          <span>Review</span>
+        </Box>
+      )}
+
       {/* Imagen del libro */}
       <Box
         sx={{
@@ -212,7 +342,123 @@ export const BookCardCompact = ({
             display: 'block',
           }}
         />
+
+        {/* Hover Overlay */}
+        <AnimatePresence>
+          {isHovered && (
+            <MotionBox
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background:
+                  'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%)',
+                backdropFilter: 'blur(4px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                variant="contained"
+                startIcon={<VisibilityIcon />}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleClick();
+                }}
+                sx={{
+                  background: `linear-gradient(135deg, ${statusInfo.color} 0%, ${statusInfo.color}CC 100%)`,
+                  color: '#fff',
+                  fontFamily: lora.style.fontFamily,
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  px: 3,
+                  py: 1,
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  boxShadow: `0 8px 24px ${statusInfo.color}60`,
+                  '&:hover': {
+                    background: `linear-gradient(135deg, ${statusInfo.color}DD 0%, ${statusInfo.color}AA 100%)`,
+                    transform: 'scale(1.05)',
+                  },
+                }}
+              >
+                View Details
+              </Button>
+            </MotionBox>
+          )}
+        </AnimatePresence>
       </Box>
+
+      {/* Progress Bar (if reading) */}
+      {progress !== null && (
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '95px',
+            left: 0,
+            right: 0,
+            px: 2,
+            zIndex: 15,
+          }}
+        >
+          <Box
+            sx={{
+              background: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '8px',
+              p: 1,
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+            }}
+          >
+            <Typography
+              sx={{
+                color: '#fff',
+                fontFamily: lora.style.fontFamily,
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                mb: 0.5,
+                textAlign: 'center',
+              }}
+            >
+              {progress}% completed
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                '& .MuiLinearProgress-bar': {
+                  background:
+                    'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)',
+                  borderRadius: 3,
+                  boxShadow: '0 0 10px rgba(59, 130, 246, 0.6)',
+                },
+              }}
+            />
+            <Typography
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontFamily: lora.style.fontFamily,
+                fontSize: '0.65rem',
+                mt: 0.5,
+                textAlign: 'center',
+              }}
+            >
+              Page {book.userData?.pagesRead || 0} of {book.totalPages}
+            </Typography>
+          </Box>
+        </Box>
+      )}
 
       {/* Contenido */}
       <Box
@@ -291,37 +537,6 @@ export const BookCardCompact = ({
                   },
                 }}
               />
-            </Box>
-          )}
-
-          {book.userData?.review && (
-            <Box
-              sx={{
-                position: 'absolute',
-                right: '8px',
-                top: 'calc(150% - 40px)',
-                zIndex: 10,
-              }}
-            >
-              <Tooltip title="See review" arrow placement="top">
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setReviewModalOpen(true);
-                  }}
-                  sx={{
-                    background:
-                      'linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(168, 85, 247, 0.9) 100%)',
-                    backdropFilter: 'blur(10px)',
-                    color: '#fff',
-                    boxShadow: '0 4px 12px rgba(147, 51, 234, 0.4)',
-                  }}
-                >
-                  <AssistantIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
             </Box>
           )}
         </Box>

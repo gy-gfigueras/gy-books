@@ -1,28 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useBiography } from '@/hooks/useBiography';
 import { User } from '@/domain/user.model';
-
-/**
- * Hook de UI para manejar el estado de edición de la biografía en el perfil.
- *
- * Este hook es responsable únicamente de:
- * - Manejar el modo de edición (isEditing)
- * - Mantener el valor temporal durante la edición
- * - Sincronizar con el estado global del usuario
- * - Coordinar las acciones de guardar/cancelar
- *
- * NO maneja la lógica de actualización de datos - eso lo hace useBiography.
- *
- * Patrón de sincronización:
- * 1. El usuario entra en modo edición
- * 2. El valor temporal se inicializa desde el usuario global
- * 3. El usuario modifica el valor temporal
- * 4. Al guardar, se llama a useBiography que hace el optimistic update
- * 5. El usuario global se actualiza automáticamente por SWR
- * 6. Este hook detecta el cambio y se sincroniza
- *
- * Este patrón es reutilizable para otros campos editables.
- */
 
 interface UseProfileBiographyReturn {
   biography: string;
@@ -50,69 +28,45 @@ export function useProfileBiography(
     setIsError: setIsErrorBiography,
   } = useBiography();
 
-  // Estado de UI: modo de edición
   const [isEditingBiography, setIsEditingBiography] = useState(false);
+  const [localBiography, setLocalBiography] = useState('');
 
-  // Estado temporal durante la edición
-  const [biography, setBiography] = useState(user?.biography || '');
+  // Usamos un ref para saber si estamos en modo edición sin causar re-renders
+  const isEditingRef = useRef(false);
 
-  /**
-   * Sincroniza el estado local con el usuario global.
-   * Solo actualiza si NO estamos en modo edición para no sobrescribir
-   * lo que el usuario está escribiendo.
-   */
-  useEffect(() => {
-    if (!isEditingBiography && user?.biography !== undefined) {
-      setBiography(user.biography);
-    }
-  }, [user?.biography, isEditingBiography]);
+  const handleBiographyChange = useCallback((newBiography: string) => {
+    setLocalBiography(newBiography);
+  }, []);
 
-  /**
-   * Actualiza el valor temporal durante la edición.
-   */
-  const handleBiographyChange = (newBiography: string) => {
-    setBiography(newBiography);
-  };
-
-  /**
-   * Guarda la biografía.
-   * El optimistic update se maneja en useBiography,
-   * aquí solo coordinamos la UI.
-   */
-  const handleBiographySave = async () => {
+  const handleBiographySave = useCallback(async () => {
     try {
-      await handleUpdateBiography(biography || '');
-      // Sale del modo edición solo si fue exitoso
-      // Si hay error, useBiography setea isError y el usuario puede reintentar
+      await handleUpdateBiography(localBiography);
       if (!isErrorBiography) {
+        isEditingRef.current = false;
         setIsEditingBiography(false);
       }
     } catch (error) {
-      // El error ya se maneja en useBiography
-      console.error(
-        '[useProfileBiography] Error in handleBiographySave:',
-        error
-      );
+      console.error('[useProfileBiography] Error saving biography:', error);
     }
-  };
+  }, [localBiography, handleUpdateBiography, isErrorBiography]);
 
-  /**
-   * Entra en modo edición.
-   */
-  const handleEditBiography = () => {
-    // Sincroniza con el valor actual del usuario antes de editar
-    setBiography(user?.biography || '');
+  const handleEditBiography = useCallback(() => {
+    const initialValue = user?.biography || '';
+    setLocalBiography(initialValue);
+    isEditingRef.current = true;
     setIsEditingBiography(true);
-  };
+  }, [user?.biography]);
 
-  /**
-   * Cancela la edición y revierte al valor del usuario global.
-   */
-  const handleCancelBiography = () => {
-    setBiography(user?.biography || '');
+  const handleCancelBiography = useCallback(() => {
+    isEditingRef.current = false;
     setIsEditingBiography(false);
     setIsErrorBiography(false);
-  };
+  }, [setIsErrorBiography]);
+
+  // Devolvemos el valor correcto según el modo
+  // Durante la edición: localBiography
+  // Fuera de edición: user?.biography
+  const biography = isEditingBiography ? localBiography : user?.biography || '';
 
   return {
     biography,

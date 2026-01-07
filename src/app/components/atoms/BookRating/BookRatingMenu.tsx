@@ -5,7 +5,6 @@ import {
   Stack,
   Box,
   Typography,
-  Divider,
   Button,
   IconButton,
 } from '@mui/material';
@@ -45,204 +44,237 @@ const BookRatingMenu: React.FC<Props> = ({
     anchorEl={anchorEl}
     open={open}
     onClose={onClose}
+    TransitionProps={{
+      timeout: 250,
+    }}
     PaperProps={{
       sx: {
-        borderRadius: 4,
-        minWidth: 340,
-        p: 3,
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(147, 51, 234, 0.3)',
-        boxShadow: '0 8px 32px rgba(147, 51, 234, 0.3)',
+        borderRadius: '16px',
+        minWidth: 600,
+        maxWidth: 720,
+        background: 'rgba(17, 24, 39, 0.85)',
+        backdropFilter: 'blur(24px)',
+        border: '1px solid rgba(147, 51, 234, 0.15)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
       },
     }}
   >
-    <Stack spacing={2} alignItems="stretch" position="relative">
-      {isBookSaved && handleDeleteBook && (
-        <IconButton
-          sx={{
-            position: 'absolute',
-            top: 10,
-            padding: '10px',
-            background: 'rgba(255, 83, 83, 0.1)',
-            borderRadius: '16px',
-            right: 0,
-          }}
-          onClick={handleDeleteBook}
-        >
-          <DeleteIcon sx={{ color: '#ff5353' }} />
-        </IconButton>
-      )}
-      <Box>
-        <Typography
-          sx={{
-            color: '#fff',
-            fontWeight: 'bold',
-            mb: 0.5,
-            fontSize: 20,
-            fontFamily,
-            letterSpacing: '.05rem',
-          }}
-        >
-          Rating
-        </Typography>
-        <RatingStars
-          rating={state.tempRating}
-          onRatingChange={handlers.setTempRating}
-          disabled={isLoading || isSubmitting}
-          isLoading={isLoading}
-        />
-        <Box sx={{ mt: 2 }}>
-          <BookRatingReviewInput
-            tempReview={state.tempReview}
-            setTempReview={handlers.setTempReview}
-            fontFamily={fontFamily}
-            isLoading={isLoading || isSubmitting}
-          />
-        </Box>
-      </Box>
-      <Divider sx={{ borderColor: '#8C54FF30' }} />
-      <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
-        <Typography
-          sx={{
-            color: '#fff',
-            fontWeight: 'bold',
-            mb: 1,
-            fontSize: 20,
-            fontFamily,
-            letterSpacing: '.05rem',
-          }}
-        >
-          Status
-        </Typography>
-        <BookRatingStatusButtons
-          tempStatus={state.tempStatus}
-          setTempStatus={handlers.setTempStatus}
-          fontFamily={fontFamily}
-        />
-        <BookRatingProgressInput
-          tempProgress={state.tempProgress}
-          setTempProgress={handlers.setTempProgress}
-          isProgressPercent={state.isProgressPercent}
-          setIsProgressPercent={handlers.setIsProgressPercent}
-          fontFamily={fontFamily}
-        />
-      </Box>
-      <Divider sx={{ borderColor: '#8C54FF30' }} />
+    <Box sx={{ p: 3, position: 'relative' }}>
+      {/* Header con título y botón eliminar */}
       <Box
         sx={{
           display: 'flex',
-          gap: 2,
-          alignContent: 'center',
-          flexDirection: 'column',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
         }}
       >
         <Typography
           sx={{
             color: '#fff',
-            fontWeight: 'bold',
-            mb: 1,
+            fontWeight: 600,
             fontSize: 20,
             fontFamily,
-            letterSpacing: '.05rem',
           }}
         >
-          Dates
+          Book Details
+        </Typography>
+        {isBookSaved && handleDeleteBook && (
+          <IconButton
+            onClick={handleDeleteBook}
+            size="small"
+            sx={{
+              color: '#ef4444',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              '&:hover': {
+                background: 'rgba(239, 68, 68, 0.2)',
+                borderColor: 'rgba(239, 68, 68, 0.3)',
+              },
+            }}
+          >
+            <DeleteIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        )}
+      </Box>
+
+      {/* Layout en 2 columnas */}
+      <Box sx={{ display: 'flex', gap: 3 }}>
+        {/* Columna izquierda: Rating y Review */}
+        <Box sx={{ flex: 1 }}>
+          <Typography
+            sx={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: 13,
+              fontWeight: 500,
+              mb: 1.5,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              fontFamily,
+            }}
+          >
+            Rating
+          </Typography>
+          <RatingStars
+            rating={state.tempRating}
+            onRatingChange={handlers.setTempRating}
+            disabled={isLoading || isSubmitting}
+            isLoading={isLoading}
+          />
+          <Box sx={{ mt: 2 }}>
+            <BookRatingReviewInput
+              tempReview={state.tempReview}
+              setTempReview={handlers.setTempReview}
+              fontFamily={fontFamily}
+              isLoading={isLoading || isSubmitting}
+            />
+          </Box>
+        </Box>
+
+        {/* Columna derecha: Status y Progress */}
+        <Box sx={{ flex: 1 }}>
+          <Typography
+            sx={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: 13,
+              fontWeight: 500,
+              mb: 1.5,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              fontFamily,
+            }}
+          >
+            Status
+          </Typography>
+          <BookRatingStatusButtons
+            tempStatus={state.tempStatus}
+            setTempStatus={handlers.setTempStatus}
+            fontFamily={fontFamily}
+          />
+          <Box sx={{ mt: 2 }}>
+            <BookRatingProgressInput
+              tempProgress={state.tempProgress}
+              setTempProgress={handlers.setTempProgress}
+              isProgressPercent={state.isProgressPercent}
+              setIsProgressPercent={handlers.setIsProgressPercent}
+              fontFamily={fontFamily}
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Fechas en una fila */}
+      <Box sx={{ mt: 3 }}>
+        <Typography
+          sx={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: 13,
+            fontWeight: 500,
+            mb: 1.5,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            fontFamily,
+          }}
+        >
+          Reading Period
         </Typography>
         <Stack direction="row" gap={2}>
           <TextField
             type="date"
             value={state.tempStartDate}
             onChange={(e) => handlers.setTempStartDate(e.target.value)}
-            label="Inicio"
+            label="Start Date"
             InputLabelProps={{ shrink: true }}
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
-              borderRadius: '10px',
-              input: {
-                color: '#fff',
-                fontFamily: fontFamily,
-              },
+              flex: 1,
               '& .MuiOutlinedInput-root': {
+                background: 'rgba(147, 51, 234, 0.05)',
                 '& fieldset': {
-                  borderColor: 'transparent',
-                  borderRadius: '10px',
+                  borderColor: 'rgba(147, 51, 234, 0.2)',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.5)',
+                  borderColor: 'rgba(147, 51, 234, 0.3)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: '#8C54FF',
-                  borderWidth: 2,
+                  borderColor: '#9333ea',
                 },
               },
-              label: {
-                color: '#fff',
-                fontFamily: fontFamily,
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: 14,
+                fontFamily,
               },
-              minWidth: 120,
+              input: {
+                color: '#fff',
+                fontSize: 14,
+                fontFamily,
+              },
             }}
           />
           <TextField
             type="date"
             value={state.tempEndDate}
             onChange={(e) => handlers.setTempEndDate(e.target.value)}
-            label="Fin"
+            label="End Date"
             InputLabelProps={{ shrink: true }}
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
-              borderRadius: '10px',
-              input: {
-                color: '#fff',
-                fontFamily: fontFamily,
-              },
+              flex: 1,
               '& .MuiOutlinedInput-root': {
+                background: 'rgba(147, 51, 234, 0.05)',
                 '& fieldset': {
-                  borderColor: 'transparent',
-                  borderRadius: '10px',
+                  borderColor: 'rgba(147, 51, 234, 0.2)',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.5)',
+                  borderColor: 'rgba(147, 51, 234, 0.3)',
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: '#9333ea',
-                  borderWidth: 2,
                 },
               },
-              label: {
-                color: '#fff',
-                fontFamily: fontFamily,
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: 14,
+                fontFamily,
               },
-              minWidth: 120,
+              input: {
+                color: '#fff',
+                fontSize: 14,
+                fontFamily,
+              },
             }}
           />
         </Stack>
       </Box>
+
+      {/* Botón Apply */}
       <Button
         variant="contained"
-        color="primary"
+        fullWidth
         onClick={handlers.handleApply}
         disabled={isSubmitting}
         sx={{
-          borderRadius: 3,
-          fontWeight: 'bold',
-          fontSize: 18,
-          fontFamily,
-          letterSpacing: '.05rem',
-          mt: 2,
+          mt: 3,
+          py: 1.2,
+          borderRadius: '10px',
           textTransform: 'none',
+          fontSize: 15,
+          fontWeight: 600,
+          fontFamily,
+          background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
+          boxShadow: 'none',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%)',
+            boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+          },
+          '&.Mui-disabled': {
+            background: 'rgba(147, 51, 234, 0.2)',
+            color: 'rgba(255, 255, 255, 0.3)',
+          },
         }}
       >
-        Apply
+        Apply Changes
       </Button>
-    </Stack>
+    </Box>
   </Menu>
 );
 

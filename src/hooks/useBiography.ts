@@ -48,36 +48,21 @@ export function useBiography(): UseBiographyProps {
     setIsError(false);
 
     try {
-      // Optimistic update: actualiza el cache inmediatamente
+      // Ejecutar la actualización en el servidor primero
+      await updateBiography(newBiography);
+
+      // Después del éxito, actualizar el cache
       await mutate(
         USER_CACHE_KEY,
-        async (currentUser: User | undefined) => {
-          if (!currentUser) throw new Error('No user data in cache');
-
-          // Ejecutar la actualización en el servidor
-          await updateBiography(newBiography);
-
-          // Retornar el usuario actualizado optimistically
+        (currentUser: User | undefined) => {
+          if (!currentUser) return currentUser;
           return {
             ...currentUser,
             biography: newBiography,
           };
         },
         {
-          // Optimistic data: lo que el usuario ve inmediatamente
-          optimisticData: (currentUser: User | undefined) => {
-            if (!currentUser) return currentUser;
-            return {
-              ...currentUser,
-              biography: newBiography,
-            };
-          },
-          // Si hay error, revertir automáticamente
-          rollbackOnError: true,
-          // Después del éxito, revalidar desde el servidor
-          revalidate: true,
-          // Popular el cache inmediatamente
-          populateCache: true,
+          revalidate: false, // No revalidar, ya tenemos el valor correcto
         }
       );
 

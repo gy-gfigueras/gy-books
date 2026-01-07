@@ -26,7 +26,9 @@ export default async function getFriends(): Promise<Profile[]> {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`Failed to fetch friends: ${response.status} - ${errorText}`);
+      console.error(
+        `Failed to fetch friends: ${response.status} - ${errorText}`
+      );
       return []; // Devolver array vacío en lugar de lanzar error
     }
 

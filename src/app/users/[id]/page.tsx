@@ -129,6 +129,8 @@ function ProfilePageContent() {
           onBiographySave={() => {}}
           onBiographyCancel={() => {}}
           canEdit={false}
+          books={books}
+          isLoadingBooks={loading}
         />
 
         {/* Tabs Navigation and Content */}

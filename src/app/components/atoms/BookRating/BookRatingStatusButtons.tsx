@@ -14,31 +14,49 @@ const BookRatingStatusButtons: React.FC<Props> = ({
   setTempStatus,
   fontFamily,
 }) => (
-  <Stack direction="row" spacing={2} justifyContent="center" pb={2}>
+  <Stack direction="row" spacing={1.5} justifyContent="flex-start">
     {statusOptions.map((opt: StatusOption) => (
       <Button
         key={opt.value}
         variant={tempStatus === opt.value ? 'contained' : 'outlined'}
         startIcon={React.cloneElement(opt.icon, {
-          sx: { color: tempStatus === opt.value ? '#fff' : '#8C54FF' },
+          sx: {
+            color:
+              tempStatus === opt.value ? '#fff' : 'rgba(147, 51, 234, 0.8)',
+            fontSize: 18,
+          },
         })}
         onClick={() => setTempStatus(opt.value)}
         sx={{
-          borderRadius: 3,
-          fontWeight: 'bold',
-          color: tempStatus === opt.value ? '#fff' : '#8C54FF',
-          background: tempStatus === opt.value ? '#8C54FF' : 'transparent',
-          borderColor: '#8C54FF',
-          px: 1,
-          py: 1,
-          minWidth: 0,
+          flex: 1,
+          borderRadius: '10px',
+          fontWeight: 600,
+          fontSize: 14,
+          color: tempStatus === opt.value ? '#fff' : 'rgba(147, 51, 234, 0.9)',
+          background:
+            tempStatus === opt.value
+              ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
+              : 'rgba(147, 51, 234, 0.05)',
+          borderColor:
+            tempStatus === opt.value
+              ? 'transparent'
+              : 'rgba(147, 51, 234, 0.2)',
+          px: 2,
+          py: 1.2,
           textTransform: 'none',
-          fontSize: 18,
           fontFamily,
-          letterSpacing: '.05rem',
+          whiteSpace: 'nowrap',
+          transition: 'all 0.2s ease',
           '&:hover': {
-            background: '#8C54FF',
-            color: '#fff',
+            background:
+              tempStatus === opt.value
+                ? 'linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%)'
+                : 'rgba(147, 51, 234, 0.1)',
+            borderColor:
+              tempStatus === opt.value
+                ? 'transparent'
+                : 'rgba(147, 51, 234, 0.3)',
+            transform: 'translateY(-1px)',
           },
         }}
       >

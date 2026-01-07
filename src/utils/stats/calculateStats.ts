@@ -60,9 +60,9 @@ export function calculateStats(books: HardcoverBook[]): Stats {
       stats.wantToReadPages += pageCount || 0;
     }
 
-    // Distribución de autores
+    // Distribución de autores (solo libros READ)
     const authorName = book.author?.name;
-    if (authorName) {
+    if (authorName && status === 'READ') {
       stats.authors[authorName] = (stats.authors[authorName] || 0) + 1;
     }
 

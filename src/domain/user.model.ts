@@ -1,4 +1,5 @@
 import { UUID } from 'crypto';
+import type HardcoverBook from './HardcoverBook';
 
 export interface User {
   id: UUID;
@@ -21,3 +22,5 @@ export interface EditData {
   picture: string;
   phoneNumber: string | null;
 }
+
+export type UserProfileBook = HardcoverBook;

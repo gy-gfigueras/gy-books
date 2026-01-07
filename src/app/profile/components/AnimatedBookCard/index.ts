@@ -1,0 +1,1 @@
+export { AnimatedBookCard } from './AnimatedBookCard';

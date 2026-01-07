@@ -50,10 +50,12 @@ export function mapHardcoverBookToBook(
   }
   // Si no hay book_series, intentar featured_series (búsquedas)
   else if (hardcoverBook.featured_series?.series) {
-    series = [{
-      id: hardcoverBook.featured_series.series.id ?? 0,
-      name: hardcoverBook.featured_series.series.name ?? '',
-    }];
+    series = [
+      {
+        id: hardcoverBook.featured_series.series.id ?? 0,
+        name: hardcoverBook.featured_series.series.name ?? '',
+      },
+    ];
   }
 
   // 3️⃣ Ediciones: todas las de book_series + hardcoverBook.editions

@@ -106,11 +106,16 @@ export function FriendsTab({
 
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 2,
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: 'repeat(2, minmax(400px, 1fr))',
+          },
+          columnGap: 2,
+          rowGap: 1.5,
           width: '100%',
+          maxWidth: '900px',
+          justifyContent: 'center',
         }}
       >
         {isLoading || !data ? (
@@ -118,16 +123,24 @@ export function FriendsTab({
             <FriendCardSkeleton key={i} />
           ))
         ) : filteredFriends.length === 0 ? (
-          <Typography
+          <Box
             sx={{
-              fontFamily: lora.style.fontFamily,
-              color: 'white',
-              fontSize: '1.5rem',
-              mt: 2,
+              gridColumn: '1 / -1',
+              display: 'flex',
+              justifyContent: 'center',
             }}
           >
-            {search ? 'No friends found.' : "You don't have any friends yet."}
-          </Typography>
+            <Typography
+              sx={{
+                fontFamily: lora.style.fontFamily,
+                color: 'white',
+                fontSize: '1.5rem',
+                mt: 2,
+              }}
+            >
+              {search ? 'No friends found.' : "You don't have any friends yet."}
+            </Typography>
+          </Box>
         ) : (
           filteredFriends.map((friend: Friend) => (
             <FriendCard

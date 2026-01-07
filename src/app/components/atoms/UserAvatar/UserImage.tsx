@@ -3,7 +3,13 @@ import { useMediaQuery, useTheme } from '@mui/material';
 import { User } from '@/domain/user.model';
 import React from 'react';
 
-export const UserImage = ({ user }: { user: User }) => {
+export const UserImage = ({
+  user,
+  compact = false,
+}: {
+  user: User;
+  compact?: boolean;
+}) => {
   const theme = useTheme();
 
   const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
@@ -13,6 +19,11 @@ export const UserImage = ({ user }: { user: User }) => {
   if (isSm) size = 120;
   if (isMd) size = 160;
 
+  // En modo compact, el tamaño es 100% del contenedor
+  if (compact) {
+    size = 100;
+  }
+
   return (
     <Image
       src={user?.picture || ''}
@@ -21,13 +32,15 @@ export const UserImage = ({ user }: { user: User }) => {
       height={size}
       style={{
         borderRadius: '50%',
-        border: '3px solid #9333ea',
+        border: compact ? 'none' : '3px solid #9333ea',
         backgroundColor: 'rgba(147, 51, 234, 0.1)',
-        marginLeft: isMd ? '16px' : '0',
-        marginBottom: isMd ? '0' : '16px',
-        alignSelf: isMd ? 'flex-start' : 'center',
+        marginLeft: compact ? '0' : isMd ? '16px' : '0',
+        marginBottom: compact ? '0' : isMd ? '0' : '36px',
+        alignSelf: compact ? 'center' : isMd ? 'flex-start' : 'center',
         aspectRatio: '1/1',
         objectFit: 'cover',
+        width: compact ? '100%' : undefined,
+        height: compact ? '100%' : undefined,
       }}
     />
   );

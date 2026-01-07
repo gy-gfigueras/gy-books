@@ -1,73 +1,193 @@
 'use client';
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { BookCardCompact } from '@/app/components/atoms/BookCardCompact/BookCardCompact';
+import { AnimatedBookCard } from '../AnimatedBookCard/AnimatedBookCard';
+import { BookCardList } from '@/app/components/atoms/BookCardList/BookCardList';
+import { ReadingTimeline } from '../ReadingTimeline/ReadingTimeline';
+import { ReadingCalendar } from '../ReadingCalendar/ReadingCalendar';
 import HardcoverBook from '@/domain/HardcoverBook';
+import type { UserProfileBook } from '@/domain/user.model';
+import { lora } from '@/utils/fonts/fonts';
+import { motion } from 'framer-motion';
+
+export type ViewType = 'grid' | 'list' | 'timeline' | 'calendar';
 
 interface BooksListProps {
   books: HardcoverBook[];
   hasMore: boolean;
+  view?: ViewType;
 }
 
-export const BooksList: React.FC<BooksListProps> = ({ books, hasMore }) => (
-  <Box
-    sx={{
-      flex: 1,
-      display: {
-        xs: 'grid',
-        sm: 'grid',
-        md: 'flex',
-      },
-      gridTemplateColumns: {
-        xs: '1fr 1fr',
-        sm: '1fr 1fr',
-        md: 'none',
-      },
-      flexDirection: { xs: 'unset', md: 'unset' },
-      width: '100%',
-      flexWrap: { xs: 'unset', md: 'wrap' },
-      gap: { xs: 1, sm: 2 },
-      overflowY: 'auto',
-      maxHeight: '65vh',
-      minHeight: 240,
-      alignItems: { xs: 'stretch', md: 'flex-start' },
-      justifyContent: { xs: 'flex-start', md: 'center' },
-      py: { md: 1 },
-      background: 'transparent',
-      scrollbarColor: '#9333ea transparent',
-      '&::-webkit-scrollbar': { width: 8 },
-      '&::-webkit-scrollbar-track': { background: 'rgba(147, 51, 234, 0.1)' },
-      '&::-webkit-scrollbar-thumb': {
-        background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-        borderRadius: 4,
-      },
-    }}
-  >
-    {books.map((book) => (
+export const BooksList: React.FC<BooksListProps> = ({
+  books,
+  hasMore,
+  view = 'grid',
+}) => {
+  // Timeline view
+  if (view === 'timeline') {
+    return <ReadingTimeline books={books as UserProfileBook[]} />;
+  }
+
+  // Calendar view
+  if (view === 'calendar') {
+    return <ReadingCalendar books={books as UserProfileBook[]} />;
+  }
+  // Grid configuration based on view type
+  const gridConfig = {
+    grid: {
+      xs: 'repeat(auto-fill, minmax(160px, 1fr))',
+      sm: 'repeat(auto-fill, minmax(180px, 1fr))',
+      md: 'repeat(auto-fill, minmax(200px, 1fr))',
+    },
+    list: {
+      xs: '1fr',
+      sm: 'repeat(2, 1fr)',
+      md: 'repeat(3, 1fr)',
+    },
+  };
+
+  // Vista list usa BookCardList en grid
+  if (view === 'list') {
+    return (
       <Box
-        key={book.id}
         sx={{
-          minWidth: { xs: 'unset', md: 200 },
-          maxWidth: { xs: 'unset', md: 220 },
-          width: { xs: '100%', sm: '100%', md: 'auto' },
-          boxSizing: 'border-box',
-          display: 'flex',
-          justifyContent: { xs: 'center', md: 'center' },
-          alignItems: { xs: 'stretch', md: 'flex-start' },
-          px: { xs: 0, sm: 1, md: 0 },
-          py: { xs: 0.5, md: 0 },
-          height: { xs: 'auto', md: '100%' },
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: gridConfig.list.xs,
+            sm: gridConfig.list.sm,
+            md: gridConfig.list.md,
+          },
+          gap: { xs: 1.5, sm: 2 },
+          width: '100%',
+          py: { xs: 1, md: 2 },
+          px: { xs: 0.5, md: 1 },
         }}
       >
-        <BookCardCompact book={book} small={true} />
+        {books.map((book, index) => (
+          <motion.div
+            key={book.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.02 }}
+          >
+            <BookCardList book={book} />
+          </motion.div>
+        ))}
+        {hasMore && books.length > 0 && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              py: 2,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'rgba(168, 85, 247, 0.6)',
+                fontFamily: lora.style.fontFamily,
+                fontStyle: 'italic',
+                fontSize: '0.9rem',
+                letterSpacing: '0.05em',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              Scroll for more books...
+            </Typography>
+          </Box>
+        )}
+        {!hasMore && books.length > 0 && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              py: 2,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'rgba(255, 255, 255, 0.3)',
+                fontFamily: lora.style.fontFamily,
+                fontSize: '0.85rem',
+              }}
+            >
+              All books loaded
+            </Typography>
+          </Box>
+        )}
       </Box>
-    ))}
-    {!hasMore && books.length > 0 && (
-      <Box sx={{ width: '100%', textAlign: 'center', py: 2 }}>
-        <Typography variant="body2" sx={{ color: '#ffffff30' }}>
-          All books loaded
-        </Typography>
-      </Box>
-    )}
-  </Box>
-);
+    );
+  }
+
+  // Grid layout para compact y grid
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: gridConfig[view].xs,
+          sm: gridConfig[view].sm,
+          md: gridConfig[view].md,
+        },
+        gap: { xs: 2, sm: 3, md: 4 },
+        width: '100%',
+        py: { xs: 1, md: 2 },
+        px: { xs: 0.5, md: 1 },
+      }}
+    >
+      {books.map((book, index) => (
+        <AnimatedBookCard key={book.id} book={book} index={index} />
+      ))}
+      {hasMore && books.length > 0 && (
+        <Box
+          sx={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            py: 2,
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'rgba(168, 85, 247, 0.6)',
+              fontFamily: lora.style.fontFamily,
+              fontStyle: 'italic',
+              fontSize: '0.9rem',
+              letterSpacing: '0.05em',
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            Scroll for more books...
+          </Typography>
+        </Box>
+      )}
+      {!hasMore && books.length > 0 && (
+        <Box
+          sx={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            py: 2,
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'rgba(255, 255, 255, 0.3)',
+              fontFamily: lora.style.fontFamily,
+              fontSize: '0.85rem',
+            }}
+          >
+            All books loaded
+          </Typography>
+        </Box>
+      )}
+    </Box>
+  );
+};
