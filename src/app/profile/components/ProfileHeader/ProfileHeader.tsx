@@ -184,10 +184,13 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            initial={{ maxHeight: 0, opacity: 0 }}
+            animate={{ maxHeight: 2000, opacity: 1 }}
+            exit={{ maxHeight: 0, opacity: 0 }}
+            transition={{
+              maxHeight: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+              opacity: { duration: 0.3, ease: 'easeInOut' },
+            }}
             style={{ overflow: 'hidden' }}
           >
             <Box

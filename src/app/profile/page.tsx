@@ -22,8 +22,10 @@ import useMergedBooksIncremental from '@/hooks/books/useMergedBooksIncremental';
 
 // Components
 import { BooksTab } from './components/BooksTab/BooksTab';
-import { ProfileTabsNavigation } from './components/ProfileTabsNavigation/ProfileTabsNavigation';
+import { ProfileNavigation } from './components/ProfileNavigation/ProfileNavigation';
 import { ProfileTabContent } from './components/ProfileTabContent/ProfileTabContent';
+import { CompactBooksFilter } from './components/BooksFilter/CompactBooksFilter';
+import { ViewType } from './components/BooksList/BooksList';
 
 // Helpers
 import { ProfileBookHelpers } from './utils/profileHelpers';
@@ -35,6 +37,7 @@ function ProfilePageContent() {
   const isLoading = !user;
 
   const { tab, setTab } = useProfileTabs();
+  const [view, setView] = React.useState<ViewType>('grid');
   const { count: friendsCount, isLoading: isLoadingFriends } = useFriends();
   const filters = useProfileFilters();
   const {
@@ -137,7 +140,39 @@ function ProfilePageContent() {
             minHeight: 0,
           }}
         >
-          <ProfileTabsNavigation tab={tab} onTabChange={setTab} />
+          <ProfileNavigation
+            activeTab={tab}
+            onTabChange={setTab}
+            booksCount={books?.length || 0}
+            hallOfFameCount={
+              books?.filter((b) => b.userData?.hallOfFame)?.length || 0
+            }
+          >
+            {tab === 0 && (
+              <CompactBooksFilter
+                statusOptions={filterOptions.statusOptions}
+                statusFilter={filters.status}
+                authorOptions={filterOptions.authorOptions}
+                seriesOptions={filterOptions.seriesOptions}
+                authorFilter={filters.author}
+                seriesFilter={filters.series}
+                ratingFilter={filters.rating}
+                search={filters.search}
+                onStatusChange={filters.handleStatusFilterChange}
+                onAuthorChange={filters.handleAuthorFilterChange}
+                onSeriesChange={filters.handleSeriesFilterChange}
+                onRatingChange={filters.handleRatingFilterChange}
+                onSearchChange={filters.handleSearchChange}
+                orderBy={filters.orderBy}
+                orderDirection={filters.orderDirection}
+                onOrderByChange={filters.handleOrderByChange}
+                onOrderDirectionChange={filters.handleOrderDirectionChange}
+                view={view}
+                onViewChange={setView}
+                isOwnProfile={true}
+              />
+            )}
+          </ProfileNavigation>
           <Box
             sx={{
               flex: 1,
@@ -159,6 +194,8 @@ function ProfilePageContent() {
                 hasMore={hasMore}
                 filterOptions={filterOptions}
                 filters={filters}
+                view={view}
+                onViewChange={setView}
               />
             </ProfileTabContent>
           </Box>

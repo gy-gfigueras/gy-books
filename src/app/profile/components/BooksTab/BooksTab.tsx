@@ -32,6 +32,8 @@ interface BooksTabProps {
     handleOrderByChange: (orderBy: string) => void;
     handleOrderDirectionChange: (direction: 'asc' | 'desc') => void;
   };
+  view: ViewType;
+  onViewChange: (view: ViewType) => void;
 }
 
 export function BooksTab({
@@ -41,9 +43,9 @@ export function BooksTab({
   hasMore,
   filterOptions,
   filters,
+  view,
+  onViewChange,
 }) {
-  const [view, setView] = useState<ViewType>('grid');
-
   return (
     <Box
       sx={{
@@ -54,39 +56,7 @@ export function BooksTab({
         overflow: 'hidden',
       }}
     >
-      {/* Filters Section - Sticky */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          background: '#000',
-          paddingTop: 4,
-          paddingBottom: 2,
-        }}
-      >
-        <BooksFilter
-          statusOptions={filterOptions.statusOptions}
-          statusFilter={filters.status}
-          authorOptions={filterOptions.authorOptions}
-          seriesOptions={filterOptions.seriesOptions}
-          authorFilter={filters.author}
-          seriesFilter={filters.series}
-          ratingFilter={filters.rating}
-          search={filters.search}
-          onStatusChange={filters.handleStatusFilterChange}
-          onAuthorChange={filters.handleAuthorFilterChange}
-          onSeriesChange={filters.handleSeriesFilterChange}
-          onRatingChange={filters.handleRatingFilterChange}
-          onSearchChange={filters.handleSearchChange}
-          orderBy={filters.orderBy}
-          orderDirection={filters.orderDirection}
-          onOrderByChange={filters.handleOrderByChange}
-          onOrderDirectionChange={filters.handleOrderDirectionChange}
-          view={view}
-          onViewChange={setView}
-        />
-      </Box>
+      {/* Filters will be rendered inline with navigation in parent component */}
 
       {/* Books Content - Scrollable */}
       <Box

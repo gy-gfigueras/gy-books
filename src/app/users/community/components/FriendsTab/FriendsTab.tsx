@@ -119,7 +119,7 @@ export function FriendsTab({
         }}
       >
         {isLoading || !data ? (
-          Array.from({ length: 3 }).map((_, i) => (
+          Array.from({ length: 4 }).map((_, i) => (
             <FriendCardSkeleton key={i} />
           ))
         ) : filteredFriends.length === 0 ? (

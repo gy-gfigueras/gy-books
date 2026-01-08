@@ -33,9 +33,6 @@ export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
     { type: 'calendar', icon: <CalendarMonthIcon />, label: 'Calendar View' },
   ];
 
-  // Solo mostrar grid y list en perfiles públicos
-  const views = isOwnProfile ? allViews : allViews.slice(0, 2);
-
   return (
     <Box
       sx={{
@@ -51,7 +48,7 @@ export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
         boxShadow: '0 4px 12px rgba(147, 51, 234, 0.2)',
       }}
     >
-      {views.map((viewOption) => {
+      {allViews.map((viewOption) => {
         const isActive = view === viewOption.type;
         return (
           <Tooltip key={viewOption.type} title={viewOption.label} arrow>

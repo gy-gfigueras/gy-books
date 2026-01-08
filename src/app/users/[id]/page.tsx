@@ -2,29 +2,28 @@
 
 import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton/ProfileSkeleton';
 import { ProfileHeader } from '@/app/profile/components/ProfileHeader/ProfileHeader';
+import { ProfileNavigation } from '@/app/profile/components/ProfileNavigation/ProfileNavigation';
+import { CompactBooksFilter } from '@/app/profile/components/BooksFilter/CompactBooksFilter';
+import { ProfileTabContent } from '@/app/profile/components/ProfileTabContent/ProfileTabContent';
+import { BooksTab } from '@/app/profile/components/BooksTab/BooksTab';
+import { ViewType } from '@/app/profile/components/BooksList/BooksList';
 import useMergedBooksIncremental from '@/hooks/books/useMergedBooksIncremental';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
-import { EBookStatus } from '@gycoding/nebula';
+import { useProfileFilters } from '@/app/profile/hooks/useProfileFilters';
+import { ProfileBookHelpers } from '@/app/profile/utils/profileHelpers';
 import { Box, Container, Typography } from '@mui/material';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { useProfileFilters } from './hooks/useProfileFilters';
-import { useProfileTabs } from './hooks/useProfileTabs';
-import { useFilteredBooks } from './hooks/useFilteredBooks';
-import { ProfileTabsNavigation } from './components/ProfileTabsNavigation/ProfileTabsNavigation';
-import { BooksTab } from './components/BooksTab/BooksTab';
-import { ProfileTabContent } from './components/ProfileTabContent/ProfileTabContent';
+import React from 'react';
 import { UserProfileSkeleton } from './components/UserProfileSkeleton/UserProfileSkeleton';
 
 function ProfilePageContent() {
   const params = useParams();
   const userId = params.id as string;
   const { data: user, isLoading } = useAccountsUser(userId);
-
-  // Custom hooks
-  const filters = useProfileFilters(userId);
-  const { activeTab, handleTabChange } = useProfileTabs();
+  const [tab, setTab] = React.useState(0);
+  const [view, setView] = React.useState<ViewType>('grid');
 
   // Books data
   const {
@@ -34,23 +33,23 @@ function ProfilePageContent() {
   } = useMergedBooksIncremental(params.id as UUID, 50);
   const hasMore = !isDone;
 
-  // Filtered books and options
-  const { authorOptions, seriesOptions, filteredBooks } = useFilteredBooks({
-    books,
-    statusFilter: filters.statusFilter,
-    authorFilter: filters.authorFilter,
-    seriesFilter: filters.seriesFilter,
-    ratingFilter: filters.ratingFilter,
-    search: filters.search,
-    orderBy: filters.orderBy,
-    orderDirection: filters.orderDirection,
-  });
+  // Filters
+  const filters = useProfileFilters();
 
-  const statusOptions = [
-    { label: 'Reading', value: EBookStatus.READING },
-    { label: 'Read', value: EBookStatus.READ },
-    { label: 'Want to read', value: EBookStatus.WANT_TO_READ },
-  ];
+  // Generar opciones de filtros desde los libros
+  const filterOptions = React.useMemo(() => {
+    return ProfileBookHelpers.generateFilterOptions(books);
+  }, [books]);
+
+  // Filtrar y ordenar libros
+  const filteredBooks = React.useMemo(() => {
+    const filtered = ProfileBookHelpers.filterBooks(books, filters);
+    return ProfileBookHelpers.sortBooks(
+      filtered,
+      filters.orderBy,
+      filters.orderDirection
+    );
+  }, [books, filters]);
 
   // Loading state
   if (isLoading) {
@@ -68,42 +67,19 @@ function ProfilePageContent() {
     );
   }
 
-  // Books tab content
-  const booksTabContent = (
-    <BooksTab
-      filteredBooks={filteredBooks}
-      hasMore={hasMore}
-      statusOptions={statusOptions}
-      statusFilter={filters.statusFilter}
-      authorOptions={authorOptions}
-      seriesOptions={seriesOptions}
-      authorFilter={filters.authorFilter}
-      seriesFilter={filters.seriesFilter}
-      ratingFilter={filters.ratingFilter}
-      search={filters.search}
-      orderBy={filters.orderBy}
-      orderDirection={filters.orderDirection}
-      onStatusChange={filters.handleStatusFilterChange}
-      onAuthorChange={filters.handleAuthorFilterChange}
-      onSeriesChange={filters.handleSeriesFilterChange}
-      onRatingChange={filters.handleRatingFilterChange}
-      onSearchChange={filters.handleSearchChange}
-      onOrderByChange={filters.handleOrderByChange}
-      onOrderDirectionChange={filters.handleOrderDirectionChange}
-    />
-  );
-
   return (
     <Container
       maxWidth="xl"
       sx={{
-        mt: { xs: 0, md: 6 },
+        mt: { xs: 0, md: 0 },
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        minHeight: '70vh',
+        minHeight: 'calc(100vh - 64px)',
+        height: '100%',
         borderRadius: 0,
         boxShadow: 'none',
+        paddingTop: { xs: 2, md: 4 },
       }}
     >
       <Box
@@ -114,9 +90,9 @@ function ProfilePageContent() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'stretch',
+          height: '100%',
         }}
       >
-        {/* Profile Header */}
         <ProfileHeader
           user={user}
           friendsCount={0}
@@ -132,21 +108,75 @@ function ProfilePageContent() {
           books={books}
           isLoadingBooks={loading}
         />
-
-        {/* Tabs Navigation and Content */}
-        <Box sx={{ mt: 6 }}>
-          <ProfileTabsNavigation
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-          />
-
-          <ProfileTabContent
-            activeTab={activeTab}
-            userId={user.id as UUID}
-            books={books}
-            booksLoading={loading}
-            booksTabContent={booksTabContent}
-          />
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            mt: 0,
+            minHeight: 0,
+          }}
+        >
+          <ProfileNavigation
+            activeTab={tab}
+            onTabChange={setTab}
+            booksCount={books?.length || 0}
+            hallOfFameCount={
+              books?.filter((b) => b.userData?.hallOfFame)?.length || 0
+            }
+          >
+            {tab === 0 && (
+              <CompactBooksFilter
+                statusOptions={filterOptions.statusOptions}
+                statusFilter={filters.status}
+                authorOptions={filterOptions.authorOptions}
+                seriesOptions={filterOptions.seriesOptions}
+                authorFilter={filters.author}
+                seriesFilter={filters.series}
+                ratingFilter={filters.rating}
+                search={filters.search}
+                onStatusChange={filters.handleStatusFilterChange}
+                onAuthorChange={filters.handleAuthorFilterChange}
+                onSeriesChange={filters.handleSeriesFilterChange}
+                onRatingChange={filters.handleRatingFilterChange}
+                onSearchChange={filters.handleSearchChange}
+                orderBy={filters.orderBy}
+                orderDirection={filters.orderDirection}
+                onOrderByChange={filters.handleOrderByChange}
+                onOrderDirectionChange={filters.handleOrderDirectionChange}
+                view={view}
+                onViewChange={setView}
+                isOwnProfile={false}
+              />
+            )}
+          </ProfileNavigation>
+          <Box
+            sx={{
+              flex: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <ProfileTabContent
+              tab={tab}
+              userId={user.id as UUID}
+              books={books}
+              booksLoading={loading}
+            >
+              <BooksTab
+                books={books}
+                filteredBooks={filteredBooks}
+                loading={loading}
+                hasMore={hasMore}
+                filterOptions={filterOptions}
+                filters={filters}
+                view={view}
+                onViewChange={setView}
+              />
+            </ProfileTabContent>
+          </Box>
         </Box>
       </Box>
     </Container>

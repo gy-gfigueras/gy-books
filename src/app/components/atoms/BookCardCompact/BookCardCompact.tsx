@@ -38,10 +38,8 @@ export const BookCardCompactSkeleton = () => {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(147, 51, 234, 0.2)',
+        background: 'rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(147, 51, 234, 0.3)',
         borderRadius: '16px',
         overflow: 'hidden',
       }}
@@ -191,14 +189,10 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      initial={{ opacity: 0, y: 30, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ scale: 1.03, y: -4 }}
-      whileTap={{ scale: 0.98 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{
-        duration: 0.6,
-        ease: [0.4, 0, 0.2, 1],
-        delay: 0.05,
+        duration: 0.2,
       }}
       sx={{
         width: 'auto',
@@ -210,37 +204,14 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
         flexDirection: 'column',
         cursor: 'pointer',
         position: 'relative',
-        background:
-          'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 50%, rgba(126, 34, 206, 0.1) 100%)',
-        backdropFilter: 'blur(16px)',
+        background: 'rgba(0, 0, 0, 0.5)',
         border: '1px solid rgba(147, 51, 234, 0.3)',
-        borderRadius: '20px',
+        borderRadius: '16px',
         overflow: 'hidden',
-        boxShadow:
-          '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '4px',
-          background:
-            'linear-gradient(90deg, #9333ea 0%, #a855f7 50%, #7e22ce 100%)',
-          opacity: 0,
-          transform: 'scaleX(0)',
-          transformOrigin: 'left',
-          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          zIndex: 10,
-        },
+        boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+        transition: 'box-shadow 0.2s ease',
         '&:hover': {
-          boxShadow: `0 16px 40px ${statusInfo.color}40, 0 8px 16px rgba(0, 0, 0, 0.5)`,
-          border: `1px solid ${statusInfo.color}60`,
-        },
-        '&:hover::before': {
-          opacity: 1,
-          transform: 'scaleX(1)',
+          boxShadow: '0 8px 24px rgba(147, 51, 234, 0.5)',
         },
       }}
     >
@@ -259,7 +230,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
           sx={{
             height: 24,
             background: `${statusInfo.bg}`,
-            backdropFilter: 'blur(10px)',
+
             color: '#fff',
             fontFamily: lora.style.fontFamily,
             fontWeight: 700,
@@ -274,50 +245,6 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
           }}
         />
       </Box>
-
-      {/* Review Button - Badge Style */}
-      {book.userData?.review && (
-        <Box
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setReviewModalOpen(true);
-          }}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            left: 8,
-            zIndex: 10,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0.5,
-            padding: '4px 10px',
-            background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-            backdropFilter: 'blur(10px)',
-            color: '#fff',
-            fontSize: '11px',
-            fontWeight: 600,
-            letterSpacing: '0.3px',
-            textTransform: 'uppercase',
-            boxShadow: '0 4px 16px rgba(147, 51, 234, 0.6)',
-            border: '1px solid rgba(168, 85, 247, 0.4)',
-            borderRadius: '20px',
-            cursor: 'pointer',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #7e22ce 0%, #9333ea 100%)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 6px 24px rgba(147, 51, 234, 0.8)',
-            },
-            '&:active': {
-              transform: 'translateY(0)',
-            },
-          }}
-        >
-          <AssistantIcon sx={{ fontSize: 14 }} />
-          <span>Review</span>
-        </Box>
-      )}
 
       {/* Imagen del libro */}
       <Box
@@ -342,59 +269,6 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
             display: 'block',
           }}
         />
-
-        {/* Hover Overlay */}
-        <AnimatePresence>
-          {isHovered && (
-            <MotionBox
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background:
-                  'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%)',
-                backdropFilter: 'blur(4px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Button
-                variant="contained"
-                startIcon={<VisibilityIcon />}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleClick();
-                }}
-                sx={{
-                  background: `linear-gradient(135deg, ${statusInfo.color} 0%, ${statusInfo.color}CC 100%)`,
-                  color: '#fff',
-                  fontFamily: lora.style.fontFamily,
-                  fontWeight: 700,
-                  fontSize: '0.9rem',
-                  px: 3,
-                  py: 1,
-                  borderRadius: '12px',
-                  textTransform: 'none',
-                  boxShadow: `0 8px 24px ${statusInfo.color}60`,
-                  '&:hover': {
-                    background: `linear-gradient(135deg, ${statusInfo.color}DD 0%, ${statusInfo.color}AA 100%)`,
-                    transform: 'scale(1.05)',
-                  },
-                }}
-              >
-                View Details
-              </Button>
-            </MotionBox>
-          )}
-        </AnimatePresence>
       </Box>
 
       {/* Progress Bar (if reading) */}
@@ -412,7 +286,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
           <Box
             sx={{
               background: 'rgba(0, 0, 0, 0.7)',
-              backdropFilter: 'blur(8px)',
+
               borderRadius: '8px',
               p: 1,
               border: '1px solid rgba(59, 130, 246, 0.3)',
@@ -479,24 +353,25 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
             gap: { xs: '2px', sm: '4px' },
           }}
         >
-          <Typography
-            variant="subtitle1"
-            sx={{
-              color: '#FFFFFF',
-              fontWeight: '800',
-              fontSize: { xs: '0.95rem', sm: '1.1rem' },
-              fontFamily: lora.style.fontFamily,
-              letterSpacing: '.05rem',
-              lineHeight: 1.3,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
-            }}
-          >
-            {title}
-          </Typography>
+          <Tooltip title={title} arrow placement="top">
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: '#FFFFFF',
+                fontWeight: '800',
+                fontSize: { xs: '0.95rem', sm: '1.1rem' },
+                fontFamily: lora.style.fontFamily,
+                letterSpacing: '.05rem',
+                lineHeight: 1.3,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              {title}
+            </Typography>
+          </Tooltip>
           <Typography
             sx={{
               color: 'rgba(255, 255, 255, 0.75)',
@@ -529,14 +404,44 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                 size="small"
                 sx={{
                   '& .MuiRating-iconFilled': {
-                    color: '#a855f7',
-                    filter: 'drop-shadow(0 0 4px rgba(168, 85, 247, 0.5))',
+                    color: book.userData?.review ? '#a855f7' : '#a855f7',
+                    filter: book.userData?.review
+                      ? 'drop-shadow(0 0 6px rgba(168, 85, 247, 0.7))'
+                      : 'drop-shadow(0 0 4px rgba(168, 85, 247, 0.5))',
                   },
                   '& .MuiRating-iconEmpty': {
                     color: 'rgba(255, 255, 255, 0.25)',
                   },
                 }}
               />
+              {book.userData?.review && (
+                <Box
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setReviewModalOpen(true);
+                  }}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 20,
+                    height: 20,
+                    borderRadius: '50%',
+                    background:
+                      'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 6px rgba(147, 51, 234, 0.4)',
+                    '&:hover': {
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 2px 10px rgba(147, 51, 234, 0.6)',
+                    },
+                  }}
+                >
+                  <AssistantIcon sx={{ fontSize: 12, color: '#fff' }} />
+                </Box>
+              )}
             </Box>
           )}
         </Box>
@@ -551,7 +456,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
               mt: 0.5,
               background:
                 'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
-              backdropFilter: 'blur(8px)',
+
               color: '#c084fc',
               fontSize: { xs: '.75rem', sm: '.85rem' },
               fontFamily: lora.style.fontFamily,
@@ -579,7 +484,6 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
         onClick={(e) => e.stopPropagation()}
         PaperProps={{
           sx: {
-            backdropFilter: 'blur(10px)',
             backgroundColor: 'rgba(0, 0, 0, 0.66)',
             color: '#FFFFFF',
             borderRadius: '16px',

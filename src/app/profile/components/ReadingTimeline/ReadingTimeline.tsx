@@ -365,16 +365,11 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                     y: yOffset,
                     scale: 1,
                   }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{
-                    duration: 0.5,
-                    delay: index * 0.08,
-                    ease: [0.4, 0, 0.2, 1],
-                  }}
-                  whileHover={{
-                    scale: 1.03,
-                    y: yOffset - 5,
-                    zIndex: 10,
+                    duration: 0.3,
+                    delay: index * 0.05,
+                    ease: 'easeOut',
                   }}
                   onHoverStart={() => setHoveredBookId(book.id)}
                   onHoverEnd={() => setHoveredBookId(null)}

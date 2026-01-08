@@ -1,11 +1,7 @@
 import type HardcoverBook from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { Box, Typography } from '@mui/material';
-import { motion } from 'framer-motion';
-
-const MotionBox = motion(Box);
+import { Box, Typography, Tooltip } from '@mui/material';
 
 interface BookCardProps {
   book: HardcoverBook;
@@ -15,62 +11,75 @@ interface BookCardProps {
 export function BookCard({ book, compact = false }: BookCardProps) {
   const { title, coverUrl } = useBookDisplay(book);
   return (
-    <MotionBox
+    <Box
       component="a"
       href={`/books/${book.id}`}
       key={book.id}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.02, y: -6 }}
-      transition={{ duration: 0.3 }}
       sx={{
         width: '100%',
         textDecoration: 'none',
-        minWidth: 0,
-        maxWidth: '100%',
-        height: compact
-          ? ['120px', '150px', '180px']
-          : ['180px', '280px', '280px'],
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: ['start', 'start', 'start'],
+        gap: compact ? { xs: '10px', md: '12px' } : { xs: '12px', md: '16px' },
+        padding: compact
+          ? { xs: '10px', md: '12px' }
+          : { xs: '12px', md: '16px' },
         background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
-        backdropFilter: 'blur(15px)',
-        borderRadius: '24px',
-        padding: compact ? '12px' : '16px',
+          'linear-gradient(135deg, rgba(20, 10, 40, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%)',
+        borderRadius: compact
+          ? { xs: '14px', md: '16px' }
+          : { xs: '16px', md: '20px' },
+        border: '1px solid rgba(147, 51, 234, 0.15)',
         overflow: 'hidden',
-        border: '1px solid rgba(147, 51, 234, 0.25)',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-        transition: 'all 0.3s ease',
+        position: 'relative',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background:
+            'linear-gradient(135deg, rgba(147, 51, 234, 0) 0%, rgba(147, 51, 234, 0.05) 100%)',
+          opacity: 0,
+          transition: 'opacity 0.3s ease',
+          pointerEvents: 'none',
+          zIndex: 0,
+        },
         '&:hover': {
+          transform: 'translateY(-2px)',
           border: '1px solid rgba(147, 51, 234, 0.4)',
           boxShadow:
-            '0 12px 32px rgba(147, 51, 234, 0.2), 0 0 40px rgba(147, 51, 234, 0.1)',
+            '0 8px 32px rgba(147, 51, 234, 0.25), 0 0 0 1px rgba(147, 51, 234, 0.1)',
+          '&::before': {
+            opacity: 1,
+          },
         },
       }}
     >
       <Box
         sx={{
           width: compact
-            ? ['70px', '90px', '110px']
-            : ['100px', '140px', '180px'],
+            ? { xs: '65px', sm: '75px', md: '95px' }
+            : { xs: '85px', sm: '105px', md: '130px' },
           flexShrink: 0,
-          height: '100%',
-          borderRadius: '16px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         <Box
           component="img"
           sx={{
-            width: { xs: '100%', md: '100%' },
-            height: { xs: '100%', md: '100%' },
+            width: '100%',
+            height: '100%',
             objectFit: 'cover',
-            borderRadius: '16px',
+            borderRadius: { xs: '10px', md: '12px' },
+            boxShadow:
+              '0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(147, 51, 234, 0.2)',
             transition: 'transform 0.3s ease',
             '&:hover': {
-              transform: 'scale(1.05)',
+              transform: 'scale(1.02)',
             },
           }}
           src={coverUrl}
@@ -81,136 +90,112 @@ export function BookCard({ book, compact = false }: BookCardProps) {
         sx={{
           flex: 1,
           minWidth: 0,
-          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'start',
-          alignItems: 'start',
-          padding: compact ? { xs: '8px', md: '12px' } : '25px',
+          justifyContent: 'center',
+          gap: compact ? { xs: '4px', md: '6px' } : { xs: '6px', md: '8px' },
           position: 'relative',
+          zIndex: 1,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            alignItems: { xs: 'start', md: 'center' },
-            justifyContent: 'start',
-            gap: { xs: '0px', md: '8px' },
-            width: '100%',
-          }}
-        >
-          <Typography
-            sx={{
-              color: 'white',
-              fontSize: compact
-                ? { xs: '14px', md: '18px' }
-                : { xs: '18px', md: '28px' },
-              letterSpacing: '.05rem',
-              fontWeight: '800',
-              fontFamily: lora.style.fontFamily,
-              textAlign: 'left',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              width: '100%',
-            }}
-            variant="h6"
-          >
-            {title}
-          </Typography>
-          {book.series && book.series.length > 0 && book.series[0]?.name && (
+        <Box>
+          <Tooltip title={title} arrow placement="top">
             <Typography
               sx={{
-                color: '#FFFFFF45',
+                color: '#fff',
                 fontSize: compact
-                  ? { xs: '12px', md: '14px' }
-                  : { xs: '16px', md: '22px' },
-                fontWeight: 'thin',
+                  ? { xs: '14px', sm: '15px', md: '17px' }
+                  : { xs: '17px', sm: '19px', md: '22px' },
+                fontWeight: '700',
                 fontFamily: lora.style.fontFamily,
-                letterSpacing: '.05rem',
-                textAlign: 'left',
-                fontStyle: 'italic',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                lineHeight: 1.2,
+                letterSpacing: '0.01em',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              {title}
+            </Typography>
+          </Tooltip>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              mt: 0.5,
+              flexWrap: 'wrap',
+            }}
+          >
+            <Typography
+              sx={{
+                color: 'rgba(168, 85, 247, 0.9)',
+                fontSize: compact
+                  ? { xs: '12px', sm: '13px', md: '14px' }
+                  : { xs: '14px', sm: '15px', md: '16px' },
+                fontWeight: '500',
+                fontFamily: lora.style.fontFamily,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
               }}
-              variant="h6"
             >
-              ({book.series[0].name})
+              {book.author.name}
             </Typography>
-          )}
+            {book.series && book.series.length > 0 && book.series[0]?.name && (
+              <>
+                <Box
+                  sx={{
+                    width: '3px',
+                    height: '3px',
+                    borderRadius: '50%',
+                    background: 'rgba(147, 51, 234, 0.5)',
+                    flexShrink: 0,
+                  }}
+                />
+                <Typography
+                  sx={{
+                    color: 'rgba(147, 51, 234, 0.7)',
+                    fontSize: compact
+                      ? { xs: '11px', sm: '12px', md: '13px' }
+                      : { xs: '13px', sm: '14px', md: '15px' },
+                    fontWeight: '400',
+                    fontFamily: lora.style.fontFamily,
+                    fontStyle: 'italic',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  {book.series[0].name}
+                </Typography>
+              </>
+            )}
+          </Box>
         </Box>
-        <Typography
-          sx={{
-            color: '#FFFFFF31',
-            fontSize: compact
-              ? { xs: '11px', md: '14px' }
-              : { xs: '14px', md: '20px' },
-            fontWeight: 'bold',
-            textAlign: 'left',
-            marginTop: { xs: '0px', md: '-10px' },
-            letterSpacing: '.05rem',
-            width: '100%',
-            fontFamily: lora.style.fontFamily,
-          }}
-          variant="h6"
-        >
-          {book.author.name}
-        </Typography>
+
         {book.description && !compact && (
           <Typography
             sx={{
               display: { xs: 'none', md: '-webkit-box' },
-              color: '#FFFFFF',
-              marginTop: '10px',
-              fontSize: '16px',
+              color: 'rgba(255, 255, 255, 0.65)',
+              fontSize: '13px',
               fontFamily: lora.style.fontFamily,
-              fontWeight: 'thin',
-              flexDirection: 'row',
-              alignItems: 'start',
-              justifyContent: 'start',
-              whiteSpace: 'pre-wrap',
+              fontWeight: '300',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              WebkitLineClamp: 4,
+              WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
-              lineClamp: 4,
-              boxOrient: 'vertical',
-              width: '100%',
-              textAlign: 'left',
+              lineHeight: 1.5,
             }}
             dangerouslySetInnerHTML={{ __html: book.description }}
-            variant="h6"
           />
         )}
-        <Typography
-          sx={{
-            color: '#FFFFFF50',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            textAlign: 'left',
-            marginTop: '10px',
-            position: 'absolute',
-            fontFamily: lora.style.fontFamily,
-            textDecoration: 'none',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'start',
-            gap: '5px',
-            letterSpacing: '.05rem',
-
-            bottom: '0',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              color: '#FFFFFF',
-              transform: 'translateX(5px)',
-            },
-          }}
-        >
-          Leer Más{' '}
-          <ArrowForwardIcon sx={{ fontSize: '14px', marginLeft: '5px' }} />
-        </Typography>
       </Box>
-    </MotionBox>
+    </Box>
   );
 }

@@ -390,18 +390,19 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           <Box sx={{ textAlign: 'center' }}>
             <Typography
               sx={{
-                color: '#fff',
+                color: '#10b981',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 20, md: 24 },
                 fontWeight: 'bold',
                 lineHeight: 1,
+                textShadow: '0 2px 8px rgba(16, 185, 129, 0.4)',
               }}
             >
               {stats.completed}
             </Typography>
             <Typography
               sx={{
-                color: 'rgba(255, 255, 255, 0.5)',
+                color: 'rgba(16, 185, 129, 0.8)',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 10, md: 11 },
                 fontWeight: 500,
@@ -416,18 +417,19 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           <Box sx={{ textAlign: 'center' }}>
             <Typography
               sx={{
-                color: '#fff',
+                color: '#f59e0b',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 20, md: 24 },
                 fontWeight: 'bold',
                 lineHeight: 1,
+                textShadow: '0 2px 8px rgba(245, 158, 11, 0.4)',
               }}
             >
               {stats.totalPages.toLocaleString()}
             </Typography>
             <Typography
               sx={{
-                color: 'rgba(255, 255, 255, 0.5)',
+                color: 'rgba(245, 158, 11, 0.8)',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 10, md: 11 },
                 fontWeight: 500,
@@ -443,18 +445,19 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             <Box sx={{ textAlign: 'center' }}>
               <Typography
                 sx={{
-                  color: '#fff',
+                  color: '#3b82f6',
                   fontFamily: lora.style.fontFamily,
                   fontSize: { xs: 20, md: 24 },
                   fontWeight: 'bold',
                   lineHeight: 1,
+                  textShadow: '0 2px 8px rgba(59, 130, 246, 0.4)',
                 }}
               >
                 {stats.reading}
               </Typography>
               <Typography
                 sx={{
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  color: 'rgba(59, 130, 246, 0.8)',
                   fontFamily: lora.style.fontFamily,
                   fontSize: { xs: 10, md: 11 },
                   fontWeight: 500,
