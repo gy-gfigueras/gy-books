@@ -42,24 +42,24 @@ export default function StatsComponent({
   // Hook de stats desde libros (si están disponibles)
   const statsFromBooks = useStatsFromBooks(books, booksLoading);
 
-  // Hook de stats desde API (fallback) - SOLO si no hay books
-  // Pasamos null para que SWR no ejecute el fetch
-  const shouldFetchFromAPI = !books || books.length === 0;
+  // Hook de stats desde API (fallback) - SOLO si books NO se pasó como prop
+  // Si books es undefined, hacer fetch. Si es array (vacío o no), usar statsFromBooks
+  const shouldFetchFromAPI = books === undefined;
   const statsFromAPI = useStats(shouldFetchFromAPI ? id : null);
 
-  // Decidir qué fuente usar (prioridad: Redux > books > API)
+  // Decidir qué fuente usar (prioridad: Redux > books prop > API)
   const data =
     isCurrentUser && storedStats.data
       ? storedStats.data
-      : books && books.length > 0
+      : books !== undefined
         ? statsFromBooks.data
         : statsFromAPI.data;
 
   const isLoading =
     isCurrentUser && storedStats.data
       ? storedStats.isLoading
-      : books && books.length > 0
-        ? statsFromBooks.isLoading
+      : books !== undefined
+        ? statsFromBooks.isLoading || booksLoading
         : statsFromAPI.isLoading;
 
   const error =
@@ -67,12 +67,71 @@ export default function StatsComponent({
       ? storedStats.error
         ? new Error(storedStats.error)
         : null
-      : books && books.length > 0
+      : books !== undefined
         ? statsFromBooks.error
         : statsFromAPI.error;
-  if (isLoading) return <StatsSkeleton />;
 
-  if (error) return <div>Error: {error.message}</div>;
+  // Mostrar skeleton SOLO cuando está cargando
+  if (isLoading) {
+    return <StatsSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 400,
+          p: 4,
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'rgba(255, 100, 100, 0.8)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 18,
+          }}
+        >
+          Error loading statistics: {error.message}
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Verificar que tengamos datos válidos
+  const hasValidData =
+    data &&
+    (data.totalBooks > 0 ||
+      Object.keys(data.authors || {}).length > 0 ||
+      Object.keys(data.bookStatus || {}).length > 0);
+
+  if (!hasValidData) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 400,
+          p: 4,
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 18,
+          }}
+        >
+          No statistics available yet. Start adding books to your library!
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -85,66 +144,70 @@ export default function StatsComponent({
         alignItems: 'center',
       }}
     >
-      <MotionBox
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
-        sx={{
-          width: '500px',
-          height: '400px',
-          background:
-            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
-          borderRadius: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 2,
-          flexDirection: 'column',
-          gap: 1,
-          boxShadow:
-            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
-        }}
-      >
-        <Typography
-          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
-          variant="h4"
+      {data.authors && Object.keys(data.authors).length > 0 && (
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
+          sx={{
+            width: '500px',
+            height: '400px',
+            background:
+              'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(147, 51, 234, 0.3)',
+            borderRadius: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 2,
+            flexDirection: 'column',
+            gap: 1,
+            boxShadow:
+              '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+          }}
         >
-          Authors read
-        </Typography>
-        <AuthorsBarChart authors={data?.authors} />
-      </MotionBox>
-      <MotionBox
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-        sx={{
-          width: '500px',
-          height: '400px',
-          background:
-            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
-          borderRadius: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 2,
-          flexDirection: 'column',
-          gap: 1,
-          boxShadow:
-            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
-        }}
-      >
-        <Typography
-          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
-          variant="h4"
+          <Typography
+            sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
+            variant="h4"
+          >
+            Authors read
+          </Typography>
+          <AuthorsBarChart authors={data?.authors} />
+        </MotionBox>
+      )}
+      {data.bookStatus && Object.keys(data.bookStatus).length > 0 && (
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
+          sx={{
+            width: '500px',
+            height: '400px',
+            background:
+              'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(147, 51, 234, 0.3)',
+            borderRadius: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 2,
+            flexDirection: 'column',
+            gap: 1,
+            boxShadow:
+              '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+          }}
         >
-          Book status
-        </Typography>
-        <DonutChart bookStatus={data?.bookStatus} />
-      </MotionBox>
+          <Typography
+            sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
+            variant="h4"
+          >
+            Book status
+          </Typography>
+          <DonutChart bookStatus={data?.bookStatus} />
+        </MotionBox>
+      )}
       <MotionBox
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

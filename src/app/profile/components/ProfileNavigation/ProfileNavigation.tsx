@@ -3,6 +3,7 @@ import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { motion } from 'framer-motion';
 import { lora } from '@/utils/fonts/fonts';
+import { useRouter } from 'next/navigation';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -34,6 +35,18 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
   hallOfFameCount = 0,
   children,
 }) => {
+  const router = useRouter();
+
+  const handleTabClick = (tabId: number) => {
+    if (tabId === 0) {
+      // Remove query param for Library tab
+      router.push('/profile');
+    } else {
+      router.push(`/profile?tab=${tabId}`);
+    }
+    onTabChange(tabId);
+  };
+
   const navigationItems: NavigationItem[] = [
     {
       id: 0,
@@ -109,7 +122,7 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
             return (
               <MotionBox
                 key={item.id}
-                onClick={() => onTabChange(item.id)}
+                onClick={() => handleTabClick(item.id)}
                 whileTap={{ scale: 0.98 }}
                 sx={{
                   position: 'relative',

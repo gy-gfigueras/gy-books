@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -20,8 +21,14 @@ interface BooksViewToggleProps {
 export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
   view,
   onViewChange,
-  isOwnProfile = true,
 }) => {
+  const router = useRouter();
+
+  const handleViewChange = (newView: ViewType) => {
+    router.push(`/profile?view=${newView}`);
+    onViewChange(newView);
+  };
+
   const allViews: {
     type: ViewType;
     icon: React.ReactElement;
@@ -76,7 +83,7 @@ export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
               )}
               <IconButton
                 size="small"
-                onClick={() => onViewChange(viewOption.type)}
+                onClick={() => handleViewChange(viewOption.type)}
                 sx={{
                   position: 'relative',
                   zIndex: 1,

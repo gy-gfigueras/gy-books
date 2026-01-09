@@ -50,6 +50,48 @@ export function ProfileTabContent({
   }
 
   if (tab === 2) {
+    // Show skeleton while loading
+    if (booksLoading) {
+      return (
+        <Box
+          sx={{
+            mt: 4,
+            color: '#FFFFFF',
+            fontFamily: lora.style.fontFamily,
+            textAlign: 'center',
+          }}
+        >
+          <StatsSkeleton />
+        </Box>
+      );
+    }
+
+    // Transform UserProfileBook[] to HardcoverBook[]
+    // Detectar si el libro ya tiene la estructura correcta o si tiene hardcoverBook anidado
+    const hardcoverBooks =
+      books?.map((book) => {
+        // Si el libro YA tiene la estructura correcta (es un HardcoverBook directamente)
+        if ('id' in book && 'title' in book && !('hardcoverBook' in book)) {
+          return {
+            ...book,
+            userData: book.userData,
+            pageCount: book.pageCount || 0,
+          };
+        }
+
+        // Si tiene la estructura antigua con hardcoverBook anidado
+        if ('hardcoverBook' in book && book.hardcoverBook) {
+          return {
+            ...book.hardcoverBook,
+            userData: book.userData,
+            pageCount: book.hardcoverBook.pageCount || 0,
+          };
+        }
+
+        // Fallback: retornar el libro tal cual
+        return book;
+      }) || [];
+
     return (
       <Box
         sx={{
@@ -60,7 +102,7 @@ export function ProfileTabContent({
         }}
       >
         <Suspense fallback={<StatsSkeleton />}>
-          <Stats id={userId} books={books} booksLoading={booksLoading} />
+          <Stats id={userId} books={hardcoverBooks} booksLoading={false} />
         </Suspense>
       </Box>
     );

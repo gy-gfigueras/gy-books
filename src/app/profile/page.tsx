@@ -19,6 +19,7 @@ import { useProfileBiography } from './hooks/useProfileBiography';
 import { useProfileFilters } from './hooks/useProfileFilters';
 import { useProfileTabs } from './hooks/useProfileTabs';
 import useMergedBooksIncremental from '@/hooks/books/useMergedBooksIncremental';
+import { useSearchParams } from 'next/navigation';
 
 // Components
 import { BooksTab } from './components/BooksTab/BooksTab';
@@ -35,9 +36,22 @@ function ProfilePageContent() {
     (state: RootState) => state.user.profile
   ) as User | null;
   const isLoading = !user;
+  const searchParams = useSearchParams();
 
   const { tab, setTab } = useProfileTabs();
   const [view, setView] = React.useState<ViewType>('grid');
+
+  // Handle view query param
+  React.useEffect(() => {
+    const viewParam = searchParams.get('view');
+    if (
+      viewParam &&
+      ['grid', 'list', 'timeline', 'calendar'].includes(viewParam)
+    ) {
+      setView(viewParam as ViewType);
+    }
+  }, [searchParams]);
+
   const { count: friendsCount, isLoading: isLoadingFriends } = useFriends();
   const filters = useProfileFilters();
   const {

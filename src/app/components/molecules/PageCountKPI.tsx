@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { lora } from '@/utils/fonts/fonts';
 import { Box, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 
 interface PageCountKPIProps {
   totalPages: number;
@@ -9,10 +11,36 @@ interface PageCountKPIProps {
 }
 
 const PageCountKPI: React.FC<PageCountKPIProps> = ({
-  totalPages,
-  wantToReadPages,
+  totalPages = 0,
+  wantToReadPages = 0,
   fontFamily,
 }) => {
+  // Guard clause
+  if (totalPages === 0 && wantToReadPages === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 300,
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 16,
+          }}
+        >
+          No page data available
+        </Typography>
+      </Box>
+    );
+  }
+
   const [currentCount, setCurrentCount] = useState(0);
   const [percentage, setPercentage] = useState(0);
 

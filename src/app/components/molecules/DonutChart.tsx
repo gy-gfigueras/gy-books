@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
+import { Box, Typography } from '@mui/material';
+import { lora } from '@/utils/fonts/fonts';
 
 interface DonutChartProps {
   bookStatus?: Record<string, number>;
@@ -14,7 +16,31 @@ const COLORS = [
 ];
 
 export default function DonutChart({ bookStatus }: DonutChartProps) {
-  if (!bookStatus) return null;
+  // Guard clause: si no hay datos o está vacío
+  if (!bookStatus || Object.keys(bookStatus).length === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 300,
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 16,
+          }}
+        >
+          No book status data available
+        </Typography>
+      </Box>
+    );
+  }
 
   // Función para formatear los nombres de estados
   const formatStatusLabel = (status: string): string => {
@@ -36,6 +62,33 @@ export default function DonutChart({ bookStatus }: DonutChartProps) {
   const statusKeys = Object.keys(bookStatus).filter(
     (status) => status !== 'unknown'
   );
+
+  // Si después de filtrar no hay datos
+  if (statusKeys.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 300,
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 16,
+          }}
+        >
+          No books with valid status
+        </Typography>
+      </Box>
+    );
+  }
+
   const data = statusKeys.map((status, idx) => ({
     label: formatStatusLabel(status),
     value: bookStatus[status],

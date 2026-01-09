@@ -14,6 +14,32 @@ interface RatingStatsProps {
 }
 
 const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
+  // Guard clause
+  if (!ratings || ratings.totalRatedBooks === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 300,
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 16,
+          }}
+        >
+          No ratings available yet
+        </Typography>
+      </Box>
+    );
+  }
+
   // Crear array de ratings de 0.5 a 5 con incrementos de 0.5
   const ratingLevels = [];
   for (let i = 0.5; i <= 5; i += 0.5) {

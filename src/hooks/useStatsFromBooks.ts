@@ -38,9 +38,22 @@ export function useStatsFromBooks(
 ): UseStatsFromBooksResult {
   const data = useMemo(() => {
     if (!books || books.length === 0) {
-      return undefined;
+      // Retornar stats vacíos en lugar de undefined
+      return {
+        totalBooks: 0,
+        totalPages: 0,
+        wantToReadPages: 0,
+        authors: {},
+        bookStatus: {},
+        ratings: {
+          distribution: {},
+          averageRating: 0,
+          totalRatedBooks: 0,
+        },
+      };
     }
-    return calculateStats(books);
+    const stats = calculateStats(books);
+    return stats;
   }, [books]);
 
   return {

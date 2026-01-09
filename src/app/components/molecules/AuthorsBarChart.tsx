@@ -1,11 +1,39 @@
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
+import { Box, Typography } from '@mui/material';
+import { lora } from '@/utils/fonts/fonts';
 
 export default function AuthorsBarChart({
   authors,
 }: {
   authors: Record<string, number>;
 }) {
+  // Guard clause: si no hay autores, mostrar empty state
+  if (!authors || Object.keys(authors).length === 0) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 300,
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: 16,
+          }}
+        >
+          No author data available yet
+        </Typography>
+      </Box>
+    );
+  }
+
   // Convertir en array de pares y ordenarlo por número
   const sortedEntries = Object.entries(authors).sort((a, b) => b[1] - a[1]);
   // Extraer nombres y conteos ya ordenados
