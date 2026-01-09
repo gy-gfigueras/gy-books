@@ -4,6 +4,7 @@ export enum ActivityType {
   RATED = 'rated',
   PROGRESS = 'progress',
   WANT_TO_READ = 'wantToRead',
+  REVIEWED = 'reviewed',
   OTHER = 'other',
 }
 
@@ -26,6 +27,11 @@ export function getActivityType(message: string): ActivityType {
     return ActivityType.PROGRESS;
   } else if (message.includes('added') && message.includes('want to read')) {
     return ActivityType.WANT_TO_READ;
+  } else if (
+    message.includes('reviewed') ||
+    message.includes('wrote a review')
+  ) {
+    return ActivityType.REVIEWED;
   } else {
     return ActivityType.OTHER;
   }
@@ -57,6 +63,18 @@ export function extractRating(message: string): number | null {
   return null;
 }
 
+// Extract review from message
+export function extractReview(message: string): string | null {
+  const activityType = getActivityType(message);
+  if (activityType !== ActivityType.REVIEWED) return null;
+
+  // Si el mensaje contiene "reviewed" o "wrote a review", retornamos un indicador
+  if (message.includes('reviewed') || message.includes('wrote a review')) {
+    return 'Has review';
+  }
+  return null;
+}
+
 // Clean message by removing [bookId]
 export function cleanMessage(message: string): string {
   const pattern = /\[\d+\]\s*/;
@@ -76,6 +94,8 @@ export function getActivityIcon(type: ActivityType): string {
       return 'bar_chart';
     case ActivityType.WANT_TO_READ:
       return 'bookmark';
+    case ActivityType.REVIEWED:
+      return 'comment';
     case ActivityType.OTHER:
       return 'circle';
   }
@@ -94,6 +114,8 @@ export function getActivityColor(type: ActivityType): string {
       return '#8C54FF'; // purple
     case ActivityType.WANT_TO_READ:
       return '#FF9800'; // orange
+    case ActivityType.REVIEWED:
+      return '#10B981'; // green
     case ActivityType.OTHER:
       return '#9E9E9E'; // gray
   }

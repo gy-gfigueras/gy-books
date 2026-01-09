@@ -6,6 +6,7 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import { CurrentlyReadingSection } from './components/CurrentlyReadingSection/CurrentlyReadingSection';
 import { ReadingStatsCards } from './components/ReadingStatsCards/ReadingStatsCards';
 import { QuickActions } from './components/QuickActions/QuickActions';
+import { FriendsActivityFeed } from './components/FriendsActivityFeed/FriendsActivityFeed';
 import useMergedBooksIncremental from '@/hooks/books/useMergedBooksIncremental';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -54,7 +55,8 @@ export default function DashboardPage() {
           zIndex: 1,
           maxWidth: '1600px',
           margin: '0 auto',
-          padding: { xs: 2, sm: 3, lg: 4 },
+          padding: { xs: 0, sm: 3, lg: 4 },
+          height: 'calc(100vh - 32px)',
         }}
       >
         {/* 3 Column Layout - Desktop */}
@@ -65,17 +67,18 @@ export default function DashboardPage() {
               xs: '1fr',
               lg: '360px 1fr 320px',
             },
-            gap: { xs: 3, lg: 4 },
+            gap: { xs: 2, lg: 4 },
             alignItems: 'start',
+            height: '100%',
           }}
         >
-          {/* LEFT COLUMN - User Profile & Currently Reading */}
+          {/* LEFT COLUMN - User Profile & Currently Reading (Desktop only) */}
           <MotionBox
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             sx={{
-              display: 'flex',
+              display: { xs: 'none', lg: 'flex' }, // Hidden on mobile
               flexDirection: 'column',
               gap: 3,
             }}
@@ -162,10 +165,8 @@ export default function DashboardPage() {
               )}
             </Paper>
 
-            {/* Currently Reading - Hidden on mobile, visible on desktop */}
-            <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
-              <CurrentlyReadingSection books={books} isLoading={booksLoading} />
-            </Box>
+            {/* Currently Reading - Desktop */}
+            <CurrentlyReadingSection books={books} isLoading={booksLoading} />
           </MotionBox>
 
           {/* CENTER COLUMN - Friends Activity Feed */}
@@ -173,82 +174,60 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+              gap: 2,
+              minHeight: 0,
+            }}
           >
-            {/* Currently Reading - Only on mobile */}
-            <Box sx={{ display: { xs: 'block', lg: 'none' }, mb: 3 }}>
+            {/* Currently Reading - Mobile only at the top */}
+            <Box sx={{ display: { xs: 'block', lg: 'none' }, flexShrink: 0 }}>
               <CurrentlyReadingSection books={books} isLoading={booksLoading} />
             </Box>
 
             {/* Friends Activity - Main content */}
             <Paper
               sx={{
-                background:
-                  'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                backdropFilter: 'blur(10px)',
+                background: 'transparent',
                 borderRadius: '20px',
-                padding: { xs: 2, sm: 3 },
-                border: '1px solid rgba(59, 130, 246, 0.2)',
-                minHeight: { xs: 400, lg: 600 },
+                padding: { xs: 1, sm: 3 },
+                border: { xs: 'none', lg: '1px solid rgba(59, 130, 246, 0.2)' },
+                minHeight: 0,
+                mt: { xs: -4, lg: 0 },
+                flex: 1,
+                overflow: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                // Custom scrollbar
+                '&::-webkit-scrollbar': {
+                  width: '6px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                  borderRadius: '3px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: 'rgba(59, 130, 246, 0.3)',
+                  borderRadius: '3px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                  },
+                },
               }}
             >
-              <Typography
-                variant="h5"
-                sx={{
-                  color: 'white',
-                  fontWeight: 700,
-                  mb: 3,
-                  fontFamily: lora.style.fontFamily,
-                  fontSize: { xs: '1.5rem', sm: '1.75rem' },
-                }}
-              >
-                Friends Activity
-              </Typography>
-
-              {/* Placeholder for Friends Activity Feed */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: 400,
-                  flexDirection: 'column',
-                  gap: 2,
-                }}
-              >
-                <Box sx={{ fontSize: 64, mb: 2 }}>👥</Box>
-                <Typography
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    fontSize: '1.1rem',
-                    fontWeight: 600,
-                    fontFamily: lora.style.fontFamily,
-                  }}
-                >
-                  Coming Soon
-                </Typography>
-                <Typography
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.5)',
-                    fontSize: '0.9rem',
-                    fontFamily: lora.style.fontFamily,
-                    textAlign: 'center',
-                    maxWidth: 400,
-                  }}
-                >
-                  See what your friends are reading, their latest reviews, and
-                  reading milestones
-                </Typography>
-              </Box>
+              <FriendsActivityFeed />
             </Paper>
           </MotionBox>
 
-          {/* RIGHT COLUMN - Stats & Actions */}
+          {/* RIGHT COLUMN - Stats & Actions (Desktop only) */}
           <MotionBox
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             sx={{
-              display: 'flex',
+              display: { xs: 'none', lg: 'flex' }, // Hidden on mobile
               flexDirection: 'column',
               gap: 3,
             }}

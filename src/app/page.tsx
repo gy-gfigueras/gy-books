@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { Box, Container, Skeleton } from '@mui/material';
+import { Box, Container, CircularProgress } from '@mui/material';
 import { Hero } from './components/organisms/Hero';
 import { FeaturesGrid } from './components/organisms/FeaturesGrid';
 import { CTASection } from './components/organisms/CTASection';
@@ -19,11 +19,12 @@ const LoadingSkeleton = () => (
       justifyContent: 'center',
     }}
   >
-    <Skeleton
-      variant="rectangular"
-      width="80%"
-      height={400}
-      sx={{ borderRadius: '20px', bgcolor: 'rgba(255, 255, 255, 0.05)' }}
+    <CircularProgress
+      size={60}
+      thickness={4}
+      sx={{
+        color: '#9333ea',
+      }}
     />
   </Box>
 );

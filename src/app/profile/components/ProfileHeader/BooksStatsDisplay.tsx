@@ -74,7 +74,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 1.5,
+        gap: 0.75,
         flexWrap: 'wrap',
         mt: 0.5,
       }}

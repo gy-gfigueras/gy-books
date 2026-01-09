@@ -51,7 +51,7 @@ const ReadingBookSkeleton = () => (
           'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
         backdropFilter: 'blur(10px)',
         borderRadius: '20px',
-        padding: 3,
+        padding: { xs: 2, sm: 3 },
         border: '1px solid rgba(147, 51, 234, 0.3)',
       }}
     >
@@ -140,7 +140,7 @@ export const CurrentlyReadingSection: React.FC<
               'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
             backdropFilter: 'blur(10px)',
             borderRadius: '20px',
-            padding: 4,
+            padding: { xs: 1, sm: 3 },
             border: '1px solid rgba(147, 51, 234, 0.2)',
             textAlign: 'center',
           }}
@@ -191,7 +191,7 @@ export const CurrentlyReadingSection: React.FC<
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, p: { xs: 1, sm: 0 } }}>
         <Typography
           variant="h5"
           sx={{
@@ -213,7 +213,7 @@ export const CurrentlyReadingSection: React.FC<
               'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
             backdropFilter: 'blur(10px)',
             borderRadius: '20px',
-            padding: 3,
+            padding: { xs: 1, sm: 3 },
             border: '1px solid rgba(147, 51, 234, 0.3)',
             cursor: 'pointer',
             transition: 'all 0.3s ease',
