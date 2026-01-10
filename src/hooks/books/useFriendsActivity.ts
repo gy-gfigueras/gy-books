@@ -77,10 +77,10 @@ export function useFriendsActivity(): UseFriendsActivityResult {
     () => fetchAllFriendsActivities(friendIds),
     {
       revalidateOnFocus: false,
-      revalidateOnReconnect: false,
+      revalidateOnReconnect: true,
       shouldRetryOnError: false,
-      dedupingInterval: 60000, // 1 minuto
-      keepPreviousData: true, // Muestra datos previos mientras revalida
+      dedupingInterval: 5000,
+      keepPreviousData: true,
     }
   );
 

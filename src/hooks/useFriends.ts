@@ -31,6 +31,9 @@ export function useFriends(): useFriendsProps {
     {
       shouldRetryOnError: false,
       revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      dedupingInterval: 5000,
+      keepPreviousData: true,
       onError: (err) => {
         console.error('Error loading friends:', err);
       },
