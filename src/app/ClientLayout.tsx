@@ -73,7 +73,6 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
     <ThemeProvider theme={getTheme(ETheme.DARK)}>
       <CssBaseline />
       <Box
-        suppressHydrationWarning={true}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -83,7 +82,6 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
       >
         {/* Header Container */}
         <Box
-          suppressHydrationWarning={true}
           sx={{
             position: 'fixed',
             top: 0,
@@ -108,15 +106,24 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
         >
           {!isHydrated ? (
             <Box
-              component="img"
               sx={{
                 width: '48px',
                 height: '48px',
-                filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
+                display: 'flex',
+                alignItems: 'center',
               }}
-              src="/gy-logo.png"
-              alt="logo"
-            />
+            >
+              <Box
+                component="img"
+                sx={{
+                  width: '48px',
+                  height: '48px',
+                  filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
+                }}
+                src="/gy-logo.png"
+                alt="logo"
+              />
+            </Box>
           ) : isMobile ? (
             <MobileHeader onLogoClick={drawer.toggle} />
           ) : (

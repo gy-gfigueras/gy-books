@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/display-name */
 import {
   Activity,
@@ -10,6 +11,7 @@ import {
 } from '@/domain/activity.model';
 import type HardcoverBook from '@/domain/HardcoverBook';
 import { useHardcoverBatch } from '@/hooks/books/useHardcoverBatch';
+import { useActivities } from '@/hooks/useActivities';
 import { lora } from '@/utils/fonts/fonts';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import BookIcon from '@mui/icons-material/Book';
@@ -358,7 +360,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
   const { data: books } = useHardcoverBatch(
     (activities?.map((a) => a.bookId).filter(Boolean) as string[]) || []
   );
-  const [setLoadedCount] = useState(0);
+  const [loadedCount, setLoadedCount] = useState(0);
 
   // Crear un mapa de bookId -> imagen para acceso rápido
   const booksMap = useMemo(() => {
