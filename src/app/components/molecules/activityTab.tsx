@@ -10,7 +10,6 @@ import {
 } from '@/domain/activity.model';
 import type HardcoverBook from '@/domain/HardcoverBook';
 import { useHardcoverBatch } from '@/hooks/books/useHardcoverBatch';
-import { useActivities } from '@/hooks/useActivities';
 import { lora } from '@/utils/fonts/fonts';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import BookIcon from '@mui/icons-material/Book';
@@ -43,6 +42,8 @@ const getActivityIconComponent = (type: ActivityType) => {
     case ActivityType.WANT_TO_READ:
       return BookmarkIcon;
     case ActivityType.OTHER:
+      return CircleIcon;
+    default:
       return CircleIcon;
   }
 };
