@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { lora } from '@/utils/fonts/fonts';
 import { Box, Typography, Chip } from '@mui/material';
 import { BooksFilter } from '../BooksFilter/BooksFilter';

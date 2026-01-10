@@ -43,40 +43,59 @@ async function fetchAllMergedBooks(
 
   while (true) {
     const url = `/api/public/books?profileId=${profileId}&page=${page}&size=${pageSize}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const pageData = (await res.json()) as ProfileBookSummary[];
-    if (!Array.isArray(pageData) || pageData.length === 0) {
-      break;
+
+    try {
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errorText}`);
+      }
+
+      const pageData = (await res.json()) as ProfileBookSummary[];
+
+      if (!Array.isArray(pageData) || pageData.length === 0) {
+        break;
+      }
+
+      // obtain ids and ask hardcover for this page
+      const ids = pageData.map((p) => p.id).filter(Boolean);
+
+      let hardcoverArr: HardcoverBook[] = [];
+      if (ids.length > 0) {
+        const hRes = await fetch('/api/hardcover', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids }),
+        });
+
+        if (!hRes.ok) {
+          const errorText = await hRes.text();
+          throw new Error(`Hardcover HTTP ${hRes.status}: ${errorText}`);
+        }
+
+        hardcoverArr = (await hRes.json()) as HardcoverBook[];
+      }
+
+      // merge userData into hardcover results by id
+      const summaryById = new Map<string, ProfileUserData | undefined>();
+      pageData.forEach((s) => summaryById.set(s.id, s.userData));
+
+      const merged = hardcoverArr.map((hb) => ({
+        ...hb,
+        userData: summaryById.get(hb.id) || hb.userData,
+      }));
+
+      allBooks.push(...(merged as HardcoverBook[]));
+
+      // if the page returned less than pageSize, we've reached the end
+      if (pageData.length < pageSize) {
+        break;
+      }
+      page += 1;
+    } catch (error) {
+      throw error;
     }
-
-    // obtain ids and ask hardcover for this page
-    const ids = pageData.map((p) => p.id).filter(Boolean);
-    let hardcoverArr: HardcoverBook[] = [];
-    if (ids.length > 0) {
-      const hRes = await fetch('/api/hardcover', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids }),
-      });
-      if (!hRes.ok) throw new Error(`Hardcover HTTP ${hRes.status}`);
-      hardcoverArr = (await hRes.json()) as HardcoverBook[];
-    }
-
-    // merge userData into hardcover results by id
-    const summaryById = new Map<string, ProfileUserData | undefined>();
-    pageData.forEach((s) => summaryById.set(s.id, s.userData));
-
-    const merged = hardcoverArr.map((hb) => ({
-      ...hb,
-      userData: summaryById.get(hb.id) || hb.userData,
-    }));
-
-    allBooks.push(...(merged as HardcoverBook[]));
-
-    // if the page returned less than pageSize, we've reached the end
-    if (pageData.length < pageSize) break;
-    page += 1;
   }
 
   return allBooks;
@@ -97,10 +116,7 @@ export default function useMergedBooksIncremental(
       dedupingInterval: 5000,
       keepPreviousData: true,
       onSuccess: () => setIsDone(true),
-      onError: (err) => {
-        console.error('Error loading merged books:', err);
-        setIsDone(true);
-      },
+      onError: () => setIsDone(true),
     }
   );
 

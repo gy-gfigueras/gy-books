@@ -125,6 +125,7 @@ function ProfilePageContent() {
             hallOfFameCount={
               books?.filter((b) => b.userData?.hallOfFame)?.length || 0
             }
+            basePath={`/users/${userId}`}
           >
             {tab === 0 && (
               <CompactBooksFilter

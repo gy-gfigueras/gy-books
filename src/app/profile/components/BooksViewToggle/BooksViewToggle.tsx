@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -23,9 +23,10 @@ export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
   onViewChange,
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleViewChange = (newView: ViewType) => {
-    router.push(`/profile?view=${newView}`);
+    router.push(`${pathname}?view=${newView}`);
     onViewChange(newView);
   };
 

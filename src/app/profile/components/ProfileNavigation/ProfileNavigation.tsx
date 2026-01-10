@@ -26,6 +26,7 @@ interface ProfileNavigationProps {
   booksCount?: number;
   hallOfFameCount?: number;
   children?: React.ReactNode;
+  basePath?: string;
 }
 
 export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
@@ -34,15 +35,16 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
   booksCount = 0,
   hallOfFameCount = 0,
   children,
+  basePath = '/profile',
 }) => {
   const router = useRouter();
 
   const handleTabClick = (tabId: number) => {
     if (tabId === 0) {
       // Remove query param for Library tab
-      router.push('/profile');
+      router.push(basePath);
     } else {
-      router.push(`/profile?tab=${tabId}`);
+      router.push(`${basePath}?tab=${tabId}`);
     }
     onTabChange(tabId);
   };

@@ -50,8 +50,19 @@ export function ProfileTabContent({
   }
 
   if (tab === 2) {
+    console.log('[ProfileTabContent] Tab 2 - Stats tab rendering with:', {
+      booksLoading,
+      booksCount: books?.length || 0,
+      userId,
+      firstBook: books?.[0],
+      booksStructure: books?.slice(0, 2),
+    });
+
     // Show skeleton while loading
     if (booksLoading) {
+      console.log(
+        '[ProfileTabContent] Tab 2 - Showing skeleton (booksLoading=true)'
+      );
       return (
         <Box
           sx={{
@@ -66,31 +77,13 @@ export function ProfileTabContent({
       );
     }
 
-    // Transform UserProfileBook[] to HardcoverBook[]
-    // Detectar si el libro ya tiene la estructura correcta o si tiene hardcoverBook anidado
-    const hardcoverBooks =
-      books?.map((book) => {
-        // Si el libro YA tiene la estructura correcta (es un HardcoverBook directamente)
-        if ('id' in book && 'title' in book && !('hardcoverBook' in book)) {
-          return {
-            ...book,
-            userData: book.userData,
-            pageCount: book.pageCount || 0,
-          };
-        }
-
-        // Si tiene la estructura antigua con hardcoverBook anidado
-        if ('hardcoverBook' in book && book.hardcoverBook) {
-          return {
-            ...book.hardcoverBook,
-            userData: book.userData,
-            pageCount: book.hardcoverBook.pageCount || 0,
-          };
-        }
-
-        // Fallback: retornar el libro tal cual
-        return book;
-      }) || [];
+    // Books are already HardcoverBook[] from useMergedBooksIncremental
+    // No need for complex transformation logic
+    console.log(
+      '[ProfileTabContent] Tab 2 - Passing books directly to Stats:',
+      books?.length || 0,
+      'books'
+    );
 
     return (
       <Box
@@ -102,7 +95,7 @@ export function ProfileTabContent({
         }}
       >
         <Suspense fallback={<StatsSkeleton />}>
-          <Stats id={userId} books={hardcoverBooks} booksLoading={false} />
+          <Stats id={userId} books={books} booksLoading={false} />
         </Suspense>
       </Box>
     );
