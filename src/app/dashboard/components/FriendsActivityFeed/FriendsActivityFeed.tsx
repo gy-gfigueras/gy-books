@@ -285,15 +285,6 @@ export const FriendsActivityFeed: React.FC = () => {
   const { data: hardcoverBooks, isLoading: isLoadingCovers } =
     useHardcoverBatch(bookIds);
 
-  console.log('[FriendsActivityFeed] State:', {
-    activitiesCount: activities?.length,
-    bookIdsCount: bookIds?.length,
-    isLoading,
-    isLoadingCovers,
-    hasError: !!error,
-    hardcoverBooksCount: hardcoverBooks?.length,
-  });
-
   // Create a map of bookId -> coverUrl
   const bookCoversMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -304,7 +295,6 @@ export const FriendsActivityFeed: React.FC = () => {
         }
       });
     }
-    console.log('[FriendsActivityFeed] Book covers map size:', map.size);
     return map;
   }, [hardcoverBooks]);
 

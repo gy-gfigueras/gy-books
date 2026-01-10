@@ -20,10 +20,11 @@ const LoadingSkeleton = () => (
     }}
   >
     <CircularProgress
-      size={60}
+      size={40}
       thickness={4}
       sx={{
         color: '#9333ea',
+        marginTop: '-80px',
       }}
     />
   </Box>

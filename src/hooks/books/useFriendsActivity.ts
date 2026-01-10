@@ -55,15 +55,10 @@ async function fetchAllFriendsActivities(
 export function useFriendsActivity(): UseFriendsActivityResult {
   const { data: friends, isLoading: friendsLoading } = useFriends();
 
-  console.log('[useFriendsActivity] Friends:', friends);
-  console.log('[useFriendsActivity] Friends loading:', friendsLoading);
-
   // Crear keys para SWR basadas en los IDs de los amigos
   const friendIds = useMemo(() => {
     return friends?.map((friend) => friend.id) || [];
   }, [friends]);
-
-  console.log('[useFriendsActivity] Friend IDs:', friendIds);
 
   // Usar un único SWR que obtiene todas las actividades
   const {
@@ -84,18 +79,11 @@ export function useFriendsActivity(): UseFriendsActivityResult {
     }
   );
 
-  console.log('[useFriendsActivity] Activities map:', {
-    mapSize: activitiesMap?.size,
-    isLoading: activitiesLoading,
-    hasError: !!error,
-  });
-
   const isLoading = friendsLoading || activitiesLoading;
 
   // Formatear y combinar todas las actividades
   const processedActivities: FriendActivity[] = useMemo(() => {
     if (!friends || !activitiesMap) {
-      console.log('[useFriendsActivity] Still loading or no data');
       return [];
     }
 
@@ -103,11 +91,6 @@ export function useFriendsActivity(): UseFriendsActivityResult {
 
     friends.forEach((friend) => {
       const activities = activitiesMap.get(friend.id);
-
-      console.log(`[useFriendsActivity] Friend ${friend.username}:`, {
-        hasActivities: !!activities,
-        activitiesCount: activities?.length,
-      });
 
       if (activities) {
         activities
@@ -133,10 +116,7 @@ export function useFriendsActivity(): UseFriendsActivityResult {
 
     // Ordenar todas las actividades por fecha (más reciente primero)
     const sorted = combined.sort(sortActivitiesByDate);
-    console.log(
-      '[useFriendsActivity] Final processed activities:',
-      sorted.length
-    );
+
     return sorted;
   }, [friends, activitiesMap]);
 
@@ -146,16 +126,8 @@ export function useFriendsActivity(): UseFriendsActivityResult {
       .map((activity) => activity.bookId)
       .filter((id): id is string => Boolean(id));
     const uniqueIds = Array.from(new Set(ids));
-    console.log('[useFriendsActivity] Book IDs:', uniqueIds);
     return uniqueIds;
   }, [processedActivities]);
-
-  console.log('[useFriendsActivity] Final return:', {
-    activitiesCount: processedActivities.length,
-    bookIdsCount: bookIds.length,
-    isLoading,
-    hasError: !!error,
-  });
 
   return {
     activities: processedActivities,

@@ -38,7 +38,7 @@ const calculatePagesRead = (progress: number, totalPages: number): number => {
 };
 
 const ReadingBookSkeleton = () => (
-  <Box sx={{ mb: 3 }}>
+  <Box sx={{ mb: 3, p: { xs: 1, sm: 0 } }}>
     <Skeleton
       variant="text"
       width={150}
@@ -140,7 +140,7 @@ export const CurrentlyReadingSection: React.FC<
               'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
             backdropFilter: 'blur(10px)',
             borderRadius: '20px',
-            padding: { xs: 1, sm: 3 },
+            padding: { xs: 2, sm: 3 },
             border: '1px solid rgba(147, 51, 234, 0.2)',
             textAlign: 'center',
           }}
@@ -196,7 +196,7 @@ export const CurrentlyReadingSection: React.FC<
           variant="h5"
           sx={{
             fontFamily: lora.style.fontFamily,
-
+            fontSize: { xs: '1.25rem', sm: '1.5rem' },
             color: 'white',
             fontWeight: 700,
             mb: 2,
@@ -213,7 +213,7 @@ export const CurrentlyReadingSection: React.FC<
               'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
             backdropFilter: 'blur(10px)',
             borderRadius: '20px',
-            padding: { xs: 1, sm: 3 },
+            padding: { xs: 2, sm: 3 },
             border: '1px solid rgba(147, 51, 234, 0.3)',
             cursor: 'pointer',
             transition: 'all 0.3s ease',
