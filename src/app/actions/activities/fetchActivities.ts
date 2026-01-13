@@ -1,7 +1,7 @@
 'use server';
 
-import { headers, cookies } from 'next/headers';
-import { Activity } from '@/domain/activity.model';
+import { Activity, feedActivity } from '@/domain/activity.model';
+import { cookies, headers } from 'next/headers';
 
 export async function fetchActivities(): Promise<Activity[]> {
   try {
@@ -36,7 +36,7 @@ export async function fetchActivities(): Promise<Activity[]> {
     }
 
     const data = await response.json();
-    return data as Activity[];
+    return data as feedActivity[];
   } catch (error) {
     console.error('[fetchActivities] Exception:', error);
     throw error;

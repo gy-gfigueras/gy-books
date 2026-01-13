@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { useMemo } from 'react';
 
 export type ProfileUserData = {
   editionId?: string;
@@ -25,60 +26,74 @@ type Result = {
 
 /**
  * useProfileBooks
- * - Recupera todos los items (paginated) de la API de Spring para un perfil
- * - Llama a `/api/public/accounts/${profileId}/books?page=${page}&size=${size}`
+ *
+ * Recupera todos los items (paginados) de la API de Spring para un perfil.
+ *
+ * ## Optimizaciones de SWR:
+ * - **dedupingInterval: 5000ms** - Evita peticiones duplicadas durante 5 segundos
+ * - **keepPreviousData: true** - Mantiene datos previos mientras revalida (evita UI vacía)
+ * - **revalidateOnFocus: false** - No revalida al volver al tab (ahorra peticiones)
+ * - **revalidateOnReconnect: true** - Sí revalida al recuperar conexión (datos frescos)
+ * - **shouldRetryOnError: false** - No reintenta automáticamente en error (evita spam)
+ *
+ * ## Paginación:
+ * - Llama a `/api/public/books?profileId=${profileId}&page=${page}&size=${size}`
  * - Acumula páginas hasta que la página devuelta sea menor al tamaño
+ * - La key de SWR incluye profileId y pageSize para cache consistente
+ *
+ * @param profileId - ID del perfil del usuario
+ * @param pageSize - Tamaño de página (default: 50)
+ * @returns Objeto con data (array de summaries), isLoading y error
  */
 export function useProfileBooks(profileId?: string, pageSize = 50): Result {
-  const [data, setData] = useState<ProfileBookSummary[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  // Fetcher que maneja la paginación completa
+  const fetcher = async (key: string) => {
+    // Extraer profileId del key
+    const [, id] = key.split('|');
+    if (!id) return [];
 
-  useEffect(() => {
-    let mounted = true;
-    const abort = new AbortController();
+    const accumulated: ProfileBookSummary[] = [];
+    let page = 0;
 
-    const fetchAll = async () => {
-      if (!profileId) {
-        setData([]);
-        return;
-      }
+    while (true) {
+      const url = `/api/public/books?profileId=${id}&page=${page}&size=${pageSize}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const pageData = (await res.json()) as ProfileBookSummary[];
 
-      setIsLoading(true);
-      setError(null);
-      try {
-        const accumulated: ProfileBookSummary[] = [];
-        let page = 0;
-        while (mounted) {
-          const url = `/api/public/books?profileId=${profileId}&page=${page}&size=${pageSize}`;
-          const res = await fetch(url, { signal: abort.signal });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const pageData = (await res.json()) as ProfileBookSummary[];
-          if (!Array.isArray(pageData) || pageData.length === 0) break;
-          accumulated.push(...pageData);
-          if (pageData.length < pageSize) break;
-          page += 1;
-        }
-        if (mounted) setData(accumulated);
-      } catch (e) {
-        if (!mounted) return;
-        const err = e instanceof Error ? e : new Error(String(e));
-        setError(err);
-        setData([]);
-      } finally {
-        if (mounted) setIsLoading(false);
-      }
-    };
+      if (!Array.isArray(pageData) || pageData.length === 0) break;
+      accumulated.push(...pageData);
 
-    fetchAll();
+      if (pageData.length < pageSize) break;
+      page += 1;
+    }
 
-    return () => {
-      mounted = false;
-      abort.abort();
-    };
-  }, [profileId, pageSize]);
+    return accumulated;
+  };
 
-  return { data, isLoading, error };
+  // Key estable para SWR (null cuando no hay profileId)
+  const swrKey = profileId ? `profile-books|${profileId}|${pageSize}` : null;
+
+  const { data, error, isLoading } = useSWR<ProfileBookSummary[], Error>(
+    swrKey,
+    fetcher,
+    {
+      revalidateOnFocus: false, // No revalidar al hacer foco en la ventana
+      revalidateOnReconnect: true, // Sí revalidar al recuperar conexión
+      dedupingInterval: 5000, // Evitar duplicados durante 5 segundos
+      keepPreviousData: true, // Mantener datos previos mientras carga
+      shouldRetryOnError: false, // No reintentar automáticamente
+    }
+  );
+
+  // Memoizar para retornar array vacío estable cuando no hay data
+  const stableData = useMemo(() => data ?? [], [data]);
+
+  return {
+    data: stableData,
+    isLoading,
+    error: error ?? null,
+  };
 }
 
 export default useProfileBooks;

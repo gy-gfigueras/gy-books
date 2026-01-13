@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
+import { Activity } from '@/domain/activity.model';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { Activity } from '@/domain/activity.model';
+import { sendLog } from '@/utils/logs/logHelper';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -20,7 +20,7 @@ export const GET = async (req: NextRequest) => {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    apiUrl = `${baseUrl}/books/profiles/${profileId}/activity`;
+    apiUrl = `${baseUrl}/books/activity/${profileId}`;
     headers = {
       ...headers,
     };

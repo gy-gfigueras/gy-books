@@ -11,8 +11,23 @@ type Result = {
 
 /**
  * useMergedBooks
- * - Composición: obtiene los summaries del profile, pide a /api/hardcover por ids,
- *   y mezcla userData en los HardcoverBook resultantes.
+ *
+ * Hook compuesto que combina datos de profile books con información detallada de Hardcover.
+ *
+ * ## Flujo de datos:
+ * 1. Obtiene summaries del perfil (con userData básica)
+ * 2. Extrae los IDs de los libros
+ * 3. Solicita información detallada a Hardcover en batch
+ * 4. Mezcla userData del profile con los datos completos de Hardcover
+ *
+ * ## Optimizaciones:
+ * - Usa useMemo para estabilizar el array de IDs (evita peticiones duplicadas)
+ * - Usa useMemo para el merge final (evita recalcular si los datos no cambian)
+ * - Los hooks internos (useProfileBooks y useHardcoverBatch) tienen configuraciones
+ *   de SWR optimizadas para evitar revalidaciones innecesarias
+ *
+ * @param profileId - ID del perfil del usuario
+ * @returns Objeto con data (libros mergeados), isLoading y error
  */
 export default function useMergedBooks(profileId?: string): Result {
   const {
@@ -21,6 +36,8 @@ export default function useMergedBooks(profileId?: string): Result {
     error: errSummaries,
   } = useProfileBooks(profileId);
 
+  // Memoiza los IDs para evitar que cambien la referencia en cada render
+  // Esto previene peticiones duplicadas a useHardcoverBatch
   const ids = useMemo(() => {
     if (!summaries) return [] as string[];
     return summaries.map((s) => s.id);
@@ -35,6 +52,12 @@ export default function useMergedBooks(profileId?: string): Result {
   const error = (errSummaries || errHardcover) ?? null;
   const isLoading = loadingSummaries || loadingHardcover;
 
+  /**
+   * Merge optimizado de datos:
+   * - Crea un Map para búsqueda O(1) de userData por ID
+   * - Solo recalcula si hardcoverData o summaries cambian
+   * - Preserva userData del profile sobre la de Hardcover (más actualizada)
+   */
   const data: HardcoverBook[] = useMemo(() => {
     if (!hardcoverData || hardcoverData.length === 0) return [];
     const summaryById = new Map<string, ProfileUserData | undefined>();

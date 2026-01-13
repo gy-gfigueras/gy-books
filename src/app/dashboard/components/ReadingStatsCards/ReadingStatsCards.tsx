@@ -6,14 +6,13 @@ import { motion } from 'framer-motion';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import HardcoverBook from '@/domain/HardcoverBook';
-import { getBookDisplayData } from '@/hooks/useBookDisplay';
-import { EBookStatus } from '@gycoding/nebula';
 import { useRouter } from 'next/navigation';
 import { lora } from '@/utils/fonts/fonts';
 
 interface ReadingStatsCardsProps {
-  books: HardcoverBook[];
+  totalBooks: number;
+  booksRead: number;
+  booksReadThisYear: number;
   isLoading: boolean;
 }
 
@@ -78,62 +77,45 @@ const StatCardSkeleton: React.FC<{
 );
 
 export const ReadingStatsCards: React.FC<ReadingStatsCardsProps> = ({
-  books,
+  totalBooks,
+  booksRead,
+  booksReadThisYear,
   isLoading,
 }) => {
   const router = useRouter();
 
-  const stats = useMemo(() => {
-    const totalBooks = books.length;
-    const booksRead = books.filter((book) => {
-      const displayData = getBookDisplayData(book);
-      return displayData?.status === EBookStatus.READ;
-    }).length;
-
-    const currentYear = new Date().getFullYear();
-    const booksReadThisYear = books.filter((book) => {
-      const displayData = getBookDisplayData(book);
-      if (displayData?.status !== EBookStatus.READ) return false;
-
-      const finishedAt = book.userData?.finishedAt;
-      if (!finishedAt) return false;
-
-      const finishedYear = new Date(finishedAt).getFullYear();
-      return finishedYear === currentYear;
-    }).length;
-
-    return { totalBooks, booksRead, booksReadThisYear };
-  }, [books]);
-
-  const cards = [
-    {
-      title: 'Total Books',
-      value: stats.totalBooks,
-      icon: MenuBookIcon,
-      color: '#9333ea',
-      gradient:
-        'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(147, 51, 234, 0.05) 100%)',
-      onClick: () => router.push('/profile'),
-    },
-    {
-      title: 'Books Read',
-      value: stats.booksRead,
-      icon: CheckCircleIcon,
-      color: '#10b981',
-      gradient:
-        'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%)',
-      onClick: () => router.push('/profile?status=read'),
-    },
-    {
-      title: 'Read in 2025',
-      value: stats.booksReadThisYear,
-      icon: TrendingUpIcon,
-      color: '#f59e0b',
-      gradient:
-        'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%)',
-      onClick: () => router.push('/profile?year=2025'),
-    },
-  ];
+  const cards = useMemo(
+    () => [
+      {
+        title: 'Total Books',
+        value: totalBooks,
+        icon: MenuBookIcon,
+        color: '#9333ea',
+        gradient:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(147, 51, 234, 0.05) 100%)',
+        onClick: () => router.push('/profile'),
+      },
+      {
+        title: 'Books Read',
+        value: booksRead,
+        icon: CheckCircleIcon,
+        color: '#10b981',
+        gradient:
+          'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%)',
+        onClick: () => router.push('/profile?status=read'),
+      },
+      {
+        title: 'Read in 2025',
+        value: booksReadThisYear,
+        icon: TrendingUpIcon,
+        color: '#f59e0b',
+        gradient:
+          'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%)',
+        onClick: () => router.push('/profile?year=2025'),
+      },
+    ],
+    [totalBooks, booksRead, booksReadThisYear, router]
+  );
 
   return (
     <Box

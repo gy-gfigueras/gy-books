@@ -6,9 +6,8 @@ import manageRequest from '@/app/actions/accounts/user/friend/handleRequest';
 import { FriendRequest, User } from '@/domain/friend.model';
 import { ECommands } from '@/utils/constants/ECommands';
 import { UUID } from 'crypto';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import useSWR from 'swr';
-import React from 'react';
 
 // Extended interface that combines FriendRequest with User data
 type FriendRequestWithUser = {

@@ -15,6 +15,12 @@ export interface Activity {
   formattedDate?: string;
 }
 
+export interface feedActivity extends Activity {
+  userId: string;
+  likes: string[] | null;
+  profilePicture?: string | null;
+}
+
 // Activity Type Detection
 export function getActivityType(message: string): ActivityType {
   if (message.includes('started reading')) {

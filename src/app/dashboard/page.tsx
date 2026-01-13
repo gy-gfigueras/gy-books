@@ -1,26 +1,199 @@
 'use client';
 
-import React from 'react';
-import { Box, Avatar, Typography, Paper, Skeleton } from '@mui/material';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
-import { CurrentlyReadingSection } from './components/CurrentlyReadingSection/CurrentlyReadingSection';
-import { ReadingStatsCards } from './components/ReadingStatsCards/ReadingStatsCards';
-import { QuickActions } from './components/QuickActions/QuickActions';
-import { FriendsActivityFeed } from './components/FriendsActivityFeed/FriendsActivityFeed';
-import useMergedBooksIncremental from '@/hooks/books/useMergedBooksIncremental';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import HardcoverBook from '@/domain/HardcoverBook';
+import { useFriendsActivityFeed } from '@/hooks/activities/useFriendsActivityFeed';
+import useMergedBooks from '@/hooks/books/useMergedBooks';
+import { getBookDisplayData } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
+import { EBookStatus } from '@gycoding/nebula';
+import { Avatar, Box, Paper, Skeleton, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import React, { useMemo } from 'react';
+import { CurrentlyReadingSection } from './components/CurrentlyReadingSection/CurrentlyReadingSection';
+import { FriendsActivityFeed } from './components/FriendsActivityFeed/FriendsActivityFeed';
+import { QuickActions } from './components/QuickActions/QuickActions';
+import { ReadingStatsCards } from './components/ReadingStatsCards/ReadingStatsCards';
 
 const MotionBox = motion(Box);
 
+/**
+ * Skeleton para el UserCompactCard
+ */
+const UserCompactCardSkeleton: React.FC = () => (
+  <Paper
+    sx={{
+      background:
+        'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
+      backdropFilter: 'blur(10px)',
+      borderRadius: '16px',
+      padding: 2,
+      border: '1px solid rgba(147, 51, 234, 0.3)',
+      textAlign: 'center',
+    }}
+  >
+    <Skeleton
+      variant="circular"
+      width={70}
+      height={70}
+      sx={{
+        bgcolor: 'rgba(255, 255, 255, 0.05)',
+        margin: '0 auto',
+        mb: 1.5,
+      }}
+    />
+    <Skeleton
+      variant="text"
+      width="80%"
+      height={24}
+      sx={{
+        bgcolor: 'rgba(255, 255, 255, 0.05)',
+        margin: '0 auto',
+      }}
+    />
+  </Paper>
+);
+
+/**
+ * Componente UserCompactCard optimizado
+ */
+interface UserCompactCardProps {
+  username?: string;
+  picture?: string;
+  isLoading: boolean;
+}
+
+const UserCompactCard: React.FC<UserCompactCardProps> = ({
+  username,
+  picture,
+  isLoading,
+}) => {
+  if (isLoading) {
+    return <UserCompactCardSkeleton />;
+  }
+
+  if (!username || !picture) {
+    return null;
+  }
+
+  return (
+    <Paper
+      sx={{
+        background:
+          'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '16px',
+        padding: 2,
+        border: '1px solid rgba(147, 51, 234, 0.3)',
+        textAlign: 'center',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          border: '1px solid rgba(147, 51, 234, 0.5)',
+          boxShadow: '0 8px 24px rgba(147, 51, 234, 0.3)',
+        },
+      }}
+    >
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        transition={{ type: 'spring', stiffness: 300 }}
+      >
+        <Avatar
+          src={picture}
+          alt={username}
+          sx={{
+            width: 70,
+            height: 70,
+            margin: '0 auto',
+            mb: 1.5,
+            border: '2px solid rgba(147, 51, 234, 0.5)',
+            boxShadow: '0 4px 16px rgba(147, 51, 234, 0.3)',
+          }}
+        />
+      </motion.div>
+      <Typography
+        sx={{
+          fontFamily: lora.style.fontFamily,
+          fontSize: '1.1rem',
+          fontWeight: 600,
+          background: 'linear-gradient(135deg, #ffffff 0%, #9333ea 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          mb: 0.5,
+        }}
+      >
+        {username}
+      </Typography>
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'rgba(255, 255, 255, 0.5)',
+          fontFamily: lora.style.fontFamily,
+        }}
+      >
+        My Profile
+      </Typography>
+    </Paper>
+  );
+};
+
+/**
+ * Dashboard Page - Componente padre optimizado
+ *
+ * Centraliza todas las peticiones de datos:
+ * - useMergedBooksIncremental: obtiene todos los libros del usuario
+ * - useFriendsActivityFeed: obtiene actividades de amigos
+ *
+ * Calcula stats en memoria y pasa datos por props a componentes hijos
+ */
 export default function DashboardPage() {
   const { user, isLoading: userLoading } = useGyCodingUser();
   const router = useRouter();
 
-  const { data: books, isLoading: booksLoading } = useMergedBooksIncremental(
+  // 🚀 PETICIÓN 1: Libros del usuario
+  const { data: books = [], isLoading: booksLoading } = useMergedBooks(
     user?.id
   );
+
+  // 🚀 PETICIÓN 2: Feed de actividades de amigos (optimizado con JOIN)
+  const { activities, isLoading: activitiesLoading } = useFriendsActivityFeed();
+
+  // 📊 Calcular libro actualmente en lectura
+  const currentlyReadingBook = useMemo<HardcoverBook | undefined>(() => {
+    if (!books || books.length === 0) return undefined;
+
+    const readingBook = books.find((book) => {
+      const displayData = getBookDisplayData(book);
+      return displayData?.status === EBookStatus.READING;
+    });
+
+    return readingBook;
+  }, [books]);
+
+  // 📊 Calcular stats en memoria (evita peticiones adicionales)
+  const stats = useMemo(() => {
+    const totalBooks = books.length;
+
+    const booksRead = books.filter((book) => {
+      const displayData = getBookDisplayData(book);
+      return displayData?.status === EBookStatus.READ;
+    }).length;
+
+    const currentYear = new Date().getFullYear();
+    const booksReadThisYear = books.filter((book) => {
+      const displayData = getBookDisplayData(book);
+      if (displayData?.status !== EBookStatus.READ) return false;
+
+      const finishedAt = book.userData?.endDate;
+      if (!finishedAt) return false;
+
+      const finishedYear = new Date(finishedAt).getFullYear();
+      return finishedYear === currentYear;
+    }).length;
+
+    return { totalBooks, booksRead, booksReadThisYear };
+  }, [books]);
 
   // Redirect if no user
   React.useEffect(() => {
@@ -83,90 +256,18 @@ export default function DashboardPage() {
               gap: 3,
             }}
           >
-            {/* Compact User Card */}
-            <Paper
-              sx={{
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '16px',
-                padding: 2,
-                border: '1px solid rgba(147, 51, 234, 0.3)',
-                textAlign: 'center',
-              }}
-            >
-              {userLoading ? (
-                <>
-                  <Skeleton
-                    variant="circular"
-                    width={70}
-                    height={70}
-                    sx={{
-                      bgcolor: 'rgba(255, 255, 255, 0.05)',
-                      margin: '0 auto',
-                      mb: 1.5,
-                    }}
-                  />
-                  <Skeleton
-                    variant="text"
-                    width="80%"
-                    height={24}
-                    sx={{
-                      bgcolor: 'rgba(255, 255, 255, 0.05)',
-                      margin: '0 auto',
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <Avatar
-                      src={user?.picture}
-                      alt={user?.username}
-                      sx={{
-                        width: 70,
-                        height: 70,
-                        margin: '0 auto',
-                        mb: 1.5,
-                        border: '2px solid rgba(147, 51, 234, 0.5)',
-                        boxShadow: '0 4px 16px rgba(147, 51, 234, 0.3)',
-                      }}
-                    />
-                  </motion.div>
-                  <Typography
-                    sx={{
-                      fontFamily: lora.style.fontFamily,
-                      fontSize: '1.1rem',
-                      fontWeight: 600,
-                      background:
-                        'linear-gradient(135deg, #ffffff 0%, #9333ea 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      mb: 0.5,
-                    }}
-                  >
-                    {user?.username}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: 'rgba(255, 255, 255, 0.5)',
-                      fontFamily: lora.style.fontFamily,
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    Book Lover 📚
-                  </Typography>
-                </>
-              )}
-            </Paper>
+            {/* User Compact Card */}
+            <UserCompactCard
+              username={user?.username}
+              picture={user?.picture}
+              isLoading={userLoading}
+            />
 
             {/* Currently Reading - Desktop */}
-            <CurrentlyReadingSection books={books} isLoading={booksLoading} />
+            <CurrentlyReadingSection
+              book={currentlyReadingBook}
+              isLoading={booksLoading}
+            />
           </MotionBox>
 
           {/* CENTER COLUMN - Friends Activity Feed */}
@@ -184,7 +285,10 @@ export default function DashboardPage() {
           >
             {/* Currently Reading - Mobile only at the top */}
             <Box sx={{ display: { xs: 'block', lg: 'none' }, flexShrink: 0 }}>
-              <CurrentlyReadingSection books={books} isLoading={booksLoading} />
+              <CurrentlyReadingSection
+                book={currentlyReadingBook}
+                isLoading={booksLoading}
+              />
             </Box>
 
             {/* Friends Activity - Main content */}
@@ -217,7 +321,10 @@ export default function DashboardPage() {
                 },
               }}
             >
-              <FriendsActivityFeed />
+              <FriendsActivityFeed
+                activities={activities}
+                isLoading={activitiesLoading}
+              />
             </Paper>
           </MotionBox>
 
@@ -233,7 +340,12 @@ export default function DashboardPage() {
             }}
           >
             {/* Stats Cards */}
-            <ReadingStatsCards books={books} isLoading={booksLoading} />
+            <ReadingStatsCards
+              totalBooks={stats.totalBooks}
+              booksRead={stats.booksRead}
+              booksReadThisYear={stats.booksReadThisYear}
+              isLoading={booksLoading}
+            />
 
             {/* Quick Actions */}
             <QuickActions />

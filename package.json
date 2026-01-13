@@ -22,7 +22,10 @@
     "cypress:run": "cypress run",
     "cypress:run:production": "cypress run --config baseUrl=https://wingwords.gycoding.com",
     "test:e2e": "cypress run",
-    "test:e2e:production": "cypress run --config baseUrl=https://wingwords.gycoding.com"
+    "test:e2e:production": "cypress run --config baseUrl=https://wingwords.gycoding.com",
+    "prune": "ts-prune",
+    "prune:report": "ts-prune --project tsconfig.json | tee unused-exports.txt",
+    "prune:strict": "ts-prune --error"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
@@ -85,6 +88,7 @@
     "prettier": "^3.5.3",
     "start-server-and-test": "^2.0.12",
     "ts-jest": "^29.4.1",
+    "ts-prune": "^0.10.3",
     "typescript": "^5",
     "typescript-eslint": "^8.26.1"
   },

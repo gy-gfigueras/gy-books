@@ -1,0 +1,37 @@
+# ts-prune configuration
+# Files or directories to ignore
+
+# Next.js special files
+-i next.config.*
+-i middleware.ts
+-i instrumentation.ts
+
+# Next.js API routes (pueden tener exports que parecen no usados)
+-i src/app/api/**/route.ts
+
+# Next.js App Router layouts and pages
+-i src/app/**/layout.tsx
+-i src/app/**/page.tsx
+-i src/app/**/loading.tsx
+-i src/app/**/error.tsx
+-i src/app/**/not-found.tsx
+-i src/app/**/template.tsx
+-i src/app/**/default.tsx
+
+# Setup files
+-i src/setupTests.ts
+-i jest.setup.js
+-i jest.config.*
+
+# Config files
+-i *.config.*
+-i eslint.config.*
+
+# Test files (pueden tener exports de mocks)
+-i **/*.test.*
+-i **/*.spec.*
+-i __mocks__/**
+
+# Type definitions
+-i src/types/**
+-i *.d.ts

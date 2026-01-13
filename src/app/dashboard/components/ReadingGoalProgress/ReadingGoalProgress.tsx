@@ -214,7 +214,7 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
           <TextField
             autoFocus
             margin="dense"
-            label="Books to read in 2025"
+            label="Books to read in 2026"
             type="number"
             fullWidth
             value={tempGoal}

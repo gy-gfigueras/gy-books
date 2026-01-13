@@ -1,45 +1,35 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { Box, Typography, Paper, Skeleton, Chip } from '@mui/material';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useActivities } from '@/hooks/useActivities';
-import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
+import { Activity } from '@/domain/activity.model';
+import HardcoverBook from '@/domain/HardcoverBook';
 import { lora } from '@/utils/fonts/fonts';
-import Image from 'next/image';
-import { useHardcoverBatch } from '@/hooks/books/useHardcoverBatch';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { UserAvatar } from '@/app/components/atoms/UserAvatar';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { Box, Chip, Paper, Skeleton, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 interface ReadingActivityFeedProps {
+  activities?: Activity[];
+  books?: HardcoverBook[];
   isLoading?: boolean;
+  userPicture?: string | null;
+  username?: string;
 }
 
 export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
-  isLoading: externalLoading,
+  activities,
+  books,
+  isLoading,
+  userPicture,
+  username = 'You',
 }) => {
   const router = useRouter();
-  const { user } = useGyCodingUser();
-  const userId = user?.id;
-  const { data: activities, isLoading } = useActivities(userId);
-
-  // Extraer IDs únicos de libros
-  const bookIds = useMemo(() => {
-    if (!activities) return [];
-    const ids = activities
-      .map((activity) => {
-        const match = activity.message?.match(/\[(.*?)\]/);
-        return match ? match[1] : null;
-      })
-      .filter((id): id is string => Boolean(id));
-    return Array.from(new Set(ids));
-  }, [activities]);
-
-  // Obtener datos de los libros
-  const { data: books } = useHardcoverBatch(bookIds);
 
   // Limitar a las 5 actividades más recientes
   const recentActivities = activities?.slice(0, 5) || [];
@@ -97,8 +87,8 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
     };
   };
 
-  const getRelativeTime = (dateString: string) => {
-    const date = new Date(dateString);
+  const getRelativeTime = (dateInput: Date | string) => {
+    const date = new Date(dateInput);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -123,7 +113,7 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
     return `Hace ${months} ${months === 1 ? 'mes' : 'meses'}`;
   };
 
-  if (isLoading || externalLoading) {
+  if (isLoading) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -273,6 +263,17 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
                         : {},
                     }}
                   >
+                    {/* Avatar del usuario */}
+                    <UserAvatar
+                      src={userPicture}
+                      alt={username}
+                      size={40}
+                      sx={{
+                        flexShrink: 0,
+                        border: '2px solid rgba(147, 51, 234, 0.3)',
+                      }}
+                    />
+
                     {/* Imagen del libro */}
                     {book?.image ? (
                       <Box

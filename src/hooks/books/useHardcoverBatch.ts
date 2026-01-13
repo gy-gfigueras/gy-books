@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { useMemo } from 'react';
 import type HardcoverBook from '../../domain/HardcoverBook';
 
 type Result = {
@@ -9,58 +10,68 @@ type Result = {
 
 /**
  * useHardcoverBatch
- * - Envía un POST a /api/hardcover con { ids: string[] }
- * - Devuelve la lista de HardcoverBook mapeados por el servidor
+ *
+ * Obtiene información detallada de múltiples libros de Hardcover en una sola petición batch.
+ *
+ * ## Optimizaciones de SWR:
+ * - **dedupingInterval: 10000ms** - Evita duplicados durante 10 segundos (datos menos volátiles)
+ * - **keepPreviousData: true** - Mantiene datos previos mientras revalida (UX fluida)
+ * - **revalidateOnFocus: false** - No revalida al hacer foco (datos externos estables)
+ * - **revalidateOnReconnect: false** - No revalida al reconectar (datos externos no cambian)
+ * - **shouldRetryOnError: false** - No reintenta automáticamente (evita spam al backend)
+ *
+ * ## Key estable:
+ * - Ordena los IDs alfabéticamente para generar una key consistente
+ * - Esto permite que ["id1", "id2"] y ["id2", "id1"] compartan cache
+ * - Mejora el hit rate del cache de SWR
+ *
+ * @param ids - Array de IDs de libros para obtener de Hardcover
+ * @returns Objeto con data (array de HardcoverBook), isLoading y error
  */
 export function useHardcoverBatch(ids: string[] | undefined | null): Result {
-  const [data, setData] = useState<HardcoverBook[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  // Crear una key estable ordenando los IDs
+  // Esto asegura que el orden no afecte el cache de SWR
+  const swrKey = useMemo(() => {
+    if (!ids || ids.length === 0) return null;
+    const sortedIds = [...ids].sort();
+    return `hardcover-batch|${sortedIds.join(',')}`;
+  }, [ids]);
 
-  useEffect(() => {
-    let mounted = true;
-    const abort = new AbortController();
+  // Fetcher que hace el POST a /api/hardcover
+  const fetcher = async (key: string) => {
+    // Extraer los IDs ordenados del key
+    const [, idsStr] = key.split('|');
+    const idsArray = idsStr.split(',');
 
-    const fetchBatch = async () => {
-      if (!ids || ids.length === 0) {
-        // Solo actualizar si data no es ya un array vacío
-        if (data === null || data.length > 0) {
-          setData([]);
-        }
-        return;
-      }
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch('/api/hardcover', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ids }),
-          signal: abort.signal,
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = (await res.json()) as HardcoverBook[];
-        if (mounted) setData(json || []);
-      } catch (e) {
-        if (!mounted) return;
-        const err = e instanceof Error ? e : new Error(String(e));
-        setError(err);
-        setData([]);
-      } finally {
-        if (mounted) setIsLoading(false);
-      }
-    };
+    const res = await fetch('/api/hardcover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: idsArray }),
+    });
 
-    fetchBatch();
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = (await res.json()) as HardcoverBook[];
+    return json || [];
+  };
 
-    return () => {
-      mounted = false;
-      abort.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ids?.join(',')]); // Usar join para comparar el contenido del array
+  const { data, error, isLoading } = useSWR<HardcoverBook[], Error>(
+    swrKey,
+    fetcher,
+    {
+      revalidateOnFocus: false, // No revalidar al hacer foco (datos externos)
+      revalidateOnReconnect: false, // No revalidar al reconectar (datos estables)
+      dedupingInterval: 10000, // Evitar duplicados durante 10 segundos
+      keepPreviousData: true, // Mantener datos previos mientras carga
+      shouldRetryOnError: false, // No reintentar automáticamente
+    }
+  );
 
-  return { data, isLoading, error };
+  // Retornar null cuando no hay data (mantiene compatibilidad con interfaz original)
+  return {
+    data: data ?? null,
+    isLoading,
+    error: error ?? null,
+  };
 }
 
 export default useHardcoverBatch;

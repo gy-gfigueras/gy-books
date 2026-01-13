@@ -1,9 +1,9 @@
+import { feedActivity } from '@/domain/activity.model';
 import { auth0 } from '@/lib/auth0';
-import { NextRequest, NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
 import { ELevel } from '@/utils/constants/ELevel';
 import { ELogs } from '@/utils/constants/ELogs';
-import { Activity } from '@/domain/activity.model';
+import { sendLog } from '@/utils/logs/logHelper';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(_req: NextRequest) {
   try {
@@ -45,7 +45,7 @@ export async function GET(_req: NextRequest) {
 
     const activities = await gyCodingResponse.json();
 
-    return NextResponse.json(activities as Activity[]);
+    return NextResponse.json(activities as feedActivity[]);
   } catch (error) {
     console.error('Error in /api/auth/books/activity:', error);
     await sendLog(ELevel.ERROR, ELogs.ACTIVITY_FETCH_ERROR, {
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
 
     const activity = await gyCodingResponse.json();
 
-    return NextResponse.json(activity as Activity);
+    return NextResponse.json(activity as feedActivity);
   } catch (error) {
     console.error('Error creating activity:', error);
     await sendLog(ELevel.ERROR, ELogs.ACTIVITY_CREATE_ERROR, {

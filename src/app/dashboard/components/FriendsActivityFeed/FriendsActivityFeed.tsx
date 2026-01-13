@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import React, { useMemo } from 'react';
-import { Box, Typography, Avatar, Skeleton } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { useFriendsActivity } from '@/hooks/books/useFriendsActivity';
-import { useHardcoverBatch } from '@/hooks/books/useHardcoverBatch';
-import { AnimatePresence, motion } from 'framer-motion';
+import { ActivityBadges } from '@/app/components/atoms/ActivityCard/components/ActivityBadges';
+import { ActivityIcon } from '@/app/components/atoms/ActivityCard/components/ActivityIcon';
+import { UserAvatar } from '@/app/components/atoms/UserAvatar';
+import { getActivityType } from '@/domain/activity.model';
+import { FriendActivity } from '@/hooks/activities/useFriendsActivityFeed';
 import { lora } from '@/utils/fonts/fonts';
 import { AutoStories } from '@mui/icons-material';
-import { getActivityType } from '@/domain/activity.model';
-import { ActivityIcon } from '@/app/components/atoms/ActivityCard/components/ActivityIcon';
-import { ActivityBadges } from '@/app/components/atoms/ActivityCard/components/ActivityBadges';
+import { Box, Skeleton, Typography } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 const MotionBox = motion(Box);
 
@@ -74,27 +74,56 @@ const FriendActivityItem: React.FC<{
           mb: 1.5,
         }}
       >
-        <Avatar
-          src={activity.userPicture}
-          alt={activity.username}
-          sx={{
-            width: 32,
-            height: 32,
-            border: '2px solid rgba(59, 130, 246, 0.3)',
-          }}
-        />
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography
+        {/* Avatar con skeleton si está cargando */}
+        {activity.userPicture === null && !activity.username ? (
+          <Skeleton
+            variant="circular"
+            width={32}
+            height={32}
+            animation="wave"
             sx={{
-              fontFamily: lora.style.fontFamily,
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              color: '#fff',
-              lineHeight: 1.2,
+              bgcolor: 'rgba(59, 130, 246, 0.1)',
+              border: '2px solid rgba(59, 130, 246, 0.3)',
             }}
-          >
-            {activity.username}
-          </Typography>
+          />
+        ) : (
+          <UserAvatar
+            src={activity.userPicture}
+            alt={activity.username || 'User'}
+            size={32}
+            sx={{
+              border: '2px solid rgba(59, 130, 246, 0.3)',
+            }}
+          />
+        )}
+
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          {/* Username con skeleton si está cargando */}
+          {!activity.username ? (
+            <Skeleton
+              variant="text"
+              width="60%"
+              height={20}
+              animation="wave"
+              sx={{
+                bgcolor: 'rgba(59, 130, 246, 0.1)',
+                mb: 0.3,
+              }}
+            />
+          ) : (
+            <Typography
+              sx={{
+                fontFamily: lora.style.fontFamily,
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: '#fff',
+                lineHeight: 1.2,
+              }}
+            >
+              {activity.username}
+            </Typography>
+          )}
+
           <Typography
             sx={{
               fontSize: '0.7rem',
@@ -279,24 +308,16 @@ const EmptyState: React.FC = () => (
   </Box>
 );
 
-export const FriendsActivityFeed: React.FC = () => {
-  const router = useRouter();
-  const { activities, bookIds, isLoading, error } = useFriendsActivity();
-  const { data: hardcoverBooks, isLoading: isLoadingCovers } =
-    useHardcoverBatch(bookIds);
+interface FriendsActivityFeedProps {
+  activities: FriendActivity[];
+  isLoading: boolean;
+}
 
-  // Create a map of bookId -> coverUrl
-  const bookCoversMap = useMemo(() => {
-    const map = new Map<string, string>();
-    if (hardcoverBooks) {
-      hardcoverBooks.forEach((book) => {
-        if (book.id && book.image) {
-          map.set(String(book.id), book.image);
-        }
-      });
-    }
-    return map;
-  }, [hardcoverBooks]);
+export const FriendsActivityFeed: React.FC<FriendsActivityFeedProps> = ({
+  activities,
+  isLoading,
+}) => {
+  const router = useRouter();
 
   const handleActivityClick = (bookId?: string) => {
     if (bookId) {
@@ -305,7 +326,7 @@ export const FriendsActivityFeed: React.FC = () => {
   };
 
   // Loading state
-  if (isLoading || isLoadingCovers) {
+  if (isLoading) {
     return (
       <Box>
         {[1, 2, 3].map((i) => (
@@ -315,8 +336,8 @@ export const FriendsActivityFeed: React.FC = () => {
     );
   }
 
-  // Error or empty state
-  if (error || !activities || activities.length === 0) {
+  // Empty state
+  if (!activities || activities.length === 0) {
     return <EmptyState />;
   }
 
@@ -324,21 +345,14 @@ export const FriendsActivityFeed: React.FC = () => {
   return (
     <>
       <AnimatePresence>
-        {activities.map((activity, index) => {
-          const bookCoverUrl = activity.bookId
-            ? bookCoversMap.get(activity.bookId)
-            : undefined;
-
-          return (
-            <FriendActivityItem
-              key={`${activity.userId}-${activity.date}-${index}`}
-              activity={activity}
-              bookCoverUrl={bookCoverUrl}
-              index={index}
-              onActivityClick={handleActivityClick}
-            />
-          );
-        })}
+        {activities.map((activity, index) => (
+          <FriendActivityItem
+            key={`${activity.userId}-${activity.date}-${index}`}
+            activity={activity}
+            index={index}
+            onActivityClick={handleActivityClick}
+          />
+        ))}
       </AnimatePresence>
     </>
   );

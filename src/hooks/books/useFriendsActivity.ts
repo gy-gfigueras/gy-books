@@ -1,4 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * ⚠️ DEPRECATED: Este hook ha sido reemplazado por useFriendsActivityFeed
+ *
+ * **Por qué está deprecado:**
+ * - Este hook hace N requests (uno por amigo) = lento y costoso
+ * - El nuevo hook usa un endpoint único optimizado que hace JOIN en backend
+ * - Mejora de rendimiento: ~5-10x más rápido
+ *
+ * **Usa en su lugar:**
+ * ```typescript
+ * import { useFriendsActivityFeed } from '@/hooks/activities/useFriendsActivityFeed';
+ *
+ * const { activities, bookIds, isLoading, error } = useFriendsActivityFeed();
+ * ```
+ *
+ * @deprecated Use useFriendsActivityFeed instead
+ * @see src/hooks/activities/useFriendsActivityFeed.ts
+ */
+
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import { useFriends } from '@/hooks/useFriends';

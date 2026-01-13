@@ -1,24 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  LinearProgress,
-  Skeleton,
-  Paper,
-} from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import HardcoverBook from '@/domain/HardcoverBook';
 import { getBookDisplayData } from '@/hooks/useBookDisplay';
-import { EBookStatus } from '@gycoding/nebula';
-import { useRouter } from 'next/navigation';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import { lora } from '@/utils/fonts/fonts';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import {
+  Box,
+  LinearProgress,
+  Paper,
+  Skeleton,
+  Typography,
+} from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 interface CurrentlyReadingSectionProps {
-  books: HardcoverBook[];
+  book?: HardcoverBook;
   isLoading: boolean;
 }
 
@@ -64,9 +63,12 @@ const ReadingBookSkeleton = () => (
       >
         <Skeleton
           variant="rectangular"
-          width={{ xs: 90, sm: 100 }}
-          height={{ xs: 135, sm: 150 }}
-          sx={{ borderRadius: '8px', bgcolor: 'rgba(255, 255, 255, 0.05)' }}
+          sx={{
+            width: { xs: 90, sm: 100 },
+            height: { xs: 135, sm: 150 },
+            borderRadius: '8px',
+            bgcolor: 'rgba(255, 255, 255, 0.05)',
+          }}
         />
         <Box sx={{ flex: 1, width: '100%' }}>
           <Skeleton
@@ -104,30 +106,15 @@ const ReadingBookSkeleton = () => (
 
 export const CurrentlyReadingSection: React.FC<
   CurrentlyReadingSectionProps
-> = ({ books, isLoading }) => {
+> = ({ book, isLoading }) => {
   const router = useRouter();
-  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const readingBooks = books.filter((book) => {
-    const displayData = getBookDisplayData(book);
-    return displayData?.status === EBookStatus.READING;
-  });
-
-  useEffect(() => {
-    if (readingBooks.length <= 1) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % readingBooks.length);
-    }, 8000);
-
-    return () => clearInterval(interval);
-  }, [readingBooks.length]);
-
+  // Show skeleton while loading
   if (isLoading) {
     return <ReadingBookSkeleton />;
   }
 
-  if (readingBooks.length === 0) {
+  if (!book) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -172,8 +159,7 @@ export const CurrentlyReadingSection: React.FC<
     );
   }
 
-  const currentBook = readingBooks[currentIndex];
-  const displayData = getBookDisplayData(currentBook);
+  const displayData = getBookDisplayData(book);
 
   if (!displayData) return null;
 
@@ -200,14 +186,13 @@ export const CurrentlyReadingSection: React.FC<
             color: 'white',
             fontWeight: 700,
             mb: 2,
-            fontFamily: lora.style.fontFamily,
           }}
         >
           Currently Reading
         </Typography>
 
         <Paper
-          onClick={() => router.push(`/books/${currentBook.id}`)}
+          onClick={() => router.push(`/books/${book.id}`)}
           sx={{
             background:
               'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
@@ -226,7 +211,7 @@ export const CurrentlyReadingSection: React.FC<
         >
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentBook.id}
+              key={book.id}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
@@ -338,36 +323,6 @@ export const CurrentlyReadingSection: React.FC<
             </motion.div>
           </AnimatePresence>
         </Paper>
-
-        {readingBooks.length > 1 && (
-          <Box
-            sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}
-          >
-            {readingBooks.map((_, index) => (
-              <Box
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  backgroundColor:
-                    index === currentIndex
-                      ? '#9333ea'
-                      : 'rgba(147, 51, 234, 0.3)',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor:
-                      index === currentIndex
-                        ? '#9333ea'
-                        : 'rgba(147, 51, 234, 0.5)',
-                  },
-                }}
-              />
-            ))}
-          </Box>
-        )}
       </Box>
     </motion.div>
   );

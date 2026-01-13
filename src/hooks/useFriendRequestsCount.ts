@@ -15,7 +15,7 @@ export function useFriendRequestsCount(
   const { data, isLoading, error, mutate } = useSWR(
     profileId ? ['friendRequests', profileId] : null,
     ([, id]) => getFriendRequests(id),
-    { refreshInterval: 5000 }
+    { refreshInterval: 60000 }
   );
 
   const count = data?.length || 0;
