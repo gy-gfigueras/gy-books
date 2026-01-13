@@ -9,10 +9,22 @@ import useSWR from 'swr';
 export function useUserProfiles(profileIds: string[]) {
   // Crear un fetcher que obtenga todos los perfiles en paralelo
   const fetcher = async (ids: string[]) => {
-    if (!ids || ids.length === 0) return {};
+    if (!ids || ids.length === 0) {
+      console.log('📋 [useUserProfiles] No profile IDs to fetch');
+      return {};
+    }
+
+    console.log('🔍 [useUserProfiles] Fetching profiles for:', ids);
+    console.log(`🎯 [useUserProfiles] Total profiles to fetch: ${ids.length}`);
 
     const profilePromises = ids.map((id) =>
-      getAccountsUser(id).catch(() => null)
+      getAccountsUser(id).catch((error) => {
+        console.error(
+          `❌ [useUserProfiles] Error fetching profile ${id}:`,
+          error
+        );
+        return null;
+      })
     );
 
     const profiles = await Promise.all(profilePromises);
@@ -21,10 +33,21 @@ export function useUserProfiles(profileIds: string[]) {
     const profilesMap: Record<string, Profile> = {};
     profiles.forEach((profile, index) => {
       if (profile) {
-        profilesMap[ids[index]] = profile;
+        const userId = ids[index];
+        profilesMap[userId] = profile;
+        console.log(
+          `✅ [useUserProfiles] Loaded profile: ${profile.username} (${userId})`
+        );
+      } else {
+        console.warn(
+          `⚠️ [useUserProfiles] Profile not found for: ${ids[index]}`
+        );
       }
     });
 
+    console.log(
+      `🎉 [useUserProfiles] Total profiles loaded: ${Object.keys(profilesMap).length}/${ids.length}`
+    );
     return profilesMap;
   };
 

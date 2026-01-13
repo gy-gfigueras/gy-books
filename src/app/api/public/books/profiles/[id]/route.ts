@@ -7,9 +7,10 @@ import { Profile } from '@gycoding/nebula';
 
 export async function GET(req: NextRequest, context: any) {
   try {
-    // In Next.js app routes the second arg can be a thenable; await it before using params
-    const awaitedContext = (await context) as { params?: { id?: string } };
-    const profileId = awaitedContext?.params?.id;
+    // In Next.js 15, params must be awaited directly
+    const { params } = context;
+    const awaitedParams = await params;
+    const profileId = awaitedParams?.id;
 
     if (!profileId) {
       await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {

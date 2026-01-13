@@ -13,6 +13,7 @@ interface ReadingStatsCardsProps {
   totalBooks: number;
   booksRead: number;
   booksReadThisYear: number;
+  displayYear?: number;
   isLoading: boolean;
 }
 
@@ -80,9 +81,12 @@ export const ReadingStatsCards: React.FC<ReadingStatsCardsProps> = ({
   totalBooks,
   booksRead,
   booksReadThisYear,
+  displayYear,
   isLoading,
 }) => {
   const router = useRouter();
+  const currentYear = new Date().getFullYear();
+  const yearToDisplay = displayYear || currentYear;
 
   const cards = useMemo(
     () => [
@@ -105,16 +109,16 @@ export const ReadingStatsCards: React.FC<ReadingStatsCardsProps> = ({
         onClick: () => router.push('/profile?status=read'),
       },
       {
-        title: 'Read in 2025',
+        title: `Read in ${yearToDisplay}`,
         value: booksReadThisYear,
         icon: TrendingUpIcon,
         color: '#f59e0b',
         gradient:
           'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%)',
-        onClick: () => router.push('/profile?year=2025'),
+        onClick: () => router.push(`/profile?year=${yearToDisplay}`),
       },
     ],
-    [totalBooks, booksRead, booksReadThisYear, router]
+    [totalBooks, booksRead, booksReadThisYear, yearToDisplay, router]
   );
 
   return (

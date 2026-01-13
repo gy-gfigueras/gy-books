@@ -32,22 +32,75 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [tempGoal, setTempGoal] = useState(goal.toString());
 
-  const booksReadThisYear = useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    return books.filter((book) => {
+  const currentYear = new Date().getFullYear();
+
+  const booksReadByYear = useMemo(() => {
+    console.log('📚 [ReadingGoal] Total books received:', books.length);
+
+    const filtered = books.filter((book) => {
       const displayData = getBookDisplayData(book);
       if (displayData?.status !== EBookStatus.READ) return false;
 
-      const finishedAt = book.userData?.finishedAt;
-      if (!finishedAt) return false;
+      const endDate = book.userData?.endDate;
+      if (!endDate) {
+        console.log(
+          '⚠️ [ReadingGoal] Book without endDate:',
+          book.id,
+          book.userData
+        );
+        return false;
+      }
 
-      const finishedYear = new Date(finishedAt).getFullYear();
-      return finishedYear === currentYear;
-    }).length;
+      console.log('✅ [ReadingGoal] Book with endDate:', {
+        id: book.id,
+        endDate,
+        year: new Date(endDate).getFullYear(),
+      });
+
+      return true;
+    });
+
+    console.log('📊 [ReadingGoal] Books with endDate:', filtered.length);
+    return filtered;
   }, [books]);
 
+  const booksReadThisYear = useMemo(() => {
+    const filtered = booksReadByYear.filter((book) => {
+      const endDate = book.userData?.endDate;
+      const finishedYear = new Date(endDate!).getFullYear();
+      return finishedYear === currentYear;
+    });
+
+    console.log(
+      `📅 [ReadingGoal] Books read in ${currentYear}:`,
+      filtered.length
+    );
+    return filtered.length;
+  }, [booksReadByYear, currentYear]);
+
+  const booksReadLastYear = useMemo(() => {
+    const lastYear = currentYear - 1;
+    const filtered = booksReadByYear.filter((book) => {
+      const endDate = book.userData?.endDate;
+      const finishedYear = new Date(endDate!).getFullYear();
+      return finishedYear === lastYear;
+    });
+
+    console.log(`📅 [ReadingGoal] Books read in ${lastYear}:`, filtered.length);
+    return filtered.length;
+  }, [booksReadByYear, currentYear]);
+
+  // Si ha leído al menos 1 libro este año, mostrar este año; sino el anterior
+  const displayYear = booksReadThisYear > 0 ? currentYear : currentYear - 1;
+  const booksRead =
+    booksReadThisYear > 0 ? booksReadThisYear : booksReadLastYear;
+
+  console.log('🎯 [ReadingGoal] Display year:', displayYear);
+  console.log('🎯 [ReadingGoal] Books to display:', booksRead);
+  console.log('---');
+
   const progressPercentage =
-    goal > 0 ? Math.min((booksReadThisYear / goal) * 100, 100) : 0;
+    goal > 0 ? Math.min((booksRead / goal) * 100, 100) : 0;
 
   const motivationalMessage = useMemo(() => {
     if (progressPercentage === 0) return 'Start your reading journey!';
@@ -89,7 +142,7 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
                 fontWeight: 700,
               }}
             >
-              2025 Reading Goal
+              {displayYear} Reading Goal
             </Typography>
             <Button
               size="small"
@@ -160,7 +213,7 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
                     fontWeight: 700,
                   }}
                 >
-                  {isLoading ? '...' : booksReadThisYear}
+                  {isLoading ? '...' : booksRead}
                 </Typography>
                 <Typography
                   variant="caption"
@@ -214,7 +267,7 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
           <TextField
             autoFocus
             margin="dense"
-            label="Books to read in 2026"
+            label={`Books to read in ${currentYear}`}
             type="number"
             fullWidth
             value={tempGoal}

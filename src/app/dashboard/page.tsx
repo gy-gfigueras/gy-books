@@ -181,6 +181,9 @@ export default function DashboardPage() {
     }).length;
 
     const currentYear = new Date().getFullYear();
+    const lastYear = currentYear - 1;
+
+    // Calcular libros leídos este año
     const booksReadThisYear = books.filter((book) => {
       const displayData = getBookDisplayData(book);
       if (displayData?.status !== EBookStatus.READ) return false;
@@ -192,7 +195,39 @@ export default function DashboardPage() {
       return finishedYear === currentYear;
     }).length;
 
-    return { totalBooks, booksRead, booksReadThisYear };
+    // Calcular libros leídos el año pasado
+    const booksReadLastYear = books.filter((book) => {
+      const displayData = getBookDisplayData(book);
+      if (displayData?.status !== EBookStatus.READ) return false;
+
+      const finishedAt = book.userData?.endDate;
+      if (!finishedAt) return false;
+
+      const finishedYear = new Date(finishedAt).getFullYear();
+      return finishedYear === lastYear;
+    }).length;
+
+    // Determinar qué año y cantidad mostrar
+    const displayYear = booksReadThisYear > 0 ? currentYear : lastYear;
+    const booksReadInDisplayYear =
+      booksReadThisYear > 0 ? booksReadThisYear : booksReadLastYear;
+
+    console.log('📊 [Dashboard] Stats calculated:', {
+      totalBooks,
+      booksRead,
+      currentYear,
+      booksReadThisYear,
+      booksReadLastYear,
+      displayYear,
+      booksReadInDisplayYear,
+    });
+
+    return {
+      totalBooks,
+      booksRead,
+      booksReadThisYear: booksReadInDisplayYear,
+      displayYear,
+    };
   }, [books]);
 
   // Redirect if no user
@@ -344,6 +379,7 @@ export default function DashboardPage() {
               totalBooks={stats.totalBooks}
               booksRead={stats.booksRead}
               booksReadThisYear={stats.booksReadThisYear}
+              displayYear={stats.displayYear}
               isLoading={booksLoading}
             />
 

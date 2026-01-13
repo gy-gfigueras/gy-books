@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Activity, feedActivity } from '@/domain/activity.model';
 import { useMemo } from 'react';
 import useSWR from 'swr';
@@ -71,16 +72,19 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
     keepPreviousData: true,
   });
 
-  // 2. Extraer profileIds únicos
+  // 2. Extraer profileIds únicos (usando userId del modelo feedActivity)
   const uniqueProfileIds = useMemo(() => {
-    if (!activities) return [];
-    return Array.from(
+    if (!activities) {
+      return [];
+    }
+    const ids = Array.from(
       new Set(
         activities
-          .map((activity) => activity.profileId)
+          .map((activity) => activity.userId)
           .filter((id): id is string => Boolean(id))
       )
     );
+    return ids;
   }, [activities]);
 
   // 3. Obtener perfiles con hook optimizado (con caché SWR)
@@ -88,16 +92,27 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
 
   // 4. Procesar actividades: agregar username y picture
   const processedActivities: FriendActivity[] = useMemo(() => {
-    if (!activities || activities.length === 0) return [];
+    if (!activities || activities.length === 0) {
+      return [];
+    }
 
-    return activities
+    let profilesMatched = 0;
+    let profilesMissing = 0;
+
+    const processed = activities
       .map((activity) => {
-        // Obtener perfil (puede estar cargando aún)
-        const userProfile = profiles[activity.profileId];
+        // Obtener perfil usando userId (puede estar cargando aún)
+        const userProfile = profiles[activity.userId];
 
         // Extraer datos del perfil o null para mostrar skeleton
         const username = userProfile?.username || null;
         const userPicture = userProfile?.picture || null;
+
+        if (username) {
+          profilesMatched++;
+        } else {
+          profilesMissing++;
+        }
 
         // Procesar datos de la actividad
         const bookId = extractBookId(activity.message);
@@ -105,7 +120,7 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
         const formattedDate = formatRelativeDate(activity.date);
 
         return {
-          userId: activity.profileId,
+          userId: activity.userId,
           username,
           userPicture,
           bookId: bookId || activity.bookId,
@@ -115,6 +130,8 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
         };
       })
       .sort(sortActivitiesByDate);
+
+    return processed;
   }, [activities, profiles]);
 
   // 5. Extraer bookIds únicos

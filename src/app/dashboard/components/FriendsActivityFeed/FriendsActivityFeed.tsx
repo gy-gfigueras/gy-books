@@ -74,8 +74,8 @@ const FriendActivityItem: React.FC<{
           mb: 1.5,
         }}
       >
-        {/* Avatar con skeleton si está cargando */}
-        {activity.userPicture === null && !activity.username ? (
+        {/* Avatar con skeleton si el username está cargando */}
+        {activity.username === null ? (
           <Skeleton
             variant="circular"
             width={32}
@@ -89,7 +89,7 @@ const FriendActivityItem: React.FC<{
         ) : (
           <UserAvatar
             src={activity.userPicture}
-            alt={activity.username || 'User'}
+            alt={activity.username}
             size={32}
             sx={{
               border: '2px solid rgba(59, 130, 246, 0.3)',
