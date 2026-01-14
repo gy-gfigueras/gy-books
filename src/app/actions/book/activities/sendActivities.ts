@@ -15,14 +15,14 @@ export default async function sendActivity(formData: FormData) {
     const cookieHeader = cookieStore.toString();
 
     const response = await fetch(
-      `${protocol}://${host}/api/auth/books/profiles/activity`,
+      `${protocol}://${host}/api/auth/books/activity`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Cookie: cookieHeader,
         },
-        body: JSON.stringify(message),
+        body: JSON.stringify({ message }),
         credentials: 'include',
       }
     );
