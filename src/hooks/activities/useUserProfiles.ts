@@ -1,73 +1,79 @@
-import { Profile } from '@gycoding/nebula';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import getAccountsUser from '@/app/actions/accounts/user/fetchAccountsUser';
+import { Profile } from '@gycoding/nebula';
 import useSWR from 'swr';
 
+interface UseUserProfilesResult {
+  profiles: Record<string, Profile>;
+  isLoading: boolean;
+}
+
 /**
- * Hook optimizado para obtener múltiples perfiles de usuario con caché
- * Usa SWR para cachear cada perfil individualmente
+ * Fetcher que obtiene múltiples perfiles en paralelo
+ * y retorna un mapa de userId -> Profile
  */
-export function useUserProfiles(profileIds: string[]) {
-  // Crear un fetcher que obtenga todos los perfiles en paralelo
-  const fetcher = async (ids: string[]) => {
-    if (!ids || ids.length === 0) {
-      console.log('📋 [useUserProfiles] No profile IDs to fetch');
-      return {};
-    }
+async function fetchMultipleProfiles(
+  profileIds: string[]
+): Promise<Record<string, Profile>> {
+  if (!profileIds || profileIds.length === 0) {
+    return {};
+  }
 
-    console.log('🔍 [useUserProfiles] Fetching profiles for:', ids);
-    console.log(`🎯 [useUserProfiles] Total profiles to fetch: ${ids.length}`);
-
-    const profilePromises = ids.map((id) =>
-      getAccountsUser(id).catch((error) => {
-        console.error(
-          `❌ [useUserProfiles] Error fetching profile ${id}:`,
-          error
-        );
-        return null;
-      })
-    );
-
-    const profiles = await Promise.all(profilePromises);
-
-    // Crear mapa profileId -> Profile
-    const profilesMap: Record<string, Profile> = {};
-    profiles.forEach((profile, index) => {
-      if (profile) {
-        const userId = ids[index];
-        profilesMap[userId] = profile;
-        console.log(
-          `✅ [useUserProfiles] Loaded profile: ${profile.username} (${userId})`
-        );
-      } else {
-        console.warn(
-          `⚠️ [useUserProfiles] Profile not found for: ${ids[index]}`
-        );
+  try {
+    // Hacer todas las peticiones en paralelo
+    const profilePromises = profileIds.map(async (userId) => {
+      try {
+        const profile = await getAccountsUser(userId);
+        return { userId, profile: profile || null };
+      } catch (error) {
+        return { userId, profile: null };
       }
     });
 
-    console.log(
-      `🎉 [useUserProfiles] Total profiles loaded: ${Object.keys(profilesMap).length}/${ids.length}`
-    );
+    const results = await Promise.all(profilePromises);
+
+    // Crear mapa de userId -> Profile
+    const profilesMap: Record<string, Profile> = {};
+    results.forEach(({ userId, profile }) => {
+      if (profile) {
+        profilesMap[userId] = profile;
+      }
+    });
+
     return profilesMap;
-  };
+  } catch (error) {
+    return {};
+  }
+}
 
-  // Usar SWR con una key única basada en los IDs
-  // Esto permite caché automático
-  const key =
-    profileIds.length > 0 ? `profiles-${profileIds.sort().join(',')}` : null;
+/**
+ * Hook optimizado para obtener múltiples perfiles de usuario con caché SWR
+ *
+ * @param profileIds - Array de IDs de usuario
+ * @returns Mapa de userId -> Profile y estado de carga
+ */
+export function useUserProfiles(profileIds: string[]): UseUserProfilesResult {
+  // Crear key única basada en los IDs (ordenados para evitar re-fetches)
+  const sortedIds = [...profileIds].sort().join(',');
+  const cacheKey = profileIds.length > 0 ? `profiles:${sortedIds}` : null;
 
-  const { data, isLoading, error } = useSWR(key, () => fetcher(profileIds), {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 60000, // 1 minuto - caché más largo para perfiles
-    keepPreviousData: true,
-    // Caché de 5 minutos para perfiles
-    revalidateIfStale: false,
-  });
+  const { data, isLoading, error } = useSWR(
+    cacheKey,
+    () => fetchMultipleProfiles(profileIds),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: true,
+      dedupingInterval: 60000, // 1 minuto
+      keepPreviousData: true,
+      // Reintentar 3 veces con delay exponencial
+      errorRetryCount: 3,
+      errorRetryInterval: 1000,
+    }
+  );
 
   return {
     profiles: data || {},
     isLoading,
-    error,
   };
 }

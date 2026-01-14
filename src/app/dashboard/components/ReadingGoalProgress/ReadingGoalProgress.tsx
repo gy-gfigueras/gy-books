@@ -35,32 +35,13 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
   const currentYear = new Date().getFullYear();
 
   const booksReadByYear = useMemo(() => {
-    console.log('📚 [ReadingGoal] Total books received:', books.length);
-
     const filtered = books.filter((book) => {
       const displayData = getBookDisplayData(book);
       if (displayData?.status !== EBookStatus.READ) return false;
-
       const endDate = book.userData?.endDate;
-      if (!endDate) {
-        console.log(
-          '⚠️ [ReadingGoal] Book without endDate:',
-          book.id,
-          book.userData
-        );
-        return false;
-      }
-
-      console.log('✅ [ReadingGoal] Book with endDate:', {
-        id: book.id,
-        endDate,
-        year: new Date(endDate).getFullYear(),
-      });
-
+      if (!endDate) return false;
       return true;
     });
-
-    console.log('📊 [ReadingGoal] Books with endDate:', filtered.length);
     return filtered;
   }, [books]);
 
@@ -70,11 +51,6 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
       const finishedYear = new Date(endDate!).getFullYear();
       return finishedYear === currentYear;
     });
-
-    console.log(
-      `📅 [ReadingGoal] Books read in ${currentYear}:`,
-      filtered.length
-    );
     return filtered.length;
   }, [booksReadByYear, currentYear]);
 
@@ -85,8 +61,6 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
       const finishedYear = new Date(endDate!).getFullYear();
       return finishedYear === lastYear;
     });
-
-    console.log(`📅 [ReadingGoal] Books read in ${lastYear}:`, filtered.length);
     return filtered.length;
   }, [booksReadByYear, currentYear]);
 
@@ -94,10 +68,6 @@ export const ReadingGoalProgress: React.FC<ReadingGoalProgressProps> = ({
   const displayYear = booksReadThisYear > 0 ? currentYear : currentYear - 1;
   const booksRead =
     booksReadThisYear > 0 ? booksReadThisYear : booksReadLastYear;
-
-  console.log('🎯 [ReadingGoal] Display year:', displayYear);
-  console.log('🎯 [ReadingGoal] Books to display:', booksRead);
-  console.log('---');
 
   const progressPercentage =
     goal > 0 ? Math.min((booksRead / goal) * 100, 100) : 0;

@@ -211,17 +211,6 @@ export default function DashboardPage() {
     const displayYear = booksReadThisYear > 0 ? currentYear : lastYear;
     const booksReadInDisplayYear =
       booksReadThisYear > 0 ? booksReadThisYear : booksReadLastYear;
-
-    console.log('📊 [Dashboard] Stats calculated:', {
-      totalBooks,
-      booksRead,
-      currentYear,
-      booksReadThisYear,
-      booksReadLastYear,
-      displayYear,
-      booksReadInDisplayYear,
-    });
-
     return {
       totalBooks,
       booksRead,

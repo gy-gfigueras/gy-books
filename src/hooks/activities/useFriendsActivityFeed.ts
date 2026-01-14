@@ -72,7 +72,7 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
     keepPreviousData: true,
   });
 
-  // 2. Extraer profileIds únicos (usando userId del modelo feedActivity)
+  // 2. Extraer profileIds únicos (usando profileId del modelo FeedActivity)
   const uniqueProfileIds = useMemo(() => {
     if (!activities) {
       return [];
@@ -80,7 +80,7 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
     const ids = Array.from(
       new Set(
         activities
-          .map((activity) => activity.userId)
+          .map((activity) => activity.profileId)
           .filter((id): id is string => Boolean(id))
       )
     );
@@ -88,7 +88,8 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
   }, [activities]);
 
   // 3. Obtener perfiles con hook optimizado (con caché SWR)
-  const { profiles } = useUserProfiles(uniqueProfileIds);
+  const { profiles, isLoading: loadingProfiles } =
+    useUserProfiles(uniqueProfileIds);
 
   // 4. Procesar actividades: agregar username y picture
   const processedActivities: FriendActivity[] = useMemo(() => {
@@ -96,23 +97,14 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
       return [];
     }
 
-    let profilesMatched = 0;
-    let profilesMissing = 0;
-
     const processed = activities
       .map((activity) => {
-        // Obtener perfil usando userId (puede estar cargando aún)
-        const userProfile = profiles[activity.userId];
+        // Obtener perfil usando profileId (puede estar cargando aún)
+        const userProfile = profiles[activity.profileId];
 
         // Extraer datos del perfil o null para mostrar skeleton
         const username = userProfile?.username || null;
         const userPicture = userProfile?.picture || null;
-
-        if (username) {
-          profilesMatched++;
-        } else {
-          profilesMissing++;
-        }
 
         // Procesar datos de la actividad
         const bookId = extractBookId(activity.message);
@@ -145,7 +137,6 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
   return {
     activities: processedActivities,
     bookIds,
-    // Solo loading mientras carga actividades, no espera perfiles
     isLoading: loadingActivities,
     error: error || null,
   };
