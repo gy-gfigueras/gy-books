@@ -4,7 +4,11 @@
 import { ActivityBadges } from '@/app/components/atoms/ActivityCard/components/ActivityBadges';
 import { ActivityIcon } from '@/app/components/atoms/ActivityCard/components/ActivityIcon';
 import { UserAvatar } from '@/app/components/atoms/UserAvatar';
-import { getActivityType } from '@/domain/activity.model';
+import {
+  ActivityType,
+  getActivityColor,
+  getActivityType,
+} from '@/domain/activity.model';
 import { FriendActivity } from '@/hooks/activities/useFriendsActivityFeed';
 import { lora } from '@/utils/fonts/fonts';
 import { AutoStories } from '@mui/icons-material';
@@ -15,15 +19,15 @@ import React from 'react';
 
 const MotionBox = motion(Box);
 
-const getActivityLabel = (type: string): string => {
-  const labels: Record<string, string> = {
-    started: 'Started Reading',
-    finished: 'Finished',
-    rated: 'Rated',
-    progress: 'Progress Update',
-    want_to_read: 'Want to Read',
-    reviewed: 'Reviewed',
-    other: 'Activity',
+const getActivityLabel = (type: ActivityType): string => {
+  const labels: Record<ActivityType, string> = {
+    [ActivityType.STARTED]: 'Started Reading',
+    [ActivityType.FINISHED]: 'Finished',
+    [ActivityType.RATED]: 'Rated',
+    [ActivityType.PROGRESS]: 'Progress Update',
+    [ActivityType.WANT_TO_READ]: 'Want to Read',
+    [ActivityType.REVIEWED]: 'Reviewed',
+    [ActivityType.OTHER]: 'Activity',
   };
   return labels[type] || 'Activity';
 };
@@ -35,6 +39,8 @@ const FriendActivityItem: React.FC<{
   onActivityClick: (bookId?: string) => void;
 }> = ({ activity, index, onActivityClick }) => {
   const activityType = getActivityType(activity.message);
+  const activityColor = getActivityColor(activityType);
+  const activityLabel = getActivityLabel(activityType);
 
   return (
     <MotionBox
@@ -50,18 +56,16 @@ const FriendActivityItem: React.FC<{
         mb: 2,
         p: 2,
         borderRadius: 3,
-        background:
-          'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%)',
+        background: `linear-gradient(135deg, ${activityColor}15 0%, ${activityColor}08 100%)`,
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(59, 130, 246, 0.2)',
+        border: `1px solid ${activityColor}30`,
         transition: 'all 0.3s ease',
         cursor: 'pointer',
         '&:hover': {
-          background:
-            'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.05) 100%)',
-          border: '1px solid rgba(59, 130, 246, 0.4)',
+          background: `linear-gradient(135deg, ${activityColor}12 0%, ${activityColor}05 100%)`,
+          border: `1px solid ${activityColor}50`,
           transform: 'translateY(-2px)',
-          boxShadow: '0 8px 24px rgba(59, 130, 246, 0.2)',
+          boxShadow: `0 12px 24px ${activityColor}30`,
         },
       }}
     >
@@ -140,19 +144,33 @@ const FriendActivityItem: React.FC<{
       </Box>
 
       {/* Activity Type Label */}
-      <Typography
+      <Box
         sx={{
-          fontSize: '0.75rem',
-          fontWeight: 600,
-          color: 'rgba(59, 130, 246, 0.9)',
-          mb: 0.5,
-          fontFamily: lora.style.fontFamily,
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 0.5,
+          px: 1,
+          py: 0.5,
+          borderRadius: 2,
+          background: `${activityColor}25`,
+          border: `1px solid ${activityColor}40`,
+          mb: 1,
         }}
       >
-        {getActivityLabel(activityType)}
-      </Typography>
+        <ActivityIcon type={activityType} size={14} />
+        <Typography
+          sx={{
+            fontSize: '0.7rem',
+            fontWeight: 600,
+            color: activityColor,
+            fontFamily: lora.style.fontFamily,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}
+        >
+          {activityLabel}
+        </Typography>
+      </Box>
 
       {/* Activity Message */}
       <Typography

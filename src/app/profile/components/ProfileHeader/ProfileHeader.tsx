@@ -170,8 +170,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 />
               </Box>
             ) : (
-              books &&
-              books.length > 0 && <BooksStatsDisplay books={books} compact />
+              <BooksStatsDisplay books={books} compact />
             )}
           </Box>
 
@@ -388,9 +387,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                       />
                     </Box>
                   )}
-                  {!isLoadingBooks && books && books.length > 0 && (
-                    <BooksStatsDisplay books={books} />
-                  )}
+                  {!isLoadingBooks && <BooksStatsDisplay books={books} />}
                 </Box>
 
                 {/* Botones compactos */}

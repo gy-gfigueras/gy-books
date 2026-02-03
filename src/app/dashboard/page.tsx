@@ -4,6 +4,7 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import HardcoverBook from '@/domain/HardcoverBook';
 import { useFriendsActivityFeed } from '@/hooks/activities/useFriendsActivityFeed';
 import useMergedBooks from '@/hooks/books/useMergedBooks';
+import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { getBookDisplayData } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
@@ -61,12 +62,14 @@ const UserCompactCardSkeleton: React.FC = () => (
 interface UserCompactCardProps {
   username?: string;
   picture?: string;
+  quote?: string;
   isLoading: boolean;
 }
 
 const UserCompactCard: React.FC<UserCompactCardProps> = ({
   username,
   picture,
+  quote,
   isLoading,
 }) => {
   if (isLoading) {
@@ -125,15 +128,21 @@ const UserCompactCard: React.FC<UserCompactCardProps> = ({
       >
         {username}
       </Typography>
-      <Typography
-        variant="caption"
-        sx={{
-          color: 'rgba(255, 255, 255, 0.5)',
-          fontFamily: lora.style.fontFamily,
-        }}
-      >
-        My Profile
-      </Typography>
+      {quote && (
+        <Typography
+          sx={{
+            fontFamily: lora.style.fontFamily,
+            fontSize: '0.75rem',
+            fontStyle: 'italic',
+            color: 'rgba(255, 255, 255, 0.7)',
+            mb: 0,
+            px: 1,
+            lineHeight: 1.4,
+          }}
+        >
+          &quot;{quote}&quot;
+        </Typography>
+      )}
     </Paper>
   );
 };
@@ -158,6 +167,9 @@ export default function DashboardPage() {
 
   // 🚀 PETICIÓN 2: Feed de actividades de amigos (optimizado con JOIN)
   const { activities, isLoading: activitiesLoading } = useFriendsActivityFeed();
+
+  // 🚀 PETICIÓN 3: Hall of Fame para obtener la quote
+  const { quote } = useHallOfFame(user?.id || '');
 
   // 📊 Calcular libro actualmente en lectura
   const currentlyReadingBook = useMemo<HardcoverBook | undefined>(() => {
@@ -284,6 +296,7 @@ export default function DashboardPage() {
             <UserCompactCard
               username={user?.username}
               picture={user?.picture}
+              quote={quote}
               isLoading={userLoading}
             />
 
@@ -321,7 +334,7 @@ export default function DashboardPage() {
                 background: 'transparent',
                 borderRadius: '20px',
                 padding: { xs: 1, sm: 3 },
-                border: { xs: 'none', lg: '1px solid rgba(59, 130, 246, 0.2)' },
+                border: { xs: 'none', lg: '1px solid rgba(140, 84, 255, 0.2)' },
                 minHeight: 0,
                 mt: { xs: -4, lg: 0 },
                 flex: 1,
@@ -333,14 +346,14 @@ export default function DashboardPage() {
                   width: '6px',
                 },
                 '&::-webkit-scrollbar-track': {
-                  backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                  backgroundColor: 'rgba(140, 84, 255, 0.05)',
                   borderRadius: '3px',
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: 'rgba(59, 130, 246, 0.3)',
+                  backgroundColor: 'rgba(140, 84, 255, 0.3)',
                   borderRadius: '3px',
                   '&:hover': {
-                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    backgroundColor: 'rgba(140, 84, 255, 0.5)',
                   },
                 },
               }}
