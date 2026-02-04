@@ -33,8 +33,9 @@ function ProfilePageContent() {
   } = useMergedBooksIncremental(params.id as UUID, 50);
   const hasMore = !isDone;
 
-  // Filters
-  const filters = useProfileFilters();
+  // Filters - Pasar la ruta dinámica como basePath para perfil ajeno
+  const basePath = `/users/${userId}`;
+  const filters = useProfileFilters(basePath);
 
   // Generar opciones de filtros desde los libros
   const filterOptions = React.useMemo(() => {

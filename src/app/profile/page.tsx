@@ -53,7 +53,8 @@ function ProfilePageContent() {
   }, [searchParams]);
 
   const { count: friendsCount, isLoading: isLoadingFriends } = useFriends();
-  const filters = useProfileFilters();
+  // Pasar '/profile' como basePath para el perfil propio
+  const filters = useProfileFilters('/profile');
   const {
     data: books,
     isLoading: loading,

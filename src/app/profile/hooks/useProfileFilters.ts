@@ -4,7 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { ProfileFilters, ProfileFiltersActions } from '../utils/profileTypes';
 import { ProfileURLHelpers } from '../utils/urlHelpers';
 
-export function useProfileFilters(): ProfileFilters & ProfileFiltersActions {
+/**
+ * Hook para manejar filtros de libros en el perfil
+ *
+ * @param basePath - Ruta base para la navegación (default: '/profile')
+ *                   Ejemplo: '/profile' para perfil propio, '/users/[id]' para perfil ajeno
+ */
+export function useProfileFilters(
+  basePath: string = '/profile'
+): ProfileFilters & ProfileFiltersActions {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -23,16 +31,16 @@ export function useProfileFilters(): ProfileFilters & ProfileFiltersActions {
     initialFilters.orderDirection || 'desc'
   );
 
-  // Función para actualizar URL
+  // Función para actualizar URL usando el basePath correcto
   const updateUrl = useCallback(
     (filters: Partial<ProfileFilters>) => {
       const urlParams = ProfileURLHelpers.buildURLFromFilters(
         filters,
         searchParams
       );
-      router.replace(`/profile?${urlParams}`, { scroll: false });
+      router.replace(`${basePath}?${urlParams}`, { scroll: false });
     },
-    [searchParams, router]
+    [searchParams, router, basePath]
   );
 
   // Handlers para cada filtro
