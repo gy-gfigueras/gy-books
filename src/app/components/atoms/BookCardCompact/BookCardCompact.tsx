@@ -137,7 +137,8 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
   const router = useRouter();
   const { title, coverUrl } = useBookDisplay(book);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  // const [isHovered, setIsHovered] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
     if (onClick) {
@@ -151,18 +152,18 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
   const statusConfig = {
     [EBookStatus.READING]: {
       label: 'Reading',
-      color: '#a855f7',
-      bg: 'rgba(147, 51, 234, 0.85)',
+      color: '#818cf8',
+      bg: 'rgba(129, 140, 248, 0.8)',
     },
     [EBookStatus.READ]: {
       label: 'Read',
-      color: '#a855f7',
-      bg: 'rgba(147, 51, 234, 0.7)',
+      color: '#6ee7b7',
+      bg: 'rgba(110, 231, 183, 0.75)',
     },
     [EBookStatus.WANT_TO_READ]: {
       label: 'Want to Read',
-      color: '#a855f7',
-      bg: 'rgba(147, 51, 234, 0.55)',
+      color: '#fbbf24',
+      bg: 'rgba(251, 191, 36, 0.7)',
     },
   };
 

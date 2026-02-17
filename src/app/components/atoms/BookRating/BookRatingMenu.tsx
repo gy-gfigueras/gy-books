@@ -50,12 +50,12 @@ const BookRatingMenu: React.FC<Props> = ({
     PaperProps={{
       sx: {
         borderRadius: '16px',
-        minWidth: 600,
-        maxWidth: 720,
-        background: 'rgba(17, 24, 39, 0.85)',
+        minWidth: { xs: 'calc(100vw - 32px)', sm: 500, md: 600 },
+        maxWidth: { xs: 'calc(100vw - 32px)', sm: 600, md: 720 },
+        background: 'rgba(17, 24, 39, 0.92)',
         backdropFilter: 'blur(24px)',
-        border: '1px solid rgba(147, 51, 234, 0.15)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
       },
     }}
   >
@@ -98,8 +98,14 @@ const BookRatingMenu: React.FC<Props> = ({
         )}
       </Box>
 
-      {/* Layout en 2 columnas */}
-      <Box sx={{ display: 'flex', gap: 3 }}>
+      {/* Layout en 2 columnas (stack en mobile) */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 3,
+        }}
+      >
         {/* Columna izquierda: Rating y Review */}
         <Box sx={{ flex: 1 }}>
           <Typography
@@ -178,7 +184,7 @@ const BookRatingMenu: React.FC<Props> = ({
         >
           Reading Period
         </Typography>
-        <Stack direction="row" gap={2}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} gap={2}>
           <TextField
             type="date"
             value={state.tempStartDate}
@@ -188,19 +194,19 @@ const BookRatingMenu: React.FC<Props> = ({
             sx={{
               flex: 1,
               '& .MuiOutlinedInput-root': {
-                background: 'rgba(147, 51, 234, 0.05)',
+                background: 'rgba(255, 255, 255, 0.03)',
                 '& fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.2)',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.3)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: '#9333ea',
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
                 },
               },
               '& .MuiInputLabel-root': {
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: 'rgba(255, 255, 255, 0.5)',
                 fontSize: 14,
                 fontFamily,
               },
@@ -220,19 +226,19 @@ const BookRatingMenu: React.FC<Props> = ({
             sx={{
               flex: 1,
               '& .MuiOutlinedInput-root': {
-                background: 'rgba(147, 51, 234, 0.05)',
+                background: 'rgba(255, 255, 255, 0.03)',
                 '& fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.2)',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.3)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: '#9333ea',
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
                 },
               },
               '& .MuiInputLabel-root': {
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: 'rgba(255, 255, 255, 0.5)',
                 fontSize: 14,
                 fontFamily,
               },
@@ -260,14 +266,14 @@ const BookRatingMenu: React.FC<Props> = ({
           fontSize: 15,
           fontWeight: 600,
           fontFamily,
-          background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
+          background: 'rgba(255, 255, 255, 0.12)',
           boxShadow: 'none',
           '&:hover': {
-            background: 'linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%)',
-            boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+            background: 'rgba(255, 255, 255, 0.18)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
           },
           '&.Mui-disabled': {
-            background: 'rgba(147, 51, 234, 0.2)',
+            background: 'rgba(255, 255, 255, 0.05)',
             color: 'rgba(255, 255, 255, 0.3)',
           },
         }}

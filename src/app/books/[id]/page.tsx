@@ -133,14 +133,16 @@ export default function BookDetails() {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#000000',
-        padding: '2rem',
+        backgroundColor: '#0A0A0A',
+        padding: { xs: '1.5rem 1rem', md: '3rem' },
         display: 'flex',
         flexDirection: { xs: 'column', md: 'row' },
         alignItems: 'flex-start',
         justifyContent: 'center',
-        gap: ['0rem', '0rem', '6rem'],
+        gap: { xs: 0, md: '4rem' },
         paddingX: { xs: '1rem', md: '100px' },
+        maxWidth: '1200px',
+        margin: '0 auto',
       }}
     >
       <Box
@@ -157,10 +159,11 @@ export default function BookDetails() {
           sx={{
             fontFamily: lora.style.fontFamily,
             fontWeight: '800',
-            fontSize: 32,
-            letterSpacing: '.1rem',
-            marginBottom: '1rem',
-            textAlign: { xs: 'center', md: 'left' },
+            fontSize: { xs: 26, sm: 32 },
+            letterSpacing: '.05rem',
+            marginBottom: '0.5rem',
+            textAlign: 'center',
+            color: '#FFFFFF',
           }}
         >
           {displayTitle}
@@ -168,12 +171,11 @@ export default function BookDetails() {
         <Typography
           variant="h6"
           sx={{
-            color: '#FFFFFF33',
+            color: 'rgba(255, 255, 255, 0.4)',
             marginBottom: '1rem',
-            textAlign: { xs: 'center', md: 'left' },
-            fontSize: 22,
-            letterSpacing: '.05rem',
-            marginTop: '-1rem',
+            textAlign: 'center',
+            fontSize: { xs: 18, sm: 22 },
+            letterSpacing: '.03rem',
             fontFamily: lora.style.fontFamily,
           }}
         >
@@ -194,11 +196,13 @@ export default function BookDetails() {
           src={displayImage}
           alt={displayTitle}
           sx={{
-            width: ['250px', '250px', '300px'],
-            maxWidth: { xs: '100%', md: '300px' },
-            height: { xs: 'auto', md: '500px' },
-            borderRadius: '16px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+            width: { xs: '220px', sm: '250px', md: '280px' },
+            maxWidth: { xs: '100%', md: '280px' },
+            height: 'auto',
+            borderRadius: '14px',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            transition: 'transform 0.3s ease',
           }}
         />
         <Divider
@@ -208,14 +212,14 @@ export default function BookDetails() {
           {book?.series && book.series.length > 0 && (
             <Chip
               sx={{
-                backgroundColor: '#9333ea20',
-                color: '#9333ea',
-                letterSpacing: '.05rem',
-                fontWeight: 'bold',
-                border: '2px solid #9333ea',
+                backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                color: '#c084fc',
+                letterSpacing: '.03rem',
+                fontWeight: 600,
+                border: '1px solid rgba(147, 51, 234, 0.25)',
                 fontFamily: lora.style.fontFamily,
-                height: '32px',
-                fontSize: '16px',
+                height: '30px',
+                fontSize: '14px',
               }}
               label={book.series[0]?.name}
             />
@@ -225,23 +229,21 @@ export default function BookDetails() {
           <Typography
             variant="body1"
             sx={{
-              color: 'primary.main',
-              justifySelf: { xs: 'center', md: 'left' },
+              color: '#fbbf24',
               fontWeight: 'bold',
               display: 'flex',
               alignItems: 'center',
               fontFamily: lora.style.fontFamily,
-              gap: '0.2rem',
-              fontSize: '36px',
-              textShadow: '0 0 20px rgba(147, 51, 234, 0.5)',
+              gap: '0.3rem',
+              fontSize: '32px',
             }}
           >
             {book?.averageRating ? book.averageRating.toFixed(1) : '0.0'}
             <StarIcon
               sx={{
-                color: 'primary.main',
-                fontSize: '38px',
-                marginTop: '-0.2rem',
+                color: '#fbbf24',
+                fontSize: '34px',
+                marginTop: '-0.15rem',
               }}
             />
           </Typography>
@@ -265,17 +267,24 @@ export default function BookDetails() {
             {user && (
               <IconButton
                 sx={{
-                  color: isOnHallOfFame ? 'gold' : 'gray',
+                  color: isOnHallOfFame
+                    ? '#fbbf24'
+                    : 'rgba(255, 255, 255, 0.3)',
                   borderRadius: '12px',
                   fontWeight: 'bold',
-                  backgroundColor: isOnHallOfFame ? '#333300' : 'transparent',
-                  borderColor: isOnHallOfFame ? 'gold' : 'gray',
+                  backgroundColor: isOnHallOfFame
+                    ? 'rgba(251, 191, 36, 0.1)'
+                    : 'rgba(255, 255, 255, 0.03)',
+                  border: isOnHallOfFame
+                    ? '1px solid rgba(251, 191, 36, 0.25)'
+                    : '1px solid rgba(255, 255, 255, 0.06)',
                   fontSize: '18px',
                   fontFamily: lora.style.fontFamily,
-                  transition: 'all 0.3s ease-in-out',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    backgroundColor: isOnHallOfFame ? '#333300' : '#1a1a1a',
-                    borderColor: isOnHallOfFame ? 'gold' : 'white',
+                    backgroundColor: isOnHallOfFame
+                      ? 'rgba(251, 191, 36, 0.15)'
+                      : 'rgba(255, 255, 255, 0.06)',
                     transform: 'scale(1.05)',
                   },
                 }}
@@ -283,8 +292,10 @@ export default function BookDetails() {
               >
                 <WorkspacePremiumIcon
                   sx={{
-                    color: isOnHallOfFame ? 'gold' : 'gray',
-                    fontSize: '32px',
+                    color: isOnHallOfFame
+                      ? '#fbbf24'
+                      : 'rgba(255, 255, 255, 0.3)',
+                    fontSize: '28px',
                   }}
                 />
               </IconButton>
@@ -322,11 +333,12 @@ export default function BookDetails() {
               fontFamily: lora.style.fontFamily,
               fontWeight: '800',
               display: ['none', 'none', 'block'],
-
-              fontSize: 48,
-              letterSpacing: '.1rem',
-              marginBottom: '1rem',
-              textAlign: { xs: 'center', md: 'left' },
+              fontSize: { md: 40, lg: 48 },
+              letterSpacing: '.05rem',
+              marginBottom: '0.5rem',
+              textAlign: 'left',
+              color: '#FFFFFF',
+              lineHeight: 1.2,
             }}
           >
             {displayTitle}
@@ -336,13 +348,11 @@ export default function BookDetails() {
           variant="h6"
           sx={{
             display: ['none', 'none', 'block'],
-
-            color: '#FFFFFF33',
-            marginBottom: '1rem',
-            textAlign: { xs: 'center', md: 'left' },
-            fontSize: 26,
-            letterSpacing: '.05rem',
-            marginTop: '-1rem',
+            color: 'rgba(255, 255, 255, 0.4)',
+            marginBottom: '1.5rem',
+            textAlign: 'left',
+            fontSize: 22,
+            letterSpacing: '.03rem',
             fontFamily: lora.style.fontFamily,
           }}
         >
@@ -368,14 +378,14 @@ export default function BookDetails() {
           {book?.series && book.series.length > 0 && (
             <Chip
               sx={{
-                backgroundColor: '#9333ea20',
-                color: '#9333ea',
-                letterSpacing: '.05rem',
-                fontWeight: 'bold',
-                border: '2px solid #9333ea',
+                backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                color: '#c084fc',
+                letterSpacing: '.03rem',
+                fontWeight: 600,
+                border: '1px solid rgba(147, 51, 234, 0.25)',
                 fontFamily: lora.style.fontFamily,
-                height: '32px',
-                fontSize: '16px',
+                height: '30px',
+                fontSize: '14px',
               }}
               label={book.series[0]?.name}
             />
@@ -387,17 +397,18 @@ export default function BookDetails() {
             marginTop: '2rem',
             display: ['flex', 'flex', 'none'],
             paddingX: ['1.5rem', '1.5rem', '0'],
+            borderColor: 'rgba(255, 255, 255, 0.06)',
           }}
         />
         <Typography
           variant="body1"
           sx={{
-            lineHeight: 1.6,
+            lineHeight: 1.8,
             marginBottom: '2rem',
-            paddingX: ['1.5rem', '1.5rem', '0'],
+            paddingX: { xs: '0.5rem', sm: '1.5rem', md: 0 },
             marginTop: '2rem',
-            fontSize: 18,
-            color: '#CCCCCC',
+            fontSize: { xs: 16, md: 17 },
+            color: 'rgba(255, 255, 255, 0.6)',
             fontFamily: lora.style.fontFamily,
             letterSpacing: '.02rem',
             textAlign: 'justify',

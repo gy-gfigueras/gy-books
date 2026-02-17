@@ -69,10 +69,9 @@ export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background:
-                      'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                    background: 'rgba(255, 255, 255, 0.12)',
                     borderRadius: '8px',
-                    boxShadow: '0 0 8px rgba(147, 51, 234, 0.3)',
+                    boxShadow: 'none',
                   }}
                   transition={{
                     type: 'spring',

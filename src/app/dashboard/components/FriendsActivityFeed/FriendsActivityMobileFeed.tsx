@@ -1,6 +1,7 @@
 'use client';
 
 import { FriendActivity } from '@/hooks/activities/useFriendsActivityFeed';
+import { useActivityLike } from '@/hooks/activities/useActivityLike';
 import { lora } from '@/utils/fonts/fonts';
 import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 import { Box, Typography } from '@mui/material';
@@ -80,6 +81,7 @@ export const FriendsActivityMobileFeed =
   React.memo<FriendsActivityMobileFeedProps>(
     ({ activities, isLoading, currentUserId }) => {
       const router = useRouter();
+      const { toggleLike } = useActivityLike();
 
       const handleActivityClick = useCallback(
         (bookId?: string) => {
@@ -91,11 +93,13 @@ export const FriendsActivityMobileFeed =
       );
 
       const handleLikeToggle = useCallback(
-        (activityUserId: string, activityDate: Date) => {
-          // TODO: Implement like API call when endpoint is available
-          console.log('Like toggled:', activityUserId, activityDate);
+        async (
+          activityId: string,
+          activityAuthorProfileId: string
+        ): Promise<string[] | null> => {
+          return toggleLike(activityId, activityAuthorProfileId);
         },
-        []
+        [toggleLike]
       );
 
       if (isLoading) {

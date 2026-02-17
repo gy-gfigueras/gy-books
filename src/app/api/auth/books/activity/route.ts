@@ -27,7 +27,7 @@ export async function GET(_req: NextRequest) {
       throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
     }
 
-    const apiUrl = `${baseUrl}/books/activity`;
+    const apiUrl = `${baseUrl}/books/activity?page=0&size=100000`;
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${ID_TOKEN}`,

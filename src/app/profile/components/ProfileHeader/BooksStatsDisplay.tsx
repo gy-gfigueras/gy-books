@@ -1,11 +1,11 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
+import { UserProfileBook } from '@/domain/user.model';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
-import { UserProfileBook } from '@/domain/user.model';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import { Box, Typography } from '@mui/material';
+import React from 'react';
 
 interface BooksStatsDisplayProps {
   books: UserProfileBook[];
@@ -30,7 +30,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
     return (
       <>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <CheckCircleIcon sx={{ fontSize: 14, color: '#a855f7' }} />
+          <CheckCircleIcon sx={{ fontSize: 14, color: '#6ee7b7' }} />
           <Typography
             sx={{
               color: '#a855f7',
@@ -42,7 +42,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <MenuBookIcon sx={{ fontSize: 14, color: '#a855f7' }} />
+          <MenuBookIcon sx={{ fontSize: 14, color: '#818cf8' }} />
           <Typography
             sx={{
               color: '#a855f7',
@@ -54,7 +54,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <BookmarkIcon sx={{ fontSize: 14, color: '#a855f7' }} />
+          <BookmarkIcon sx={{ fontSize: 14, color: '#fbbf24' }} />
           <Typography
             sx={{
               color: '#a855f7',
@@ -80,7 +80,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <CheckCircleIcon sx={{ fontSize: 16, color: '#a855f7' }} />
+        <CheckCircleIcon sx={{ fontSize: 16, color: '#6ee7b7' }} />
         <Typography
           sx={{
             color: 'rgba(255,255,255,0.7)',
@@ -105,7 +105,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
       <Box sx={{ color: 'rgba(255,255,255,0.3)' }}>•</Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <MenuBookIcon sx={{ fontSize: 16, color: '#a855f7' }} />
+        <MenuBookIcon sx={{ fontSize: 16, color: '#818cf8' }} />
         <Typography
           sx={{
             color: 'rgba(255,255,255,0.7)',
@@ -130,7 +130,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
       <Box sx={{ color: 'rgba(255,255,255,0.3)' }}>•</Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <BookmarkIcon sx={{ fontSize: 16, color: '#a855f7' }} />
+        <BookmarkIcon sx={{ fontSize: 16, color: '#fbbf24' }} />
         <Typography
           sx={{
             color: 'rgba(255,255,255,0.7)',

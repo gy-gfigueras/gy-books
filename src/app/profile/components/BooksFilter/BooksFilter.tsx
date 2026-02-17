@@ -165,10 +165,9 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           borderRadius: '10px',
           px: 0,
           color: '#fff',
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+          background: 'rgba(255, 255, 255, 0.04)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           fontFamily: lora.style.fontFamily,
           fontWeight: 500,
           fontSize: 15,
@@ -179,9 +178,8 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           justifyContent: 'center',
           gap: 0.5,
           '&:hover': {
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)',
-            border: '1px solid rgba(147, 51, 234, 0.5)',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
           },
         }}
         onClick={(e) => setOrderMenuAnchor(e.currentTarget)}
@@ -241,24 +239,23 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
           fontWeight: 500,
           fontSize: 15,
           fontFamily: lora.style.fontFamily,
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+          background: 'rgba(255, 255, 255, 0.04)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '10px',
           boxShadow: 'none',
           minHeight: 40,
           '.MuiOutlinedInput-notchedOutline': { border: 0 },
-          '& .MuiSvgIcon-root': { color: '#9333ea' },
+          '& .MuiSvgIcon-root': { color: 'rgba(255, 255, 255, 0.5)' },
           '&:hover': {
-            border: '1px solid rgba(147, 51, 234, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
           },
         }}
       >
         <MenuItem
           value=""
           sx={{
-            color: '#9333ea',
+            color: 'rgba(255, 255, 255, 0.5)',
             fontWeight: 500,
             fontFamily: lora.style.fontFamily,
           }}
@@ -302,7 +299,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
                 width: 56,
                 height: 56,
                 borderRadius: '50%',
-                boxShadow: '0 4px 16px rgba(147,51,234,0.25)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -376,21 +373,19 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
             cursor: 'pointer',
             px: 2,
             py: 1.5,
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+            background: 'rgba(255, 255, 255, 0.04)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '12px',
             transition: 'all 0.3s ease',
             '&:hover': {
-              border: '1px solid rgba(147, 51, 234, 0.5)',
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'rgba(255, 255, 255, 0.08)',
             },
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FilterAltIcon sx={{ color: '#a855f7' }} />
+            <FilterAltIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
             <Box
               component="span"
               sx={{
@@ -403,9 +398,9 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
             </Box>
           </Box>
           {filtersExpanded ? (
-            <ExpandLessIcon sx={{ color: '#a855f7' }} />
+            <ExpandLessIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
           ) : (
-            <ExpandMoreIcon sx={{ color: '#a855f7' }} />
+            <ExpandMoreIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
           )}
         </Box>
 
@@ -441,10 +436,9 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
                 size="small"
                 fullWidth
                 sx={{
-                  background:
-                    'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(147, 51, 234, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
                   borderRadius: '10px',
                   input: {
                     color: '#fff',
@@ -456,10 +450,10 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
                       borderRadius: '10px',
                     },
                     '&:hover fieldset': {
-                      borderColor: 'rgba(147, 51, 234, 0.5)',
+                      borderColor: 'rgba(255, 255, 255, 0.15)',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#9333ea',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
                       borderWidth: 2,
                     },
                   },
@@ -467,7 +461,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#9333ea' }} />
+                      <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
                     </InputAdornment>
                   ),
                 }}

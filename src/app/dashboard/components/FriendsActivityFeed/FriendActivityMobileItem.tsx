@@ -13,7 +13,7 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import { Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 const MotionBox = motion(Box);
 const MotionIconButton = motion(IconButton);
@@ -33,7 +33,10 @@ interface FriendActivityMobileItemProps {
   index: number;
   currentUserId?: string;
   onActivityClick: (bookId?: string) => void;
-  onLikeToggle?: (activityUserId: string, activityDate: Date) => void;
+  onLikeToggle: (
+    activityId: string,
+    profileId: string
+  ) => Promise<string[] | null>;
 }
 
 /**
@@ -91,25 +94,62 @@ export const FriendActivityMobileItemSkeleton: React.FC = () => (
  * - Avatar + username + timestamp
  * - Activity type badge (color-coded chip sutil)
  * - Mensaje de la actividad
- * - Botón de like con animación heart bounce
+ * - Botón de like funcional con optimistic updates
  */
 export const FriendActivityMobileItem =
   React.memo<FriendActivityMobileItemProps>(
-    ({ activity, index, _currentUserId, onActivityClick, onLikeToggle }) => {
+    ({ activity, index, currentUserId, onActivityClick, onLikeToggle }) => {
       const activityType = getActivityType(activity.message);
       const activityColor = getActivityColor(activityType);
       const activityLabel = ACTIVITY_LABELS[activityType] || 'Activity';
 
-      // Local state for optimistic like UI
-      const [isLiked, setIsLiked] = useState(false);
+      // Optimistic likes state — initialized from real server data
+      const [likes, setLikes] = useState<string[]>(activity.likes ?? []);
+      const [isLiking, setIsLiking] = useState(false);
+
+      const isLiked = useMemo(
+        () => (currentUserId ? likes.includes(currentUserId) : false),
+        [likes, currentUserId]
+      );
 
       const handleLike = useCallback(
-        (e: React.MouseEvent) => {
+        async (e: React.MouseEvent) => {
           e.stopPropagation();
-          setIsLiked((prev) => !prev);
-          onLikeToggle?.(activity.userId, activity.date);
+          if (!currentUserId || !activity.activityId || isLiking) return;
+
+          setIsLiking(true);
+          const previousLikes = [...likes];
+
+          // Optimistic update
+          if (isLiked) {
+            setLikes((prev) => prev.filter((id) => id !== currentUserId));
+          } else {
+            setLikes((prev) => [...prev, currentUserId]);
+          }
+
+          const result = await onLikeToggle(
+            activity.activityId,
+            activity.profileId
+          );
+
+          if (result === null) {
+            // Revert on error
+            setLikes(previousLikes);
+          } else {
+            // Reconcile with server state
+            setLikes(result);
+          }
+
+          setIsLiking(false);
         },
-        [activity.userId, activity.date, onLikeToggle]
+        [
+          currentUserId,
+          activity.activityId,
+          isLiking,
+          isLiked,
+          likes,
+          onLikeToggle,
+        ]
       );
 
       return (
@@ -247,7 +287,7 @@ export const FriendActivityMobileItem =
             {activity.message}
           </Typography>
 
-          {/* Footer: Like button */}
+          {/* Footer: Like button + count */}
           <Box
             sx={{
               display: 'flex',
@@ -257,11 +297,12 @@ export const FriendActivityMobileItem =
           >
             <MotionIconButton
               onClick={handleLike}
+              disabled={!currentUserId || isLiking}
               whileTap={{ scale: 1.3 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
               sx={{
                 p: 0.5,
-                color: isLiked ? '#ef4444' : 'rgba(255, 255, 255, 0.25)',
+                color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.25)',
                 '&:hover': {
                   background: 'transparent',
                 },
@@ -275,15 +316,15 @@ export const FriendActivityMobileItem =
               )}
             </MotionIconButton>
 
-            {isLiked && (
+            {likes.length > 0 && (
               <Typography
                 sx={{
                   fontSize: '0.65rem',
-                  color: 'rgba(255, 255, 255, 0.3)',
+                  color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.35)',
                   fontWeight: 500,
                 }}
               >
-                Liked
+                {likes.length}
               </Typography>
             )}
           </Box>

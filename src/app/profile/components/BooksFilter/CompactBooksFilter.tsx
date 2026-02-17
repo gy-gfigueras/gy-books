@@ -192,24 +192,26 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
           fontWeight: 500,
           fontSize: 13,
           fontFamily: lora.style.fontFamily,
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+          background: 'rgba(255, 255, 255, 0.04)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '8px',
           boxShadow: 'none',
           minHeight: 32,
           '.MuiOutlinedInput-notchedOutline': { border: 0 },
-          '& .MuiSvgIcon-root': { color: '#9333ea', fontSize: 18 },
+          '& .MuiSvgIcon-root': {
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontSize: 18,
+          },
           '&:hover': {
-            border: '1px solid rgba(147, 51, 234, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
           },
         }}
       >
         <MenuItem
           value=""
           sx={{
-            color: '#9333ea',
+            color: 'rgba(255, 255, 255, 0.5)',
             fontWeight: 500,
             fontSize: 13,
             fontFamily: lora.style.fontFamily,
@@ -240,16 +242,16 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
         whileTap={{ scale: 0.95 }}
         sx={{
           background: orderBy
-            ? 'rgba(147, 51, 234, 0.15)'
-            : 'rgba(147, 51, 234, 0.1)',
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(255, 255, 255, 0.04)',
           backdropFilter: 'blur(10px)',
-          border: `1px solid rgba(147, 51, 234, ${orderBy ? '0.3' : '0.2'})`,
-          color: orderBy ? '#9333ea' : '#a855f7',
+          border: `1px solid rgba(255, 255, 255, ${orderBy ? '0.12' : '0.08'})`,
+          color: 'rgba(255, 255, 255, 0.7)',
           width: 32,
           height: 32,
           '&:hover': {
-            background: 'rgba(147, 51, 234, 0.2)',
-            borderColor: 'rgba(147, 51, 234, 0.3)',
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(255, 255, 255, 0.15)',
           },
         }}
       >
@@ -270,15 +272,15 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               sx={{
-                background: 'rgba(147, 51, 234, 0.1)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.2)',
-                color: '#a855f7',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                color: 'rgba(255, 255, 255, 0.7)',
                 width: 36,
                 height: 36,
                 '&:hover': {
-                  background: 'rgba(147, 51, 234, 0.2)',
-                  borderColor: 'rgba(147, 51, 234, 0.3)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
                 },
               }}
             >
@@ -355,17 +357,17 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
             whileTap={{ scale: 0.95 }}
             sx={{
               background: filtersExpanded
-                ? 'rgba(147, 51, 234, 0.15)'
-                : 'rgba(147, 51, 234, 0.1)',
+                ? 'rgba(255, 255, 255, 0.08)'
+                : 'rgba(255, 255, 255, 0.04)',
               backdropFilter: 'blur(10px)',
-              border: `1px solid rgba(147, 51, 234, ${filtersExpanded ? '0.3' : '0.2'})`,
-              color: filtersExpanded ? '#9333ea' : '#a855f7',
+              border: `1px solid rgba(255, 255, 255, ${filtersExpanded ? '0.12' : '0.08'})`,
+              color: 'rgba(255, 255, 255, 0.7)',
               width: 32,
               height: 32,
               position: 'relative',
               '&:hover': {
-                background: 'rgba(147, 51, 234, 0.2)',
-                borderColor: 'rgba(147, 51, 234, 0.3)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'rgba(255, 255, 255, 0.15)',
               },
             }}
           >
@@ -418,8 +420,7 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
                 flexDirection: 'column',
                 gap: 1.5,
                 p: 2,
-                background:
-                  'linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(20, 10, 40, 0.9) 100%)',
+                background: 'rgba(0, 0, 0, 0.88)',
                 backdropFilter: 'blur(16px)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '12px',
@@ -444,14 +445,14 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
                   },
                   '& .MuiOutlinedInput-root': {
                     '& fieldset': {
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.08)',
                       borderRadius: '8px',
                     },
                     '&:hover fieldset': {
-                      borderColor: 'rgba(147, 51, 234, 0.5)',
+                      borderColor: 'rgba(255, 255, 255, 0.15)',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#9333ea',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
                       borderWidth: 1,
                     },
                   },
@@ -459,7 +460,9 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#9333ea', fontSize: 16 }} />
+                      <SearchIcon
+                        sx={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: 16 }}
+                      />
                     </InputAdornment>
                   ),
                 }}
@@ -532,15 +535,15 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       sx={{
-                        background: 'rgba(147, 51, 234, 0.15)',
+                        background: 'rgba(255, 255, 255, 0.06)',
                         backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(147, 51, 234, 0.3)',
-                        color: '#9333ea',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: 'rgba(255, 255, 255, 0.7)',
                         width: 32,
                         height: 32,
                         '&:hover': {
-                          background: 'rgba(147, 51, 234, 0.2)',
-                          borderColor: 'rgba(147, 51, 234, 0.3)',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderColor: 'rgba(255, 255, 255, 0.15)',
                         },
                       }}
                     >
@@ -567,7 +570,7 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
           sx: {
             background: 'rgba(0, 0, 0, 0.95)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             mt: 1,
           },
         }}
@@ -578,14 +581,15 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
             onClick={() => handleOrderChange(option.value)}
             selected={orderBy === option.value}
             sx={{
-              color: orderBy === option.value ? '#9333ea' : '#fff',
+              color:
+                orderBy === option.value ? '#fff' : 'rgba(255, 255, 255, 0.7)',
               fontSize: 13,
               fontFamily: lora.style.fontFamily,
               '&.Mui-selected': {
-                background: 'rgba(147, 51, 234, 0.2)',
+                background: 'rgba(255, 255, 255, 0.08)',
               },
               '&:hover': {
-                background: 'rgba(147, 51, 234, 0.1)',
+                background: 'rgba(255, 255, 255, 0.06)',
               },
             }}
           >

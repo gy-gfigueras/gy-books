@@ -24,10 +24,9 @@ const BookRatingReviewInput: React.FC<BookRatingReviewInputProps> = ({
         placeholder="Write your review..."
         disabled={isLoading}
         sx={{
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+          background: 'rgba(255, 255, 255, 0.03)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '10px',
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
@@ -35,10 +34,10 @@ const BookRatingReviewInput: React.FC<BookRatingReviewInputProps> = ({
               borderRadius: '10px',
             },
             '&:hover fieldset': {
-              borderColor: 'rgba(147, 51, 234, 0.5)',
+              borderColor: 'rgba(255, 255, 255, 0.15)',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#9333ea',
+              borderColor: 'rgba(255, 255, 255, 0.3)',
               borderWidth: 2,
             },
           },

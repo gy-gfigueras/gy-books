@@ -61,7 +61,7 @@ const BookRatingDrawer: React.FC<Props> = ({
           borderTopRightRadius: 24,
           background: 'rgba(17, 24, 39, 0.95)',
           backdropFilter: 'blur(24px)',
-          borderTop: '1px solid rgba(147, 51, 234, 0.15)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
           maxHeight: '85vh',
           overflowY: 'auto',
         },
@@ -74,7 +74,7 @@ const BookRatingDrawer: React.FC<Props> = ({
             width: 40,
             height: 4,
             borderRadius: 2,
-            background: 'rgba(147, 51, 234, 0.3)',
+            background: 'rgba(255, 255, 255, 0.15)',
             margin: '0 auto 16px',
           }}
         />
@@ -213,15 +213,15 @@ const BookRatingDrawer: React.FC<Props> = ({
                 sx={{
                   flex: 1,
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(147, 51, 234, 0.05)',
+                    background: 'rgba(255, 255, 255, 0.03)',
                     '& fieldset': {
-                      borderColor: 'rgba(147, 51, 234, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.08)',
                     },
                     '&:hover fieldset': {
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.15)',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#9333ea',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
                     },
                   },
                   '& .MuiInputLabel-root': {
@@ -245,15 +245,15 @@ const BookRatingDrawer: React.FC<Props> = ({
                 sx={{
                   flex: 1,
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(147, 51, 234, 0.05)',
+                    background: 'rgba(255, 255, 255, 0.03)',
                     '& fieldset': {
-                      borderColor: 'rgba(147, 51, 234, 0.2)',
+                      borderColor: 'rgba(255, 255, 255, 0.08)',
                     },
                     '&:hover fieldset': {
-                      borderColor: 'rgba(147, 51, 234, 0.3)',
+                      borderColor: 'rgba(255, 255, 255, 0.15)',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#9333ea',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
                     },
                   },
                   '& .MuiInputLabel-root': {
@@ -284,13 +284,13 @@ const BookRatingDrawer: React.FC<Props> = ({
               fontSize: 15,
               fontWeight: 600,
               fontFamily,
-              background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
+              background: 'rgba(255, 255, 255, 0.12)',
               boxShadow: 'none',
               '&:active': {
                 transform: 'scale(0.98)',
               },
               '&.Mui-disabled': {
-                background: 'rgba(147, 51, 234, 0.2)',
+                background: 'rgba(255, 255, 255, 0.05)',
                 color: 'rgba(255, 255, 255, 0.3)',
               },
             }}

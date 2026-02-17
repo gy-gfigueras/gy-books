@@ -14,9 +14,15 @@ import { useUserProfiles } from './useUserProfiles';
  * Interface para actividades de amigos con información del usuario
  */
 export interface FriendActivity extends Activity {
+  /** ID único de la actividad (para likes) */
+  activityId: string;
+  /** profileId del autor de la actividad */
+  profileId: string;
   userId: string;
   username: string | null;
   userPicture: string | null;
+  /** Array de profileIds que han dado like */
+  likes: string[];
 }
 
 /**
@@ -104,6 +110,8 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
         const formattedDate = formatRelativeDate(activity.date);
 
         return {
+          activityId: activity.id,
+          profileId: activity.profileId,
           userId: activity.userId,
           username,
           userPicture,
@@ -111,6 +119,7 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
           message: cleanedMessage,
           date: new Date(activity.date),
           formattedDate,
+          likes: activity.likes ?? [],
         };
       })
       .sort(sortActivitiesByDate);

@@ -372,6 +372,7 @@ export default function DashboardPage() {
                 <FriendsActivityFeed
                   activities={activities}
                   isLoading={activitiesLoading}
+                  currentUserId={user?.id}
                 />
               </Paper>
             </MotionBox>

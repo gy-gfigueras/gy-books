@@ -1,19 +1,21 @@
-import React from 'react';
 import { Box, Skeleton } from '@mui/material';
+import React from 'react';
 
 const BookDetailsSkeleton: React.FC = () => {
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#000000',
-        padding: '2rem',
+        backgroundColor: '#0A0A0A',
+        padding: { xs: '1.5rem 1rem', md: '3rem' },
         display: 'flex',
         flexDirection: { xs: 'column', md: 'row' },
         alignItems: 'flex-start',
         justifyContent: 'center',
-        gap: ['0rem', '0rem', '6rem'],
+        gap: { xs: 0, md: '4rem' },
         paddingX: { xs: '1rem', md: '100px' },
+        maxWidth: '1200px',
+        margin: '0 auto',
       }}
     >
       {/* Mobile title and author (visible only on mobile) */}
@@ -32,7 +34,7 @@ const BookDetailsSkeleton: React.FC = () => {
           height={50}
           sx={{
             marginBottom: '1rem',
-            bgcolor: 'rgba(255, 255, 255, 0.1)',
+            bgcolor: 'rgba(255, 255, 255, 0.05)',
           }}
         />
         <Skeleton
@@ -41,7 +43,7 @@ const BookDetailsSkeleton: React.FC = () => {
           height={30}
           sx={{
             marginBottom: '1rem',
-            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            bgcolor: 'rgba(255, 255, 255, 0.03)',
           }}
         />
       </Box>
@@ -59,10 +61,10 @@ const BookDetailsSkeleton: React.FC = () => {
         <Skeleton
           variant="rectangular"
           sx={{
-            width: ['250px', '250px', '300px'],
-            height: ['375px', '375px', '500px'],
-            borderRadius: '16px',
-            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            width: { xs: '220px', sm: '250px', md: '280px' },
+            height: { xs: '330px', sm: '375px', md: '420px' },
+            borderRadius: '14px',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
 
@@ -75,7 +77,7 @@ const BookDetailsSkeleton: React.FC = () => {
             display: ['flex', 'flex', 'none'],
             marginTop: '1rem',
             borderRadius: '16px',
-            bgcolor: 'rgba(147, 51, 234, 0.2)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
 
@@ -86,7 +88,7 @@ const BookDetailsSkeleton: React.FC = () => {
             width={100}
             height={50}
             sx={{
-              bgcolor: 'rgba(147, 51, 234, 0.3)',
+              bgcolor: 'rgba(251, 191, 36, 0.15)',
             }}
           />
 
@@ -105,7 +107,7 @@ const BookDetailsSkeleton: React.FC = () => {
               height={40}
               sx={{
                 borderRadius: '12px',
-                bgcolor: 'rgba(255, 255, 255, 0.1)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
               }}
             />
             <Skeleton
@@ -113,7 +115,7 @@ const BookDetailsSkeleton: React.FC = () => {
               width={48}
               height={48}
               sx={{
-                bgcolor: 'rgba(255, 215, 0, 0.2)',
+                bgcolor: 'rgba(251, 191, 36, 0.1)',
               }}
             />
           </Box>
@@ -145,7 +147,7 @@ const BookDetailsSkeleton: React.FC = () => {
             sx={{
               display: ['none', 'none', 'block'],
               marginBottom: '1rem',
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              bgcolor: 'rgba(255, 255, 255, 0.05)',
             }}
           />
         </Box>
@@ -159,7 +161,7 @@ const BookDetailsSkeleton: React.FC = () => {
             display: ['none', 'none', 'block'],
             marginBottom: '1rem',
             marginTop: '-1rem',
-            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            bgcolor: 'rgba(255, 255, 255, 0.03)',
           }}
         />
 
@@ -177,7 +179,7 @@ const BookDetailsSkeleton: React.FC = () => {
             height={32}
             sx={{
               borderRadius: '16px',
-              bgcolor: 'rgba(147, 51, 234, 0.2)',
+              bgcolor: 'rgba(255, 255, 255, 0.04)',
             }}
           />
         </Box>
@@ -190,7 +192,7 @@ const BookDetailsSkeleton: React.FC = () => {
           sx={{
             marginTop: '2rem',
             display: ['flex', 'flex', 'none'],
-            bgcolor: 'rgba(255, 255, 255, 0.1)',
+            bgcolor: 'rgba(255, 255, 255, 0.06)',
           }}
         />
 

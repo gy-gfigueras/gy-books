@@ -3,6 +3,18 @@ import { Button, Stack } from '@mui/material';
 import React from 'react';
 import { StatusOption, statusOptions } from './BookRatingOptions';
 
+/** Semantic status color map for each book status */
+const STATUS_COLORS: Record<EBookStatus, string> = {
+  [EBookStatus.WANT_TO_READ]: '#fbbf24',
+  [EBookStatus.READING]: '#818cf8',
+  [EBookStatus.READ]: '#6ee7b7',
+} as Record<EBookStatus, string>;
+
+/** Returns the accent color for a given status, falling back to white */
+function getStatusColor(status: EBookStatus): string {
+  return STATUS_COLORS[status] ?? '#ffffff';
+}
+
 interface Props {
   tempStatus: EBookStatus;
   setTempStatus: (status: EBookStatus) => void;
@@ -15,54 +27,48 @@ const BookRatingStatusButtons: React.FC<Props> = ({
   fontFamily,
 }) => (
   <Stack direction="row" spacing={1.5} justifyContent="flex-start">
-    {statusOptions.map((opt: StatusOption) => (
-      <Button
-        key={opt.value}
-        variant={tempStatus === opt.value ? 'contained' : 'outlined'}
-        startIcon={React.cloneElement(opt.icon, {
-          sx: {
-            color:
-              tempStatus === opt.value ? '#fff' : 'rgba(147, 51, 234, 0.8)',
-            fontSize: 18,
-          },
-        })}
-        onClick={() => setTempStatus(opt.value)}
-        sx={{
-          flex: 1,
-          borderRadius: '10px',
-          fontWeight: 600,
-          fontSize: 14,
-          color: tempStatus === opt.value ? '#fff' : 'rgba(147, 51, 234, 0.9)',
-          background:
-            tempStatus === opt.value
-              ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
-              : 'rgba(147, 51, 234, 0.05)',
-          borderColor:
-            tempStatus === opt.value
-              ? 'transparent'
-              : 'rgba(147, 51, 234, 0.2)',
-          px: 2,
-          py: 1.2,
-          textTransform: 'none',
-          fontFamily,
-          whiteSpace: 'nowrap',
-          transition: 'all 0.2s ease',
-          '&:hover': {
-            background:
-              tempStatus === opt.value
-                ? 'linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%)'
-                : 'rgba(147, 51, 234, 0.1)',
-            borderColor:
-              tempStatus === opt.value
-                ? 'transparent'
-                : 'rgba(147, 51, 234, 0.3)',
-            transform: 'translateY(-1px)',
-          },
-        }}
-      >
-        {opt.label}
-      </Button>
-    ))}
+    {statusOptions.map((opt: StatusOption) => {
+      const isActive = tempStatus === opt.value;
+      const color = getStatusColor(opt.value);
+
+      return (
+        <Button
+          key={opt.value}
+          variant={isActive ? 'contained' : 'outlined'}
+          startIcon={React.cloneElement(opt.icon, {
+            sx: {
+              color: isActive ? '#fff' : `${color}80`,
+              fontSize: 18,
+            },
+          })}
+          onClick={() => setTempStatus(opt.value)}
+          sx={{
+            flex: 1,
+            borderRadius: '10px',
+            fontWeight: 600,
+            fontSize: 14,
+            color: isActive ? '#fff' : 'rgba(255, 255, 255, 0.7)',
+            background: isActive ? `${color}30` : 'rgba(255, 255, 255, 0.03)',
+            borderColor: isActive ? `${color}60` : 'rgba(255, 255, 255, 0.08)',
+            px: 2,
+            py: 1.2,
+            textTransform: 'none',
+            fontFamily,
+            whiteSpace: 'nowrap',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              background: isActive ? `${color}40` : 'rgba(255, 255, 255, 0.06)',
+              borderColor: isActive
+                ? `${color}80`
+                : 'rgba(255, 255, 255, 0.12)',
+              transform: 'translateY(-1px)',
+            },
+          }}
+        >
+          {opt.label}
+        </Button>
+      );
+    })}
   </Stack>
 );
 

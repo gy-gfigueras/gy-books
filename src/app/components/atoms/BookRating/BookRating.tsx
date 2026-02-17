@@ -85,23 +85,29 @@ export const BookRating = ({
           sx={{
             justifyContent: 'space-between',
             color: isBookSaved ? '#fff' : '#ccc',
-            borderColor: isBookSaved ? '#9333ea' : '#9333ea40',
+            borderColor: isBookSaved
+              ? 'rgba(255, 255, 255, 0.2)'
+              : 'rgba(255, 255, 255, 0.1)',
             fontWeight: 'bold',
             fontSize: 20,
             fontFamily: lora.style.fontFamily,
             letterSpacing: '.05rem',
             borderRadius: '12px',
-            background: isBookSaved ? '#9333ea' : 'rgba(147,51,234,0.05)',
+            background: isBookSaved
+              ? 'rgba(255, 255, 255, 0.12)'
+              : 'rgba(255, 255, 255, 0.03)',
             px: 2,
             py: 1,
             textTransform: 'none',
             opacity: !user ? 0.5 : 1,
             '&:hover': {
-              borderColor: isBookSaved ? '#c4b5fd' : '#9333ea',
-              background: isBookSaved ? '#9333ea' : 'rgba(147,51,234,0.15)',
+              borderColor: 'rgba(255, 255, 255, 0.25)',
+              background: isBookSaved
+                ? 'rgba(255, 255, 255, 0.18)'
+                : 'rgba(255, 255, 255, 0.08)',
               color: '#fff',
               transform: 'translateY(-1px)',
-              boxShadow: '0 4px 12px rgba(147,51,234,0.15)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
             },
             '&:disabled': {
               borderColor: '#666',

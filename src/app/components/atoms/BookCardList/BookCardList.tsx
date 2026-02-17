@@ -19,11 +19,23 @@ export const BookCardList = ({ book }: BookCardListProps) => {
   const getStatusColor = (status?: EBookStatus) => {
     switch (status) {
       case EBookStatus.READING:
-        return { bg: '#a855f720', border: '#a855f7', text: '#c084fc' };
+        return {
+          bg: 'rgba(129, 140, 248, 0.12)',
+          border: '#818cf8',
+          text: '#a5b4fc',
+        };
       case EBookStatus.READ:
-        return { bg: '#a855f720', border: '#a855f7', text: '#c084fc' };
+        return {
+          bg: 'rgba(110, 231, 183, 0.12)',
+          border: '#6ee7b7',
+          text: '#a7f3d0',
+        };
       case EBookStatus.WANT_TO_READ:
-        return { bg: '#a855f720', border: '#a855f7', text: '#c084fc' };
+        return {
+          bg: 'rgba(251, 191, 36, 0.12)',
+          border: '#fbbf24',
+          text: '#fde68a',
+        };
       default:
         return {
           bg: 'rgba(147, 51, 234, 0.1)',

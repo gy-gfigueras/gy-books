@@ -53,23 +53,22 @@ export const ActiveFiltersChips: React.FC<ActiveFiltersChipsProps> = ({
             onDelete={() => onRemove(filter.type)}
             deleteIcon={<CloseIcon sx={{ fontSize: '1rem' }} />}
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+              background: 'rgba(255, 255, 255, 0.06)',
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(147, 51, 234, 0.4)',
-              color: '#e9d5ff',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#d4d4d8',
               fontFamily: lora.style.fontFamily,
               fontWeight: 600,
               fontSize: '0.9rem',
               height: 36,
               borderRadius: '18px',
-              boxShadow: '0 4px 12px rgba(147, 51, 234, 0.2)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               '& .MuiChip-label': {
                 px: 2,
               },
               '& .MuiChip-deleteIcon': {
-                color: '#e9d5ff',
+                color: '#d4d4d8',
                 opacity: 0.8,
                 transition: 'all 0.2s ease',
                 '&:hover': {
@@ -78,11 +77,10 @@ export const ActiveFiltersChips: React.FC<ActiveFiltersChipsProps> = ({
                 },
               },
               '&:hover': {
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(168, 85, 247, 0.3) 100%)',
-                border: '1px solid rgba(147, 51, 234, 0.6)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.18)',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 6px 16px rgba(147, 51, 234, 0.3)',
+                boxShadow: '0 6px 16px rgba(0, 0, 0, 0.25)',
               },
             }}
           />

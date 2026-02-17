@@ -9,13 +9,16 @@ import {
   getActivityColor,
   getActivityType,
 } from '@/domain/activity.model';
+import { useActivityLike } from '@/hooks/activities/useActivityLike';
 import { FriendActivity } from '@/hooks/activities/useFriendsActivityFeed';
 import { lora } from '@/utils/fonts/fonts';
 import { AutoStories } from '@mui/icons-material';
-import { Box, Skeleton, Typography } from '@mui/material';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import { Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 const MotionBox = motion(Box);
 
@@ -32,6 +35,8 @@ const getActivityLabel = (type: ActivityType): string => {
   return labels[type] || 'Activity';
 };
 
+const MotionIconButton = motion(IconButton);
+
 /**
  * Item individual de actividad de amigo.
  * Memoizado para evitar re-renders de toda la lista cuando cambia una sola actividad.
@@ -40,11 +45,56 @@ const FriendActivityItem = React.memo<{
   activity: any;
   bookCoverUrl?: string;
   index: number;
+  currentUserId?: string;
   onActivityClick: (bookId?: string) => void;
-}>(({ activity, index, onActivityClick }) => {
+  onLikeToggle: (
+    activityId: string,
+    profileId: string
+  ) => Promise<string[] | null>;
+}>(({ activity, index, currentUserId, onActivityClick, onLikeToggle }) => {
   const activityType = getActivityType(activity.message);
   const activityColor = getActivityColor(activityType);
   const activityLabel = getActivityLabel(activityType);
+
+  // Optimistic likes state — initialized from real server data
+  const [likes, setLikes] = useState<string[]>(activity.likes ?? []);
+  const [isLiking, setIsLiking] = useState(false);
+
+  const isLiked = useMemo(
+    () => (currentUserId ? likes.includes(currentUserId) : false),
+    [likes, currentUserId]
+  );
+
+  const handleLike = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!currentUserId || !activity.activityId || isLiking) return;
+
+      setIsLiking(true);
+      const previousLikes = [...likes];
+
+      // Optimistic update
+      if (isLiked) {
+        setLikes((prev) => prev.filter((id) => id !== currentUserId));
+      } else {
+        setLikes((prev) => [...prev, currentUserId]);
+      }
+
+      const result = await onLikeToggle(
+        activity.activityId,
+        activity.profileId
+      );
+
+      if (result === null) {
+        setLikes(previousLikes);
+      } else {
+        setLikes(result);
+      }
+
+      setIsLiking(false);
+    },
+    [currentUserId, activity.activityId, isLiking, isLiked, likes, onLikeToggle]
+  );
 
   return (
     <MotionBox
@@ -186,6 +236,50 @@ const FriendActivityItem = React.memo<{
 
       {/* Activity Badges */}
       <ActivityBadges activity={activity} />
+
+      {/* Like button */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.5,
+          mt: 1,
+        }}
+      >
+        <MotionIconButton
+          onClick={handleLike}
+          disabled={!currentUserId || isLiking}
+          whileTap={{ scale: 1.3 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          sx={{
+            p: 0.5,
+            color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.25)',
+            '&:hover': {
+              background: 'rgba(231, 76, 111, 0.08)',
+              color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.5)',
+            },
+          }}
+          size="small"
+        >
+          {isLiked ? (
+            <FavoriteRoundedIcon sx={{ fontSize: 16 }} />
+          ) : (
+            <FavoriteBorderRoundedIcon sx={{ fontSize: 16 }} />
+          )}
+        </MotionIconButton>
+
+        {likes.length > 0 && (
+          <Typography
+            sx={{
+              fontSize: '0.7rem',
+              color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.35)',
+              fontWeight: 500,
+            }}
+          >
+            {likes.length}
+          </Typography>
+        )}
+      </Box>
     </MotionBox>
   );
 });
@@ -328,6 +422,7 @@ const EmptyState: React.FC = () => (
 interface FriendsActivityFeedProps {
   activities: FriendActivity[];
   isLoading: boolean;
+  currentUserId?: string;
 }
 
 /**
@@ -335,8 +430,9 @@ interface FriendsActivityFeedProps {
  * Memoizado para evitar re-renders cuando cambian datos no relacionados del dashboard.
  */
 export const FriendsActivityFeed = React.memo<FriendsActivityFeedProps>(
-  ({ activities, isLoading }) => {
+  ({ activities, isLoading, currentUserId }) => {
     const router = useRouter();
+    const { toggleLike } = useActivityLike();
 
     const handleActivityClick = React.useCallback(
       (bookId?: string) => {
@@ -345,6 +441,16 @@ export const FriendsActivityFeed = React.memo<FriendsActivityFeedProps>(
         }
       },
       [router]
+    );
+
+    const handleLikeToggle = React.useCallback(
+      async (
+        activityId: string,
+        profileId: string
+      ): Promise<string[] | null> => {
+        return toggleLike(activityId, profileId);
+      },
+      [toggleLike]
     );
 
     // Loading state
@@ -372,7 +478,9 @@ export const FriendsActivityFeed = React.memo<FriendsActivityFeedProps>(
               key={`${activity.userId}-${activity.date}-${index}`}
               activity={activity}
               index={index}
+              currentUserId={currentUserId}
               onActivityClick={handleActivityClick}
+              onLikeToggle={handleLikeToggle}
             />
           ))}
         </AnimatePresence>

@@ -103,10 +103,9 @@ export const BooksStats: React.FC<BooksStatsProps> = ({ books }) => {
         width: '100%',
         px: { xs: 0.5, md: 1 },
         py: 1,
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(147, 51, 234, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '16px',
       }}
     >
@@ -114,19 +113,19 @@ export const BooksStats: React.FC<BooksStatsProps> = ({ books }) => {
         icon={<MenuBookIcon />}
         label="Reading"
         count={readingCount}
-        color="#a855f7"
+        color="#818cf8"
       />
       <StatItem
         icon={<CheckCircleIcon />}
         label="Read"
         count={readCount}
-        color="#a855f7"
+        color="#6ee7b7"
       />
       <StatItem
         icon={<BookmarkIcon />}
         label="Want to Read"
         count={wantToReadCount}
-        color="#a855f7"
+        color="#fbbf24"
       />
     </Box>
   );

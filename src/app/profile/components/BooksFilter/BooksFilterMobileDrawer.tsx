@@ -106,10 +106,9 @@ export const BooksFilterMobileDrawer: React.FC<
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           pb: 2,
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+          background: 'rgba(10, 10, 15, 0.98)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           minHeight: 380,
         },
       }}
@@ -124,16 +123,14 @@ export const BooksFilterMobileDrawer: React.FC<
             right: 16,
             color: '#fff',
             zIndex: 10,
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+            background: 'rgba(255, 255, 255, 0.04)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '50%',
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             '&:hover': {
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)',
-              border: '1px solid rgba(147, 51, 234, 0.5)',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
             },
           }}
           aria-label="Close filters"
@@ -171,10 +168,9 @@ export const BooksFilterMobileDrawer: React.FC<
             variant="outlined"
             size="small"
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+              background: 'rgba(255, 255, 255, 0.04)',
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: '10px',
               minWidth: 110,
               input: {
@@ -187,10 +183,10 @@ export const BooksFilterMobileDrawer: React.FC<
                   borderRadius: '10px',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.5)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: '#9333ea',
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
                   borderWidth: 2,
                 },
               },
@@ -198,7 +194,7 @@ export const BooksFilterMobileDrawer: React.FC<
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: '#9333ea' }} />
+                  <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
                 </InputAdornment>
               ),
             }}
@@ -213,17 +209,16 @@ export const BooksFilterMobileDrawer: React.FC<
                 fontWeight: 500,
                 fontSize: 15,
                 fontFamily: lora.style.fontFamily,
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '10px',
                 boxShadow: 'none',
                 minHeight: 40,
                 '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                '& .MuiSvgIcon-root': { color: '#9333ea' },
+                '& .MuiSvgIcon-root': { color: 'rgba(255, 255, 255, 0.5)' },
                 '&:hover': {
-                  border: '1px solid rgba(147, 51, 234, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                 },
               }}
             >
@@ -250,24 +245,23 @@ export const BooksFilterMobileDrawer: React.FC<
                 fontWeight: 500,
                 fontSize: 15,
                 fontFamily: lora.style.fontFamily,
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '10px',
                 boxShadow: 'none',
                 minHeight: 40,
                 '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                '& .MuiSvgIcon-root': { color: '#9333ea' },
+                '& .MuiSvgIcon-root': { color: 'rgba(255, 255, 255, 0.5)' },
                 '&:hover': {
-                  border: '1px solid rgba(147, 51, 234, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                 },
               }}
             >
               <MenuItem
                 value=""
                 sx={{
-                  color: '#9333ea',
+                  color: 'rgba(255, 255, 255, 0.5)',
                   fontWeight: 500,
                   fontFamily: lora.style.fontFamily,
                 }}
@@ -297,24 +291,23 @@ export const BooksFilterMobileDrawer: React.FC<
                 fontWeight: 500,
                 fontSize: 15,
                 fontFamily: lora.style.fontFamily,
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '10px',
                 boxShadow: 'none',
                 minHeight: 40,
                 '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                '& .MuiSvgIcon-root': { color: '#9333ea' },
+                '& .MuiSvgIcon-root': { color: 'rgba(255, 255, 255, 0.5)' },
                 '&:hover': {
-                  border: '1px solid rgba(147, 51, 234, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                 },
               }}
             >
               <MenuItem
                 value=""
                 sx={{
-                  color: '#9333ea',
+                  color: 'rgba(255, 255, 255, 0.5)',
                   fontWeight: 500,
                   fontFamily: lora.style.fontFamily,
                 }}
@@ -344,24 +337,23 @@ export const BooksFilterMobileDrawer: React.FC<
                 fontWeight: 500,
                 fontSize: 15,
                 fontFamily: lora.style.fontFamily,
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '10px',
                 boxShadow: 'none',
                 minHeight: 40,
                 '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                '& .MuiSvgIcon-root': { color: '#9333ea' },
+                '& .MuiSvgIcon-root': { color: 'rgba(255, 255, 255, 0.5)' },
                 '&:hover': {
-                  border: '1px solid rgba(147, 51, 234, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                 },
               }}
             >
               <MenuItem
                 value=""
                 sx={{
-                  color: '#9333ea',
+                  color: 'rgba(255, 255, 255, 0.5)',
                   fontWeight: 500,
                   fontFamily: lora.style.fontFamily,
                 }}
@@ -381,7 +373,7 @@ export const BooksFilterMobileDrawer: React.FC<
               ))}
             </Select>
           </FormControl>
-          <Divider sx={{ borderColor: '#9333ea30' }} />
+          <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.06)' }} />
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <Typography
               sx={{
@@ -403,17 +395,16 @@ export const BooksFilterMobileDrawer: React.FC<
                   fontWeight: 500,
                   fontSize: 15,
                   fontFamily: lora.style.fontFamily,
-                  background:
-                    'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(147, 51, 234, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
                   borderRadius: '10px',
                   boxShadow: 'none',
                   minHeight: 40,
                   '.MuiOutlinedInput-notchedOutline': { border: 0 },
-                  '& .MuiSvgIcon-root': { color: '#9333ea' },
+                  '& .MuiSvgIcon-root': { color: 'rgba(255, 255, 255, 0.5)' },
                   '&:hover': {
-                    border: '1px solid rgba(147, 51, 234, 0.5)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
                   },
                 }}
               >
@@ -443,10 +434,9 @@ export const BooksFilterMobileDrawer: React.FC<
                 borderRadius: '10px',
                 px: 0,
                 color: '#fff',
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 fontFamily: lora.style.fontFamily,
                 fontWeight: 500,
                 fontSize: 15,
@@ -457,9 +447,8 @@ export const BooksFilterMobileDrawer: React.FC<
                 justifyContent: 'center',
                 gap: 0.5,
                 '&:hover': {
-                  background:
-                    'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)',
-                  border: '1px solid rgba(147, 51, 234, 0.5)',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                 },
               }}
             >

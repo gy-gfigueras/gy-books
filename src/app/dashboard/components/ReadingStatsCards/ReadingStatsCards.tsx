@@ -78,21 +78,21 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
           title: 'Total Books',
           value: totalBooks,
           icon: MenuBookIcon,
-          color: '#9333ea',
+          color: '#818cf8',
           onClick: () => router.push('/profile'),
         },
         {
           title: 'Books Read',
           value: booksRead,
           icon: CheckCircleIcon,
-          color: '#9333ea',
+          color: '#6ee7b7',
           onClick: () => router.push('/profile?status=read'),
         },
         {
           title: `Read in ${yearToDisplay}`,
           value: booksReadThisYear,
           icon: TrendingUpIcon,
-          color: '#9333ea',
+          color: '#fbbf24',
           onClick: () => router.push(`/profile?year=${yearToDisplay}`),
         },
       ],
@@ -194,7 +194,7 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
                           width: 40,
                           height: 40,
                           borderRadius: '10px',
-                          background: 'rgba(147, 51, 234, 0.12)',
+                          background: `${card.color}1F`,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -202,7 +202,7 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
                       >
                         <Icon
                           sx={{
-                            color: '#a855f7',
+                            color: card.color,
                             fontSize: 24,
                           }}
                         />

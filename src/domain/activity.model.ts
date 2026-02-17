@@ -16,6 +16,8 @@ export interface Activity {
 }
 
 export interface feedActivity extends Activity {
+  id: string;
+  profileId: string;
   userId: string;
   likes: string[] | null;
   profilePicture?: string | null;
@@ -111,17 +113,17 @@ export function getActivityIcon(type: ActivityType): string {
 export function getActivityColor(type: ActivityType): string {
   switch (type) {
     case ActivityType.STARTED:
-      return '#2196F3'; // blue
+      return '#818cf8'; // indigo
     case ActivityType.FINISHED:
-      return '#9333ea'; // purple
+      return '#6ee7b7'; // emerald
     case ActivityType.RATED:
-      return '#a855f7'; // purple light
+      return '#fbbf24'; // amber
     case ActivityType.PROGRESS:
-      return '#9333ea'; // purple
+      return '#818cf8'; // indigo
     case ActivityType.WANT_TO_READ:
-      return '#c084fc'; // purple lighter
+      return '#c084fc'; // purple light
     case ActivityType.REVIEWED:
-      return '#a855f7'; // purple light
+      return '#67e8f9'; // cyan
     case ActivityType.OTHER:
       return '#6b7280'; // neutral gray
   }
