@@ -1,79 +1,68 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import getAccountsUser from '@/app/actions/accounts/user/fetchAccountsUser';
 import { Profile } from '@gycoding/nebula';
 import useSWR from 'swr';
 
-interface UseUserProfilesResult {
-  profiles: Record<string, Profile>;
+export interface UseUserProfilesResult {
+  profiles: Record<string, Profile | null>;
   isLoading: boolean;
+  error: Error | null;
 }
 
 /**
- * Fetcher que obtiene múltiples perfiles en paralelo
- * y retorna un mapa de userId -> Profile
+ * Fetch batch de perfiles desde el endpoint centralizado.
+ * UNA sola petición HTTP en lugar de N peticiones individuales.
  */
-async function fetchMultipleProfiles(
+async function fetchProfilesBatch(
   profileIds: string[]
-): Promise<Record<string, Profile>> {
-  if (!profileIds || profileIds.length === 0) {
-    return {};
+): Promise<Record<string, Profile | null>> {
+  if (profileIds.length === 0) return {};
+
+  const response = await fetch('/api/public/books/profiles/batch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids: profileIds }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch profiles batch: ${response.status}`);
   }
 
-  try {
-    // Hacer todas las peticiones en paralelo
-    const profilePromises = profileIds.map(async (userId) => {
-      try {
-        const profile = await getAccountsUser(userId);
-        return { userId, profile: profile || null };
-      } catch (error) {
-        return { userId, profile: null };
-      }
-    });
-
-    const results = await Promise.all(profilePromises);
-
-    // Crear mapa de userId -> Profile
-    const profilesMap: Record<string, Profile> = {};
-    results.forEach(({ userId, profile }) => {
-      if (profile) {
-        profilesMap[userId] = profile;
-      }
-    });
-
-    return profilesMap;
-  } catch (error) {
-    return {};
-  }
+  return response.json();
 }
 
 /**
- * Hook optimizado para obtener múltiples perfiles de usuario con caché SWR
+ * Hook optimizado para obtener múltiples perfiles de usuario con UNA sola petición.
+ *
+ * Mejoras respecto a la versión anterior:
+ * - 1 petición HTTP en lugar de N (eliminación del problema N+1)
+ * - Caché SWR con deduplicación agresiva
+ * - Keep previous data para evitar flashes de loading
  *
  * @param profileIds - Array de IDs de usuario
  * @returns Mapa de userId -> Profile y estado de carga
  */
 export function useUserProfiles(profileIds: string[]): UseUserProfilesResult {
-  // Crear key única basada en los IDs (ordenados para evitar re-fetches)
-  const sortedIds = [...profileIds].sort().join(',');
-  const cacheKey = profileIds.length > 0 ? `profiles:${sortedIds}` : null;
+  const sortedKey =
+    profileIds.length > 0
+      ? `profiles-batch:${[...profileIds].sort().join(',')}`
+      : null;
 
   const { data, isLoading, error } = useSWR(
-    cacheKey,
-    () => fetchMultipleProfiles(profileIds),
+    sortedKey,
+    () => fetchProfilesBatch(profileIds),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       shouldRetryOnError: true,
-      dedupingInterval: 60000, // 1 minuto
+      dedupingInterval: 120000,
       keepPreviousData: true,
-      // Reintentar 3 veces con delay exponencial
-      errorRetryCount: 3,
-      errorRetryInterval: 1000,
+      errorRetryCount: 2,
+      errorRetryInterval: 2000,
     }
   );
 
   return {
-    profiles: data || {},
+    profiles: data ?? {},
     isLoading,
+    error: error ?? null,
   };
 }

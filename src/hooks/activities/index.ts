@@ -5,3 +5,5 @@ export type {
   FriendActivity,
   UseFriendsActivityFeedResult,
 } from './useFriendsActivityFeed';
+export { useUserProfiles } from './useUserProfiles';
+export type { UseUserProfilesResult } from './useUserProfiles';

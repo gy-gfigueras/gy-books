@@ -77,179 +77,181 @@ const StatCardSkeleton: React.FC<{
   </Paper>
 );
 
-export const ReadingStatsCards: React.FC<ReadingStatsCardsProps> = ({
-  totalBooks,
-  booksRead,
-  booksReadThisYear,
-  displayYear,
-  isLoading,
-}) => {
-  const router = useRouter();
-  const currentYear = new Date().getFullYear();
-  const yearToDisplay = displayYear || currentYear;
+/**
+ * Cards de estadísticas de lectura.
+ * Memoizado para evitar re-renders cuando cambian actividades u otros datos.
+ */
+export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
+  ({ totalBooks, booksRead, booksReadThisYear, displayYear, isLoading }) => {
+    const router = useRouter();
+    const currentYear = new Date().getFullYear();
+    const yearToDisplay = displayYear || currentYear;
 
-  const cards = useMemo(
-    () => [
-      {
-        title: 'Total Books',
-        value: totalBooks,
-        icon: MenuBookIcon,
-        color: '#9333ea',
-        gradient:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(147, 51, 234, 0.05) 100%)',
-        onClick: () => router.push('/profile'),
-      },
-      {
-        title: 'Books Read',
-        value: booksRead,
-        icon: CheckCircleIcon,
-        color: '#10b981',
-        gradient:
-          'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%)',
-        onClick: () => router.push('/profile?status=read'),
-      },
-      {
-        title: `Read in ${yearToDisplay}`,
-        value: booksReadThisYear,
-        icon: TrendingUpIcon,
-        color: '#f59e0b',
-        gradient:
-          'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%)',
-        onClick: () => router.push(`/profile?year=${yearToDisplay}`),
-      },
-    ],
-    [totalBooks, booksRead, booksReadThisYear, yearToDisplay, router]
-  );
+    const cards = useMemo(
+      () => [
+        {
+          title: 'Total Books',
+          value: totalBooks,
+          icon: MenuBookIcon,
+          color: '#9333ea',
+          gradient:
+            'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(147, 51, 234, 0.05) 100%)',
+          onClick: () => router.push('/profile'),
+        },
+        {
+          title: 'Books Read',
+          value: booksRead,
+          icon: CheckCircleIcon,
+          color: '#10b981',
+          gradient:
+            'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%)',
+          onClick: () => router.push('/profile?status=read'),
+        },
+        {
+          title: `Read in ${yearToDisplay}`,
+          value: booksReadThisYear,
+          icon: TrendingUpIcon,
+          color: '#f59e0b',
+          gradient:
+            'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%)',
+          onClick: () => router.push(`/profile?year=${yearToDisplay}`),
+        },
+      ],
+      [totalBooks, booksRead, booksReadThisYear, yearToDisplay, router]
+    );
 
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1.5,
-        mb: 3,
-      }}
-    >
-      <Typography
-        variant="h6"
+    return (
+      <Box
         sx={{
-          color: 'white',
-          fontWeight: 700,
-          mb: 1,
-          fontFamily: lora.style.fontFamily,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1.5,
+          mb: 3,
         }}
       >
-        Reading Stats
-      </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'white',
+            fontWeight: 700,
+            mb: 1,
+            fontFamily: lora.style.fontFamily,
+          }}
+        >
+          Reading Stats
+        </Typography>
 
-      {isLoading
-        ? // Mostrar skeletons mientras carga
-          cards.map((card) => (
-            <motion.div
-              key={card.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <StatCardSkeleton color={card.color} gradient={card.gradient} />
-            </motion.div>
-          ))
-        : // Mostrar datos reales cuando termine de cargar
-          cards.map((card, index) => {
-            const Icon = card.icon;
-            return (
+        {isLoading
+          ? // Mostrar skeletons mientras carga
+            cards.map((card) => (
               <motion.div
                 key={card.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -4 }}
+                transition={{ duration: 0.5 }}
               >
-                <Paper
-                  onClick={card.onClick}
-                  sx={{
-                    background: card.gradient,
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: '12px',
-                    padding: 1.5,
-                    border: `1px solid ${card.color}40`,
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&:hover': {
-                      boxShadow: `0 12px 24px ${card.color}40`,
-                      border: `1px solid ${card.color}60`,
-                    },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      right: 0,
-                      width: '100px',
-                      height: '100px',
-                      background: `radial-gradient(circle, ${card.color}20 0%, transparent 70%)`,
-                      pointerEvents: 'none',
-                    },
-                  }}
+                <StatCardSkeleton color={card.color} gradient={card.gradient} />
+              </motion.div>
+            ))
+          : // Mostrar datos reales cuando termine de cargar
+            cards.map((card, index) => {
+              const Icon = card.icon;
+              return (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -4 }}
                 >
-                  <Box
+                  <Paper
+                    onClick={card.onClick}
                     sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
+                      background: card.gradient,
+                      backdropFilter: 'blur(10px)',
+                      borderRadius: '12px',
+                      padding: 1.5,
+                      border: `1px solid ${card.color}40`,
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&:hover': {
+                        boxShadow: `0 12px 24px ${card.color}40`,
+                        border: `1px solid ${card.color}60`,
+                      },
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        width: '100px',
+                        height: '100px',
+                        background: `radial-gradient(circle, ${card.color}20 0%, transparent 70%)`,
+                        pointerEvents: 'none',
+                      },
                     }}
                   >
-                    <Box>
-                      <Typography
-                        variant="h3"
-                        sx={{
-                          color: 'white',
-                          fontWeight: 700,
-                          mb: 0.25,
-                          fontSize: { xs: '1.5rem', sm: '1.75rem' },
-                          fontFamily: lora.style.fontFamily,
-                        }}
-                      >
-                        {card.value}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: 'rgba(255, 255, 255, 0.7)',
-                          fontSize: '0.8rem',
-                          fontFamily: lora.style.fontFamily,
-                        }}
-                      >
-                        {card.title}
-                      </Typography>
-                    </Box>
-
                     <Box
                       sx={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: '10px',
-                        background: `${card.color}30`,
                         display: 'flex',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative',
-                        zIndex: 1,
                       }}
                     >
-                      <Icon
+                      <Box>
+                        <Typography
+                          variant="h3"
+                          sx={{
+                            color: 'white',
+                            fontWeight: 700,
+                            mb: 0.25,
+                            fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                            fontFamily: lora.style.fontFamily,
+                          }}
+                        >
+                          {card.value}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: '0.8rem',
+                            fontFamily: lora.style.fontFamily,
+                          }}
+                        >
+                          {card.title}
+                        </Typography>
+                      </Box>
+
+                      <Box
                         sx={{
-                          color: card.color,
-                          fontSize: 24,
+                          width: 40,
+                          height: 40,
+                          borderRadius: '10px',
+                          background: `${card.color}30`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'relative',
+                          zIndex: 1,
                         }}
-                      />
+                      >
+                        <Icon
+                          sx={{
+                            color: card.color,
+                            fontSize: 24,
+                          }}
+                        />
+                      </Box>
                     </Box>
-                  </Box>
-                </Paper>
-              </motion.div>
-            );
-          })}
-    </Box>
-  );
-};
+                  </Paper>
+                </motion.div>
+              );
+            })}
+      </Box>
+    );
+  }
+);
+
+ReadingStatsCards.displayName = 'ReadingStatsCards';

@@ -12,7 +12,11 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import { useRouter } from 'next/navigation';
 import { lora } from '@/utils/fonts/fonts';
 
-export const QuickActions: React.FC = () => {
+/**
+ * Acciones rápidas del dashboard.
+ * Memoizado porque no depende de datos que cambien frecuentemente.
+ */
+export const QuickActions = React.memo(() => {
   const router = useRouter();
 
   const actions = [
@@ -139,4 +143,6 @@ export const QuickActions: React.FC = () => {
       </Box>
     </Box>
   );
-};
+});
+
+QuickActions.displayName = 'QuickActions';

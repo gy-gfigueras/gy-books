@@ -50,14 +50,6 @@ async function fetchFriendsActivityFeed(): Promise<feedActivity[]> {
   return data as feedActivity[];
 }
 
-/**
- * Hook para obtener el feed de actividades de amigos
- *
- * Optimizaciones:
- * - Muestra actividades inmediatamente (sin esperar perfiles)
- * - Perfiles se cargan en paralelo con caché SWR
- * - Caché de perfiles persiste entre renders
- */
 export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
   // 1. Obtener actividades
   const {

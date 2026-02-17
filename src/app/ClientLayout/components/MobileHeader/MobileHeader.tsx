@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Box } from '@mui/material';
+import React from 'react';
 
 const MotionBox = motion(Box);
 
@@ -8,10 +9,14 @@ interface MobileHeaderProps {
 }
 
 /**
- * Header para versión móvil
- * Solo muestra el logo que al hacer click abre el drawer
+ * Header para versión móvil.
+ * Solo muestra el logo que al hacer click abre el drawer.
+ *
+ * Envuelto en React.memo para evitar re-renders cuando el layout padre
+ * se actualiza por datos del dashboard, friend requests, etc.
+ * Esto asegura que el handler onLogoClick responde instantáneamente.
  */
-export const MobileHeader = ({ onLogoClick }: MobileHeaderProps) => {
+export const MobileHeader = React.memo(({ onLogoClick }: MobileHeaderProps) => {
   return (
     <MotionBox
       component="img"
@@ -29,4 +34,6 @@ export const MobileHeader = ({ onLogoClick }: MobileHeaderProps) => {
       alt="logo"
     />
   );
-};
+});
+
+MobileHeader.displayName = 'MobileHeader';

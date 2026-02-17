@@ -32,12 +32,16 @@ const getActivityLabel = (type: ActivityType): string => {
   return labels[type] || 'Activity';
 };
 
-const FriendActivityItem: React.FC<{
+/**
+ * Item individual de actividad de amigo.
+ * Memoizado para evitar re-renders de toda la lista cuando cambia una sola actividad.
+ */
+const FriendActivityItem = React.memo<{
   activity: any;
   bookCoverUrl?: string;
   index: number;
   onActivityClick: (bookId?: string) => void;
-}> = ({ activity, index, onActivityClick }) => {
+}>(({ activity, index, onActivityClick }) => {
   const activityType = getActivityType(activity.message);
   const activityColor = getActivityColor(activityType);
   const activityLabel = getActivityLabel(activityType);
@@ -189,7 +193,9 @@ const FriendActivityItem: React.FC<{
       <ActivityBadges activity={activity} />
     </MotionBox>
   );
-};
+});
+
+FriendActivityItem.displayName = 'FriendActivityItem';
 
 const SkeletonItem: React.FC = () => (
   <Box
@@ -331,47 +337,55 @@ interface FriendsActivityFeedProps {
   isLoading: boolean;
 }
 
-export const FriendsActivityFeed: React.FC<FriendsActivityFeedProps> = ({
-  activities,
-  isLoading,
-}) => {
-  const router = useRouter();
+/**
+ * Feed de actividades de amigos.
+ * Memoizado para evitar re-renders cuando cambian datos no relacionados del dashboard.
+ */
+export const FriendsActivityFeed = React.memo<FriendsActivityFeedProps>(
+  ({ activities, isLoading }) => {
+    const router = useRouter();
 
-  const handleActivityClick = (bookId?: string) => {
-    if (bookId) {
-      router.push(`/books/${bookId}`);
+    const handleActivityClick = React.useCallback(
+      (bookId?: string) => {
+        if (bookId) {
+          router.push(`/books/${bookId}`);
+        }
+      },
+      [router]
+    );
+
+    // Loading state
+    if (isLoading) {
+      return (
+        <Box>
+          {[1, 2, 3].map((i) => (
+            <SkeletonItem key={i} />
+          ))}
+        </Box>
+      );
     }
-  };
 
-  // Loading state
-  if (isLoading) {
+    // Empty state
+    if (!activities || activities.length === 0) {
+      return <EmptyState />;
+    }
+
+    // Content
     return (
-      <Box>
-        {[1, 2, 3].map((i) => (
-          <SkeletonItem key={i} />
-        ))}
-      </Box>
+      <>
+        <AnimatePresence>
+          {activities.map((activity, index) => (
+            <FriendActivityItem
+              key={`${activity.userId}-${activity.date}-${index}`}
+              activity={activity}
+              index={index}
+              onActivityClick={handleActivityClick}
+            />
+          ))}
+        </AnimatePresence>
+      </>
     );
   }
+);
 
-  // Empty state
-  if (!activities || activities.length === 0) {
-    return <EmptyState />;
-  }
-
-  // Content
-  return (
-    <>
-      <AnimatePresence>
-        {activities.map((activity, index) => (
-          <FriendActivityItem
-            key={`${activity.userId}-${activity.date}-${index}`}
-            activity={activity}
-            index={index}
-            onActivityClick={handleActivityClick}
-          />
-        ))}
-      </AnimatePresence>
-    </>
-  );
-};
+FriendsActivityFeed.displayName = 'FriendsActivityFeed';

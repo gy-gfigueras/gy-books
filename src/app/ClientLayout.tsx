@@ -19,7 +19,7 @@ import {
 import { getTheme } from '@/styles/theme';
 import { ETheme } from '@/utils/constants/theme.enum';
 import { getMenuItems } from '@/utils/constants/MenuItems';
-import { useEffect, useState } from 'react';
+import { useEffect, useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import AnimatedAlert from './components/atoms/Alert/Alert';
@@ -51,23 +51,27 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
     setIsHydrated(true);
   }, []);
 
-  const menuItems = getMenuItems(user as User | null);
+  // Memoizar menuItems para evitar recrearlos en cada render
+  const menuItems = useMemo(() => getMenuItems(user as User | null), [user]);
 
-  // Handlers
-  const handleLogoClick = () => {
+  // Handlers memoizados: esencial para que React.memo funcione en hijos
+  const handleLogoClick = useCallback(() => {
     router.push('/');
     drawer.close();
-  };
+  }, [router, drawer]);
 
-  const handleMenuItemClick = (route: string) => {
-    router.push(route);
-    drawer.close();
-  };
+  const handleMenuItemClick = useCallback(
+    (route: string) => {
+      router.push(route);
+      drawer.close();
+    },
+    [router, drawer]
+  );
 
-  const handleFriendRequestsClick = () => {
+  const handleFriendRequestsClick = useCallback(() => {
     friendRequestsPanel.toggle();
     drawer.close();
-  };
+  }, [friendRequestsPanel, drawer]);
 
   return (
     <ThemeProvider theme={getTheme(ETheme.DARK)}>

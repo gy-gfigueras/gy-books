@@ -104,226 +104,233 @@ const ReadingBookSkeleton = () => (
   </Box>
 );
 
-export const CurrentlyReadingSection: React.FC<
-  CurrentlyReadingSectionProps
-> = ({ book, isLoading }) => {
-  const router = useRouter();
+/**
+ * Sección de lectura actual.
+ * Memoizado para evitar re-renders cuando cambian datos no relacionados
+ * del dashboard (actividades de amigos, stats, etc.)
+ */
+export const CurrentlyReadingSection = React.memo<CurrentlyReadingSectionProps>(
+  ({ book, isLoading }) => {
+    const router = useRouter();
 
-  // Show skeleton while loading
-  if (isLoading) {
-    return <ReadingBookSkeleton />;
-  }
+    // Show skeleton while loading
+    if (isLoading) {
+      return <ReadingBookSkeleton />;
+    }
 
-  if (!book) {
+    if (!book) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Box
+            sx={{
+              background:
+                'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+              padding: { xs: 2, sm: 3 },
+              border: '1px solid rgba(147, 51, 234, 0.2)',
+              textAlign: 'center',
+            }}
+          >
+            <AutoStoriesIcon
+              sx={{ fontSize: 64, color: 'rgba(147, 51, 234, 0.5)', mb: 2 }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                mb: 1,
+                fontFamily: lora.style.fontFamily,
+              }}
+            >
+              No books currently reading
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontFamily: lora.style.fontFamily,
+              }}
+            >
+              Start reading a book to see your progress here
+            </Typography>
+          </Box>
+        </motion.div>
+      );
+    }
+
+    const displayData = getBookDisplayData(book);
+
+    if (!displayData) return null;
+
+    // Calcular páginas leídas basándose en el tipo de progreso
+    const pagesRead = calculatePagesRead(
+      displayData.progress,
+      displayData.pageCount
+    );
+    const progressPercentage =
+      displayData.pageCount > 0 ? (pagesRead / displayData.pageCount) * 100 : 0;
+
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Box
-          sx={{
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '20px',
-            padding: { xs: 2, sm: 3 },
-            border: '1px solid rgba(147, 51, 234, 0.2)',
-            textAlign: 'center',
-          }}
-        >
-          <AutoStoriesIcon
-            sx={{ fontSize: 64, color: 'rgba(147, 51, 234, 0.5)', mb: 2 }}
-          />
+        <Box sx={{ mb: 3, p: { xs: 1, sm: 0 } }}>
           <Typography
-            variant="h6"
+            variant="h5"
             sx={{
-              color: 'rgba(255, 255, 255, 0.7)',
-              mb: 1,
               fontFamily: lora.style.fontFamily,
+              fontSize: { xs: '1.25rem', sm: '1.5rem' },
+              color: 'white',
+              fontWeight: 700,
+              mb: 2,
             }}
           >
-            No books currently reading
+            Currently Reading
           </Typography>
-          <Typography
-            variant="body2"
+
+          <Paper
+            onClick={() => router.push(`/books/${book.id}`)}
             sx={{
-              color: 'rgba(255, 255, 255, 0.5)',
-              fontFamily: lora.style.fontFamily,
+              background:
+                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+              padding: { xs: 2, sm: 3 },
+              border: '1px solid rgba(147, 51, 234, 0.3)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 20px 40px rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(147, 51, 234, 0.5)',
+              },
             }}
           >
-            Start reading a book to see your progress here
-          </Typography>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={book.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: 2,
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: { xs: 90, sm: 100 },
+                      height: { xs: 135, sm: 150 },
+                      flexShrink: 0,
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                    }}
+                  >
+                    <Image
+                      src={displayData.coverUrl}
+                      alt={displayData.title}
+                      fill
+                      sizes="(max-width: 600px) 90px, 100px"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </Box>
+
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: 'white',
+                        fontWeight: 700,
+                        mb: 0.5,
+                        fontSize: { xs: '1.1rem', sm: '1.25rem' },
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        fontFamily: lora.style.fontFamily,
+                      }}
+                    >
+                      {displayData.title}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        fontFamily: lora.style.fontFamily,
+
+                        mb: 2,
+                      }}
+                    >
+                      {displayData.author}
+                    </Typography>
+
+                    <Box sx={{ mb: 1 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          mb: 0.5,
+                          alignItems: 'baseline',
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            fontFamily: lora.style.fontFamily,
+                          }}
+                        >
+                          {Math.round(progressPercentage)}% completed
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: '#9333ea',
+                            fontWeight: 600,
+                            fontFamily: lora.style.fontFamily,
+                          }}
+                        >
+                          {pagesRead} / {displayData.pageCount}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={progressPercentage}
+                        sx={{
+                          height: 8,
+                          borderRadius: 4,
+                          backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                          '& .MuiLinearProgress-bar': {
+                            borderRadius: 4,
+                            background:
+                              'linear-gradient(90deg, #9333ea 0%, #c084fc 100%)',
+                          },
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
+              </motion.div>
+            </AnimatePresence>
+          </Paper>
         </Box>
       </motion.div>
     );
   }
+);
 
-  const displayData = getBookDisplayData(book);
-
-  if (!displayData) return null;
-
-  // Calcular páginas leídas basándose en el tipo de progreso
-  const pagesRead = calculatePagesRead(
-    displayData.progress,
-    displayData.pageCount
-  );
-  const progressPercentage =
-    displayData.pageCount > 0 ? (pagesRead / displayData.pageCount) * 100 : 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Box sx={{ mb: 3, p: { xs: 1, sm: 0 } }}>
-        <Typography
-          variant="h5"
-          sx={{
-            fontFamily: lora.style.fontFamily,
-            fontSize: { xs: '1.25rem', sm: '1.5rem' },
-            color: 'white',
-            fontWeight: 700,
-            mb: 2,
-          }}
-        >
-          Currently Reading
-        </Typography>
-
-        <Paper
-          onClick={() => router.push(`/books/${book.id}`)}
-          sx={{
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '20px',
-            padding: { xs: 2, sm: 3 },
-            border: '1px solid rgba(147, 51, 234, 0.3)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              transform: 'translateY(-4px)',
-              boxShadow: '0 20px 40px rgba(147, 51, 234, 0.3)',
-              border: '1px solid rgba(147, 51, 234, 0.5)',
-            },
-          }}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={book.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: 2,
-                  alignItems: 'flex-start',
-                }}
-              >
-                <Box
-                  sx={{
-                    position: 'relative',
-                    width: { xs: 90, sm: 100 },
-                    height: { xs: 135, sm: 150 },
-                    flexShrink: 0,
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-                  }}
-                >
-                  <Image
-                    src={displayData.coverUrl}
-                    alt={displayData.title}
-                    fill
-                    sizes="(max-width: 600px) 90px, 100px"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </Box>
-
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: 'white',
-                      fontWeight: 700,
-                      mb: 0.5,
-                      fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      fontFamily: lora.style.fontFamily,
-                    }}
-                  >
-                    {displayData.title}
-                  </Typography>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      fontFamily: lora.style.fontFamily,
-
-                      mb: 2,
-                    }}
-                  >
-                    {displayData.author}
-                  </Typography>
-
-                  <Box sx={{ mb: 1 }}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        mb: 0.5,
-                        alignItems: 'baseline',
-                      }}
-                    >
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: 'rgba(255, 255, 255, 0.5)',
-                          fontFamily: lora.style.fontFamily,
-                        }}
-                      >
-                        {Math.round(progressPercentage)}% completed
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: '#9333ea',
-                          fontWeight: 600,
-                          fontFamily: lora.style.fontFamily,
-                        }}
-                      >
-                        {pagesRead} / {displayData.pageCount}
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={progressPercentage}
-                      sx={{
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: 'rgba(147, 51, 234, 0.2)',
-                        '& .MuiLinearProgress-bar': {
-                          borderRadius: 4,
-                          background:
-                            'linear-gradient(90deg, #9333ea 0%, #c084fc 100%)',
-                        },
-                      }}
-                    />
-                  </Box>
-                </Box>
-              </Box>
-            </motion.div>
-          </AnimatePresence>
-        </Paper>
-      </Box>
-    </motion.div>
-  );
-};
+CurrentlyReadingSection.displayName = 'CurrentlyReadingSection';
