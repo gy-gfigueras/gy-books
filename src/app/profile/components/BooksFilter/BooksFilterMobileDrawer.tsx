@@ -267,7 +267,7 @@ export const BooksFilterMobileDrawer: React.FC<
               <MenuItem
                 value=""
                 sx={{
-                  color: '#8C54FF',
+                  color: '#9333ea',
                   fontWeight: 500,
                   fontFamily: lora.style.fontFamily,
                 }}
@@ -314,7 +314,7 @@ export const BooksFilterMobileDrawer: React.FC<
               <MenuItem
                 value=""
                 sx={{
-                  color: '#8C54FF',
+                  color: '#9333ea',
                   fontWeight: 500,
                   fontFamily: lora.style.fontFamily,
                 }}
@@ -361,7 +361,7 @@ export const BooksFilterMobileDrawer: React.FC<
               <MenuItem
                 value=""
                 sx={{
-                  color: '#8C54FF',
+                  color: '#9333ea',
                   fontWeight: 500,
                   fontFamily: lora.style.fontFamily,
                 }}
@@ -381,7 +381,7 @@ export const BooksFilterMobileDrawer: React.FC<
               ))}
             </Select>
           </FormControl>
-          <Divider sx={{ borderColor: '#8C54FF30' }} />
+          <Divider sx={{ borderColor: '#9333ea30' }} />
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <Typography
               sx={{

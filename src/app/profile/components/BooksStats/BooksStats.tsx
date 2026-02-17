@@ -1,12 +1,12 @@
 'use client';
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import { EBookStatus } from '@gycoding/nebula';
 import { UserProfileBook } from '@/domain/user.model';
 import { lora } from '@/utils/fonts/fonts';
+import { EBookStatus } from '@gycoding/nebula';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import { Box, Typography } from '@mui/material';
+import React from 'react';
 
 interface BooksStatsProps {
   books: UserProfileBook[];
@@ -48,7 +48,7 @@ const StatItem: React.FC<StatItemProps> = ({ icon, label, count, color }) => (
         color: color,
         '& svg': {
           fontSize: '1.1rem',
-          filter: `drop-shadow(0 2px 4px ${color}40)`,
+          filter: 'none',
         },
       }}
     >
@@ -72,7 +72,7 @@ const StatItem: React.FC<StatItemProps> = ({ icon, label, count, color }) => (
         fontSize: '1rem',
         fontWeight: 700,
         letterSpacing: '0.02em',
-        textShadow: `0 2px 4px ${color}40`,
+        textShadow: 'none',
       }}
     >
       {count}
@@ -114,19 +114,19 @@ export const BooksStats: React.FC<BooksStatsProps> = ({ books }) => {
         icon={<MenuBookIcon />}
         label="Reading"
         count={readingCount}
-        color="#3b82f6"
+        color="#a855f7"
       />
       <StatItem
         icon={<CheckCircleIcon />}
         label="Read"
         count={readCount}
-        color="#10b981"
+        color="#a855f7"
       />
       <StatItem
         icon={<BookmarkIcon />}
         label="Want to Read"
         count={wantToReadCount}
-        color="#f59e0b"
+        color="#a855f7"
       />
     </Box>
   );

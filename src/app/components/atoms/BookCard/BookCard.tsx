@@ -1,7 +1,7 @@
 import type HardcoverBook from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
-import { Box, Typography, Tooltip } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 
 interface BookCardProps {
   book: HardcoverBook;
@@ -24,37 +24,18 @@ export function BookCard({ book, compact = false }: BookCardProps) {
         padding: compact
           ? { xs: '10px', md: '12px' }
           : { xs: '12px', md: '16px' },
-        background:
-          'linear-gradient(135deg, rgba(20, 10, 40, 0.6) 0%, rgba(10, 5, 20, 0.8) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         borderRadius: compact
           ? { xs: '14px', md: '16px' }
           : { xs: '16px', md: '20px' },
-        border: '1px solid rgba(147, 51, 234, 0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         overflow: 'hidden',
         position: 'relative',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0) 0%, rgba(147, 51, 234, 0.05) 100%)',
-          opacity: 0,
-          transition: 'opacity 0.3s ease',
-          pointerEvents: 'none',
-          zIndex: 0,
-        },
         '&:hover': {
           transform: 'translateY(-2px)',
-          border: '1px solid rgba(147, 51, 234, 0.4)',
-          boxShadow:
-            '0 8px 32px rgba(147, 51, 234, 0.25), 0 0 0 1px rgba(147, 51, 234, 0.1)',
-          '&::before': {
-            opacity: 1,
-          },
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.04)',
         },
       }}
     >
@@ -75,8 +56,7 @@ export function BookCard({ book, compact = false }: BookCardProps) {
             height: '100%',
             objectFit: 'cover',
             borderRadius: { xs: '10px', md: '12px' },
-            boxShadow:
-              '0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(147, 51, 234, 0.2)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
             transition: 'transform 0.3s ease',
             '&:hover': {
               transform: 'scale(1.02)',

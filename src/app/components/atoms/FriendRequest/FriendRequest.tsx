@@ -1,9 +1,8 @@
-import React from 'react';
-import { lora } from '@/utils/fonts/fonts';
 import { User } from '@/domain/friend.model';
-import { Box, Typography, IconButton } from '@mui/material';
-import { Check, Close } from '@mui/icons-material';
 import { ECommands } from '@/utils/constants/ECommands';
+import { lora } from '@/utils/fonts/fonts';
+import { Check, Close } from '@mui/icons-material';
+import { Box, IconButton, Typography } from '@mui/material';
 import Image from 'next/image';
 
 interface FriendRequestProps {
@@ -32,10 +31,9 @@ export default function FriendRequest({
         alignItems: 'center',
         justifyContent: 'left',
         gap: '1.5rem',
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(147, 51, 234, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '16px',
         padding: '1rem',
         width: { xs: '100%', md: '100%' },
@@ -45,8 +43,8 @@ export default function FriendRequest({
         textDecoration: 'none',
         transition: 'all 0.3s ease',
         '&:hover': {
-          border: '1px solid rgba(147, 51, 234, 0.4)',
-          boxShadow: '0 4px 12px rgba(147, 51, 234, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.05)',
         },
       }}
     >
@@ -86,7 +84,7 @@ export default function FriendRequest({
         }}
       >
         <IconButton
-          sx={{ color: 'lightgreen' }}
+          sx={{ color: 'rgba(147, 51, 234, 0.6)' }}
           onClick={(e) => {
             e.preventDefault();
             handleManageRequest(requestId, ECommands.ACCEPT);
@@ -96,7 +94,7 @@ export default function FriendRequest({
           <Check />
         </IconButton>
         <IconButton
-          sx={{ color: 'red' }}
+          sx={{ color: 'rgba(255, 255, 255, 0.4)' }}
           onClick={(e) => {
             e.preventDefault();
             handleManageRequest(requestId, ECommands.DENY);

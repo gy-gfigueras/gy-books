@@ -75,7 +75,7 @@ const BookDetailsSkeleton: React.FC = () => {
             display: ['flex', 'flex', 'none'],
             marginTop: '1rem',
             borderRadius: '16px',
-            bgcolor: 'rgba(140, 84, 255, 0.2)',
+            bgcolor: 'rgba(147, 51, 234, 0.2)',
           }}
         />
 
@@ -86,7 +86,7 @@ const BookDetailsSkeleton: React.FC = () => {
             width={100}
             height={50}
             sx={{
-              bgcolor: 'rgba(140, 84, 255, 0.3)',
+              bgcolor: 'rgba(147, 51, 234, 0.3)',
             }}
           />
 
@@ -177,7 +177,7 @@ const BookDetailsSkeleton: React.FC = () => {
             height={32}
             sx={{
               borderRadius: '16px',
-              bgcolor: 'rgba(140, 84, 255, 0.2)',
+              bgcolor: 'rgba(147, 51, 234, 0.2)',
             }}
           />
         </Box>

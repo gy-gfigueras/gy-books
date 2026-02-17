@@ -90,7 +90,7 @@ export const FeatureCard = ({
               label={feature}
               sx={{
                 backgroundColor: 'transparent',
-                border: '1px solid #8C54FF',
+                border: '1px solid #9333ea',
                 color: '#FFFFFF',
                 fontSize: '0.8rem',
                 padding: '0.2rem 0.5rem',

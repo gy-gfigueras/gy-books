@@ -1,10 +1,10 @@
-import { Box, Popper, Paper, Grow, ClickAwayListener } from '@mui/material';
-import * as React from 'react';
 import { User } from '@/domain/user.model';
-import Image from 'next/image';
-import Link from 'next/link';
 import { lora } from '@/utils/fonts/fonts';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Box, ClickAwayListener, Grow, Paper, Popper } from '@mui/material';
+import Image from 'next/image';
+import Link from 'next/link';
+import * as React from 'react';
 interface ProfileProps {
   user?: User;
 }
@@ -55,7 +55,7 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
             aspectRatio: '1/1',
             borderRadius: '50%',
             objectFit: 'cover',
-            border: '2px solid #8C54FF',
+            border: '2px solid rgba(147, 51, 234, 0.3)',
             transition: 'border-color 0.3s ease',
             zIndex: 1000,
           }}
@@ -85,8 +85,8 @@ export default function Profile({ user }: ProfileProps): JSX.Element {
                 borderRadius: '16px',
                 marginTop: '8px',
                 width: '233px',
-                boxShadow: '0px 8px 32px rgba(147, 51, 234, 0.3)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
+                boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.4)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 overflow: 'hidden',
               }}
             >

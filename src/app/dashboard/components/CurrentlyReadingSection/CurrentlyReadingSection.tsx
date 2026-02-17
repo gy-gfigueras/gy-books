@@ -46,12 +46,11 @@ const ReadingBookSkeleton = () => (
     />
     <Paper
       sx={{
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(10px)',
         borderRadius: '20px',
         padding: { xs: 2, sm: 3 },
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
       }}
     >
       <Box
@@ -67,7 +66,7 @@ const ReadingBookSkeleton = () => (
             width: { xs: 90, sm: 100 },
             height: { xs: 135, sm: 150 },
             borderRadius: '8px',
-            bgcolor: 'rgba(255, 255, 255, 0.05)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
         <Box sx={{ flex: 1, width: '100%' }}>
@@ -127,12 +126,11 @@ export const CurrentlyReadingSection = React.memo<CurrentlyReadingSectionProps>(
         >
           <Box
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
+              background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(10px)',
               borderRadius: '20px',
               padding: { xs: 2, sm: 3 },
-              border: '1px solid rgba(147, 51, 234, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
               textAlign: 'center',
             }}
           >
@@ -198,18 +196,17 @@ export const CurrentlyReadingSection = React.memo<CurrentlyReadingSectionProps>(
           <Paper
             onClick={() => router.push(`/books/${book.id}`)}
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
+              background: 'rgba(255, 255, 255, 0.03)',
               backdropFilter: 'blur(10px)',
               borderRadius: '20px',
               padding: { xs: 2, sm: 3 },
-              border: '1px solid rgba(147, 51, 234, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 20px 40px rgba(147, 51, 234, 0.3)',
-                border: '1px solid rgba(147, 51, 234, 0.5)',
+                transform: 'translateY(-2px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.04)',
               },
             }}
           >

@@ -1,18 +1,17 @@
-import * as React from 'react';
-import { PieChart } from '@mui/x-charts/PieChart';
-import { Box, Typography } from '@mui/material';
 import { lora } from '@/utils/fonts/fonts';
+import { Box, Typography } from '@mui/material';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 interface DonutChartProps {
   bookStatus?: Record<string, number>;
 }
 
 const COLORS = [
-  '#00de1e', // Verde brillante para "Read"
-  '#FFD700', // Dorado brillante para "Reading"
-  '#8C54FF', // Morado principal para "Want to read"
-  '#A855F7', // Morado claro adicional
-  '#9333EA', // Morado medio adicional
+  '#a855f7', // Morado claro para "Read"
+  '#c084fc', // Morado más claro para "Reading"
+  '#9333ea', // Morado principal para "Want to read"
+  '#7e22ce', // Morado oscuro adicional
+  '#6d28d9', // Morado medio adicional
 ];
 
 export default function DonutChart({ bookStatus }: DonutChartProps) {
@@ -118,17 +117,17 @@ export default function DonutChart({ bookStatus }: DonutChartProps) {
           '& .MuiChartsLegend-series text': {
             fill: 'rgba(255, 255, 255, 0.9) !important',
             fontWeight: '500',
-            textShadow: '0 0 8px rgba(140, 84, 255, 0.5)',
+            textShadow: 'none',
           },
         },
         '& .MuiPieChart-arc': {
-          filter: 'drop-shadow(0 0 12px rgba(140, 84, 255, 0.4))',
-          stroke: 'rgba(140, 84, 255, 0.3)',
+          filter: 'none',
+          stroke: 'rgba(255, 255, 255, 0.06)',
           strokeWidth: 1,
         },
         '& .MuiChartsTooltip-root': {
-          backgroundColor: 'rgba(140, 84, 255, 0.95)',
-          border: '1px solid rgba(140, 84, 255, 0.5)',
+          backgroundColor: 'rgba(20, 20, 20, 0.95)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           borderRadius: '8px',
         },
       }}

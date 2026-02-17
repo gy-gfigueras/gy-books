@@ -60,16 +60,13 @@ const FriendActivityItem = React.memo<{
         mb: 2,
         p: 2,
         borderRadius: 3,
-        background: `linear-gradient(135deg, ${activityColor}15 0%, ${activityColor}08 100%)`,
-        backdropFilter: 'blur(10px)',
-        border: `1px solid ${activityColor}30`,
+        background: 'rgba(255, 255, 255, 0.02)',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
         transition: 'all 0.3s ease',
         cursor: 'pointer',
         '&:hover': {
-          background: `linear-gradient(135deg, ${activityColor}12 0%, ${activityColor}05 100%)`,
-          border: `1px solid ${activityColor}50`,
-          transform: 'translateY(-2px)',
-          boxShadow: `0 12px 24px ${activityColor}30`,
+          background: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
         },
       }}
     >
@@ -82,7 +79,6 @@ const FriendActivityItem = React.memo<{
           mb: 1.5,
         }}
       >
-        {/* Avatar con skeleton si el username está cargando */}
         {activity.username === null ? (
           <Skeleton
             variant="circular"
@@ -90,8 +86,7 @@ const FriendActivityItem = React.memo<{
             height={32}
             animation="wave"
             sx={{
-              bgcolor: 'rgba(59, 130, 246, 0.1)',
-              border: '2px solid rgba(59, 130, 246, 0.3)',
+              bgcolor: 'rgba(255, 255, 255, 0.04)',
             }}
           />
         ) : (
@@ -100,7 +95,7 @@ const FriendActivityItem = React.memo<{
             alt={activity.username}
             size={32}
             sx={{
-              border: '2px solid rgba(59, 130, 246, 0.3)',
+              border: '1.5px solid rgba(255, 255, 255, 0.1)',
             }}
           />
         )}
@@ -114,7 +109,7 @@ const FriendActivityItem = React.memo<{
               height={20}
               animation="wave"
               sx={{
-                bgcolor: 'rgba(59, 130, 246, 0.1)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
                 mb: 0.3,
               }}
             />
@@ -203,10 +198,8 @@ const SkeletonItem: React.FC = () => (
       mb: 2,
       p: 2,
       borderRadius: 3,
-      background:
-        'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%)',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(59, 130, 246, 0.2)',
+      background: 'rgba(255, 255, 255, 0.02)',
+      border: '1px solid rgba(255, 255, 255, 0.05)',
     }}
   >
     {/* Header: Avatar + Info + Icon */}
@@ -222,27 +215,27 @@ const SkeletonItem: React.FC = () => (
         variant="circular"
         width={32}
         height={32}
-        sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+        sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
       />
       <Box sx={{ flex: 1 }}>
         <Skeleton
           variant="text"
           width={100}
           height={16}
-          sx={{ mb: 0.5, bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+          sx={{ mb: 0.5, bgcolor: 'rgba(255, 255, 255, 0.04)' }}
         />
         <Skeleton
           variant="text"
           width={70}
           height={14}
-          sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
         />
       </Box>
       <Skeleton
         variant="circular"
         width={28}
         height={28}
-        sx={{ bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+        sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
       />
     </Box>
 
@@ -251,7 +244,7 @@ const SkeletonItem: React.FC = () => (
       variant="text"
       width={120}
       height={14}
-      sx={{ mb: 0.5, bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+      sx={{ mb: 0.5, bgcolor: 'rgba(255, 255, 255, 0.04)' }}
     />
 
     {/* Message */}
@@ -259,13 +252,13 @@ const SkeletonItem: React.FC = () => (
       variant="text"
       width="100%"
       height={16}
-      sx={{ mb: 0.5, bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+      sx={{ mb: 0.5, bgcolor: 'rgba(255, 255, 255, 0.04)' }}
     />
     <Skeleton
       variant="text"
       width="80%"
       height={16}
-      sx={{ mb: 1.5, bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+      sx={{ mb: 1.5, bgcolor: 'rgba(255, 255, 255, 0.04)' }}
     />
 
     {/* Badges */}
@@ -274,7 +267,7 @@ const SkeletonItem: React.FC = () => (
         variant="rounded"
         width={60}
         height={24}
-        sx={{ borderRadius: 3, bgcolor: 'rgba(59, 130, 246, 0.1)' }}
+        sx={{ borderRadius: 3, bgcolor: 'rgba(255, 255, 255, 0.04)' }}
       />
     </Box>
   </Box>
@@ -297,14 +290,14 @@ const EmptyState: React.FC = () => (
         width: 80,
         height: 80,
         borderRadius: '50%',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        backgroundColor: 'rgba(147, 51, 234, 0.08)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         mb: 3,
       }}
     >
-      <AutoStories sx={{ fontSize: 40, color: '#3b82f6' }} />
+      <AutoStories sx={{ fontSize: 40, color: 'rgba(147, 51, 234, 0.4)' }} />
     </Box>
     <Typography
       variant="h6"

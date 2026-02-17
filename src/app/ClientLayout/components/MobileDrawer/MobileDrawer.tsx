@@ -1,4 +1,9 @@
-import { motion } from 'framer-motion';
+import { MenuItem } from '@/domain/menu.model';
+import { User } from '@/domain/user.model';
+import { lora } from '@/utils/fonts/fonts';
+import CloseIcon from '@mui/icons-material/Close';
+import InboxIcon from '@mui/icons-material/Inbox';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
   Box,
   Button,
@@ -9,12 +14,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import LogoutIcon from '@mui/icons-material/Logout';
-import InboxIcon from '@mui/icons-material/Inbox';
-import { lora } from '@/utils/fonts/fonts';
-import { MenuItem } from '@/domain/menu.model';
-import { User } from '@/domain/user.model';
+import { motion } from 'framer-motion';
 import React from 'react';
 
 const MotionBox = motion(Box);
@@ -62,7 +62,7 @@ export const MobileDrawer = React.memo(
             backdropFilter: 'blur(20px)',
             color: 'white',
             width: 300,
-            borderRight: '1px solid rgba(147, 51, 234, 0.3)',
+            borderRight: '1px solid rgba(255, 255, 255, 0.06)',
           },
         }}
       >
@@ -128,14 +128,13 @@ export const MobileDrawer = React.memo(
                     mb: 1.5,
                     borderRadius: '12px',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    background: 'rgba(147, 51, 234, 0.05)',
-                    border: '1px solid rgba(147, 51, 234, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
                     '&:hover': {
-                      background:
-                        'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
-                      border: '1px solid rgba(147, 51, 234, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
                       transform: 'translateX(8px) scale(1.02)',
-                      boxShadow: '0 4px 20px rgba(147, 51, 234, 0.3)',
+                      boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
                     },
                     py: 1.5,
                   }}
@@ -144,7 +143,7 @@ export const MobileDrawer = React.memo(
                     sx={{
                       color: '#a855f7',
                       minWidth: '45px',
-                      filter: 'drop-shadow(0 0 4px rgba(147, 51, 234, 0.4))',
+                      filter: 'none',
                     }}
                   >
                     {item.icon}
@@ -182,15 +181,14 @@ export const MobileDrawer = React.memo(
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   background:
                     friendRequestsCount > 0
-                      ? 'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%)'
-                      : 'rgba(147, 51, 234, 0.05)',
-                  border: `1px solid ${friendRequestsCount > 0 ? 'rgba(147, 51, 234, 0.4)' : 'rgba(147, 51, 234, 0.15)'}`,
+                      ? 'rgba(147, 51, 234, 0.1)'
+                      : 'rgba(255, 255, 255, 0.03)',
+                  border: `1px solid ${friendRequestsCount > 0 ? 'rgba(147, 51, 234, 0.2)' : 'rgba(255, 255, 255, 0.06)'}`,
                   '&:hover': {
-                    background:
-                      'linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(168, 85, 247, 0.25) 100%)',
-                    border: '1px solid rgba(147, 51, 234, 0.5)',
+                    background: 'rgba(147, 51, 234, 0.15)',
+                    border: '1px solid rgba(147, 51, 234, 0.3)',
                     transform: 'translateX(8px) scale(1.02)',
-                    boxShadow: '0 4px 20px rgba(147, 51, 234, 0.4)',
+                    boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
                   },
                   py: 1.5,
                 }}
@@ -267,17 +265,17 @@ export const MobileDrawer = React.memo(
                   sx={{
                     py: 1.5,
                     borderRadius: '12px',
-                    borderColor: 'rgba(239, 68, 68, 0.5)',
-                    color: '#ef4444',
+                    borderColor: 'rgba(255, 100, 100, 0.3)',
+                    color: 'rgba(255, 100, 100, 0.7)',
                     fontFamily: lora.style.fontFamily,
                     fontSize: 16,
                     fontWeight: 600,
                     letterSpacing: '0.02em',
                     transition: 'all 0.3s ease',
                     '&:hover': {
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      borderColor: '#ef4444',
-                      boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)',
+                      background: 'rgba(255, 100, 100, 0.1)',
+                      borderColor: 'rgba(255, 100, 100, 0.5)',
+                      boxShadow: 'none',
                     },
                   }}
                   startIcon={<LogoutIcon />}

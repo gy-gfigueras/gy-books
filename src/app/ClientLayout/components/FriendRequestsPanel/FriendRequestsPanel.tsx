@@ -66,10 +66,10 @@ export const FriendRequestsPanel = ({
             maxHeight: { xs: '70vh', md: '500px' },
             zIndex: 999,
             background:
-              'linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(30, 10, 40, 0.98) 100%)',
+              'linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(20, 10, 30, 0.98) 100%)',
             backdropFilter: 'blur(20px)',
             borderRadius: '12px',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
 
             overflow: 'hidden',
           }}
@@ -81,9 +81,9 @@ export const FriendRequestsPanel = ({
               alignItems: 'center',
               justifyContent: 'space-between',
               p: 2,
-              borderBottom: '1px solid rgba(147, 51, 234, 0.3)',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
               background:
-                'linear-gradient(90deg, rgba(147, 51, 234, 0.1) 0%, transparent 100%)',
+                'linear-gradient(90deg, rgba(147, 51, 234, 0.06) 0%, transparent 100%)',
             }}
           >
             <Typography
@@ -93,7 +93,6 @@ export const FriendRequestsPanel = ({
                 fontWeight: 'bold',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 16, md: 20 },
-                textShadow: '0 0 10px rgba(147, 51, 234, 0.5)',
               }}
             >
               Friend Requests
@@ -119,15 +118,15 @@ export const FriendRequestsPanel = ({
                 width: '6px',
               },
               '&::-webkit-scrollbar-track': {
-                background: 'rgba(147, 51, 234, 0.1)',
+                background: 'rgba(255, 255, 255, 0.02)',
                 borderRadius: '3px',
               },
               '&::-webkit-scrollbar-thumb': {
-                background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                background: 'rgba(255, 255, 255, 0.08)',
                 borderRadius: '3px',
               },
               '&::-webkit-scrollbar-thumb:hover': {
-                background: 'linear-gradient(135deg, #a855f7 0%, #c084fc 100%)',
+                background: 'rgba(255, 255, 255, 0.12)',
               },
             }}
           >

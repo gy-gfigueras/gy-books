@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { useMemo, useState } from 'react';
-import { Box, Typography, Chip, Paper } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import type HardcoverBook from '@/domain/HardcoverBook';
+import type { UserProfileBook } from '@/domain/user.model';
+import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
-import type { UserProfileBook } from '@/domain/user.model';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SpeedIcon from '@mui/icons-material/Speed';
+import { Box, Chip, Paper, Typography } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
-import type HardcoverBook from '@/domain/HardcoverBook';
+import React, { useMemo, useState } from 'react';
 
 interface ReadingTimelineProps {
   books: UserProfileBook[];
@@ -239,12 +239,12 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
             label={`${timelineBooks.filter((b) => b.userData?.status === EBookStatus.READ).length} completed`}
             sx={{
               background:
-                'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.15) 100%)',
-              color: '#10b981',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.1) 100%)',
+              color: '#a855f7',
+              border: '1px solid rgba(147, 51, 234, 0.2)',
               fontFamily: lora.style.fontFamily,
               fontWeight: 600,
-              '& .MuiChip-icon': { color: '#10b981' },
+              '& .MuiChip-icon': { color: '#a855f7' },
             }}
           />
           <Chip
@@ -252,12 +252,12 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
             label={`${timelineBooks.filter((b) => b.userData?.status === EBookStatus.READING).length} reading`}
             sx={{
               background:
-                'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%)',
-              color: '#3b82f6',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
+                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.1) 100%)',
+              color: '#a855f7',
+              border: '1px solid rgba(147, 51, 234, 0.2)',
               fontFamily: lora.style.fontFamily,
               fontWeight: 600,
-              '& .MuiChip-icon': { color: '#3b82f6' },
+              '& .MuiChip-icon': { color: '#a855f7' },
             }}
           />
           <Chip
@@ -288,14 +288,14 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
             height: 8,
           },
           '&::-webkit-scrollbar-track': {
-            background: 'rgba(147, 51, 234, 0.05)',
+            background: 'rgba(255, 255, 255, 0.02)',
             borderRadius: 10,
           },
           '&::-webkit-scrollbar-thumb': {
-            background: 'linear-gradient(90deg, #9333ea 0%, #a855f7 100%)',
+            background: 'rgba(255, 255, 255, 0.08)',
             borderRadius: 10,
             '&:hover': {
-              background: 'linear-gradient(90deg, #7e22ce 0%, #9333ea 100%)',
+              background: 'rgba(255, 255, 255, 0.12)',
             },
           },
         }}
@@ -411,12 +411,10 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                       height: 16,
                       borderRadius: '50%',
                       background: isReading
-                        ? 'radial-gradient(circle, #3b82f6 0%, #2563eb 100%)'
-                        : 'radial-gradient(circle, #10b981 0%, #059669 100%)',
+                        ? 'radial-gradient(circle, #a855f7 0%, #9333ea 100%)'
+                        : 'radial-gradient(circle, #9333ea 0%, #7e22ce 100%)',
                       border: '3px solid rgba(0, 0, 0, 0.8)',
-                      boxShadow: isReading
-                        ? '0 0 15px rgba(59, 130, 246, 0.7)'
-                        : '0 0 15px rgba(16, 185, 129, 0.7)',
+                      boxShadow: 'rgba(147, 51, 234, 0.2) 0px 0px 6px',
                       transition: 'all 0.3s ease',
                       zIndex: 2,
                     }}
@@ -432,8 +430,8 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                       width: 1,
                       height: 16,
                       background: isReading
-                        ? 'linear-gradient(180deg, #3b82f6 0%, transparent 100%)'
-                        : 'linear-gradient(180deg, #10b981 0%, transparent 100%)',
+                        ? 'linear-gradient(180deg, #a855f7 0%, transparent 100%)'
+                        : 'linear-gradient(180deg, #9333ea 0%, transparent 100%)',
                       opacity: 0.5,
                     }}
                   />
@@ -443,15 +441,15 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                     elevation={isHovered ? 16 : 4}
                     sx={{
                       p: 1.5,
-                      background: 'rgba(17, 24, 39, 0.8)',
+                      background: 'rgba(255, 255, 255, 0.03)',
                       backdropFilter: 'blur(12px)',
                       border: isHovered
-                        ? `1.5px solid ${isReading ? 'rgba(59, 130, 246, 0.5)' : 'rgba(147, 51, 234, 0.5)'}`
-                        : '1px solid rgba(147, 51, 234, 0.2)',
+                        ? '1.5px solid rgba(255, 255, 255, 0.1)'
+                        : '1px solid rgba(255, 255, 255, 0.06)',
                       borderRadius: '16px',
                       boxShadow: isHovered
-                        ? `0 12px 40px ${isReading ? 'rgba(59, 130, 246, 0.25)' : 'rgba(147, 51, 234, 0.25)'}`
-                        : '0 4px 20px rgba(0, 0, 0, 0.3)',
+                        ? '0 8px 24px rgba(0, 0, 0, 0.3)'
+                        : '0 2px 8px rgba(0, 0, 0, 0.2)',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
                   >
@@ -493,8 +491,8 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                             width: 8,
                             height: 8,
                             borderRadius: '50%',
-                            background: '#3b82f6',
-                            boxShadow: '0 0 8px rgba(59, 130, 246, 0.8)',
+                            background: '#a855f7',
+                            boxShadow: '0 0 6px rgba(147, 51, 234, 0.3)',
                             animation: 'pulse 2s ease-in-out infinite',
                             '@keyframes pulse': {
                               '0%, 100%': { opacity: 1 },
@@ -569,7 +567,7 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                           fontSize: 10,
                           background: 'rgba(147, 51, 234, 0.15)',
                           color: '#a855f7',
-                          border: '1px solid rgba(147, 51, 234, 0.25)',
+                          border: '1px solid rgba(147, 51, 234, 0.2)',
                           fontFamily: lora.style.fontFamily,
                           '& .MuiChip-label': { px: 1 },
                         }}
@@ -583,7 +581,7 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                             fontSize: 10,
                             background: 'rgba(168, 85, 247, 0.15)',
                             color: '#c084fc',
-                            border: '1px solid rgba(168, 85, 247, 0.25)',
+                            border: '1px solid rgba(168, 85, 247, 0.2)',
                             fontFamily: lora.style.fontFamily,
                             '& .MuiChip-label': { px: 1 },
                           }}

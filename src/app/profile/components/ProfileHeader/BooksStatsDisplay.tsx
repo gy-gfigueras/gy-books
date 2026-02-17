@@ -30,10 +30,10 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
     return (
       <>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <CheckCircleIcon sx={{ fontSize: 14, color: '#10b981' }} />
+          <CheckCircleIcon sx={{ fontSize: 14, color: '#a855f7' }} />
           <Typography
             sx={{
-              color: '#10b981',
+              color: '#a855f7',
               fontSize: 13,
               fontWeight: 600,
             }}
@@ -42,10 +42,10 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <MenuBookIcon sx={{ fontSize: 14, color: '#3b82f6' }} />
+          <MenuBookIcon sx={{ fontSize: 14, color: '#a855f7' }} />
           <Typography
             sx={{
-              color: '#3b82f6',
+              color: '#a855f7',
               fontSize: 13,
               fontWeight: 600,
             }}
@@ -54,10 +54,10 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <BookmarkIcon sx={{ fontSize: 14, color: '#f59e0b' }} />
+          <BookmarkIcon sx={{ fontSize: 14, color: '#a855f7' }} />
           <Typography
             sx={{
-              color: '#f59e0b',
+              color: '#a855f7',
               fontSize: 13,
               fontWeight: 600,
             }}
@@ -80,7 +80,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <CheckCircleIcon sx={{ fontSize: 16, color: '#10b981' }} />
+        <CheckCircleIcon sx={{ fontSize: 16, color: '#a855f7' }} />
         <Typography
           sx={{
             color: 'rgba(255,255,255,0.7)',
@@ -92,7 +92,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
         </Typography>
         <Typography
           sx={{
-            color: '#10b981',
+            color: '#a855f7',
             fontSize: 14,
             fontWeight: 700,
             fontFamily: lora.style.fontFamily,
@@ -105,7 +105,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
       <Box sx={{ color: 'rgba(255,255,255,0.3)' }}>•</Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <MenuBookIcon sx={{ fontSize: 16, color: '#3b82f6' }} />
+        <MenuBookIcon sx={{ fontSize: 16, color: '#a855f7' }} />
         <Typography
           sx={{
             color: 'rgba(255,255,255,0.7)',
@@ -117,7 +117,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
         </Typography>
         <Typography
           sx={{
-            color: '#3b82f6',
+            color: '#a855f7',
             fontSize: 14,
             fontWeight: 700,
             fontFamily: lora.style.fontFamily,
@@ -130,7 +130,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
       <Box sx={{ color: 'rgba(255,255,255,0.3)' }}>•</Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <BookmarkIcon sx={{ fontSize: 16, color: '#f59e0b' }} />
+        <BookmarkIcon sx={{ fontSize: 16, color: '#a855f7' }} />
         <Typography
           sx={{
             color: 'rgba(255,255,255,0.7)',
@@ -142,7 +142,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
         </Typography>
         <Typography
           sx={{
-            color: '#f59e0b',
+            color: '#a855f7',
             fontSize: 14,
             fontWeight: 700,
             fontFamily: lora.style.fontFamily,

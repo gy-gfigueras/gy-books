@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { BarChart } from '@mui/x-charts/BarChart';
-import { Box, Typography } from '@mui/material';
 import { lora } from '@/utils/fonts/fonts';
+import { Box, Typography } from '@mui/material';
+import { BarChart } from '@mui/x-charts/BarChart';
 
 export default function AuthorsBarChart({
   authors,
@@ -47,21 +46,21 @@ export default function AuthorsBarChart({
           backgroundColor: 'transparent',
         },
         '& .MuiChartsAxis-root .MuiChartsAxis-tick': {
-          stroke: 'rgba(140, 84, 255, 0.6)',
+          stroke: 'rgba(255, 255, 255, 0.1)',
         },
         '& .MuiChartsAxis-root .MuiChartsAxis-line': {
-          stroke: 'rgba(140, 84, 255, 0.8)',
+          stroke: 'rgba(255, 255, 255, 0.15)',
         },
         '& .MuiChartsAxis-root .MuiChartsAxis-tickLabel': {
           fill: 'rgba(255, 255, 255, 0.9)',
           fontWeight: '500',
-          textShadow: '0 0 10px rgba(140, 84, 255, 0.4)',
+          textShadow: 'none',
         },
         '& .MuiChartsLegend-root': {
           display: 'none',
         },
         '& .MuiChartsBar-root': {
-          filter: 'drop-shadow(0 0 8px rgba(140, 84, 255, 0.6))',
+          filter: 'none',
         },
         width: ['300px', '500px'],
         height: ['250px', '300px'],
@@ -73,17 +72,17 @@ export default function AuthorsBarChart({
           data: authorNames,
           labelStyle: {
             fill: 'rgba(255, 255, 255, 0.9)',
-            textShadow: '0 0 8px rgba(140, 84, 255, 0.5)',
+            textShadow: 'none',
           },
         },
       ]}
       series={[
         {
           data: authorCounts,
-          color: '#8C54FF',
+          color: '#9333ea',
         },
       ]}
-      colors={['#8C54FF', '#A855F7', '#9333EA', '#7C3AED', '#6D28D9']}
+      colors={['#9333ea', '#a855f7', '#7e22ce', '#7c3aed', '#6d28d9']}
       height={300}
     />
   );

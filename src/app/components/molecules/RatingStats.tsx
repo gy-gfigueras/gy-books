@@ -60,7 +60,7 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
 
   // Colores morados de la app
   const colors = [
-    '#8C54FF',
+    '#9333ea',
     '#A855F7',
     '#9333EA',
     '#7C3AED',
@@ -92,10 +92,10 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
             gap: 1,
           }}
         >
-          <Star sx={{ color: '#8C54FF', fontSize: '24px' }} />
+          <Star sx={{ color: '#9333ea', fontSize: '24px' }} />
           <Typography
             sx={{
-              color: '#8C54FF',
+              color: '#9333ea',
               fontFamily: lora.style.fontFamily,
               fontSize: '1.5rem',
               fontWeight: 'bold',
@@ -118,7 +118,7 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
       {/* Bar Chart */}
       <Box sx={{ width: '100%', height: '240px' }}>
         <BarChart
-          series={[{ data, color: '#8C54FF' }]}
+          series={[{ data, color: '#9333ea' }]}
           xAxis={[
             {
               data: labels,

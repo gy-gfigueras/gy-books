@@ -1,19 +1,19 @@
-import React from 'react';
-import { TextField } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
-  Menu,
-  Stack,
   Box,
-  Typography,
   Button,
   IconButton,
+  Menu,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React from 'react';
 import RatingStars from '../RatingStars/RatingStars';
-import BookRatingStatusButtons from './BookRatingStatusButtons';
 import BookRatingProgressInput from './BookRatingProgressInput';
 import BookRatingReviewInput from './BookRatingReviewInput';
-import { BookRatingState, BookRatingHandlers } from './types';
+import BookRatingStatusButtons from './BookRatingStatusButtons';
+import { BookRatingHandlers, BookRatingState } from './types';
 
 interface Props {
   open: boolean;
@@ -84,12 +84,12 @@ const BookRatingMenu: React.FC<Props> = ({
             onClick={handleDeleteBook}
             size="small"
             sx={{
-              color: '#ef4444',
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
+              color: 'rgba(255, 100, 100, 0.7)',
+              background: 'rgba(255, 100, 100, 0.08)',
+              border: '1px solid rgba(255, 100, 100, 0.15)',
               '&:hover': {
-                background: 'rgba(239, 68, 68, 0.2)',
-                borderColor: 'rgba(239, 68, 68, 0.3)',
+                background: 'rgba(255, 100, 100, 0.12)',
+                borderColor: 'rgba(255, 100, 100, 0.2)',
               },
             }}
           >

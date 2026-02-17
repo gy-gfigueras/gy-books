@@ -1,12 +1,8 @@
 import HardcoverBook from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
-import AssistantIcon from '@mui/icons-material/Assistant';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { motion, AnimatePresence } from 'framer-motion';
 import { EBookStatus } from '@gycoding/nebula';
-
-const MotionBox = motion(Box);
+import AssistantIcon from '@mui/icons-material/Assistant';
 import {
   Box,
   Button,
@@ -15,15 +11,17 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
+  LinearProgress,
   Rating,
   Skeleton,
   Tooltip,
   Typography,
-  LinearProgress,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+const MotionBox = motion(Box);
 
 interface BookCardCompactProps {
   book: HardcoverBook;
@@ -38,8 +36,8 @@ export const BookCardCompactSkeleton = () => {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        background: 'rgba(0, 0, 0, 0.4)',
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        background: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '16px',
         overflow: 'hidden',
       }}
@@ -61,7 +59,7 @@ export const BookCardCompactSkeleton = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            bgcolor: 'rgba(147, 51, 234, 0.15)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
           animation="wave"
         />
@@ -81,7 +79,7 @@ export const BookCardCompactSkeleton = () => {
           variant="text"
           width="80%"
           height={24}
-          sx={{ bgcolor: 'rgba(147, 51, 234, 0.15)' }}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
         />
 
         {/* Skeleton del rating */}
@@ -90,7 +88,7 @@ export const BookCardCompactSkeleton = () => {
             variant="text"
             width={100}
             height={20}
-            sx={{ bgcolor: 'rgba(147, 51, 234, 0.15)' }}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
           />
         </Box>
 
@@ -102,13 +100,13 @@ export const BookCardCompactSkeleton = () => {
             variant="text"
             width={120}
             height={16}
-            sx={{ bgcolor: 'rgba(147, 51, 234, 0.15)' }}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
           />
           <Skeleton
             variant="text"
             width={100}
             height={16}
-            sx={{ bgcolor: 'rgba(147, 51, 234, 0.15)' }}
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
           />
         </Box>
 
@@ -117,7 +115,7 @@ export const BookCardCompactSkeleton = () => {
           variant="text"
           width="60%"
           height={20}
-          sx={{ bgcolor: 'rgba(147, 51, 234, 0.15)' }}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
         />
 
         {/* Skeleton del chip de serie */}
@@ -127,7 +125,7 @@ export const BookCardCompactSkeleton = () => {
           height={24}
           sx={{
             borderRadius: '12px',
-            bgcolor: 'rgba(147, 51, 234, 0.15)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
       </Box>
@@ -139,7 +137,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
   const router = useRouter();
   const { title, coverUrl } = useBookDisplay(book);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  // const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
     if (onClick) {
@@ -153,18 +151,18 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
   const statusConfig = {
     [EBookStatus.READING]: {
       label: 'Reading',
-      color: '#3b82f6',
-      bg: 'rgba(59, 130, 246, 0.9)',
+      color: '#a855f7',
+      bg: 'rgba(147, 51, 234, 0.85)',
     },
     [EBookStatus.READ]: {
       label: 'Read',
-      color: '#10b981',
-      bg: 'rgba(16, 185, 129, 0.9)',
+      color: '#a855f7',
+      bg: 'rgba(147, 51, 234, 0.7)',
     },
     [EBookStatus.WANT_TO_READ]: {
       label: 'Want to Read',
-      color: '#f59e0b',
-      bg: 'rgba(245, 158, 11, 0.9)',
+      color: '#a855f7',
+      bg: 'rgba(147, 51, 234, 0.55)',
     },
   };
 
@@ -204,14 +202,16 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
         flexDirection: 'column',
         cursor: 'pointer',
         position: 'relative',
-        background: 'rgba(0, 0, 0, 0.5)',
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        background: 'rgba(255, 255, 255, 0.03)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '16px',
         overflow: 'hidden',
-        boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
-        transition: 'box-shadow 0.2s ease',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+        transition: 'all 0.25s ease',
         '&:hover': {
-          boxShadow: '0 8px 24px rgba(147, 51, 234, 0.5)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+          transform: 'translateY(-4px)',
         },
       }}
     >
@@ -237,8 +237,8 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
             fontSize: '0.7rem',
             letterSpacing: '0.05em',
             border: `1px solid ${statusInfo.color}`,
-            boxShadow: `0 4px 12px ${statusInfo.color}60`,
-            textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+            boxShadow: 'none',
+            textShadow: 'none',
             '& .MuiChip-label': {
               px: 1.5,
             },
@@ -289,7 +289,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
 
               borderRadius: '8px',
               p: 1,
-              border: '1px solid rgba(59, 130, 246, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
             }}
           >
             <Typography
@@ -313,9 +313,9 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                 backgroundColor: 'rgba(255, 255, 255, 0.2)',
                 '& .MuiLinearProgress-bar': {
                   background:
-                    'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)',
+                    'linear-gradient(90deg, #9333ea 0%, #a855f7 100%)',
                   borderRadius: 3,
-                  boxShadow: '0 0 10px rgba(59, 130, 246, 0.6)',
+                  boxShadow: '0 0 8px rgba(147, 51, 234, 0.3)',
                 },
               }}
             />
@@ -366,7 +366,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
-                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
+                textShadow: 'none',
               }}
             >
               {title}
@@ -383,7 +383,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
               WebkitLineClamp: 1,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              textShadow: '0 1px 4px rgba(0, 0, 0, 0.4)',
+              textShadow: 'none',
             }}
           >
             {book.author.name}
@@ -432,10 +432,10 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                       'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 6px rgba(147, 51, 234, 0.4)',
+                    boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
                     '&:hover': {
                       transform: 'scale(1.1)',
-                      boxShadow: '0 2px 10px rgba(147, 51, 234, 0.6)',
+                      boxShadow: '0 2px 8px rgba(147, 51, 234, 0.4)',
                     },
                   }}
                 >
@@ -464,8 +464,8 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
               fontWeight: '700',
               height: { xs: '22px', sm: '24px' },
               borderRadius: '12px',
-              border: '1px solid rgba(147, 51, 234, 0.4)',
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+              border: '1px solid rgba(147, 51, 234, 0.3)',
+              textShadow: 'none',
             }}
           />
         )}

@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, { useState } from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import { lora } from '@/utils/fonts/fonts';
+import { EBookStatus } from '@gycoding/nebula';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import SearchIcon from '@mui/icons-material/Search';
+import SortIcon from '@mui/icons-material/Sort';
 import {
+  Badge,
+  Box,
+  FormControl,
   IconButton,
+  InputAdornment,
   Menu,
   MenuItem,
-  Box,
-  Badge,
-  Tooltip,
   Select,
-  FormControl,
   TextField,
-  InputAdornment,
+  Tooltip,
 } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import SortIcon from '@mui/icons-material/Sort';
-import SearchIcon from '@mui/icons-material/Search';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { AnimatePresence, motion } from 'framer-motion';
-import { lora } from '@/utils/fonts/fonts';
+import React, { useState } from 'react';
 import { BooksViewToggle, ViewType } from '../BooksViewToggle/BooksViewToggle';
-import { BooksFilterMobileDrawer } from './BooksFilterMobileDrawer';
 import { ActiveFiltersChips } from './ActiveFiltersChips';
-import { EBookStatus } from '@gycoding/nebula';
+import { BooksFilterMobileDrawer } from './BooksFilterMobileDrawer';
 
 const MotionIconButton = motion(IconButton);
 
@@ -209,7 +209,7 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
         <MenuItem
           value=""
           sx={{
-            color: '#8C54FF',
+            color: '#9333ea',
             fontWeight: 500,
             fontSize: 13,
             fontFamily: lora.style.fontFamily,
@@ -421,10 +421,9 @@ export const CompactBooksFilter: React.FC<CompactBooksFilterProps> = ({
                 background:
                   'linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(20, 10, 40, 0.9) 100%)',
                 backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(147, 51, 234, 0.4)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '12px',
-                boxShadow:
-                  '0 8px 24px rgba(0, 0, 0, 0.6), 0 0 40px rgba(147, 51, 234, 0.15)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
               }}
             >
               {/* Search */}

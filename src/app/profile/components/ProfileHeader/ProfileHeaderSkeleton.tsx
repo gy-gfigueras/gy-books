@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Skeleton } from '@mui/material';
+import React from 'react';
 
 interface ProfileHeaderSkeletonProps {
   canEdit?: boolean;
@@ -20,10 +20,9 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
           gap: 2,
           py: 1.5,
           px: 2,
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+          background: 'rgba(255, 255, 255, 0.03)',
           backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(147, 51, 234, 0.25)',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
           borderRadius: '16px',
         }}
       >
@@ -34,7 +33,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
             width: 50,
             height: 50,
             flexShrink: 0,
-            bgcolor: 'rgba(147, 51, 234, 0.15)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
 
@@ -54,7 +53,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
             sx={{
               width: 150,
               height: 28,
-              bgcolor: 'rgba(147, 51, 234, 0.15)',
+              bgcolor: 'rgba(255, 255, 255, 0.04)',
             }}
           />
 
@@ -65,7 +64,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               width={120}
               height={32}
               sx={{
-                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '16px',
               }}
             />
@@ -78,7 +77,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               width={80}
               height={28}
               sx={{
-                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '12px',
               }}
             />
@@ -87,7 +86,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               width={80}
               height={28}
               sx={{
-                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '12px',
               }}
             />
@@ -100,7 +99,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
           sx={{
             width: 24,
             height: 24,
-            bgcolor: 'rgba(147, 51, 234, 0.15)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
       </Box>
@@ -112,10 +111,9 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
     <Box
       sx={{
         position: 'relative',
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(147, 51, 234, 0.25)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '16px',
         p: 3,
       }}
@@ -129,7 +127,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
           right: 16,
           width: 32,
           height: 32,
-          bgcolor: 'rgba(147, 51, 234, 0.15)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
         }}
       />
 
@@ -147,8 +145,8 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
           sx={{
             width: { xs: 120, md: 160 },
             height: { xs: 120, md: 160 },
-            bgcolor: 'rgba(147, 51, 234, 0.15)',
-            border: '3px solid rgba(147, 51, 234, 0.3)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
+            border: '3px solid rgba(255, 255, 255, 0.08)',
           }}
         />
 
@@ -177,7 +175,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               sx={{
                 width: 200,
                 height: { xs: 36, md: 48 },
-                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
               }}
             />
             {canEdit && (
@@ -186,7 +184,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
                 width={120}
                 height={32}
                 sx={{
-                  bgcolor: 'rgba(147, 51, 234, 0.15)',
+                  bgcolor: 'rgba(255, 255, 255, 0.04)',
                   borderRadius: '16px',
                 }}
               />
@@ -200,7 +198,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               width: { xs: '100%', md: 500 },
               height: 80,
               borderRadius: '12px',
-              bgcolor: 'rgba(147, 51, 234, 0.08)',
+              bgcolor: 'rgba(255, 255, 255, 0.03)',
             }}
           />
 
@@ -218,7 +216,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               width={100}
               height={36}
               sx={{
-                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '12px',
               }}
             />
@@ -227,7 +225,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               width={100}
               height={36}
               sx={{
-                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '12px',
               }}
             />
@@ -236,7 +234,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
               width={100}
               height={36}
               sx={{
-                bgcolor: 'rgba(147, 51, 234, 0.15)',
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
                 borderRadius: '12px',
               }}
             />
@@ -259,7 +257,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
                 width: { xs: 140, md: 160 },
                 height: 40,
                 borderRadius: '10px',
-                bgcolor: 'rgba(147, 51, 234, 0.2)',
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
               }}
             />
             <Skeleton
@@ -268,7 +266,7 @@ export const ProfileHeaderSkeleton: React.FC<ProfileHeaderSkeletonProps> = ({
                 width: { xs: 140, md: 160 },
                 height: 40,
                 borderRadius: '10px',
-                bgcolor: 'rgba(147, 51, 234, 0.2)',
+                bgcolor: 'rgba(255, 255, 255, 0.05)',
               }}
             />
           </Box>

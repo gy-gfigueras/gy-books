@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Skeleton,
-  Chip,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import { AnimatePresence, motion } from 'framer-motion';
+import { UserImage } from '@/app/components/atoms/UserAvatar/UserImage';
+import { UserProfileBook } from '@/domain/user.model';
+import { lora } from '@/utils/fonts/fonts';
 import EditIcon from '@mui/icons-material/Edit';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaunchIcon from '@mui/icons-material/Launch';
 import PeopleIcon from '@mui/icons-material/People';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { UserImage } from '@/app/components/atoms/UserAvatar/UserImage';
-import { lora } from '@/utils/fonts/fonts';
+import {
+  Box,
+  Chip,
+  IconButton,
+  Skeleton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
 import { BiographySection } from '../BiographySection/BiographySection';
-import { UserProfileBook } from '@/domain/user.model';
 import { BooksStatsDisplay } from './BooksStatsDisplay';
 
 interface ProfileHeaderProps {
@@ -64,17 +64,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             gap: 2,
             py: 1.5,
             px: 2,
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+            background: 'rgba(255, 255, 255, 0.03)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(147, 51, 234, 0.25)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
             borderRadius: '16px',
             cursor: 'pointer',
             transition: 'all 0.3s ease',
             '&:hover': {
-              border: '1px solid rgba(147, 51, 234, 0.4)',
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'rgba(255, 255, 255, 0.05)',
             },
           }}
           onClick={() => setIsExpanded(true)}
@@ -87,7 +85,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               flexShrink: 0,
               borderRadius: '50%',
               overflow: 'hidden',
-              border: '2px solid rgba(147, 51, 234, 0.4)',
+              border: '2px solid rgba(255, 255, 255, 0.1)',
               '& img': {
                 width: '100%',
                 height: '100%',
@@ -137,8 +135,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   label={`${friendsCount} friends`}
                   size="small"
                   sx={{
-                    background:
-                      'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                    background: 'rgba(147, 51, 234, 0.12)',
                     color: '#e9d5ff',
                     border: '1px solid rgba(147, 51, 234, 0.4)',
                     fontFamily: lora.style.fontFamily,
@@ -195,10 +192,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             <Box
               sx={{
                 position: 'relative',
-                background:
-                  'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+                background: 'rgba(255, 255, 255, 0.03)',
                 backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(147, 51, 234, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
                 borderRadius: '16px',
                 p: 2,
               }}
@@ -292,8 +288,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         size="small"
                         clickable
                         sx={{
-                          background:
-                            'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                          background: 'rgba(147, 51, 234, 0.12)',
                           color: '#e9d5ff',
                           border: '1px solid rgba(147, 51, 234, 0.4)',
                           fontFamily: lora.style.fontFamily,
@@ -301,8 +296,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                           fontSize: { xs: '0.75rem', md: '0.8125rem' },
                           '& .MuiChip-icon': { color: '#a855f7' },
                           '&:hover': {
-                            background:
-                              'linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(168, 85, 247, 0.3) 100%)',
+                            background: 'rgba(147, 51, 234, 0.18)',
                             border: '1px solid rgba(147, 51, 234, 0.6)',
                           },
                         }}
@@ -410,14 +404,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         href="https://accounts.gycoding.com"
                         target="_blank"
                         sx={{
-                          background:
-                            'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                          background: 'rgba(147, 51, 234, 0.12)',
                           backdropFilter: 'blur(10px)',
                           border: '1px solid rgba(147, 51, 234, 0.4)',
                           color: '#e9d5ff',
                           '&:hover': {
-                            background:
-                              'linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(168, 85, 247, 0.3) 100%)',
+                            background: 'rgba(147, 51, 234, 0.18)',
                             border: '1px solid rgba(147, 51, 234, 0.6)',
                           },
                         }}
@@ -429,14 +421,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                       <IconButton
                         onClick={onEditProfile}
                         sx={{
-                          background:
-                            'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                          background: 'rgba(147, 51, 234, 0.12)',
                           backdropFilter: 'blur(10px)',
                           border: '1px solid rgba(147, 51, 234, 0.4)',
                           color: '#e9d5ff',
                           '&:hover': {
-                            background:
-                              'linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(168, 85, 247, 0.3) 100%)',
+                            background: 'rgba(147, 51, 234, 0.18)',
                             border: '1px solid rgba(147, 51, 234, 0.6)',
                           },
                         }}

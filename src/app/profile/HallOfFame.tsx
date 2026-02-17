@@ -5,8 +5,8 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUpdateHallOfFame } from '@/hooks/useUpdateHallOfFame';
 import { Box, Typography } from '@mui/material';
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import { HallOfFameSkeleton } from './HallOfFameSkeleton';
 import { HallOfFameCarousel } from './halloffame/HallOfFameCarousel';
 import { HallOfFameEmpty } from './halloffame/HallOfFameEmpty';
@@ -90,8 +90,7 @@ export default function HallOfFame({ userId }: { userId: string }) {
         alignItems: 'center',
         gap: '2rem',
         userSelect: 'none',
-        boxShadow:
-          '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
       }}
     >
       <HallOfFameCarousel

@@ -1,12 +1,12 @@
 'use client';
-import React from 'react';
-import { Box, IconButton, Tooltip } from '@mui/material';
-import { useRouter, usePathname } from 'next/navigation';
-import GridViewIcon from '@mui/icons-material/GridView';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import TimelineIcon from '@mui/icons-material/Timeline';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import GridViewIcon from '@mui/icons-material/GridView';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import { Box, IconButton, Tooltip } from '@mui/material';
 import { motion } from 'framer-motion';
+import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
 
 const MotionBox = motion(Box);
 
@@ -47,13 +47,12 @@ export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '12px',
         padding: '4px',
-        boxShadow: '0 4px 12px rgba(147, 51, 234, 0.2)',
+        boxShadow: 'none',
       }}
     >
       {allViews.map((viewOption) => {
@@ -73,7 +72,7 @@ export const BooksViewToggle: React.FC<BooksViewToggleProps> = ({
                     background:
                       'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
                     borderRadius: '8px',
-                    boxShadow: '0 0 20px rgba(147, 51, 234, 0.6)',
+                    boxShadow: '0 0 8px rgba(147, 51, 234, 0.3)',
                   }}
                   transition={{
                     type: 'spring',

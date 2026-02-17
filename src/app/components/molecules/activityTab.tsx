@@ -21,8 +21,8 @@ import CircleIcon from '@mui/icons-material/Circle';
 import StarIcon from '@mui/icons-material/Star';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { UUID } from 'crypto';
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const MotionBox = motion(Box);
 
@@ -61,9 +61,8 @@ const ProgressBadge: React.FC<{ progress: number }> = React.memo(
         px: 1,
         py: 0.5,
         borderRadius: '8px',
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
-        border: '1px solid rgba(147, 51, 234, 0.4)',
+        background: 'rgba(147, 51, 234, 0.15)',
+        border: '1px solid rgba(147, 51, 234, 0.2)',
         color: '#c084fc',
       }}
     >
@@ -91,8 +90,8 @@ const RatingBadge: React.FC<{ rating: number }> = React.memo(({ rating }) => (
       px: 1,
       py: 0.5,
       borderRadius: '6px',
-      background: 'rgba(255, 193, 7, 0.2)',
-      color: '#FFC107',
+      background: 'rgba(147, 51, 234, 0.15)',
+      color: '#c084fc',
     }}
   >
     <StarIcon sx={{ fontSize: 14 }} />
@@ -182,25 +181,21 @@ const ActivityItem: React.FC<{
       sx={{
         p: 1.5,
         mb: 2,
-        background:
-          'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(16px)',
         borderRadius: '16px',
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         display: 'flex',
         alignItems: 'flex-start',
         gap: 1.5,
         textDecoration: 'none',
         transition: 'all 0.2s',
-        boxShadow:
-          '0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(147, 51, 234, 0.15)',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
         '&:hover': {
-          background:
-            'linear-gradient(145deg, rgba(147, 51, 234, 0.18) 0%, rgba(168, 85, 247, 0.12) 100%)',
-          border: '1px solid rgba(147, 51, 234, 0.5)',
+          background: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           transform: 'translateY(-2px)',
-          boxShadow:
-            '0 8px 16px rgba(147, 51, 234, 0.25), 0 4px 8px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
         },
       }}
       tabIndex={0}
@@ -275,11 +270,10 @@ const SkeletonActivityItem: React.FC = React.memo(() => (
     sx={{
       p: 1.5,
       mb: 2,
-      background:
-        'linear-gradient(145deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+      background: 'rgba(255, 255, 255, 0.02)',
       backdropFilter: 'blur(16px)',
       borderRadius: '16px',
-      border: '1px solid rgba(147, 51, 234, 0.2)',
+      border: '1px solid rgba(255, 255, 255, 0.04)',
       display: 'flex',
       alignItems: 'flex-start',
       gap: 1.5,
@@ -322,7 +316,7 @@ const EmptyState: React.FC = React.memo(() => (
     <Box
       sx={{
         fontSize: 80,
-        background: 'linear-gradient(135deg, #8C54FF, #B388FF)',
+        background: 'linear-gradient(135deg, #9333ea, #c084fc)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         backgroundClip: 'text',

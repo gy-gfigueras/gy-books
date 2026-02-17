@@ -1,13 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { Friend } from '@/domain/friend.model';
+import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
 import FriendCard from '@/app/components/atoms/FriendCard/FriendCard';
 import FriendCardSkeleton from '@/app/components/atoms/FriendCard/FriendCardSkeleton';
-import { Box, Typography, TextField, InputAdornment } from '@mui/material';
-import { motion } from 'framer-motion';
+import { Friend } from '@/domain/friend.model';
+import { ESeverity } from '@/utils/constants/ESeverity';
 import { lora } from '@/utils/fonts/fonts';
 import SearchIcon from '@mui/icons-material/Search';
-import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
-import { ESeverity } from '@/utils/constants/ESeverity';
+import { Box, InputAdornment, TextField, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useMemo, useState } from 'react';
 
 const MotionBox = motion(Box);
 
@@ -63,24 +63,23 @@ export function FriendsTab({
           mb: '8px',
           width: ['90%', '70%', '60%'],
           maxWidth: '600px',
-          backgroundColor: 'rgba(147, 51, 234, 0.05)',
+          backgroundColor: 'rgba(255, 255, 255, 0.03)',
           backdropFilter: 'blur(10px)',
           borderRadius: '16px',
           fontFamily: lora.style.fontFamily,
           '& .MuiOutlinedInput-root': {
             minHeight: '56px',
             '& fieldset': {
-              borderColor: 'rgba(147, 51, 234, 0.3)',
+              borderColor: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '16px',
-              borderWidth: '2px',
+              borderWidth: '1px',
             },
             '&:hover fieldset': {
-              borderColor: 'rgba(147, 51, 234, 0.5)',
+              borderColor: 'rgba(255, 255, 255, 0.15)',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#9333ea',
-              borderWidth: '2px',
-              boxShadow: '0 0 20px rgba(147, 51, 234, 0.3)',
+              borderColor: 'rgba(147, 51, 234, 0.5)',
+              borderWidth: '1px',
             },
           },
           '& .MuiInputBase-input': {

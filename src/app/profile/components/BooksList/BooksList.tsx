@@ -1,14 +1,14 @@
 'use client';
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import { AnimatedBookCard } from '../AnimatedBookCard/AnimatedBookCard';
 import { BookCardList } from '@/app/components/atoms/BookCardList/BookCardList';
-import { ReadingTimeline } from '../ReadingTimeline/ReadingTimeline';
-import { ReadingCalendar } from '../ReadingCalendar/ReadingCalendar';
 import HardcoverBook from '@/domain/HardcoverBook';
 import type { UserProfileBook } from '@/domain/user.model';
 import { lora } from '@/utils/fonts/fonts';
+import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
+import React from 'react';
+import { AnimatedBookCard } from '../AnimatedBookCard/AnimatedBookCard';
+import { ReadingCalendar } from '../ReadingCalendar/ReadingCalendar';
+import { ReadingTimeline } from '../ReadingTimeline/ReadingTimeline';
 
 export type ViewType = 'grid' | 'list' | 'timeline' | 'calendar';
 
@@ -90,7 +90,7 @@ export const BooksList: React.FC<BooksListProps> = ({
                 fontStyle: 'italic',
                 fontSize: '0.9rem',
                 letterSpacing: '0.05em',
-                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                textShadow: 'none',
               }}
             >
               Scroll for more books...
@@ -159,7 +159,7 @@ export const BooksList: React.FC<BooksListProps> = ({
               fontStyle: 'italic',
               fontSize: '0.9rem',
               letterSpacing: '0.05em',
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+              textShadow: 'none',
             }}
           >
             Scroll for more books...

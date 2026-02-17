@@ -5,8 +5,8 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUpdateHallOfFame } from '@/hooks/useUpdateHallOfFame';
 import { Box, Typography } from '@mui/material';
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import { HallOfFameSkeleton } from './HallOfFameSkeleton';
 import { HallOfFameCarousel } from './halloffame/HallOfFameCarousel';
 import { HallOfFameEmpty } from './halloffame/HallOfFameEmpty';
@@ -76,10 +76,9 @@ export default function HallOfFame({ userId }: { userId: string }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
       sx={{
-        background:
-          'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 50%, rgba(126, 34, 206, 0.1) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '20px',
         padding: '2rem',
         width: '100%',
@@ -90,8 +89,7 @@ export default function HallOfFame({ userId }: { userId: string }) {
         alignItems: 'center',
         gap: '2rem',
         userSelect: 'none',
-        boxShadow:
-          '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
       }}
     >
       <HallOfFameCarousel

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Skeleton } from '@mui/material';
 
 export default function StatsSkeleton() {
@@ -19,24 +18,26 @@ export default function StatsSkeleton() {
           sx={{
             width: '500px',
             height: '400px',
-            background:
-              'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            background: 'rgba(255, 255, 255, 0.03)',
             backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
             borderRadius: '20px',
             padding: 2,
             display: 'flex',
             flexDirection: 'column',
             gap: 1,
-            boxShadow:
-              '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
           }}
         >
           {/* Simula el título */}
           <Skeleton
             variant="text"
             height={40}
-            sx={{ bgcolor: 'rgba(147, 51, 234, 0.25)', mb: 2, borderRadius: 1 }}
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.06)',
+              mb: 2,
+              borderRadius: 1,
+            }}
           />
 
           {/* Simula el gráfico */}
@@ -44,7 +45,7 @@ export default function StatsSkeleton() {
             variant="rectangular"
             sx={{
               flexGrow: 1,
-              bgcolor: 'rgba(147, 51, 234, 0.2)',
+              bgcolor: 'rgba(255, 255, 255, 0.04)',
               borderRadius: 2,
             }}
           />

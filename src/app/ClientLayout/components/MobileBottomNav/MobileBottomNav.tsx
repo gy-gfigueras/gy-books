@@ -28,7 +28,7 @@ const ActiveIndicator: React.FC = () => (
       height: 3,
       borderRadius: 2,
       background: 'linear-gradient(90deg, #9333ea, #c084fc)',
-      boxShadow: '0 0 8px rgba(147, 51, 234, 0.5)',
+      boxShadow: '0 0 6px rgba(147, 51, 234, 0.3)',
     }}
   />
 );

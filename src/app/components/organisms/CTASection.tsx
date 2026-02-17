@@ -1,14 +1,13 @@
 'use client';
 
-import React from 'react';
-import { Box, Typography, Button, Chip } from '@mui/material';
-import { motion } from 'framer-motion';
-import { lora } from '@/utils/fonts/fonts';
-import Link from 'next/link';
-import GroupsIcon from '@mui/icons-material/Groups';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { CTA_FEATURES } from '@/utils/constants/homepage.constants';
 import { useAnimations } from '@/hooks/useAnimations';
+import { CTA_FEATURES } from '@/utils/constants/homepage.constants';
+import { lora } from '@/utils/fonts/fonts';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import GroupsIcon from '@mui/icons-material/Groups';
+import { Box, Button, Chip, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const MotionBox = motion(Box);
 
@@ -66,9 +65,9 @@ export const CTASection = () => {
           borderRadius: '24px',
           background:
             'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           backdropFilter: 'blur(20px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
           textAlign: 'center',
           overflow: 'hidden',
           '&::before': {
@@ -217,11 +216,11 @@ export const CTASection = () => {
                 fontWeight: 'bold',
                 letterSpacing: '.05rem',
                 borderRadius: '12px',
-                boxShadow: '0 8px 24px rgba(147, 51, 234, 0.4)',
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.2)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 32px rgba(147, 51, 234, 0.6)',
+                  boxShadow: '0 6px 16px rgba(147, 51, 234, 0.3)',
                   background:
                     'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
                 },

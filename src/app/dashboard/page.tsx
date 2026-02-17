@@ -34,12 +34,11 @@ const MotionBox = motion(Box);
 const UserCompactCardSkeleton: React.FC = () => (
   <Paper
     sx={{
-      background:
-        'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
+      background: 'rgba(255, 255, 255, 0.03)',
       backdropFilter: 'blur(10px)',
       borderRadius: '16px',
       padding: 2,
-      border: '1px solid rgba(147, 51, 234, 0.3)',
+      border: '1px solid rgba(255, 255, 255, 0.06)',
       textAlign: 'center',
     }}
   >
@@ -48,7 +47,7 @@ const UserCompactCardSkeleton: React.FC = () => (
       width={70}
       height={70}
       sx={{
-        bgcolor: 'rgba(255, 255, 255, 0.05)',
+        bgcolor: 'rgba(255, 255, 255, 0.04)',
         margin: '0 auto',
         mb: 1.5,
       }}
@@ -58,7 +57,7 @@ const UserCompactCardSkeleton: React.FC = () => (
       width="80%"
       height={24}
       sx={{
-        bgcolor: 'rgba(255, 255, 255, 0.05)',
+        bgcolor: 'rgba(255, 255, 255, 0.04)',
         margin: '0 auto',
       }}
     />
@@ -92,17 +91,16 @@ const UserCompactCard: React.FC<UserCompactCardProps> = ({
   return (
     <Paper
       sx={{
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.05) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(10px)',
         borderRadius: '16px',
         padding: 2,
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         textAlign: 'center',
         transition: 'all 0.3s ease',
         '&:hover': {
-          border: '1px solid rgba(147, 51, 234, 0.5)',
-          boxShadow: '0 8px 24px rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.04)',
         },
       }}
     >
@@ -118,8 +116,7 @@ const UserCompactCard: React.FC<UserCompactCardProps> = ({
             height: 70,
             margin: '0 auto',
             mb: 1.5,
-            border: '2px solid rgba(147, 51, 234, 0.5)',
-            boxShadow: '0 4px 16px rgba(147, 51, 234, 0.3)',
+            border: '2px solid rgba(147, 51, 234, 0.3)',
           }}
         />
       </motion.div>
@@ -350,25 +347,24 @@ export default function DashboardPage() {
                   background: 'transparent',
                   borderRadius: '20px',
                   padding: 3,
-                  border: '1px solid rgba(140, 84, 255, 0.2)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
                   minHeight: 0,
                   flex: 1,
                   overflow: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
-                  // Custom scrollbar
                   '&::-webkit-scrollbar': {
                     width: '6px',
                   },
                   '&::-webkit-scrollbar-track': {
-                    backgroundColor: 'rgba(140, 84, 255, 0.05)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
                     borderRadius: '3px',
                   },
                   '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: 'rgba(140, 84, 255, 0.3)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
                     borderRadius: '3px',
                     '&:hover': {
-                      backgroundColor: 'rgba(140, 84, 255, 0.5)',
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
                     },
                   },
                 }}

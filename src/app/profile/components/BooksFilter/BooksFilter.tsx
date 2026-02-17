@@ -258,7 +258,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
         <MenuItem
           value=""
           sx={{
-            color: '#8C54FF',
+            color: '#9333ea',
             fontWeight: 500,
             fontFamily: lora.style.fontFamily,
           }}
@@ -302,7 +302,7 @@ export const BooksFilter: React.FC<BooksFilterProps> = ({
                 width: 56,
                 height: 56,
                 borderRadius: '50%',
-                boxShadow: '0 4px 16px rgba(140,84,255,0.25)',
+                boxShadow: '0 4px 16px rgba(147,51,234,0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

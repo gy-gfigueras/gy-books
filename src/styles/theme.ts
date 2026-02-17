@@ -9,10 +9,16 @@ export const getTheme = (mode: ETheme.LIGHT | ETheme.DARK) =>
     palette: {
       mode,
       primary: {
-        main: '#8C54FF',
+        main: '#9333ea',
+        light: '#a855f7',
+        dark: '#7e22ce',
       },
       secondary: {
-        main: '#FF0000',
+        main: '#c084fc',
+      },
+      background: {
+        default: '#0A0A0A',
+        paper: '#0A0A0A',
       },
     },
     typography: {

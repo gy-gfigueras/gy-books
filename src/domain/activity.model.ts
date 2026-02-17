@@ -113,16 +113,16 @@ export function getActivityColor(type: ActivityType): string {
     case ActivityType.STARTED:
       return '#2196F3'; // blue
     case ActivityType.FINISHED:
-      return '#4CAF50'; // green
+      return '#9333ea'; // purple
     case ActivityType.RATED:
-      return '#FFC107'; // yellow
+      return '#a855f7'; // purple light
     case ActivityType.PROGRESS:
-      return '#8C54FF'; // purple
+      return '#9333ea'; // purple
     case ActivityType.WANT_TO_READ:
-      return '#FF9800'; // orange
+      return '#c084fc'; // purple lighter
     case ActivityType.REVIEWED:
-      return '#10B981'; // green
+      return '#a855f7'; // purple light
     case ActivityType.OTHER:
-      return '#9E9E9E'; // gray
+      return '#6b7280'; // neutral gray
   }
 }

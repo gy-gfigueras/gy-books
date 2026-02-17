@@ -1,14 +1,14 @@
 'use client';
 
-import React from 'react';
-import { Box, Chip } from '@mui/material';
-import { BarChart, Star, Comment } from '@mui/icons-material';
 import {
   Activity,
   extractProgress,
   extractRating,
   extractReview,
 } from '@/domain/activity.model';
+import { BarChart, Comment, Star } from '@mui/icons-material';
+import { Box, Chip } from '@mui/material';
+import React from 'react';
 
 interface ActivityBadgesProps {
   activity: Activity;
@@ -49,11 +49,11 @@ export const ActivityBadges: React.FC<ActivityBadgesProps> = ({ activity }) => {
           label={`${rating} stars`}
           size="small"
           sx={{
-            backgroundColor: 'rgba(255, 193, 7, 0.1)',
-            color: '#FFC107',
+            backgroundColor: 'rgba(147, 51, 234, 0.1)',
+            color: '#c084fc',
             fontWeight: 600,
             '& .MuiChip-icon': {
-              color: '#FFC107',
+              color: '#c084fc',
             },
           }}
         />
@@ -65,11 +65,11 @@ export const ActivityBadges: React.FC<ActivityBadgesProps> = ({ activity }) => {
           label="Review"
           size="small"
           sx={{
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            color: '#10B981',
+            backgroundColor: 'rgba(147, 51, 234, 0.1)',
+            color: '#a855f7',
             fontWeight: 600,
             '& .MuiChip-icon': {
-              color: '#10B981',
+              color: '#a855f7',
             },
           }}
         />

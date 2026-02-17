@@ -1,15 +1,14 @@
 'use client';
 
-import { lora, birthStone } from '@/utils/fonts/fonts';
-import { Box, Typography, Button } from '@mui/material';
-import { motion } from 'framer-motion';
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useAnimations } from '@/hooks/useAnimations';
+import { HERO_STATS } from '@/utils/constants/homepage.constants';
+import { birthStone, lora } from '@/utils/fonts/fonts';
 import GroupsIcon from '@mui/icons-material/Groups';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-import { HERO_STATS } from '@/utils/constants/homepage.constants';
-import { useAnimations } from '@/hooks/useAnimations';
+import { Box, Button, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 const MotionBox = motion(Box);
 const MotionTypography = motion(Typography);
@@ -191,11 +190,11 @@ export const Hero = () => {
               fontWeight: 'bold',
               letterSpacing: '.05rem',
               borderRadius: '12px',
-              boxShadow: '0 8px 24px rgba(147, 51, 234, 0.4)',
+              boxShadow: '0 4px 12px rgba(147, 51, 234, 0.2)',
               transition: 'all 0.3s ease',
               '&:hover': {
                 transform: 'translateY(-2px)',
-                boxShadow: '0 12px 32px rgba(147, 51, 234, 0.6)',
+                boxShadow: '0 6px 16px rgba(147, 51, 234, 0.3)',
                 background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
               },
             }}
@@ -265,7 +264,7 @@ export const Hero = () => {
                   'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%)',
                 border: '1px solid rgba(147, 51, 234, 0.5)',
                 transform: 'translateY(-2px)',
-                boxShadow: '0 4px 20px rgba(147, 51, 234, 0.3)',
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
               },
             }}
           >
@@ -275,7 +274,7 @@ export const Hero = () => {
                 height: 8,
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-                boxShadow: '0 0 10px rgba(147, 51, 234, 0.6)',
+                boxShadow: '0 0 6px rgba(147, 51, 234, 0.3)',
                 animation: 'pulse 2s ease-in-out infinite',
                 '@keyframes pulse': {
                   '0%, 100%': { opacity: 1, transform: 'scale(1)' },

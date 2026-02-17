@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react';
-import { TextField } from '@mui/material';
-import {
-  Drawer,
-  Box,
-  IconButton,
-  Stack,
-  Typography,
-  Button,
-} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Box,
+  Button,
+  Drawer,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import React, { useEffect } from 'react';
 import RatingStars from '../RatingStars/RatingStars';
-import BookRatingStatusButtons from './BookRatingStatusButtons';
 import BookRatingProgressInput from './BookRatingProgressInput';
 import BookRatingReviewInput from './BookRatingReviewInput';
-import { BookRatingState, BookRatingHandlers } from './types';
+import BookRatingStatusButtons from './BookRatingStatusButtons';
+import { BookRatingHandlers, BookRatingState } from './types';
 
 interface Props {
   open: boolean;
@@ -104,9 +104,9 @@ const BookRatingDrawer: React.FC<Props> = ({
                 onClick={handleDeleteBook}
                 size="small"
                 sx={{
-                  color: '#ef4444',
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                  color: 'rgba(255, 100, 100, 0.7)',
+                  background: 'rgba(255, 100, 100, 0.08)',
+                  border: '1px solid rgba(255, 100, 100, 0.15)',
                 }}
               >
                 <DeleteIcon sx={{ fontSize: 20 }} />

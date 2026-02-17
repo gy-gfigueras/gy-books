@@ -110,7 +110,7 @@ function BooksContent() {
           justifyContent: 'start',
           height: '100%',
           gap: '1rem',
-          backgroundColor: '#000000',
+          backgroundColor: '#0A0A0A',
           paddingBottom: '100px',
         }}
       >
@@ -135,14 +135,14 @@ function BooksContent() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.6)' }} />
+                  <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.4)' }} />
                 </InputAdornment>
               ),
               style: {
                 color: 'white',
                 fontFamily: lora.style.fontFamily,
                 fontSize: '18px',
-                backgroundColor: 'rgba(147, 51, 234, 0.05)',
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
                 backdropFilter: 'blur(10px)',
                 borderRadius: '16px',
                 minHeight: '56px',
@@ -162,17 +162,16 @@ function BooksContent() {
               maxWidth: { xs: '100%', sm: '600px' },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.3)',
+                  borderColor: 'rgba(255, 255, 255, 0.08)',
                   borderRadius: '16px',
-                  borderWidth: '2px',
+                  borderWidth: '1px',
                 },
                 '&:hover fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.5)',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: '#9333ea',
-                  borderWidth: '2px',
-                  boxShadow: '0 0 20px rgba(147, 51, 234, 0.3)',
+                  borderColor: 'rgba(147, 51, 234, 0.5)',
+                  borderWidth: '1px',
                 },
               },
             }}
@@ -191,16 +190,16 @@ function BooksContent() {
             alignContent: 'start',
             padding: '25px',
             overflow: 'auto',
-            scrollbarColor: '#9333ea transparent',
+            scrollbarColor: 'rgba(255,255,255,0.1) transparent',
             '&::-webkit-scrollbar': {
-              width: '8px',
+              width: '6px',
             },
             '&::-webkit-scrollbar-track': {
-              background: 'rgba(147, 51, 234, 0.1)',
+              background: 'rgba(255, 255, 255, 0.02)',
             },
             '&::-webkit-scrollbar-thumb': {
-              background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-              borderRadius: '4px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '3px',
             },
           }}
         >

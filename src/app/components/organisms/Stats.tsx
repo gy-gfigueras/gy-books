@@ -1,18 +1,17 @@
-import React from 'react';
-import { UUID } from 'crypto';
+import type HardcoverBook from '@/domain/HardcoverBook';
 import { useStats } from '@/hooks/useStats';
 import { useStatsFromBooks } from '@/hooks/useStatsFromBooks';
-import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import AuthorsBarChart from '../molecules/AuthorsBarChart';
+import { lora } from '@/utils/fonts/fonts';
 import { Box, Typography } from '@mui/material';
+import { UUID } from 'crypto';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import AuthorsBarChart from '../molecules/AuthorsBarChart';
 import DonutChart from '../molecules/DonutChart';
 import PageCountKPI from '../molecules/PageCountKPI';
 import RatingStats from '../molecules/RatingStats';
-import { lora } from '@/utils/fonts/fonts';
 import StatsSkeleton from '../molecules/StatsSkeleton';
-import type HardcoverBook from '@/domain/HardcoverBook';
 
 const MotionBox = motion(Box);
 
@@ -152,10 +151,9 @@ export default function StatsComponent({
           sx={{
             width: '500px',
             height: '400px',
-            background:
-              'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            background: 'rgba(255, 255, 255, 0.03)',
             backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
             borderRadius: '20px',
             display: 'flex',
             justifyContent: 'center',
@@ -163,8 +161,7 @@ export default function StatsComponent({
             padding: 2,
             flexDirection: 'column',
             gap: 1,
-            boxShadow:
-              '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
           }}
         >
           <Typography
@@ -184,10 +181,9 @@ export default function StatsComponent({
           sx={{
             width: '500px',
             height: '400px',
-            background:
-              'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+            background: 'rgba(255, 255, 255, 0.03)',
             backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(147, 51, 234, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
             borderRadius: '20px',
             display: 'flex',
             justifyContent: 'center',
@@ -195,8 +191,7 @@ export default function StatsComponent({
             padding: 2,
             flexDirection: 'column',
             gap: 1,
-            boxShadow:
-              '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
           }}
         >
           <Typography
@@ -215,10 +210,9 @@ export default function StatsComponent({
         sx={{
           width: '500px',
           height: '400px',
-          background:
-            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+          background: 'rgba(255, 255, 255, 0.03)',
           backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
           borderRadius: '20px',
           display: 'flex',
           justifyContent: 'center',
@@ -226,8 +220,7 @@ export default function StatsComponent({
           padding: 2,
           flexDirection: 'column',
           gap: 1,
-          boxShadow:
-            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
         }}
       >
         <Typography
@@ -250,10 +243,9 @@ export default function StatsComponent({
         sx={{
           width: '500px',
           height: '400px',
-          background:
-            'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+          background: 'rgba(255, 255, 255, 0.03)',
           backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
           borderRadius: '20px',
           display: 'flex',
           justifyContent: 'center',
@@ -261,8 +253,7 @@ export default function StatsComponent({
           padding: 2,
           flexDirection: 'column',
           gap: 1,
-          boxShadow:
-            '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
         }}
       >
         <Typography

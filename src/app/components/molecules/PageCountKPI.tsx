@@ -92,12 +92,12 @@ const PageCountKPI: React.FC<PageCountKPIProps> = ({
       <Box sx={{ textAlign: 'center' }}>
         <Typography
           sx={{
-            color: '#8C54FF',
+            color: '#9333ea',
             fontFamily: fontFamily,
             fontSize: '3.5rem',
             fontWeight: 'bold',
             lineHeight: 1,
-            textShadow: '0 0 20px rgba(140, 84, 255, 0.5)',
+            textShadow: 'none',
           }}
         >
           {currentCount.toLocaleString()}
@@ -130,10 +130,10 @@ const PageCountKPI: React.FC<PageCountKPIProps> = ({
           sx={{
             width: `${Math.min(percentage, 100)}%`,
             height: '100%',
-            background: 'linear-gradient(90deg, #8C54FF 0%, #A855F7 100%)',
+            background: 'linear-gradient(90deg, #9333ea 0%, #a855f7 100%)',
             borderRadius: '4px',
             transition: 'width 0.1s ease-out',
-            boxShadow: '0 0 10px rgba(140, 84, 255, 0.6)',
+            boxShadow: 'none',
           }}
         />
       </Box>
@@ -142,7 +142,7 @@ const PageCountKPI: React.FC<PageCountKPIProps> = ({
       <Box sx={{ textAlign: 'center' }}>
         <Typography
           sx={{
-            color: '#8C54FF',
+            color: '#9333ea',
             fontFamily: fontFamily,
             fontSize: '1.5rem',
             fontWeight: 'bold',

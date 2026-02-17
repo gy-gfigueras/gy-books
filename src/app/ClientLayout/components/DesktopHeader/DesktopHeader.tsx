@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion';
-import { Box, IconButton } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { CustomButton } from '@/app/components/atoms/CustomButton/customButton';
+import { User } from '@/domain/user.model';
+import { lora } from '@/utils/fonts/fonts';
+import InboxIcon from '@mui/icons-material/Inbox';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import PersonIcon from '@mui/icons-material/Person';
-import InboxIcon from '@mui/icons-material/Inbox';
-import { CustomButton } from '@/app/components/atoms/CustomButton/customButton';
+import { Box, IconButton } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { ProfileButton } from '../ProfileButton/ProfileButton';
-import { lora } from '@/utils/fonts/fonts';
-import { User } from '@/domain/user.model';
 
 const MotionBox = motion(Box);
 const MotionIconButton = motion(IconButton);
@@ -58,7 +58,7 @@ export const DesktopHeader = ({
             width: '48px',
             height: '48px',
             cursor: 'pointer',
-            filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
+            filter: 'drop-shadow(0 0 6px rgba(147, 51, 234, 0.3))',
             transition: 'filter 0.3s ease',
           }}
           onClick={() => router.push('/')}
@@ -96,8 +96,7 @@ export const DesktopHeader = ({
             transition: 'all 0.3s ease',
             '&:hover': {
               borderColor: '#a855f7',
-              backgroundColor: 'rgba(147, 51, 234, 0.2)',
-              boxShadow: '0 4px 15px rgba(147, 51, 234, 0.3)',
+              backgroundColor: 'rgba(147, 51, 234, 0.1)',
             },
           }}
           startIcon={<LocalLibraryIcon />}
@@ -123,8 +122,7 @@ export const DesktopHeader = ({
             transition: 'all 0.3s ease',
             '&:hover': {
               borderColor: '#a855f7',
-              backgroundColor: 'rgba(147, 51, 234, 0.2)',
-              boxShadow: '0 4px 15px rgba(147, 51, 234, 0.3)',
+              backgroundColor: 'rgba(147, 51, 234, 0.1)',
             },
           }}
           startIcon={<PersonIcon />}
@@ -164,7 +162,7 @@ export const DesktopHeader = ({
                   borderRadius: '50%',
                   padding: '4px',
                   fontSize: '12px',
-                  boxShadow: '0 2px 8px rgba(147, 51, 234, 0.6)',
+                  boxShadow: '0 2px 8px rgba(147, 51, 234, 0.3)',
                 }}
               >
                 {friendRequestsCount}

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Box, Paper, Typography, TextField } from '@mui/material';
 import { CustomButton } from '@/app/components/atoms/CustomButton/customButton';
 import { lora } from '@/utils/fonts/fonts';
+import { Box, Paper, TextField, Typography } from '@mui/material';
+import React from 'react';
 
 interface BiographySectionProps {
   biography: string;
@@ -107,14 +107,15 @@ export const BiographySection: React.FC<BiographySectionProps> = ({
                   minWidth: { xs: 0, md: 'auto' },
                   width: { xs: '50%', md: 'auto' },
                   fontFamily: lora.style.fontFamily,
-                  background: 'rgba(255, 0, 0, 0.43)',
-                  boxShadow: '0 4px 14px rgba(255, 0, 0, 0.4)',
+                  background: 'rgba(255, 100, 100, 0.15)',
+                  boxShadow: 'none',
                   paddingTop: '14px',
                   height: '44px',
                   textAlign: 'center',
                   fontSize: { xs: 11, md: 15 },
+                  color: 'rgba(255, 100, 100, 0.8)',
                   '&:hover': {
-                    background: 'rgba(255, 0, 0, 0.65)',
+                    background: 'rgba(255, 100, 100, 0.25)',
                     transform: 'translateY(-2px)',
                   },
                 }}

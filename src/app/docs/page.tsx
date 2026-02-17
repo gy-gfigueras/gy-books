@@ -2,7 +2,6 @@
 
 import { lora } from '@/utils/fonts/fonts';
 import dynamic from 'next/dynamic';
-import React from 'react';
 
 const RedocStandalone = dynamic(
   () => import('redoc').then((mod) => mod.RedocStandalone),
@@ -13,7 +12,7 @@ const RedocStandalone = dynamic(
 
 export default function DocsPage() {
   return (
-    <div style={{ height: '100vh', backgroundColor: '#121212' }}>
+    <div style={{ height: '100vh', backgroundColor: '#0A0A0A' }}>
       <RedocStandalone
         specUrl="/api/swagger"
         options={{
@@ -21,7 +20,7 @@ export default function DocsPage() {
           theme: {
             colors: {
               primary: {
-                main: '#9E45F1', // morado
+                main: '#9333ea', // morado
               },
               text: {
                 primary: '#E5E7EB', // gris claro (tailwind gray-200)

@@ -61,16 +61,16 @@ export const CustomButton = ({
         boxShadow:
           variant === 'contained'
             ? type === 'ACTION'
-              ? '0 4px 12px rgba(147, 51, 234, 0.5)'
-              : '0 4px 12px rgba(234, 51, 51, 0.21)'
+              ? '0 4px 12px rgba(147, 51, 234, 0.25)'
+              : '0 4px 12px rgba(234, 51, 51, 0.15)'
             : 'none',
         transition: 'all 0.3s ease',
         '&:hover': {
           transform: 'translateY(-2px)',
           boxShadow:
             type === 'ACTION'
-              ? '0 6px 20px rgba(147, 51, 234, 0.6)'
-              : '0 6px 20px rgba(234, 51, 51, 0.6)',
+              ? '0 4px 12px rgba(147, 51, 234, 0.3)'
+              : '0 4px 12px rgba(234, 51, 51, 0.3)',
           background:
             type === 'ACTION'
               ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'

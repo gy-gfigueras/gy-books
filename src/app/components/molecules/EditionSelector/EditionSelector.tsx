@@ -84,7 +84,7 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                   return (
                     <Typography
                       sx={{
-                        color: '#8C54FF',
+                        color: '#9333ea',
                         fontFamily: lora.style.fontFamily,
                         fontWeight: 500,
                         overflow: 'hidden',
@@ -124,7 +124,7 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                   border: 0,
                 },
                 '.MuiSvgIcon-root': {
-                  color: '#8C54FF',
+                  color: '#9333ea',
                 },
                 '.MuiSelect-select': {
                   overflow: 'hidden',
@@ -137,12 +137,11 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    background:
-                      'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+                    background: 'rgba(255, 255, 255, 0.03)',
                     backdropFilter: 'blur(20px)',
                     borderRadius: '12px',
-                    border: '1px solid rgba(147, 51, 234, 0.3)',
-                    boxShadow: '0 8px 32px rgba(147, 51, 234, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
                     maxHeight: '300px',
                     overflowY: 'auto',
                     scrollbarColor: '#9333ea transparent',
@@ -164,10 +163,10 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                       fontFamily: lora.style.fontFamily,
                       transition: 'all 0.2s ease',
                       '&:hover': {
-                        backgroundColor: '#8C54FF20',
+                        backgroundColor: '#9333ea20',
                       },
                       '&.Mui-selected': {
-                        backgroundColor: '#8C54FF30',
+                        backgroundColor: '#9333ea30',
                       },
                     },
                   },
@@ -190,7 +189,7 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                     variant="body2"
                     sx={{
                       fontFamily: lora.style.fontFamily,
-                      color: '#8C54FF',
+                      color: '#9333ea',
                       fontWeight: 500,
                     }}
                   >
@@ -238,8 +237,8 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                             label={getLanguageCode(edition.language.language)}
                             size="small"
                             sx={{
-                              backgroundColor: '#8C54FF20',
-                              color: '#8C54FF',
+                              backgroundColor: '#9333ea20',
+                              color: '#9333ea',
                               fontSize: '10px',
                               height: '18px',
                               fontFamily: lora.style.fontFamily,
@@ -286,18 +285,17 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                     border: 0,
                   },
                   '.MuiSvgIcon-root': {
-                    color: '#8C54FF',
+                    color: '#9333ea',
                   },
                 }}
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      background:
-                        'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
+                      background: 'rgba(255, 255, 255, 0.03)',
                       backdropFilter: 'blur(20px)',
                       borderRadius: '12px',
-                      border: '1px solid rgba(147, 51, 234, 0.3)',
-                      boxShadow: '0 8px 32px rgba(147, 51, 234, 0.3)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
                       maxHeight: '200px',
                       overflowY: 'auto',
                       scrollbarColor: '#9333ea transparent',
@@ -318,10 +316,10 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                         fontFamily: lora.style.fontFamily,
                         transition: 'all 0.2s ease',
                         '&:hover': {
-                          backgroundColor: '#8C54FF20',
+                          backgroundColor: '#9333ea20',
                         },
                         '&.Mui-selected': {
-                          backgroundColor: '#8C54FF30',
+                          backgroundColor: '#9333ea30',
                         },
                       },
                     },
@@ -334,7 +332,7 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
                     sx={{
                       fontFamily: lora.style.fontFamily,
                       fontWeight: 500,
-                      color: '#8C54FF',
+                      color: '#9333ea',
                     }}
                   >
                     ALL
@@ -363,7 +361,7 @@ export const EditionSelector: React.FC<EditionSelectorProps> = ({
         <Typography
           variant="caption"
           sx={{
-            color: '#8C54FF',
+            color: '#9333ea',
             mt: 1,
             display: 'block',
             textAlign: 'center',

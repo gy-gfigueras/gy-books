@@ -47,8 +47,8 @@ const BookRatingProgressInput: React.FC<Props> = ({
           borderRadius: 3,
           fontWeight: 'bold',
           color: isProgressPercent ? '#fff' : 'white',
-          background: isProgressPercent ? '#8C54FF' : 'transparent',
-          borderColor: '#8C54FF',
+          background: isProgressPercent ? '#9333ea' : 'transparent',
+          borderColor: '#9333ea',
           px: 2,
           py: 1,
           minWidth: 0,
@@ -57,7 +57,7 @@ const BookRatingProgressInput: React.FC<Props> = ({
           fontFamily,
           letterSpacing: '.05rem',
           '&:hover': {
-            background: '#8C54FF',
+            background: '#9333ea',
             color: '#fff',
           },
         }}
@@ -71,8 +71,8 @@ const BookRatingProgressInput: React.FC<Props> = ({
           borderRadius: 3,
           fontWeight: 'bold',
           color: !isProgressPercent ? '#fff' : 'white',
-          background: !isProgressPercent ? '#8C54FF' : 'transparent',
-          borderColor: '#8C54FF',
+          background: !isProgressPercent ? '#9333ea' : 'transparent',
+          borderColor: '#9333ea',
           px: 2,
           py: 1,
           minWidth: 0,
@@ -81,7 +81,7 @@ const BookRatingProgressInput: React.FC<Props> = ({
           fontFamily,
           letterSpacing: '.05rem',
           '&:hover': {
-            background: '#8C54FF',
+            background: '#9333ea',
             color: '#fff',
           },
         }}

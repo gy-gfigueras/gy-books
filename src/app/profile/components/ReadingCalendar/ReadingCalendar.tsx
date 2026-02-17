@@ -1,41 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-import React, { useState, useMemo, useCallback } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Chip,
-  Tooltip,
-  IconButton,
-} from '@mui/material';
-import { motion } from 'framer-motion';
-import {
-  Calendar,
-  dateFnsLocalizer,
-  Event,
-  View,
-  ToolbarProps,
-} from 'react-big-calendar';
-import {
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  addMonths,
-  subMonths,
-} from 'date-fns';
-import { enUS } from 'date-fns/locale';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import type { UserProfileBook } from '@/domain/user.model';
+import { getBookDisplayData } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
-import type { UserProfileBook } from '@/domain/user.model';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import { format, getDay, parse, startOfWeek } from 'date-fns';
+import { enUS } from 'date-fns/locale';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { getBookDisplayData } from '@/hooks/useBookDisplay';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  Calendar,
+  dateFnsLocalizer,
+  Event,
+  ToolbarProps,
+  View,
+} from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const locales = {
   'en-US': enUS,
@@ -188,7 +174,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
               '& .MuiTooltip-tooltip': {
                 backgroundColor: 'rgba(20, 20, 20, 0.98)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(147, 51, 234, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '12px',
                 padding: 0,
                 maxWidth: 'none',
@@ -196,7 +182,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
               '& .MuiTooltip-arrow': {
                 color: 'rgba(20, 20, 20, 0.98)',
                 '&::before': {
-                  border: '1px solid rgba(147, 51, 234, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
                 },
               },
             },
@@ -212,8 +198,8 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
               padding: '2px 4px',
               cursor: 'pointer',
               background: resource.isReading
-                ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
-                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
+                : 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
               borderRadius: '4px',
               fontSize: '11px',
               fontWeight: 600,
@@ -223,9 +209,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
               gap: '4px',
               '&:hover': {
                 transform: 'scale(1.02)',
-                boxShadow: resource.isReading
-                  ? '0 4px 12px rgba(59, 130, 246, 0.6)'
-                  : '0 4px 12px rgba(16, 185, 129, 0.6)',
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
               },
               transition: 'all 0.2s ease',
             }}
@@ -390,19 +374,18 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           <Box sx={{ textAlign: 'center' }}>
             <Typography
               sx={{
-                color: '#10b981',
+                color: '#a855f7',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 20, md: 24 },
                 fontWeight: 'bold',
                 lineHeight: 1,
-                textShadow: '0 2px 8px rgba(16, 185, 129, 0.4)',
               }}
             >
               {stats.completed}
             </Typography>
             <Typography
               sx={{
-                color: 'rgba(16, 185, 129, 0.8)',
+                color: 'rgba(147, 51, 234, 0.8)',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 10, md: 11 },
                 fontWeight: 500,
@@ -417,19 +400,18 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           <Box sx={{ textAlign: 'center' }}>
             <Typography
               sx={{
-                color: '#f59e0b',
+                color: '#a855f7',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 20, md: 24 },
                 fontWeight: 'bold',
                 lineHeight: 1,
-                textShadow: '0 2px 8px rgba(245, 158, 11, 0.4)',
               }}
             >
               {stats.totalPages.toLocaleString()}
             </Typography>
             <Typography
               sx={{
-                color: 'rgba(245, 158, 11, 0.8)',
+                color: 'rgba(147, 51, 234, 0.8)',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 10, md: 11 },
                 fontWeight: 500,
@@ -445,19 +427,18 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             <Box sx={{ textAlign: 'center' }}>
               <Typography
                 sx={{
-                  color: '#3b82f6',
+                  color: '#a855f7',
                   fontFamily: lora.style.fontFamily,
                   fontSize: { xs: 20, md: 24 },
                   fontWeight: 'bold',
                   lineHeight: 1,
-                  textShadow: '0 2px 8px rgba(59, 130, 246, 0.4)',
                 }}
               >
                 {stats.reading}
               </Typography>
               <Typography
                 sx={{
-                  color: 'rgba(59, 130, 246, 0.8)',
+                  color: 'rgba(147, 51, 234, 0.8)',
                   fontFamily: lora.style.fontFamily,
                   fontSize: { xs: 10, md: 11 },
                   fontWeight: 500,
@@ -479,10 +460,10 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           p: { xs: 0.5, md: 2 },
           background: {
             xs: 'transparent',
-            md: 'linear-gradient(145deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+            md: 'rgba(255, 255, 255, 0.03)',
           },
           backdropFilter: { xs: 'none', md: 'blur(16px)' },
-          border: { xs: 'none', md: '1px solid rgba(147, 51, 234, 0.3)' },
+          border: { xs: 'none', md: '1px solid rgba(255, 255, 255, 0.06)' },
           borderRadius: { xs: '12px', md: '20px' },
           minHeight: { xs: 'auto', md: 600 },
           '& .rbc-calendar': {
@@ -499,22 +480,22 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             letterSpacing: '0.5px',
           },
           '& .rbc-today': {
-            background: 'rgba(147, 51, 234, 0.1)',
+            background: 'rgba(147, 51, 234, 0.08)',
           },
           '& .rbc-off-range-bg': {
             background: 'rgba(0, 0, 0, 0.3)',
           },
           '& .rbc-month-view': {
             border: {
-              xs: '1px solid rgba(147, 51, 234, 0.15)',
-              md: '1px solid rgba(147, 51, 234, 0.2)',
+              xs: '1px solid rgba(255, 255, 255, 0.06)',
+              md: '1px solid rgba(255, 255, 255, 0.08)',
             },
             borderRadius: { xs: '8px', md: '12px' },
             overflow: 'hidden',
             background: { xs: 'rgba(0, 0, 0, 0.3)', md: 'rgba(0, 0, 0, 0.3)' },
           },
           '& .rbc-day-bg': {
-            borderColor: 'rgba(147, 51, 234, 0.2)',
+            borderColor: 'rgba(255, 255, 255, 0.06)',
             background: 'rgba(0, 0, 0, 0.2)',
           },
           '& .rbc-date-cell': {
@@ -537,22 +518,22 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             gap: '12px',
             '& button': {
               color: '#a855f7',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: '8px',
               padding: '8px 16px',
-              background: 'rgba(147, 51, 234, 0.1)',
+              background: 'rgba(255, 255, 255, 0.03)',
               fontFamily: lora.style.fontFamily,
               fontWeight: 600,
               transition: 'all 0.3s ease',
               '&:hover': {
-                background: 'rgba(147, 51, 234, 0.2)',
-                borderColor: 'rgba(147, 51, 234, 0.5)',
+                background: 'rgba(147, 51, 234, 0.1)',
+                borderColor: 'rgba(147, 51, 234, 0.3)',
               },
               '&:active, &.rbc-active': {
                 background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
                 color: '#fff',
                 borderColor: '#9333ea',
-                boxShadow: '0 0 20px rgba(147, 51, 234, 0.6)',
+                boxShadow: 'none',
               },
             },
           },

@@ -1,12 +1,11 @@
 'use client';
 
-import React from 'react';
-import { Box, Container, Typography, Link, IconButton } from '@mui/material';
-import { motion } from 'framer-motion';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import LanguageIcon from '@mui/icons-material/Language';
 import { birthStone, cinzel, lora } from '@/utils/fonts/fonts';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LanguageIcon from '@mui/icons-material/Language';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import { Box, Container, IconButton, Link, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 
 const MotionBox = motion(Box);
 const MotionIconButton = motion(IconButton);
@@ -17,8 +16,8 @@ export const Footer = () => {
       component="footer"
       sx={{
         position: 'relative',
-        backgroundColor: '#000000',
-        borderTop: '1px solid rgba(147, 51, 234, 0.3)',
+        backgroundColor: '#0A0A0A',
+        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
         py: { xs: 6, sm: 8 },
         mt: 'auto',
         overflow: 'hidden',
@@ -222,7 +221,7 @@ export const Footer = () => {
                 '&:hover': {
                   color: '#a855f7',
                   backgroundColor: 'rgba(147, 51, 234, 0.15)',
-                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
                 },
               }}
             >
@@ -241,7 +240,7 @@ export const Footer = () => {
                 '&:hover': {
                   color: '#a855f7',
                   backgroundColor: 'rgba(147, 51, 234, 0.15)',
-                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
                 },
               }}
             >
@@ -260,7 +259,7 @@ export const Footer = () => {
                 '&:hover': {
                   color: '#a855f7',
                   backgroundColor: 'rgba(147, 51, 234, 0.15)',
-                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
                 },
               }}
             >
@@ -275,7 +274,7 @@ export const Footer = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
           sx={{
-            borderTop: '1px solid rgba(147, 51, 234, 0.2)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
             mt: { xs: 4, sm: 6 },
             pt: { xs: 3, sm: 4 },
             textAlign: 'center',

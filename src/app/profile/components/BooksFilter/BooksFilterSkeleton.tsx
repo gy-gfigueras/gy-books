@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, Skeleton, useMediaQuery, useTheme } from '@mui/material';
+import React from 'react';
 
 export const BooksFilterSkeleton: React.FC = () => {
   const theme = useTheme();
@@ -22,7 +22,7 @@ export const BooksFilterSkeleton: React.FC = () => {
             width: '100%',
             height: 48,
             borderRadius: '16px',
-            bgcolor: 'rgba(140, 84, 255, 0.2)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
       </Box>
@@ -54,7 +54,7 @@ export const BooksFilterSkeleton: React.FC = () => {
           height: 40,
           borderRadius: '16px',
           minWidth: 110,
-          bgcolor: 'rgba(45, 45, 45, 0.95)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
           mb: { xs: 1, sm: 0 },
         }}
       />
@@ -66,7 +66,7 @@ export const BooksFilterSkeleton: React.FC = () => {
           height: 40,
           borderRadius: '10px',
           minWidth: 110,
-          bgcolor: 'rgba(45, 45, 45, 0.95)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
         }}
       />
       {/* Status filter skeleton */}
@@ -77,7 +77,7 @@ export const BooksFilterSkeleton: React.FC = () => {
           height: 40,
           borderRadius: '10px',
           minWidth: 110,
-          bgcolor: 'rgba(45, 45, 45, 0.95)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
         }}
       />
       {/* Author filter skeleton */}
@@ -88,7 +88,7 @@ export const BooksFilterSkeleton: React.FC = () => {
           height: 40,
           borderRadius: '10px',
           minWidth: 110,
-          bgcolor: 'rgba(45, 45, 45, 0.95)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
         }}
       />
       {/* Series filter skeleton */}
@@ -99,7 +99,7 @@ export const BooksFilterSkeleton: React.FC = () => {
           height: 40,
           borderRadius: '10px',
           minWidth: 110,
-          bgcolor: 'rgba(45, 45, 45, 0.95)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
         }}
       />
       {/* Order button skeleton */}
@@ -109,7 +109,7 @@ export const BooksFilterSkeleton: React.FC = () => {
           width: 55,
           height: 40,
           borderRadius: '10px',
-          bgcolor: 'rgba(45, 45, 45, 0.95)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
         }}
       />
     </Box>

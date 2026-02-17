@@ -1,16 +1,16 @@
 'use client';
 
-import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
-import { motion } from 'framer-motion';
-import SearchIcon from '@mui/icons-material/Search';
+import { lora } from '@/utils/fonts/fonts';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PeopleIcon from '@mui/icons-material/People';
+import SearchIcon from '@mui/icons-material/Search';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import { Box, Paper, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { lora } from '@/utils/fonts/fonts';
+import React from 'react';
 
 /**
  * Acciones rápidas del dashboard.
@@ -21,39 +21,33 @@ export const QuickActions = React.memo(() => {
 
   const actions = [
     {
-      title: 'Browse Books',
+      title: 'Books',
       icon: SearchIcon,
-      color: '#9333ea',
       onClick: () => router.push('/books'),
     },
     {
       title: 'My Stats',
       icon: BarChartIcon,
-      color: '#3b82f6',
       onClick: () => router.push('/profile?tab=2'),
     },
     {
       title: 'Calendar',
       icon: CalendarMonthIcon,
-      color: '#10b981',
       onClick: () => router.push('/profile?view=calendar'),
     },
     {
       title: 'Hall of Fame',
       icon: EmojiEventsIcon,
-      color: '#fbbf24',
       onClick: () => router.push('/profile?tab=1'),
     },
     {
       title: 'Community',
       icon: PeopleIcon,
-      color: '#f59e0b',
       onClick: () => router.push('/users/community'),
     },
     {
       title: 'Timeline',
       icon: TimelineIcon,
-      color: '#ef4444',
       onClick: () => router.push('/profile?view=timeline'),
     },
   ];
@@ -75,8 +69,8 @@ export const QuickActions = React.memo(() => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 1.5,
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 1,
         }}
       >
         {actions.map((action, index) => {
@@ -90,32 +84,32 @@ export const QuickActions = React.memo(() => {
                 duration: 0.3,
                 delay: index * 0.05,
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
               <Paper
                 onClick={action.onClick}
                 sx={{
-                  background: `linear-gradient(135deg, ${action.color}30 0%, ${action.color}10 100%)`,
+                  background: 'rgba(255, 255, 255, 0.03)',
                   backdropFilter: 'blur(10px)',
-                  borderRadius: '16px',
-                  padding: 2,
-                  border: `1px solid ${action.color}40`,
+                  borderRadius: '14px',
+                  padding: 1.5,
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   textAlign: 'center',
                   '&:hover': {
-                    boxShadow: `0 8px 16px ${action.color}40`,
-                    border: `1px solid ${action.color}60`,
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    background: 'rgba(255, 255, 255, 0.04)',
                   },
                 }}
               >
                 <Box
                   sx={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: '12px',
-                    background: `${action.color}30`,
+                    width: 32,
+                    height: 32,
+                    borderRadius: '10px',
+                    background: 'rgba(147, 51, 234, 0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -123,14 +117,14 @@ export const QuickActions = React.memo(() => {
                     mb: 1,
                   }}
                 >
-                  <Icon sx={{ color: action.color, fontSize: 24 }} />
+                  <Icon sx={{ color: '#a855f7', fontSize: 18 }} />
                 </Box>
                 <Typography
                   variant="body2"
                   sx={{
-                    color: 'white',
+                    color: 'rgba(255, 255, 255, 0.8)',
                     fontWeight: 600,
-                    fontSize: '0.85rem',
+                    fontSize: '0.75rem',
                     fontFamily: lora.style.fontFamily,
                   }}
                 >

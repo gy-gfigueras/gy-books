@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { Box, Typography, Paper, Skeleton } from '@mui/material';
-import { motion } from 'framer-motion';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { useRouter } from 'next/navigation';
 import { lora } from '@/utils/fonts/fonts';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { Box, Paper, Skeleton, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import React, { useMemo } from 'react';
 
 interface ReadingStatsCardsProps {
   totalBooks: number;
@@ -18,36 +18,21 @@ interface ReadingStatsCardsProps {
 }
 
 // Skeleton individual para cada card de stats
-const StatCardSkeleton: React.FC<{
-  color: string;
-  gradient: string;
-}> = ({ color, gradient }) => (
+const StatCardSkeleton: React.FC = () => (
   <Paper
     sx={{
-      background: gradient,
+      background: 'rgba(255, 255, 255, 0.03)',
       backdropFilter: 'blur(10px)',
-      borderRadius: '16px',
-      padding: 2.5,
-      border: `1px solid ${color}40`,
-      position: 'relative',
-      overflow: 'hidden',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        width: '100px',
-        height: '100px',
-        background: `radial-gradient(circle, ${color}20 0%, transparent 70%)`,
-        pointerEvents: 'none',
-      },
+      borderRadius: '12px',
+      padding: 2,
+      border: '1px solid rgba(255, 255, 255, 0.06)',
     }}
   >
     <Box
       sx={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        alignItems: 'center',
       }}
     >
       <Box>
@@ -55,22 +40,22 @@ const StatCardSkeleton: React.FC<{
           variant="text"
           width={60}
           height={48}
-          sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)' }}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)' }}
         />
         <Skeleton
           variant="text"
           width={100}
           height={24}
-          sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', mt: 0.5 }}
+          sx={{ bgcolor: 'rgba(255, 255, 255, 0.04)', mt: 0.5 }}
         />
       </Box>
       <Skeleton
         variant="rounded"
-        width={48}
-        height={48}
+        width={40}
+        height={40}
         sx={{
-          bgcolor: `${color}30`,
-          borderRadius: '12px',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
+          borderRadius: '10px',
         }}
       />
     </Box>
@@ -94,26 +79,20 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
           value: totalBooks,
           icon: MenuBookIcon,
           color: '#9333ea',
-          gradient:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(147, 51, 234, 0.05) 100%)',
           onClick: () => router.push('/profile'),
         },
         {
           title: 'Books Read',
           value: booksRead,
           icon: CheckCircleIcon,
-          color: '#10b981',
-          gradient:
-            'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 100%)',
+          color: '#9333ea',
           onClick: () => router.push('/profile?status=read'),
         },
         {
           title: `Read in ${yearToDisplay}`,
           value: booksReadThisYear,
           icon: TrendingUpIcon,
-          color: '#f59e0b',
-          gradient:
-            'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%)',
+          color: '#9333ea',
           onClick: () => router.push(`/profile?year=${yearToDisplay}`),
         },
       ],
@@ -142,19 +121,17 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
         </Typography>
 
         {isLoading
-          ? // Mostrar skeletons mientras carga
-            cards.map((card) => (
+          ? cards.map((card) => (
               <motion.div
                 key={card.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <StatCardSkeleton color={card.color} gradient={card.gradient} />
+                <StatCardSkeleton />
               </motion.div>
             ))
-          : // Mostrar datos reales cuando termine de cargar
-            cards.map((card, index) => {
+          : cards.map((card, index) => {
               const Icon = card.icon;
               return (
                 <motion.div
@@ -162,33 +139,21 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -2 }}
                 >
                   <Paper
                     onClick={card.onClick}
                     sx={{
-                      background: card.gradient,
+                      background: 'rgba(255, 255, 255, 0.03)',
                       backdropFilter: 'blur(10px)',
                       borderRadius: '12px',
                       padding: 1.5,
-                      border: `1px solid ${card.color}40`,
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
-                      position: 'relative',
-                      overflow: 'hidden',
                       '&:hover': {
-                        boxShadow: `0 12px 24px ${card.color}40`,
-                        border: `1px solid ${card.color}60`,
-                      },
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        width: '100px',
-                        height: '100px',
-                        background: `radial-gradient(circle, ${card.color}20 0%, transparent 70%)`,
-                        pointerEvents: 'none',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        background: 'rgba(255, 255, 255, 0.04)',
                       },
                     }}
                   >
@@ -215,7 +180,7 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
                         <Typography
                           variant="body2"
                           sx={{
-                            color: 'rgba(255, 255, 255, 0.7)',
+                            color: 'rgba(255, 255, 255, 0.5)',
                             fontSize: '0.8rem',
                             fontFamily: lora.style.fontFamily,
                           }}
@@ -229,17 +194,15 @@ export const ReadingStatsCards = React.memo<ReadingStatsCardsProps>(
                           width: 40,
                           height: 40,
                           borderRadius: '10px',
-                          background: `${card.color}30`,
+                          background: 'rgba(147, 51, 234, 0.12)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          position: 'relative',
-                          zIndex: 1,
                         }}
                       >
                         <Icon
                           sx={{
-                            color: card.color,
+                            color: '#a855f7',
                             fontSize: 24,
                           }}
                         />

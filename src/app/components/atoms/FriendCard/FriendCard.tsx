@@ -1,10 +1,10 @@
-import React from 'react';
-import { lora } from '@/utils/fonts/fonts';
 import { Friend } from '@/domain/friend.model';
+import { lora } from '@/utils/fonts/fonts';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, IconButton, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React from 'react';
 
 const MotionBox = motion(Box);
 const MotionIconButton = motion(IconButton);
@@ -35,10 +35,7 @@ export default function FriendCard({
         alignItems: 'center',
         justifyContent: 'left',
         gap: '1.5rem',
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(147, 51, 234, 0.2)',
+        background: 'rgba(255, 255, 255, 0.03)',
         borderRadius: '16px',
         padding: '1rem',
         width: { xs: '90%', md: '25%' },
@@ -46,10 +43,11 @@ export default function FriendCard({
         minWidth: { xs: '200px', md: '400px' },
         position: 'relative',
         textDecoration: 'none',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+        transition: 'all 0.3s ease',
         '&:hover': {
-          border: '1px solid rgba(147, 51, 234, 0.4)',
-          boxShadow: '0 8px 20px rgba(147, 51, 234, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.04)',
         },
       }}
     >
@@ -58,10 +56,8 @@ export default function FriendCard({
           width: '80px',
           height: '80px',
           borderRadius: '50%',
-          border: '2px solid rgba(147, 51, 234, 0.3)',
+          border: '1.5px solid rgba(147, 51, 234, 0.3)',
           padding: '2px',
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

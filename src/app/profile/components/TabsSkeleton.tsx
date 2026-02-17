@@ -1,10 +1,10 @@
-import React from 'react';
 import { Box, Skeleton } from '@mui/material';
+import React from 'react';
 
 export const TabsSkeleton: React.FC = () => (
   <Box
     sx={{
-      borderBottom: '1px solid #FFFFFF30',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
       background: 'transparent',
       mb: 4,
     }}
@@ -24,7 +24,7 @@ export const TabsSkeleton: React.FC = () => (
           sx={{
             width: index === 0 ? 60 : index === 1 ? 110 : index === 2 ? 50 : 70,
             height: 32,
-            bgcolor: 'rgba(255, 255, 255, 0.1)',
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
           }}
         />
       ))}

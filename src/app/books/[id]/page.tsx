@@ -208,11 +208,11 @@ export default function BookDetails() {
           {book?.series && book.series.length > 0 && (
             <Chip
               sx={{
-                backgroundColor: '#8C54FF20',
-                color: '#8C54FF',
+                backgroundColor: '#9333ea20',
+                color: '#9333ea',
                 letterSpacing: '.05rem',
                 fontWeight: 'bold',
-                border: '2px solid #8C54FF',
+                border: '2px solid #9333ea',
                 fontFamily: lora.style.fontFamily,
                 height: '32px',
                 fontSize: '16px',
@@ -233,7 +233,7 @@ export default function BookDetails() {
               fontFamily: lora.style.fontFamily,
               gap: '0.2rem',
               fontSize: '36px',
-              textShadow: '0 0 20px rgba(140, 84, 255, 0.5)',
+              textShadow: '0 0 20px rgba(147, 51, 234, 0.5)',
             }}
           >
             {book?.averageRating ? book.averageRating.toFixed(1) : '0.0'}
@@ -368,11 +368,11 @@ export default function BookDetails() {
           {book?.series && book.series.length > 0 && (
             <Chip
               sx={{
-                backgroundColor: '#8C54FF20',
-                color: '#8C54FF',
+                backgroundColor: '#9333ea20',
+                color: '#9333ea',
                 letterSpacing: '.05rem',
                 fontWeight: 'bold',
-                border: '2px solid #8C54FF',
+                border: '2px solid #9333ea',
                 fontFamily: lora.style.fontFamily,
                 height: '32px',
                 fontSize: '16px',

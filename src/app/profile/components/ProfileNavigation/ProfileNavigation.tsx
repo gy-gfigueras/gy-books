@@ -1,13 +1,13 @@
 'use client';
-import React from 'react';
-import { Box, Typography, Chip } from '@mui/material';
-import { motion } from 'framer-motion';
 import { lora } from '@/utils/fonts/fonts';
-import { useRouter } from 'next/navigation';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import { Box, Chip, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 const MotionBox = motion(Box);
 
@@ -62,23 +62,23 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
       id: 1,
       label: 'Hall of Fame',
       icon: <WorkspacePremiumIcon sx={{ fontSize: 20 }} />,
-      color: '#fbbf24',
-      gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+      color: '#a855f7',
+      gradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
       badge: hallOfFameCount,
     },
     {
       id: 2,
       label: 'Stats',
       icon: <BarChartIcon sx={{ fontSize: 20 }} />,
-      color: '#3b82f6',
-      gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+      color: '#a855f7',
+      gradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
     },
     {
       id: 3,
       label: 'Activity',
       icon: <TimelineIcon sx={{ fontSize: 20 }} />,
-      color: '#10b981',
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      color: '#a855f7',
+      gradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
     },
   ];
 
@@ -137,14 +137,12 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                   cursor: 'pointer',
                   background: isActive
                     ? item.gradient
-                    : 'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%)',
+                    : 'rgba(255, 255, 255, 0.03)',
                   backdropFilter: 'blur(12px)',
                   border: isActive
                     ? 'none'
-                    : '1px solid rgba(147, 51, 234, 0.2)',
-                  boxShadow: isActive
-                    ? `0 4px 16px ${item.color}50`
-                    : '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    : '1px solid rgba(255, 255, 255, 0.06)',
+                  boxShadow: isActive ? `0 4px 12px ${item.color}30` : 'none',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   whiteSpace: 'nowrap',
                   '&::before': {
@@ -170,7 +168,7 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                     color: isActive ? '#fff' : item.color,
                     '& svg': {
                       filter: isActive
-                        ? 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))'
+                        ? 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15))'
                         : 'none',
                     },
                   }}

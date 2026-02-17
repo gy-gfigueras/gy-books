@@ -1,13 +1,11 @@
 import { Box, Skeleton } from '@mui/material';
-import React from 'react';
 export function HallOfFameSkeleton() {
   return (
     <Box
       sx={{
-        background:
-          'linear-gradient(145deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 50%, rgba(126, 34, 206, 0.1) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(147, 51, 234, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '20px',
         padding: '2rem',
         width: '100%',
@@ -18,8 +16,7 @@ export function HallOfFameSkeleton() {
         alignItems: 'center',
         gap: '2rem',
         userSelect: 'none',
-        boxShadow:
-          '0 8px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(147, 51, 234, 0.15)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
       }}
     >
       {/* Skeleton for carousel container */}
@@ -65,8 +62,8 @@ export function HallOfFameSkeleton() {
         sx={{
           maxWidth: '800px',
           borderRadius: '12px',
-          bgcolor: 'rgba(147, 51, 234, 0.15)',
-          border: '2px solid rgba(147, 51, 234, 0.3)',
+          bgcolor: 'rgba(255, 255, 255, 0.04)',
+          border: '2px solid rgba(255, 255, 255, 0.06)',
         }}
       />
     </Box>

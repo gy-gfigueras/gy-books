@@ -1,9 +1,9 @@
 'use client';
 
+import { UserAvatar } from '@/app/components/atoms/UserAvatar';
 import { Activity } from '@/domain/activity.model';
 import HardcoverBook from '@/domain/HardcoverBook';
 import { lora } from '@/utils/fonts/fonts';
-import { UserAvatar } from '@/app/components/atoms/UserAvatar';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
@@ -44,7 +44,7 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
       return {
         type: 'finished',
         icon: CheckCircleIcon,
-        color: '#10b981',
+        color: '#a855f7',
         label: 'Terminado',
       };
     }
@@ -52,7 +52,7 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
       return {
         type: 'started',
         icon: AutoStoriesIcon,
-        color: '#3b82f6',
+        color: '#c084fc',
         label: 'Empezado',
       };
     }
@@ -64,7 +64,7 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
       return {
         type: 'rated',
         icon: StarIcon,
-        color: '#fbbf24',
+        color: '#e9d5ff',
         label: 'Puntuado',
       };
     }
@@ -208,7 +208,6 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
             color: 'white',
             fontWeight: 700,
             mb: 2,
-            fontFamily: lora.style.fontFamily,
           }}
         >
           Recent Activity
@@ -216,12 +215,11 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
 
         <Paper
           sx={{
-            background:
-              'linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
+            background: 'rgba(255, 255, 255, 0.03)',
             backdropFilter: 'blur(10px)',
             borderRadius: '16px',
             padding: 2,
-            border: '1px solid rgba(147, 51, 234, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
           }}
         >
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -254,10 +252,10 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
                       padding: 1.5,
                       borderRadius: '12px',
                       transition: 'all 0.2s ease',
-                      background: 'rgba(0, 0, 0, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.02)',
                       '&:hover': bookId
                         ? {
-                            background: 'rgba(147, 51, 234, 0.15)',
+                            background: 'rgba(255, 255, 255, 0.05)',
                             transform: 'translateX(4px)',
                           }
                         : {},
@@ -270,7 +268,7 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
                       size={40}
                       sx={{
                         flexShrink: 0,
-                        border: '2px solid rgba(147, 51, 234, 0.3)',
+                        border: '2px solid rgba(255, 255, 255, 0.1)',
                       }}
                     />
 
@@ -284,7 +282,7 @@ export const ReadingActivityFeed: React.FC<ReadingActivityFeedProps> = ({
                           flexShrink: 0,
                           borderRadius: '8px',
                           overflow: 'hidden',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                         }}
                       >
                         <Image

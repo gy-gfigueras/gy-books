@@ -2,9 +2,9 @@
 import HardcoverBook from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
-import { Box, Typography, Chip, Rating } from '@mui/material';
-import { motion } from 'framer-motion';
 import { EBookStatus } from '@gycoding/nebula';
+import { Box, Chip, Rating, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 
 const MotionBox = motion(Box);
 
@@ -19,11 +19,11 @@ export const BookCardList = ({ book }: BookCardListProps) => {
   const getStatusColor = (status?: EBookStatus) => {
     switch (status) {
       case EBookStatus.READING:
-        return { bg: '#3b82f620', border: '#3b82f6', text: '#60a5fa' };
+        return { bg: '#a855f720', border: '#a855f7', text: '#c084fc' };
       case EBookStatus.READ:
-        return { bg: '#10b98120', border: '#10b981', text: '#34d399' };
+        return { bg: '#a855f720', border: '#a855f7', text: '#c084fc' };
       case EBookStatus.WANT_TO_READ:
-        return { bg: '#f59e0b20', border: '#f59e0b', text: '#fbbf24' };
+        return { bg: '#a855f720', border: '#a855f7', text: '#c084fc' };
       default:
         return {
           bg: 'rgba(147, 51, 234, 0.1)',
@@ -46,20 +46,18 @@ export const BookCardList = ({ book }: BookCardListProps) => {
         flexDirection: 'row',
         gap: 1.5,
         p: 1.5,
-        background:
-          'linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%)',
+        background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(147, 51, 234, 0.25)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '16px',
         textDecoration: 'none',
         overflow: 'hidden',
         position: 'relative',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': {
-          border: '1px solid rgba(147, 51, 234, 0.5)',
-          background:
-            'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(168, 85, 247, 0.08) 100%)',
-          boxShadow: '0 8px 24px rgba(147, 51, 234, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.05)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
         },
         '&::before': {
           content: '""',
@@ -81,7 +79,7 @@ export const BookCardList = ({ book }: BookCardListProps) => {
           flexShrink: 0,
           borderRadius: '12px',
           overflow: 'hidden',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
         }}
       >
         <Box
