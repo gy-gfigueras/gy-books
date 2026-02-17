@@ -4,15 +4,24 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import HardcoverBook from '@/domain/HardcoverBook';
 import { useFriendsActivityFeed } from '@/hooks/activities/useFriendsActivityFeed';
 import useMergedBooks from '@/hooks/books/useMergedBooks';
-import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { getBookDisplayData } from '@/hooks/useBookDisplay';
+import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
-import { Avatar, Box, Paper, Skeleton, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Paper,
+  Skeleton,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { CurrentlyReadingSection } from './components/CurrentlyReadingSection/CurrentlyReadingSection';
+import { DashboardMobile } from './components/DashboardMobile';
 import { FriendsActivityFeed } from './components/FriendsActivityFeed/FriendsActivityFeed';
 import { QuickActions } from './components/QuickActions/QuickActions';
 import { ReadingStatsCards } from './components/ReadingStatsCards/ReadingStatsCards';
@@ -159,6 +168,8 @@ const UserCompactCard: React.FC<UserCompactCardProps> = ({
 export default function DashboardPage() {
   const { user, isLoading: userLoading } = useGyCodingUser();
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   // 🚀 PETICIÓN 1: Libros del usuario
   const { data: books = [], isLoading: booksLoading } = useMergedBooks(
@@ -258,138 +269,143 @@ export default function DashboardPage() {
         },
       }}
     >
-      <Box
-        sx={{
-          position: 'relative',
-          zIndex: 1,
-          maxWidth: '1600px',
-          margin: '0 auto',
-          padding: { xs: 0, sm: 3, lg: 4 },
-          height: 'calc(100vh - 32px)',
-        }}
-      >
-        {/* 3 Column Layout - Desktop */}
+      {/* Mobile Dashboard */}
+      {isMobile ? (
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <DashboardMobile
+            currentlyReadingBook={currentlyReadingBook}
+            booksLoading={booksLoading}
+            activities={activities}
+            activitiesLoading={activitiesLoading}
+            totalBooks={stats.totalBooks}
+            booksRead={stats.booksRead}
+            booksReadThisYear={stats.booksReadThisYear}
+            displayYear={stats.displayYear}
+            currentUserId={user?.id}
+          />
+        </Box>
+      ) : (
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              lg: '360px 1fr 320px',
-            },
-            gap: { xs: 2, lg: 4 },
-            alignItems: 'start',
-            height: '100%',
+            position: 'relative',
+            zIndex: 1,
+            maxWidth: '1600px',
+            margin: '0 auto',
+            padding: { xs: 0, sm: 3, lg: 4 },
+            height: 'calc(100vh - 32px)',
           }}
         >
-          {/* LEFT COLUMN - User Profile & Currently Reading (Desktop only) */}
-          <MotionBox
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+          {/* 3 Column Layout - Desktop */}
+          <Box
             sx={{
-              display: { xs: 'none', lg: 'flex' }, // Hidden on mobile
-              flexDirection: 'column',
-              gap: 3,
-            }}
-          >
-            {/* User Compact Card */}
-            <UserCompactCard
-              username={user?.username}
-              picture={user?.picture}
-              quote={quote}
-              isLoading={userLoading}
-            />
-
-            {/* Currently Reading - Desktop */}
-            <CurrentlyReadingSection
-              book={currentlyReadingBook}
-              isLoading={booksLoading}
-            />
-          </MotionBox>
-
-          {/* CENTER COLUMN - Friends Activity Feed */}
-          <MotionBox
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
+              display: 'grid',
+              gridTemplateColumns: '360px 1fr 320px',
+              gap: 4,
+              alignItems: 'start',
               height: '100%',
-              gap: 2,
-              minHeight: 0,
             }}
           >
-            {/* Currently Reading - Mobile only at the top */}
-            <Box sx={{ display: { xs: 'block', lg: 'none' }, flexShrink: 0 }}>
+            {/* LEFT COLUMN - User Profile & Currently Reading */}
+            <MotionBox
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 3,
+              }}
+            >
+              {/* User Compact Card */}
+              <UserCompactCard
+                username={user?.username}
+                picture={user?.picture}
+                quote={quote}
+                isLoading={userLoading}
+              />
+
+              {/* Currently Reading - Desktop */}
               <CurrentlyReadingSection
                 book={currentlyReadingBook}
                 isLoading={booksLoading}
               />
-            </Box>
+            </MotionBox>
 
-            {/* Friends Activity - Main content */}
-            <Paper
+            {/* CENTER COLUMN - Friends Activity Feed */}
+            <MotionBox
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
               sx={{
-                background: 'transparent',
-                borderRadius: '20px',
-                padding: { xs: 1, sm: 3 },
-                border: { xs: 'none', lg: '1px solid rgba(140, 84, 255, 0.2)' },
-                minHeight: 0,
-                mt: { xs: -4, lg: 0 },
-                flex: 1,
-                overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
-                // Custom scrollbar
-                '&::-webkit-scrollbar': {
-                  width: '6px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: 'rgba(140, 84, 255, 0.05)',
-                  borderRadius: '3px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: 'rgba(140, 84, 255, 0.3)',
-                  borderRadius: '3px',
-                  '&:hover': {
-                    backgroundColor: 'rgba(140, 84, 255, 0.5)',
-                  },
-                },
+                height: '100%',
+                gap: 2,
+                minHeight: 0,
               }}
             >
-              <FriendsActivityFeed
-                activities={activities}
-                isLoading={activitiesLoading}
+              {/* Friends Activity - Main content */}
+              <Paper
+                sx={{
+                  background: 'transparent',
+                  borderRadius: '20px',
+                  padding: 3,
+                  border: '1px solid rgba(140, 84, 255, 0.2)',
+                  minHeight: 0,
+                  flex: 1,
+                  overflow: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  // Custom scrollbar
+                  '&::-webkit-scrollbar': {
+                    width: '6px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: 'rgba(140, 84, 255, 0.05)',
+                    borderRadius: '3px',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'rgba(140, 84, 255, 0.3)',
+                    borderRadius: '3px',
+                    '&:hover': {
+                      backgroundColor: 'rgba(140, 84, 255, 0.5)',
+                    },
+                  },
+                }}
+              >
+                <FriendsActivityFeed
+                  activities={activities}
+                  isLoading={activitiesLoading}
+                />
+              </Paper>
+            </MotionBox>
+
+            {/* RIGHT COLUMN - Stats & Actions */}
+            <MotionBox
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 3,
+              }}
+            >
+              {/* Stats Cards */}
+              <ReadingStatsCards
+                totalBooks={stats.totalBooks}
+                booksRead={stats.booksRead}
+                booksReadThisYear={stats.booksReadThisYear}
+                displayYear={stats.displayYear}
+                isLoading={booksLoading}
               />
-            </Paper>
-          </MotionBox>
 
-          {/* RIGHT COLUMN - Stats & Actions (Desktop only) */}
-          <MotionBox
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            sx={{
-              display: { xs: 'none', lg: 'flex' }, // Hidden on mobile
-              flexDirection: 'column',
-              gap: 3,
-            }}
-          >
-            {/* Stats Cards */}
-            <ReadingStatsCards
-              totalBooks={stats.totalBooks}
-              booksRead={stats.booksRead}
-              booksReadThisYear={stats.booksReadThisYear}
-              displayYear={stats.displayYear}
-              isLoading={booksLoading}
-            />
-
-            {/* Quick Actions */}
-            <QuickActions />
-          </MotionBox>
+              {/* Quick Actions */}
+              <QuickActions />
+            </MotionBox>
+          </Box>
         </Box>
-      </Box>
+      )}
     </Box>
   );
 }

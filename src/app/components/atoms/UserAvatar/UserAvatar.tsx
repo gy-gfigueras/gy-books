@@ -1,7 +1,7 @@
 import PersonIcon from '@mui/icons-material/Person';
 import { Avatar, SxProps, Theme } from '@mui/material';
 import Image from 'next/image';
-import React, { memo } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 
 interface UserAvatarProps {
   src?: string | null;
@@ -16,6 +16,22 @@ interface UserAvatarProps {
  * Usa Next.js Image para caché automático y optimización
  * Memo para evitar re-renders innecesarios
  */
+const FallbackAvatar: React.FC<{ size: number; sx?: SxProps<Theme> }> = ({
+  size,
+  sx,
+}) => (
+  <Avatar
+    sx={{
+      width: size,
+      height: size,
+      bgcolor: 'rgba(59, 130, 246, 0.2)',
+      ...sx,
+    }}
+  >
+    <PersonIcon sx={{ fontSize: size * 0.6 }} />
+  </Avatar>
+);
+
 const UserAvatarComponent: React.FC<UserAvatarProps> = ({
   src,
   alt,
@@ -23,20 +39,15 @@ const UserAvatarComponent: React.FC<UserAvatarProps> = ({
   sx,
   priority = false,
 }) => {
-  // Si no hay imagen, mostrar el avatar con icono por defecto
-  if (!src) {
-    return (
-      <Avatar
-        sx={{
-          width: size,
-          height: size,
-          bgcolor: 'rgba(59, 130, 246, 0.2)',
-          ...sx,
-        }}
-      >
-        <PersonIcon sx={{ fontSize: size * 0.6 }} />
-      </Avatar>
-    );
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = useCallback(() => {
+    setHasError(true);
+  }, []);
+
+  // Si no hay imagen o hubo error al cargar, mostrar el avatar con icono por defecto
+  if (!src || hasError) {
+    return <FallbackAvatar size={size} sx={sx} />;
   }
 
   return (
@@ -59,8 +70,7 @@ const UserAvatarComponent: React.FC<UserAvatarProps> = ({
         }}
         priority={priority}
         quality={75}
-        // Next.js cachea automáticamente las imágenes optimizadas
-        unoptimized={false}
+        onError={handleError}
       />
     </Avatar>
   );

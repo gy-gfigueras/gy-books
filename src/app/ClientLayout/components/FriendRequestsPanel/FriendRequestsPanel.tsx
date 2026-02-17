@@ -1,9 +1,9 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { Box, CircularProgress, IconButton, Typography } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import FriendRequest from '@/app/components/atoms/FriendRequest/FriendRequest';
-import { lora } from '@/utils/fonts/fonts';
 import { FriendRequestWithUser } from '@/domain/friend.model';
+import { lora } from '@/utils/fonts/fonts';
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, CircularProgress, IconButton, Typography } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const MotionBox = motion(Box);
 const MotionIconButton = motion(IconButton);
@@ -59,7 +59,7 @@ export const FriendRequestsPanel = ({
           onClick={(e) => e.stopPropagation()}
           sx={{
             position: 'fixed',
-            top: '80px',
+            top: { xs: '60px', md: '80px' },
             right: { xs: '10px', md: '20px' },
             left: { xs: '10px', md: 'auto' },
             width: { xs: 'auto', md: '500px' },
@@ -70,8 +70,7 @@ export const FriendRequestsPanel = ({
             backdropFilter: 'blur(20px)',
             borderRadius: '12px',
             border: '1px solid rgba(147, 51, 234, 0.3)',
-            boxShadow:
-              '0 8px 32px rgba(147, 51, 234, 0.3), 0 0 80px rgba(147, 51, 234, 0.1)',
+
             overflow: 'hidden',
           }}
         >

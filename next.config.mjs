@@ -11,12 +11,15 @@ const nextConfig = {
   // External packages para evitar problemas con MongoDB en servidor
   serverExternalPackages: ['mongodb'],
   images: {
-    domains: [
-      'api.gycoding.com',
-      'localhost',
-      'lh3.googleusercontent.com',
-      'assets.hardcover.app',
-      'raw.githubusercontent.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
     ],
   },
   // Optimizaciones para producción
