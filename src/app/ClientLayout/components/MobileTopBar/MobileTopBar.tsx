@@ -63,36 +63,62 @@ export const MobileTopBar = React.memo<MobileTopBarProps>(
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {/* Friend Requests Icon - only when logged in */}
           {user && (
-            <IconButton
-              onClick={onFriendRequestsClick}
-              size="small"
+            <Box
               sx={{
-                color: 'rgba(255, 255, 255, 0.6)',
-                p: 0.75,
-                WebkitTapHighlightColor: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                minWidth: 44,
+                minHeight: 44,
+                p: 0,
+                m: 0,
+                position: 'relative',
+                background: 'rgba(255,255,255,0.02)',
+                transition: 'background 0.2s',
                 '&:active': {
-                  color: '#c084fc',
+                  background: 'rgba(147, 51, 234, 0.08)',
                 },
               }}
             >
-              <Badge
-                badgeContent={friendRequestsCount}
-                max={9}
+              <IconButton
+                onClick={onFriendRequestsClick}
+                size="large"
                 sx={{
-                  '& .MuiBadge-badge': {
-                    backgroundColor: '#9333ea',
-                    color: '#fff',
-                    fontSize: '0.6rem',
-                    fontWeight: 700,
-                    minWidth: 16,
-                    height: 16,
-                    padding: '0 4px',
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  p: 1.2,
+                  borderRadius: '50%',
+                  width: 44,
+                  height: 44,
+                  position: 'relative',
+                  WebkitTapHighlightColor: 'transparent',
+                  '&:active': {
+                    color: '#c084fc',
+                    background: 'rgba(147, 51, 234, 0.08)',
                   },
                 }}
+                aria-label="Abrir solicitudes de amistad"
               >
-                <InboxRoundedIcon sx={{ fontSize: 20 }} />
-              </Badge>
-            </IconButton>
+                <Badge
+                  badgeContent={friendRequestsCount}
+                  max={9}
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      backgroundColor: '#9333ea',
+                      color: '#fff',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      minWidth: 18,
+                      height: 18,
+                      padding: '0 5px',
+                      boxShadow: '0 1px 4px rgba(147,51,234,0.18)',
+                    },
+                  }}
+                >
+                  <InboxRoundedIcon sx={{ fontSize: 22 }} />
+                </Badge>
+              </IconButton>
+            </Box>
           )}
 
           {/* User Avatar */}

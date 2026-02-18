@@ -45,17 +45,18 @@ export const FriendRequestsPanel = ({
           right: 0,
           bottom: 0,
           zIndex: 998,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backgroundColor: 'rgba(0, 0, 0, 0.18)',
+          touchAction: 'manipulation',
         }}
       />
 
       {/* Pestaña flotante de solicitudes de amistad */}
       <AnimatePresence>
         <MotionBox
-          initial={{ opacity: 0, y: -20, scale: 0.95 }}
+          initial={{ opacity: 0, y: -16, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -20, scale: 0.95 }}
-          transition={{ duration: 0.2 }}
+          exit={{ opacity: 0, y: -16, scale: 0.98 }}
+          transition={{ duration: 0.13 }}
           onClick={(e) => e.stopPropagation()}
           sx={{
             position: 'fixed',

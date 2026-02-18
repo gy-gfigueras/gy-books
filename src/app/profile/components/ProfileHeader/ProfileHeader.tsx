@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaunchIcon from '@mui/icons-material/Launch';
+import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleIcon from '@mui/icons-material/People';
 import {
   Box,
@@ -432,6 +433,25 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         }}
                       >
                         <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Account" placement="top">
+                      <IconButton
+                        component="a"
+                        href={'/auth/logout?federated=true'}
+                        target="_blank"
+                        sx={{
+                          background: 'rgba(234, 51, 51, 0.12)',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(234, 51, 51, 0.4)',
+                          color: '#e9d5ff',
+                          '&:hover': {
+                            background: 'rgba(234, 51, 51, 0.18)',
+                            border: '1px solid rgba(234, 51, 51, 0.6)',
+                          },
+                        }}
+                      >
+                        <LogoutIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </Box>
