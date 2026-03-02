@@ -57,7 +57,7 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
-          height: ['100dvh', '100vh'],
+          // height: ['100dvh', '100vh'],
           overflow: ['hidden', 'auto'],
           backgroundColor: '#0A0A0A',
         }}
