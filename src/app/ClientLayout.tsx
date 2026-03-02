@@ -56,8 +56,9 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          height: '100dvh',
-          overflow: 'hidden',
+          minHeight: '100vh',
+          height: ['100dvh', '100vh'],
+          overflow: ['hidden', 'auto'],
           backgroundColor: '#0A0A0A',
         }}
       >
