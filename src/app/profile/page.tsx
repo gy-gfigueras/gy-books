@@ -113,11 +113,12 @@ function ProfilePageContent() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        minHeight: 'calc(100vh - 64px)',
         height: '100%',
         borderRadius: 0,
         boxShadow: 'none',
         paddingTop: { xs: 2, md: 4 },
+        overflowY: 'auto',
+        overflowX: 'hidden',
       }}
     >
       <Box

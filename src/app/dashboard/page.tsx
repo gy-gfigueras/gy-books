@@ -94,7 +94,7 @@ const UserCompactCard: React.FC<UserCompactCardProps> = ({
         background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(10px)',
         borderRadius: '16px',
-        padding: 2,
+        // padding: 2,
         border: '1px solid rgba(255, 255, 255, 0.06)',
         textAlign: 'center',
         transition: 'all 0.3s ease',
@@ -257,7 +257,7 @@ export default function DashboardPage() {
       sx={{
         height: '100%',
         backgroundColor: '#0A0A0A',
-        // position: 'relative',
+        position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
         p: 0,
@@ -280,8 +280,8 @@ export default function DashboardPage() {
           sx={{
             position: 'relative',
             zIndex: 1,
-            height: '100vh',
-            overflow: 'auto',
+            height: '100%',
+            overflow: 'hidden',
             boxSizing: 'border-box',
           }}
         >

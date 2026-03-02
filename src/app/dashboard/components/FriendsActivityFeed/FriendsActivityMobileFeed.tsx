@@ -123,7 +123,7 @@ export const FriendsActivityMobileFeed =
             flexDirection: 'column',
             gap: 1.5,
             maxHeight: '500px',
-            height: '45vdh',
+            height: '47vh',
             overflow: 'auto',
           }}
         >

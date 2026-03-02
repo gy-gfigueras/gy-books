@@ -59,7 +59,11 @@ export const DashboardMobile = React.memo<DashboardMobileProps>(
           display: 'flex',
           flexDirection: 'column',
           gap: 2.5,
-          minHeight: '100vh',
+          height: '100%',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': { display: 'none' },
         }}
       >
         {/* Section 1: Currently Reading */}

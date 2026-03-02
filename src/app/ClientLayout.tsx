@@ -56,7 +56,8 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh',
+          height: '100dvh',
+          overflow: 'hidden',
           backgroundColor: '#0A0A0A',
         }}
       >
@@ -147,7 +148,15 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
           suppressHydrationWarning={true}
           sx={{
             mt: { xs: '56px', md: '80px' },
-            pb: { xs: `${BOTTOM_NAV_HEIGHT + 16}px`, md: 0 },
+            pb: {
+              xs: isMobile && isHydrated ? `${BOTTOM_NAV_HEIGHT}px` : 0,
+              md: 0,
+            },
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
           }}
         >
           {children}
