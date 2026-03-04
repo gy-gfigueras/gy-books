@@ -10,7 +10,8 @@ import React from 'react';
 
 const MotionBox = motion(Box);
 
-export type ViewType = 'grid' | 'list' | 'timeline' | 'calendar';
+import { ViewType } from '../../utils/profileTypes';
+export type { ViewType } from '../../utils/profileTypes';
 
 interface BooksViewToggleProps {
   view: ViewType;

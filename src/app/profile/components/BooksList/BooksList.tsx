@@ -10,7 +10,8 @@ import { AnimatedBookCard } from '../AnimatedBookCard/AnimatedBookCard';
 import { ReadingCalendar } from '../ReadingCalendar/ReadingCalendar';
 import { ReadingTimeline } from '../ReadingTimeline/ReadingTimeline';
 
-export type ViewType = 'grid' | 'list' | 'timeline' | 'calendar';
+import { ViewType } from '../../utils/profileTypes';
+export type { ViewType } from '../../utils/profileTypes';
 
 interface BooksListProps {
   books: HardcoverBook[];

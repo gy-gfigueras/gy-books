@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import { useMediaQuery, useTheme } from '@mui/material';
-import { User } from '@/domain/user.model';
+import { ProfileUser } from '@/app/profile/utils/profileTypes';
 import React from 'react';
 
 export const UserImage = ({
   user,
   compact = false,
 }: {
-  user: User;
+  user: ProfileUser;
   compact?: boolean;
 }) => {
   const theme = useTheme();

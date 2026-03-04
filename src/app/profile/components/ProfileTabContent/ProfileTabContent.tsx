@@ -4,6 +4,7 @@ import React, { Suspense } from 'react';
 import { HallOfFameSkeleton } from '../../../components/molecules/HallOfFameSkeleton';
 import StatsSkeleton from '../../../components/molecules/StatsSkeleton';
 import { UserProfileBook } from '@/domain/user.model';
+import { UUID } from 'crypto';
 
 const Stats = React.lazy(() => import('../../../components/organisms/Stats'));
 const HallOfFame = React.lazy(
@@ -50,19 +51,7 @@ export function ProfileTabContent({
   }
 
   if (tab === 2) {
-    console.log('[ProfileTabContent] Tab 2 - Stats tab rendering with:', {
-      booksLoading,
-      booksCount: books?.length || 0,
-      userId,
-      firstBook: books?.[0],
-      booksStructure: books?.slice(0, 2),
-    });
-
-    // Show skeleton while loading
     if (booksLoading) {
-      console.log(
-        '[ProfileTabContent] Tab 2 - Showing skeleton (booksLoading=true)'
-      );
       return (
         <Box
           sx={{
@@ -77,14 +66,6 @@ export function ProfileTabContent({
       );
     }
 
-    // Books are already HardcoverBook[] from useMergedBooksIncremental
-    // No need for complex transformation logic
-    console.log(
-      '[ProfileTabContent] Tab 2 - Passing books directly to Stats:',
-      books?.length || 0,
-      'books'
-    );
-
     return (
       <Box
         sx={{
@@ -95,7 +76,7 @@ export function ProfileTabContent({
         }}
       >
         <Suspense fallback={<StatsSkeleton />}>
-          <Stats id={userId} books={books} booksLoading={false} />
+          <Stats id={userId as UUID} books={books} booksLoading={false} />
         </Suspense>
       </Box>
     );
@@ -112,7 +93,7 @@ export function ProfileTabContent({
         }}
       >
         <Suspense fallback={<CircularProgress />}>
-          <ActivityTab id={userId} />
+          <ActivityTab id={userId as UUID} />
         </Suspense>
       </Box>
     );

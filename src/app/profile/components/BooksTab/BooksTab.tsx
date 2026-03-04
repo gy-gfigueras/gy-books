@@ -1,38 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { lora } from '@/utils/fonts/fonts';
 import { Box, Typography, Chip } from '@mui/material';
-import { BooksFilter } from '../BooksFilter/BooksFilter';
-import { BooksList, ViewType } from '../BooksList/BooksList';
+import { BooksList } from '../BooksList/BooksList';
 import { BooksListSkeleton } from '../BooksList/BooksListSkeleton';
 import { UserProfileBook } from '@/domain/user.model';
-import { useState } from 'react';
+import {
+  ProfileFilters,
+  ProfileFiltersActions,
+  ProfileFilterOptions,
+  ViewType,
+} from '../../utils/profileTypes';
 
 interface BooksTabProps {
   books: UserProfileBook[];
   filteredBooks: UserProfileBook[];
   loading: boolean;
   hasMore: boolean;
-  filterOptions: {
-    statusOptions: string[];
-    authorOptions: string[];
-    seriesOptions: string[];
-  };
-  filters: {
-    status: string;
-    author: string;
-    series: string;
-    rating: number | null;
-    search: string;
-    orderBy: string;
-    orderDirection: 'asc' | 'desc';
-    handleStatusFilterChange: (status: string) => void;
-    handleAuthorFilterChange: (author: string) => void;
-    handleSeriesFilterChange: (series: string) => void;
-    handleRatingFilterChange: (rating: number | null) => void;
-    handleSearchChange: (search: string) => void;
-    handleOrderByChange: (orderBy: string) => void;
-    handleOrderDirectionChange: (direction: 'asc' | 'desc') => void;
-  };
+  filterOptions: ProfileFilterOptions;
+  filters: ProfileFilters & ProfileFiltersActions;
   view: ViewType;
   onViewChange: (view: ViewType) => void;
 }
@@ -46,7 +31,7 @@ export function BooksTab({
   filters,
   view,
   onViewChange,
-}) {
+}: BooksTabProps) {
   return (
     <Box
       sx={{

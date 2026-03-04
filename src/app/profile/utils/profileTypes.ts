@@ -1,5 +1,15 @@
-import HardcoverBook from '@/domain/HardcoverBook';
 import { EBookStatus } from '@gycoding/nebula';
+import { UUID } from 'crypto';
+
+export type ViewType = 'grid' | 'list' | 'timeline' | 'calendar';
+
+export interface ProfileUser {
+  id: UUID | string;
+  username: string;
+  email?: string | null;
+  picture: string;
+  biography?: string | null;
+}
 
 export interface ProfileFilters {
   status: EBookStatus | null;
@@ -15,35 +25,6 @@ export interface ProfileFilterOptions {
   statusOptions: Array<{ label: string; value: EBookStatus }>;
   authorOptions: string[];
   seriesOptions: string[];
-}
-
-export interface ProfileState {
-  tab: number;
-  isEditingBiography: boolean;
-  biography: string;
-  books: HardcoverBook[];
-  hasMore: boolean;
-  loading: boolean;
-}
-
-export interface ProfileBiographyState {
-  isEditing: boolean;
-  value: string;
-  isLoading: boolean;
-  isUpdated: boolean;
-  isError: boolean;
-}
-
-export interface ProfilePaginationState {
-  books: HardcoverBook[];
-  hasMore: boolean;
-  loading: boolean;
-  page: number;
-}
-
-export interface ProfilePaginationActions {
-  loadMoreBooks: () => Promise<void>;
-  resetPagination: () => void;
 }
 
 export interface ProfileFiltersActions {

@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserImage } from '@/app/components/atoms/UserAvatar/UserImage';
 import { UserProfileBook } from '@/domain/user.model';
+import { ProfileUser } from '../../utils/profileTypes';
 import { lora } from '@/utils/fonts/fonts';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -22,7 +22,7 @@ import { BiographySection } from '../BiographySection/BiographySection';
 import { BooksStatsDisplay } from './BooksStatsDisplay';
 
 interface ProfileHeaderProps {
-  user: any;
+  user: ProfileUser;
   friendsCount: number;
   isLoadingFriends: boolean;
   onEditProfile: () => void;
