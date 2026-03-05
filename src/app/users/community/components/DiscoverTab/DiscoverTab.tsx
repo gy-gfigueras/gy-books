@@ -148,109 +148,111 @@ export function DiscoverTab({
         ) : (
           users.map((user) => (
             <MotionBox
-              component="a"
-              href={`/users/${user.id}`}
               key={user.username}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.02, y: -4 }}
               transition={{ duration: 0.3 }}
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'left',
-                gap: '1.5rem',
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: '16px',
-                padding: '1rem',
-                width: { xs: '90%', md: '25%' },
-                height: '100px',
-                minWidth: { xs: '200px', md: '400px' },
-                position: 'relative',
-                textDecoration: 'none',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                },
-              }}
             >
-              <Image
-                src={user.picture}
-                style={{
-                  width: 'auto',
-                  height: '100%',
-                  aspectRatio: '1/1',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                }}
-                alt={user.username}
-                width={100}
-                height={100}
-              />
-              <Typography
+              <Box
+                component="a"
+                href={`/users/${user.id}`}
                 sx={{
-                  fontSize: '22px',
-                  letterSpacing: '0.1rem',
-                  fontWeight: 'bold',
-                  color: 'white',
-                  fontFamily: lora.style.fontFamily,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'left',
+                  gap: '1.5rem',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  borderRadius: '16px',
+                  padding: '1rem',
+                  width: { xs: '90%', md: '25%' },
+                  height: '100px',
+                  minWidth: { xs: '200px', md: '400px' },
+                  position: 'relative',
+                  textDecoration: 'none',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                  },
                 }}
               >
-                {user.username}
-              </Typography>
-              {!user.isFriend && (
-                <MotionIconButton
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    onAddFriend(user.id);
+                <Image
+                  src={user.picture}
+                  style={{
+                    width: 'auto',
+                    height: '100%',
+                    aspectRatio: '1/1',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
                   }}
+                  alt={user.username}
+                  width={100}
+                  height={100}
+                />
+                <Typography
                   sx={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '12px',
-                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                    color: '#a855f7',
-                    border: '1px solid rgba(147, 51, 234, 0.2)',
-                    fontFamily: lora.style.fontFamily,
-                    fontSize: '16px',
+                    fontSize: '22px',
                     letterSpacing: '0.1rem',
-                    position: 'absolute',
-                    right: '1rem',
-                    zIndex: 1000,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: 'rgba(147, 51, 234, 0.2)',
-                      border: '1px solid rgba(147, 51, 234, 0.4)',
-                    },
-                  }}
-                >
-                  <PersonAddIcon />
-                </MotionIconButton>
-              )}
-              {user.isFriend && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    right: '1rem',
-                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                    color: '#a855f7',
-                    border: '1px solid rgba(147, 51, 234, 0.2)',
-                    borderRadius: '12px',
-                    padding: '8px 16px',
-                    fontSize: '14px',
-                    fontFamily: lora.style.fontFamily,
                     fontWeight: 'bold',
+                    color: 'white',
+                    fontFamily: lora.style.fontFamily,
                   }}
                 >
-                  Friend
-                </Box>
-              )}
+                  {user.username}
+                </Typography>
+                {user.isFriend ? (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      right: '1rem',
+                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                      color: '#a855f7',
+                      border: '1px solid rgba(147, 51, 234, 0.2)',
+                      borderRadius: '12px',
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontFamily: lora.style.fontFamily,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Friend
+                  </Box>
+                ) : (
+                  <MotionIconButton
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      event.preventDefault();
+                      onAddFriend(user.id);
+                    }}
+                    sx={{
+                      width: '50px',
+                      height: '50px',
+                      borderRadius: '12px',
+                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                      color: '#a855f7',
+                      border: '1px solid rgba(147, 51, 234, 0.2)',
+                      fontFamily: lora.style.fontFamily,
+                      fontSize: '16px',
+                      letterSpacing: '0.1rem',
+                      position: 'absolute',
+                      right: '1rem',
+                      zIndex: 1000,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                        border: '1px solid rgba(147, 51, 234, 0.4)',
+                      },
+                    }}
+                  >
+                    <PersonAddIcon />
+                  </MotionIconButton>
+                )}
+              </Box>
             </MotionBox>
           ))
         )}

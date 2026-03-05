@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { lora } from '@/utils/fonts/fonts';
-import { Box, Tab, Tabs, Badge } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
 import ExploreIcon from '@mui/icons-material/Explore';
-import React, { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 
 interface TabNavigationProps {
   tab: number;
@@ -12,102 +10,114 @@ interface TabNavigationProps {
   onTabChange: (tab: number) => void;
 }
 
+const TABS = [
+  { label: 'Discover', icon: <ExploreIcon sx={{ fontSize: 18 }} /> },
+  { label: 'Friends', icon: <PeopleIcon sx={{ fontSize: 18 }} /> },
+];
+
 export function TabNavigation({
   tab,
   friendsCount,
   onTabChange,
 }: TabNavigationProps) {
-  const router = useRouter();
-
-  const prefetch = useCallback(
-    (href: string) => {
-      try {
-        router.prefetch(href);
-      } catch (e) {
-        // ignore
-      }
-    },
-    [router]
-  );
   return (
-    <Box
-      sx={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        mb: 3,
-      }}
-    >
-      <Tabs
-        value={tab}
-        onChange={(_, v) => onTabChange(v)}
-        textColor="primary"
-        indicatorColor="primary"
-        variant="standard"
+    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <Box
         sx={{
-          '& .MuiTabs-indicator': {
-            height: '3px',
-            borderRadius: '3px 3px 0 0',
-            background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
-          },
-          '& .MuiTab-root': {
-            color: 'rgba(255, 255, 255, 0.6)',
-            fontWeight: 'bold',
-            fontFamily: lora.style.fontFamily,
-            fontSize: { xs: '16px', md: '18px' },
-            textTransform: 'none',
-            minWidth: { xs: '120px', md: '160px' },
-            padding: '16px 24px',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              color: 'rgba(255, 255, 255, 0.9)',
-              background: 'rgba(147, 51, 234, 0.1)',
-            },
-          },
-          '& .Mui-selected': {
-            color: '#FFFFFF !important',
-          },
+          display: 'inline-flex',
+          borderRadius: '14px',
+          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.03)',
+          p: '4px',
+          gap: '4px',
         }}
       >
-        <Tab
-          icon={<ExploreIcon />}
-          iconPosition="start"
-          label="Discover"
-          onMouseEnter={() => prefetch('/users/community')}
-          onFocus={() => prefetch('/users/community')}
-          onTouchStart={() => prefetch('/users/community')}
-        />
-        <Tab
-          icon={<PeopleIcon />}
-          iconPosition="start"
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              Friends
-              {friendsCount !== undefined && (
-                <Badge
-                  badgeContent={friendsCount}
-                  sx={{
-                    marginLeft: '4px',
-                    '& .MuiBadge-badge': {
-                      backgroundColor: 'rgba(147, 51, 234, 0.8)',
-                      color: 'white',
-                      fontFamily: lora.style.fontFamily,
-                      fontSize: '11px',
-                      fontWeight: 'bold',
-                      minWidth: '20px',
-                      height: '20px',
+        {TABS.map(({ label, icon }, index) => {
+          const isActive = tab === index;
+          const isFriendsTab = index === 1;
+          return (
+            <Box
+              key={label}
+              onClick={() => onTabChange(index)}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: { xs: 2, sm: 3 },
+                py: 1,
+                borderRadius: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                background: isActive ? 'rgba(147,51,234,0.2)' : 'transparent',
+                border: isActive
+                  ? '1px solid rgba(147,51,234,0.4)'
+                  : '1px solid transparent',
+                userSelect: 'none',
+                '&:hover': !isActive
+                  ? {
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                    }
+                  : {},
+              }}
+            >
+              <Box
+                sx={{
+                  color: isActive ? '#c084fc' : 'rgba(255,255,255,0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'color 0.2s',
+                }}
+              >
+                {icon}
+              </Box>
+              <Typography
+                sx={{
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: { xs: '14px', sm: '15px' },
+                  fontWeight: isActive ? 600 : 400,
+                  color: isActive ? '#ffffff' : 'rgba(255,255,255,0.5)',
+                  transition: 'all 0.2s',
+                  letterSpacing: '0.01em',
+                }}
+              >
+                {label}
+              </Typography>
+              {isFriendsTab &&
+                friendsCount !== undefined &&
+                friendsCount > 0 && (
+                  <Box
+                    sx={{
+                      minWidth: 20,
+                      height: 20,
                       borderRadius: '10px',
-                    },
-                  }}
-                />
-              )}
+                      background: isActive
+                        ? 'rgba(147,51,234,0.6)'
+                        : 'rgba(147,51,234,0.25)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      px: 0.75,
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: lora.style.fontFamily,
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        color: isActive ? '#fff' : '#c084fc',
+                        lineHeight: 1,
+                      }}
+                    >
+                      {friendsCount}
+                    </Typography>
+                  </Box>
+                )}
             </Box>
-          }
-          onMouseEnter={() => prefetch('/users/community?tab=1')}
-          onFocus={() => prefetch('/users/community?tab=1')}
-          onTouchStart={() => prefetch('/users/community?tab=1')}
-        />
-      </Tabs>
+          );
+        })}
+      </Box>
     </Box>
   );
 }

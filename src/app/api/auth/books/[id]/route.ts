@@ -76,7 +76,7 @@ async function handler(
       }
 
       console.log('[DEBUG] /api/auth/books/[id] PATCH sending to backend:', {
-        body: JSON.stringify({ userData: USER_DATA }),
+        body: JSON.stringify(JSON.stringify({ userData: USER_DATA })),
       });
 
       const gyCodingResponse = await fetch(API_URL, {

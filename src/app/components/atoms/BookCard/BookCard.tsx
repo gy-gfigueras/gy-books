@@ -1,7 +1,26 @@
 import type HardcoverBook from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
+import StarIcon from '@mui/icons-material/Star';
 import { Box, Tooltip, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+
+function useIsEllipsis() {
+  const ref = useRef<HTMLElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const check = () => setIsTruncated(el.scrollWidth > el.clientWidth);
+    check();
+    const observer = new ResizeObserver(check);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isTruncated };
+}
 
 interface BookCardProps {
   book: HardcoverBook;
@@ -10,20 +29,22 @@ interface BookCardProps {
 
 export function BookCard({ book, compact = false }: BookCardProps) {
   const { title, coverUrl } = useBookDisplay(book);
+  const { ref: titleRef, isTruncated } = useIsEllipsis();
   return (
     <Box
       component="a"
       href={`/books/${book.id}`}
       key={book.id}
       sx={{
-        width: '45%',
+        width: '100%',
+        height: '100%',
         textDecoration: 'none',
         display: 'flex',
         flexDirection: 'row',
-        gap: compact ? { xs: '10px', md: '12px' } : { xs: '12px', md: '16px' },
+        gap: compact ? { xs: '8px', md: '12px' } : { xs: '10px', md: '16px' },
         padding: compact
-          ? { xs: '10px', md: '12px' }
-          : { xs: '12px', md: '16px' },
+          ? { xs: '8px', md: '12px' }
+          : { xs: '10px', sm: '12px', md: '16px' },
         background: 'rgba(255, 255, 255, 0.03)',
         borderRadius: compact
           ? { xs: '14px', md: '16px' }
@@ -42,9 +63,12 @@ export function BookCard({ book, compact = false }: BookCardProps) {
       <Box
         sx={{
           width: compact
-            ? { xs: '65px', sm: '75px', md: '95px' }
-            : { xs: '85px', sm: '105px', md: '130px' },
+            ? { xs: '56px', sm: '65px', md: '80px' }
+            : { xs: '64px', sm: '80px', md: '104px' },
           flexShrink: 0,
+          alignSelf: 'stretch',
+          overflow: 'hidden',
+          borderRadius: { xs: '10px', md: '12px' },
           position: 'relative',
           zIndex: 1,
         }}
@@ -55,11 +79,11 @@ export function BookCard({ book, compact = false }: BookCardProps) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            borderRadius: { xs: '10px', md: '12px' },
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
             transition: 'transform 0.3s ease',
+            display: 'block',
             '&:hover': {
-              transform: 'scale(1.02)',
+              transform: 'scale(1.03)',
             },
           }}
           src={coverUrl}
@@ -73,19 +97,25 @@ export function BookCard({ book, compact = false }: BookCardProps) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          gap: compact ? { xs: '4px', md: '6px' } : { xs: '6px', md: '8px' },
+          gap: compact ? { xs: '4px', md: '6px' } : { xs: '5px', md: '7px' },
           position: 'relative',
           zIndex: 1,
         }}
       >
         <Box>
-          <Tooltip title={title} arrow placement="top">
+          <Tooltip
+            title={isTruncated ? title : ''}
+            arrow
+            placement="top"
+            disableHoverListener={!isTruncated}
+          >
             <Typography
+              ref={titleRef}
               sx={{
                 color: '#fff',
                 fontSize: compact
-                  ? { xs: '14px', sm: '15px', md: '17px' }
-                  : { xs: '17px', sm: '19px', md: '22px' },
+                  ? { xs: '13px', sm: '14px', md: '16px' }
+                  : { xs: '15px', sm: '17px', md: '20px' },
                 fontWeight: '700',
                 fontFamily: lora.style.fontFamily,
                 textOverflow: 'ellipsis',
@@ -161,9 +191,9 @@ export function BookCard({ book, compact = false }: BookCardProps) {
         {book.description && !compact && (
           <Typography
             sx={{
-              display: { xs: 'none', md: '-webkit-box' },
-              color: 'rgba(255, 255, 255, 0.65)',
-              fontSize: '13px',
+              display: { xs: 'none', xl: '-webkit-box' },
+              color: 'rgba(255, 255, 255, 0.55)',
+              fontSize: '12px',
               fontFamily: lora.style.fontFamily,
               fontWeight: '300',
               overflow: 'hidden',
@@ -174,6 +204,23 @@ export function BookCard({ book, compact = false }: BookCardProps) {
             }}
             dangerouslySetInnerHTML={{ __html: book.description }}
           />
+        )}
+
+        {(book.averageRating ?? 0) > 0 && (
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25 }}
+          >
+            <StarIcon sx={{ color: '#f59e0b', fontSize: 13 }} />
+            <Typography
+              sx={{
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: compact ? '11px' : '12px',
+                fontFamily: lora.style.fontFamily,
+              }}
+            >
+              {book.averageRating.toFixed(1)}
+            </Typography>
+          </Box>
         )}
       </Box>
     </Box>

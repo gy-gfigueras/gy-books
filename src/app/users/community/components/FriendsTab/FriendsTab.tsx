@@ -15,10 +15,10 @@ interface FriendsTabProps {
   data: Friend[] | undefined;
   isLoading: boolean;
   isLoadingDelete: boolean;
-  errorDelete: string | null;
+  errorDelete: Error | null;
   isSuccessDelete: boolean;
-  handleDeleteFriend: (friendId: string) => void;
-  setErrorDelete: (error: string | null) => void;
+  handleDeleteFriend: (friendId: string) => Promise<void>;
+  setErrorDelete: (error: Error | null) => void;
   setIsSuccessDelete: (success: boolean) => void;
 }
 

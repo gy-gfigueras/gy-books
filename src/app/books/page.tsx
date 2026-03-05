@@ -1,226 +1,228 @@
-/* eslint-disable react/jsx-key */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import queryBooks from '@/app/actions/book/queryBooks';
-import HardcoverBook from '@/domain/HardcoverBook';
-import { useDebounce } from '@/hooks/useDebounce';
-import { birthStone, lora } from '@/utils/fonts/fonts';
-import SearchIcon from '@mui/icons-material/Search';
-import { Box, InputAdornment, TextField } from '@mui/material';
+import { lora } from '@/utils/fonts/fonts';
+import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import Head from 'next/head';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
-import { BookCard } from '../components/atoms/BookCard/BookCard';
-import CustomTitle from '../components/atoms/BookTitle/CustomTitle';
-import LottieAnimation from '../components/atoms/LottieAnimation/LottieAnimation';
+import { Suspense } from 'react';
+import { BooksEmptyState } from './components/BooksEmptyState/BooksEmptyState';
+import { BooksFilters } from './components/BooksFilters/BooksFilters';
+import { BooksGrid } from './components/BooksGrid/BooksGrid';
+import { BooksSearchBar } from './components/BooksSearchBar/BooksSearchBar';
+import { useBooksFilters } from './hooks/useBooksFilters';
+import { useBooksSearch } from './hooks/useBooksSearch';
 
 const MotionBox = motion(Box);
 
-function BooksContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const [title, setTitle] = useState(searchParams.get('q') || '');
-  const [books, setBooks] = useState<HardcoverBook[]>([]);
+const HERO_GLOW_SX = {
+  position: 'absolute' as const,
+  borderRadius: '50%',
+  filter: 'blur(80px)',
+  pointerEvents: 'none',
+};
 
-  const [animationData, setAnimationData] = useState<object | null>(null);
-
-  useEffect(() => {
-    fetch('/lottie/book_searcher.json')
-      .then((res) => res.json())
-      .then((data) => setAnimationData(data));
-  }, []);
-
-  const debouncedTitle = useDebounce(title, 250);
-
-  useEffect(() => {
-    const fetchBooks = async () => {
-      if (debouncedTitle) {
-        const formData = new FormData();
-        formData.append('title', debouncedTitle);
-        const result = await queryBooks(formData);
-        setBooks(result as HardcoverBook[]);
-      } else {
-        setBooks([]);
-      }
-    };
-
-    fetchBooks();
-  }, [debouncedTitle]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (debouncedTitle) {
-      params.set('q', debouncedTitle);
-    } else {
-      params.delete('q');
-    }
-    router.push(`/books?${params.toString()}`);
-  }, [debouncedTitle, router, searchParams]);
-
+function BooksHero({
+  query,
+  onQueryChange,
+}: {
+  query: string;
+  onQueryChange: (v: string) => void;
+}) {
   return (
-    <>
-      <Head>
-        <title>
-          {debouncedTitle
-            ? `Buscando: ${debouncedTitle} - WingWords`
-            : '- Tu biblioteca personal'}
-        </title>
-        <meta
-          name="description"
-          content={
-            debouncedTitle
-              ? `Resultados de búsqueda para: ${debouncedTitle}`
-              : 'Tu biblioteca personal de libros'
-          }
-        />
-      </Head>
+    <Box
+      sx={{
+        position: 'relative',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        pt: { xs: 4, sm: 7, md: 10 },
+        pb: { xs: 3, sm: 5, md: 9 },
+        gap: { xs: 1.5, sm: 3 },
+      }}
+    >
+      {/* Eyebrow label */}
       <MotionBox
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.5 }}
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '1rem',
-          pt: 4,
+          px: 2,
+          py: 0.5,
+          borderRadius: '100px',
+          border: '1px solid rgba(147,51,234,0.3)',
+          background: 'rgba(147,51,234,0.08)',
+          backdropFilter: 'blur(8px)',
         }}
       >
-        <CustomTitle
-          text="Library"
-          size="6rem"
-          fontFamily={birthStone.style.fontFamily}
+        <Typography
           sx={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #a855f7 100%)',
+            fontFamily: lora.style.fontFamily,
+            fontSize: { xs: '0.7rem', sm: '0.75rem' },
+            color: '#c084fc',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Book Discovery
+        </Typography>
+      </MotionBox>
+
+      {/* Main title */}
+      <MotionBox
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        sx={{ textAlign: 'center', px: 2 }}
+      >
+        <Typography
+          component="h1"
+          sx={{
+            fontFamily: lora.style.fontFamily,
+            fontSize: { xs: '2.8rem', sm: '4.5rem', md: '6rem', lg: '7.5rem' },
+            lineHeight: 1,
+            fontWeight: 700,
+            background:
+              'linear-gradient(135deg, #ffffff 20%, #c084fc 60%, #818cf8 100%)',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.02em',
+            paddingBottom: 2,
           }}
-        />
+        >
+          Library
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: lora.style.fontFamily,
+            fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+            color: 'rgba(255,255,255,0.4)',
+            mt: { xs: 0.5, md: 1 },
+            letterSpacing: '0.02em',
+          }}
+        >
+          Search millions of books, authors &amp; series
+        </Typography>
       </MotionBox>
 
+      {/* Search bar */}
+      <MotionBox
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        sx={{ width: '100%', mt: { xs: 1, sm: 2 } }}
+      >
+        <BooksSearchBar value={query} onChange={onQueryChange} />
+      </MotionBox>
+    </Box>
+  );
+}
+
+function BooksContent() {
+  const { query, setQuery, books, isLoading, hasSearched } = useBooksSearch();
+  const {
+    filters,
+    filteredBooks,
+    filterOptions,
+    activeFiltersCount,
+    setAuthor,
+    setSeries,
+    setSortBy,
+    resetFilters,
+  } = useBooksFilters(books);
+
+  const showResults = isLoading || filteredBooks.length > 0;
+  const showEmpty = !isLoading && hasSearched && filteredBooks.length === 0;
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#0A0A0A',
+        position: 'relative',
+        overflow: 'hidden',
+        pb: { xs: '80px', md: '120px' },
+      }}
+    >
+      {/* Background glows */}
       <Box
         sx={{
+          ...HERO_GLOW_SX,
+          top: '0%',
+          left: '10%',
+          width: 600,
+          height: 500,
+          background:
+            'radial-gradient(ellipse, rgba(147,51,234,0.1) 0%, transparent 70%)',
+        }}
+      />
+      <Box
+        sx={{
+          ...HERO_GLOW_SX,
+          top: '5%',
+          right: '5%',
+          width: 500,
+          height: 450,
+          background:
+            'radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 70%)',
+        }}
+      />
+      <BooksHero query={query} onQueryChange={setQuery} />
+
+      {/* Results section */}
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: { xs: '100%', xl: '1400px' },
+          px: { xs: 2, sm: 4, md: 6, lg: 8 },
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'start',
-          justifyContent: 'start',
-          height: '100%',
-          gap: '1rem',
-          backgroundColor: '#0A0A0A',
-          paddingBottom: '100px',
+          gap: 2,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: { xs: 'stretch', sm: 'center' },
-            justifyContent: 'center',
-            width: '100%',
-            gap: { xs: '0.5rem', sm: '1rem' },
-            paddingTop: { xs: '8px', sm: '10px' },
-            px: { xs: 2, sm: 0 },
-          }}
-        >
-          <TextField
-            placeholder="Look for a book..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            variant="outlined"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'rgba(255, 255, 255, 0.4)' }} />
-                </InputAdornment>
-              ),
-              style: {
-                color: 'white',
-                fontFamily: lora.style.fontFamily,
-                fontSize: '18px',
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '16px',
-                minHeight: '56px',
-              },
-            }}
-            InputLabelProps={{
-              style: {
-                color: 'white',
-                fontFamily: lora.style.fontFamily,
-                fontSize: '20px',
-              },
-            }}
-            sx={{
-              mb: { xs: 1, sm: 2 },
-              width: { xs: '90%', sm: '60%', md: '60%' },
-              alignSelf: 'center',
-              maxWidth: { xs: '100%', sm: '600px' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'rgba(255, 255, 255, 0.08)',
-                  borderRadius: '16px',
-                  borderWidth: '1px',
-                },
-                '&:hover fieldset': {
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'rgba(147, 51, 234, 0.5)',
-                  borderWidth: '1px',
-                },
-              },
-            }}
+        {(hasSearched || isLoading) && (
+          <BooksFilters
+            filters={filters}
+            filterOptions={filterOptions}
+            activeFiltersCount={activeFiltersCount}
+            resultsCount={filteredBooks.length}
+            onAuthorChange={setAuthor}
+            onSeriesChange={setSeries}
+            onSortByChange={setSortBy}
+            onReset={resetFilters}
           />
-        </Box>
+        )}
 
-        <Box
-          sx={{
-            width: '100%',
-            height: '70vh',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '1rem',
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignContent: 'start',
-            padding: '25px',
-            overflow: 'auto',
-            scrollbarColor: 'rgba(255,255,255,0.1) transparent',
-            '&::-webkit-scrollbar': {
-              width: '6px',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: 'rgba(255, 255, 255, 0.02)',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '3px',
-            },
-          }}
-        >
-          {books.length > 0
-            ? books.map((book: any) => <BookCard key={book.id} book={book} />)
-            : animationData && (
-                <LottieAnimation
-                  loop
-                  animationData={animationData}
-                  style={{ width: '500px', height: '80%', maxWidth: '100%' }}
-                />
-              )}
-        </Box>
+        {showResults && (
+          <BooksGrid books={filteredBooks} isLoading={isLoading} />
+        )}
+        {showEmpty && (
+          <BooksEmptyState
+            hasSearched={hasSearched}
+            hasActiveFilters={activeFiltersCount > 0}
+            onResetFilters={resetFilters}
+          />
+        )}
+        {!hasSearched && !isLoading && (
+          <BooksEmptyState
+            hasSearched={false}
+            hasActiveFilters={false}
+            onResetFilters={resetFilters}
+          />
+        )}
       </Box>
-    </>
+    </Box>
   );
 }
 
 export default function BooksPage() {
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
+    <Suspense
+      fallback={<Box sx={{ minHeight: '100vh', bgcolor: '#0A0A0A' }} />}
+    >
       <BooksContent />
     </Suspense>
   );

@@ -66,8 +66,7 @@ export const FriendRequestsPanel = ({
             width: { xs: 'auto', md: '500px' },
             maxHeight: { xs: '70vh', md: '500px' },
             zIndex: 999,
-            background:
-              'linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(20, 10, 30, 0.98) 100%)',
+            background: 'rgba(18, 18, 18, 0.98)',
             backdropFilter: 'blur(20px)',
             borderRadius: '12px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -83,8 +82,7 @@ export const FriendRequestsPanel = ({
               justifyContent: 'space-between',
               p: 2,
               borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-              background:
-                'linear-gradient(90deg, rgba(147, 51, 234, 0.06) 0%, transparent 100%)',
+              background: 'rgba(255, 255, 255, 0.03)',
             }}
           >
             <Typography

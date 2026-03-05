@@ -3,8 +3,21 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { User } from '@/domain/friend.model';
 import queryUsers from '@/app/actions/accounts/user/fetchUsers';
 import addFriend from '@/app/actions/accounts/user/friend/addFriend';
+import { Profile } from '@gycoding/nebula';
 
-export function useUserSearch() {
+function profileToUser(profile: Profile): User {
+  return {
+    id: profile.id as User['id'],
+    username: profile.username,
+    phoneNumber: profile.phoneNumber,
+    picture: profile.picture,
+    email: profile.email,
+    biography: profile.biography,
+    isFriend: false,
+  };
+}
+
+export function useUserSearch(currentUserId?: string) {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [isAddingFriend, setIsAddingFriend] = useState(false);
@@ -17,14 +30,18 @@ export function useUserSearch() {
         const formData = new FormData();
         formData.append('username', debouncedSearch);
         const result = await queryUsers(formData);
-        setUsers(result);
+        setUsers(
+          result
+            .map(profileToUser)
+            .filter((u) => !currentUserId || u.id !== currentUserId)
+        );
       } else {
         setUsers([]);
       }
     };
 
     fetchUsers();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, currentUserId]);
 
   const handleAddFriend = async (userId: string) => {
     try {
