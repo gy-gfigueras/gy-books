@@ -160,3 +160,49 @@ export const GET_MULTIPLE_STATS = `
 }
 
 `;
+
+export const SEARCH_AUTHORS_QUERY = `
+  query SearchAuthors($query: String!) {
+    search(query: $query, query_type: "author", per_page: 10) {
+      error
+      page
+      per_page
+      query
+      query_type
+      results
+    }
+  }
+`;
+
+export const GET_AUTHOR_BY_ID_QUERY = `
+  query GetAuthorById($id: Int!) {
+    authors(where: { id: { _eq: $id } }, limit: 1) {
+      id
+      name
+      bio
+      born_year
+      born_date
+      books_count
+      image {
+        url
+      }
+      contributions(where: { contributable_type: { _eq: "Book" } }, limit: 3000) {
+        book {
+          id
+          title
+          description
+          release_year
+          book_series {
+            series {
+              id
+              name
+            }
+          }
+          image {
+            url
+          }
+        }
+      }
+    }
+  }
+`;

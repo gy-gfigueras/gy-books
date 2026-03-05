@@ -7,18 +7,32 @@ import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUser } from '@/hooks/useUser';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { lora } from '@/utils/fonts/fonts';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import NorthEastIcon from '@mui/icons-material/NorthEast';
 import StarIcon from '@mui/icons-material/Star';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import { Box, Chip, Divider, IconButton, Typography } from '@mui/material';
+import { Avatar, Box, IconButton, Skeleton, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React from 'react';
-// replaced individual api hooks by useMergedBook
 import BookDetailsSkeleton from '@/app/components/molecules/BookDetailsSkeleton';
 import { EditionSelector } from '@/app/components/molecules/EditionSelector/EditionSelector';
 import { Edition } from '@/domain/HardcoverBook';
 import useMergedBook from '@/hooks/books/useMergedBook';
 import { useEditionSelection } from '@/hooks/useEditionSelection';
 import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
+
+const MotionBox = motion(Box);
+
+const GLOW_SX = {
+  position: 'absolute' as const,
+  borderRadius: '50%',
+  filter: 'blur(100px)',
+  pointerEvents: 'none' as const,
+};
 
 export default function BookDetails() {
   const params = useParams();
@@ -29,36 +43,42 @@ export default function BookDetails() {
     mutate,
   } = useMergedBook(params.id as string);
 
-  // Normalizar datos para manejar tanto estructura HardcoverBook como ApiBook
   const authorName = React.useMemo(() => {
     if (!book) return '';
-    // Si es string (ApiBook)
     if (typeof book.author === 'string') return book.author;
-    // Si es objeto (HardcoverBook)
     return book.author?.name || '';
+  }, [book]);
+
+  const authorId = React.useMemo(() => {
+    if (!book) return null;
+    if (typeof book.author === 'object' && book.author?.id)
+      return book.author.id;
+    return null;
+  }, [book]);
+
+  const authorImage = React.useMemo(() => {
+    if (!book || typeof book.author !== 'object') return null;
+    return (book.author as any)?.image?.url || null;
+  }, [book]);
+
+  const authorBio = React.useMemo(() => {
+    if (!book || typeof book.author !== 'object') return null;
+    return (book.author as any)?.biography || null;
   }, [book]);
 
   const coverUrl = React.useMemo(() => {
     if (!book) return DEFAULT_COVER_IMAGE;
-    // HardcoverBook usa cover.url
     if (book.cover?.url) return book.cover.url;
-    // ApiBook usa image
     if ((book as any).image) return (book as any).image;
     return DEFAULT_COVER_IMAGE;
   }, [book]);
 
-  // Estados para notificaciones de edición
   const [editionNotification, setEditionNotification] = React.useState<{
     open: boolean;
     success: boolean;
     message: string;
-  }>({
-    open: false,
-    success: false,
-    message: '',
-  });
+  }>({ open: false, success: false, message: '' });
 
-  // Gestión de selección de ediciones con hook personalizado
   const {
     selectedEdition,
     setSelectedEdition,
@@ -71,13 +91,7 @@ export default function BookDetails() {
     defaultCoverUrl: coverUrl,
     defaultTitle: book?.title || '',
     onEditionSaved: (success, message) => {
-      setEditionNotification({
-        open: true,
-        success,
-        message,
-      });
-      // No necesitamos llamar a mutate() aquí porque useEditionSelection
-      // ya maneja la actualización optimista del estado local
+      setEditionNotification({ open: true, success, message });
     },
   });
 
@@ -96,13 +110,13 @@ export default function BookDetails() {
     isUpdatedDeleteToHallOfFame,
     isErrorDeleteToHallOfFame,
   } = useHallOfFame(user?.id || '');
+
   const isOnHallOfFame = hallOfFame?.books.some((b) => {
     const id = typeof b === 'string' ? b : b.id;
     return id === book?.id;
   });
   const isLoggedIn = !!user;
 
-  // Extraer todas las ediciones disponibles
   const allEditions: Edition[] = React.useMemo(() => {
     if (!book?.editions) return [];
     return book.editions;
@@ -121,7 +135,7 @@ export default function BookDetails() {
       setIsLoadingToAddHallOfFame(false);
       setIsUpdatedAddToHallOfFame(false);
       setIsErrorAddToHallOfFame(false);
-    } else if (!isOnHallOfFame) {
+    } else {
       setIsLoadingToAddHallOfFame(false);
       setIsUpdatedAddToHallOfFame(false);
       setIsErrorAddToHallOfFame(false);
@@ -133,289 +147,494 @@ export default function BookDetails() {
     <Box
       sx={{
         minHeight: '100vh',
-        backgroundColor: '#0A0A0A',
-        padding: { xs: '1.5rem 1rem', md: '3rem' },
-        display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        gap: { xs: 0, md: '4rem' },
-        paddingX: { xs: '1rem', md: '100px' },
-        maxWidth: '1200px',
-        margin: '0 auto',
+        bgcolor: '#0A0A0A',
+        position: 'relative',
+        overflow: 'hidden',
+        pb: { xs: '80px', md: '120px' },
       }}
     >
+      {/* Glows */}
       <Box
         sx={{
-          display: ['flex', 'flex', 'none'],
+          ...GLOW_SX,
+          top: '-5%',
+          left: '-5%',
+          width: 700,
+          height: 600,
+          background:
+            'radial-gradient(ellipse, rgba(147,51,234,0.08) 0%, transparent 70%)',
+        }}
+      />
+      <Box
+        sx={{
+          ...GLOW_SX,
+          top: '10%',
+          right: '-10%',
+          width: 500,
+          height: 500,
+          background:
+            'radial-gradient(ellipse, rgba(59,130,246,0.05) 0%, transparent 70%)',
+        }}
+      />
+
+      <Box
+        sx={{
           width: '100%',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center',
+          maxWidth: 1200,
+          mx: 'auto',
+          px: { xs: 2, sm: 4, md: 6 },
+          pt: { xs: 5, md: 9 },
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            fontFamily: lora.style.fontFamily,
-            fontWeight: '800',
-            fontSize: { xs: 26, sm: 32 },
-            letterSpacing: '.05rem',
-            marginBottom: '0.5rem',
-            textAlign: 'center',
-            color: '#FFFFFF',
-          }}
-        >
-          {displayTitle}
-        </Typography>
-        <Typography
-          variant="h6"
-          sx={{
-            color: 'rgba(255, 255, 255, 0.4)',
-            marginBottom: '1rem',
-            textAlign: 'center',
-            fontSize: { xs: 18, sm: 22 },
-            letterSpacing: '.03rem',
-            fontFamily: lora.style.fontFamily,
-          }}
-        >
-          {authorName}
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: { xs: '100%', md: '300px' },
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'start',
-        }}
-      >
-        <Box
-          component="img"
-          src={displayImage}
-          alt={displayTitle}
-          sx={{
-            width: { xs: '220px', sm: '250px', md: '280px' },
-            maxWidth: { xs: '100%', md: '280px' },
-            height: 'auto',
-            borderRadius: '14px',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-            transition: 'transform 0.3s ease',
-          }}
-        />
-        <Divider
-          sx={{ display: ['flex', 'flex', 'none'], marginTop: '1rem' }}
-          textAlign="left"
-        >
-          {book?.series && book.series.length > 0 && (
-            <Chip
-              sx={{
-                backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                color: '#c084fc',
-                letterSpacing: '.03rem',
-                fontWeight: 600,
-                border: '1px solid rgba(147, 51, 234, 0.25)',
-                fontFamily: lora.style.fontFamily,
-                height: '30px',
-                fontSize: '14px',
-              }}
-              label={book.series[0]?.name}
-            />
-          )}
-        </Divider>
-        <Box display={'flex'} flexDirection="column" alignItems="center" mt={2}>
-          <Typography
-            variant="body1"
-            sx={{
-              color: '#fbbf24',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              fontFamily: lora.style.fontFamily,
-              gap: '0.3rem',
-              fontSize: '32px',
-            }}
-          >
-            {book?.averageRating ? book.averageRating.toFixed(1) : '0.0'}
-            <StarIcon
-              sx={{
-                color: '#fbbf24',
-                fontSize: '34px',
-                marginTop: '-0.15rem',
-              }}
-            />
-          </Typography>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            gap={2}
-            mt={2}
-            flexDirection={'row'}
-          >
-            <BookRating
-              apiBook={book as any}
-              bookId={book?.id || ''}
-              isRatingLoading={isMergedLoading}
-              mutate={mutate as any}
-              isLoggedIn={isLoggedIn}
-              selectedEdition={selectedEdition}
-            />
-
-            {user && (
-              <IconButton
-                sx={{
-                  color: isOnHallOfFame
-                    ? '#fbbf24'
-                    : 'rgba(255, 255, 255, 0.3)',
-                  borderRadius: '12px',
-                  fontWeight: 'bold',
-                  backgroundColor: isOnHallOfFame
-                    ? 'rgba(251, 191, 36, 0.1)'
-                    : 'rgba(255, 255, 255, 0.03)',
-                  border: isOnHallOfFame
-                    ? '1px solid rgba(251, 191, 36, 0.25)'
-                    : '1px solid rgba(255, 255, 255, 0.06)',
-                  fontSize: '18px',
-                  fontFamily: lora.style.fontFamily,
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: isOnHallOfFame
-                      ? 'rgba(251, 191, 36, 0.15)'
-                      : 'rgba(255, 255, 255, 0.06)',
-                    transform: 'scale(1.05)',
-                  },
-                }}
-                onClick={handleClick}
-              >
-                <WorkspacePremiumIcon
-                  sx={{
-                    color: isOnHallOfFame
-                      ? '#fbbf24'
-                      : 'rgba(255, 255, 255, 0.3)',
-                    fontSize: '28px',
-                  }}
-                />
-              </IconButton>
-            )}
-          </Box>
-
-          {/* Edition Selector */}
-          <EditionSelector
-            editions={allEditions}
-            selectedEdition={selectedEdition}
-            onEditionChange={setSelectedEdition}
-            disabled={isSaving}
-          />
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          width: { xs: '100%', md: '60%' },
-          color: 'white',
-        }}
-      >
-        <Box
+        {/* ── HERO ── */}
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
-            gap: { xs: '0rem', md: '1rem' },
-            alignItems: 'center',
-            justifyContent: 'start',
-            width: '100%',
+            gap: { xs: 4, md: 7 },
+            alignItems: 'flex-start',
+            mb: { xs: 6, md: 8 },
           }}
         >
-          <Typography
-            variant="h4"
+          {/* Cover wrapper — centers cover+actions on mobile */}
+          <Box
             sx={{
-              fontFamily: lora.style.fontFamily,
-              fontWeight: '800',
-              display: ['none', 'none', 'block'],
-              fontSize: { md: 40, lg: 48 },
-              letterSpacing: '.05rem',
-              marginBottom: '0.5rem',
-              textAlign: 'left',
-              color: '#FFFFFF',
-              lineHeight: 1.2,
+              display: { xs: 'flex', md: 'contents' },
+              justifyContent: { xs: 'center', md: 'unset' },
+              width: { xs: '100%', md: 'auto' },
             }}
           >
-            {displayTitle}
-          </Typography>
-        </Box>
-        <Typography
-          variant="h6"
-          sx={{
-            display: ['none', 'none', 'block'],
-            color: 'rgba(255, 255, 255, 0.4)',
-            marginBottom: '1.5rem',
-            textAlign: 'left',
-            fontSize: 22,
-            letterSpacing: '.03rem',
-            fontFamily: lora.style.fontFamily,
-          }}
-        >
-          {authorName}
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: ['column', 'column', 'row'],
-            gap: ['0rem', '0rem', '1rem'],
-            width: 'auto',
-            justifyContent: ['center', 'center', 'start'],
-            alignItems: ['center', 'center', 'start'],
-          }}
-        ></Box>
-
-        <Divider
-          sx={{
-            display: ['none', 'none', 'block'],
-          }}
-          textAlign="center"
-        >
-          {book?.series && book.series.length > 0 && (
-            <Chip
+            <Box
               sx={{
-                backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                color: '#c084fc',
-                letterSpacing: '.03rem',
-                fontWeight: 600,
-                border: '1px solid rgba(147, 51, 234, 0.25)',
-                fontFamily: lora.style.fontFamily,
-                height: '30px',
-                fontSize: '14px',
+                flexShrink: 0,
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
               }}
-              label={book.series[0]?.name}
+            >
+              <Box
+                sx={{
+                  width: { xs: 200, sm: 230, md: 260 },
+                  height: { xs: 290, sm: 336, md: 380 },
+                  borderRadius: '18px',
+                  overflow: 'hidden',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow:
+                    '0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(147,51,234,0.12)',
+                  position: 'relative',
+                }}
+              >
+                {displayImage ? (
+                  <Image
+                    src={displayImage}
+                    alt={displayTitle}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes="260px"
+                    priority
+                  />
+                ) : (
+                  <Skeleton
+                    variant="rectangular"
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                    }}
+                  />
+                )}
+              </Box>
+
+              {/* Actions below cover */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  mt: 2.5,
+                }}
+              >
+                {/* Rating stars */}
+                <BookRating
+                  apiBook={book as any}
+                  bookId={book?.id || ''}
+                  isRatingLoading={isMergedLoading}
+                  mutate={mutate as any}
+                  isLoggedIn={isLoggedIn}
+                  selectedEdition={selectedEdition}
+                />
+
+                {/* Hall of Fame */}
+                {user && (
+                  <IconButton
+                    onClick={handleClick}
+                    sx={{
+                      width: '100%',
+                      maxWidth: 200,
+                      borderRadius: '10px',
+                      gap: 1,
+                      py: 0.8,
+                      px: 2,
+                      color: isOnHallOfFame
+                        ? '#fbbf24'
+                        : 'rgba(255,255,255,0.4)',
+                      background: isOnHallOfFame
+                        ? 'rgba(251,191,36,0.08)'
+                        : 'rgba(255,255,255,0.03)',
+                      border: isOnHallOfFame
+                        ? '1px solid rgba(251,191,36,0.25)'
+                        : '1px solid rgba(255,255,255,0.07)',
+                      transition: 'all 0.25s',
+                      '&:hover': {
+                        background: isOnHallOfFame
+                          ? 'rgba(251,191,36,0.13)'
+                          : 'rgba(255,255,255,0.06)',
+                      },
+                    }}
+                  >
+                    <WorkspacePremiumIcon sx={{ fontSize: 18 }} />
+                    <Typography
+                      sx={{
+                        fontFamily: lora.style.fontFamily,
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {isOnHallOfFame ? 'In Hall of Fame' : 'Hall of Fame'}
+                    </Typography>
+                  </IconButton>
+                )}
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Info */}
+          <Box sx={{ flex: 1, minWidth: 0, width: { xs: '100%', md: 'auto' } }}>
+            {/* Series + Title + Author — centered on mobile */}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: { xs: 'center', md: 'flex-start' },
+                mb: 3,
+              }}
+            >
+              {/* Series badge */}
+              {book?.series && book.series.length > 0 && (
+                <MotionBox
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.1 }}
+                  sx={{
+                    display: 'inline-flex',
+                    px: 1.5,
+                    py: 0.4,
+                    borderRadius: '100px',
+                    border: '1px solid rgba(147,51,234,0.3)',
+                    background: 'rgba(147,51,234,0.08)',
+                    mb: 2,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: lora.style.fontFamily,
+                      fontSize: '0.7rem',
+                      color: '#c084fc',
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {book.series[0]?.name}
+                  </Typography>
+                </MotionBox>
+              )}
+
+              {/* Title */}
+              <Typography
+                component="h1"
+                sx={{
+                  fontFamily: lora.style.fontFamily,
+                  fontWeight: 700,
+                  fontSize: { xs: '2rem', sm: '2.6rem', md: '3.2rem' },
+                  lineHeight: 1.1,
+                  background:
+                    'linear-gradient(135deg, #ffffff 20%, #c084fc 60%, #818cf8 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  letterSpacing: '-0.02em',
+                  paddingBottom: '8px',
+                  textAlign: { xs: 'center', md: 'left' },
+                }}
+              >
+                {displayTitle}
+              </Typography>
+
+              {/* Author subtitle */}
+              <Typography
+                sx={{
+                  fontFamily: lora.style.fontFamily,
+                  color: 'rgba(255,255,255,0.4)',
+                  fontSize: { xs: '1rem', md: '1.15rem' },
+                  letterSpacing: '0.02em',
+                  textAlign: { xs: 'center', md: 'left' },
+                }}
+              >
+                {authorName}
+              </Typography>
+            </Box>
+
+            {/* Meta row */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2.5,
+                mb: 3,
+                flexWrap: 'wrap',
+                justifyContent: { xs: 'center', md: 'flex-start' },
+              }}
+            >
+              {/* Rating */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+                <StarIcon sx={{ color: '#fbbf24', fontSize: 18 }} />
+                <Typography
+                  sx={{
+                    fontFamily: lora.style.fontFamily,
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    color: '#fbbf24',
+                  }}
+                >
+                  {book?.averageRating ? book.averageRating.toFixed(1) : '—'}
+                </Typography>
+              </Box>
+
+              {/* Page count */}
+              {book?.pageCount && book.pageCount > 0 && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+                  <MenuBookIcon
+                    sx={{ color: 'rgba(147,51,234,0.6)', fontSize: 16 }}
+                  />
+                  <Typography
+                    sx={{
+                      fontFamily: lora.style.fontFamily,
+                      color: 'rgba(255,255,255,0.4)',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    {book.pageCount} pages
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Editions count + selector */}
+              {allEditions.length > 0 && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AutoStoriesIcon
+                    sx={{ color: 'rgba(147,51,234,0.6)', fontSize: 16 }}
+                  />
+                  <Typography
+                    sx={{
+                      fontFamily: lora.style.fontFamily,
+                      color: 'rgba(255,255,255,0.4)',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    {allEditions.length} editions
+                  </Typography>
+                  <EditionSelector
+                    editions={allEditions}
+                    selectedEdition={selectedEdition}
+                    onEditionChange={setSelectedEdition}
+                    disabled={isSaving}
+                  />
+                </Box>
+              )}
+            </Box>
+
+            {/* Divider */}
+            <Box
+              sx={{
+                height: '1px',
+                background: 'rgba(255,255,255,0.06)',
+                mb: 3,
+              }}
             />
-          )}
-        </Divider>
-        <Divider
-          variant="middle"
-          sx={{
-            marginTop: '2rem',
-            display: ['flex', 'flex', 'none'],
-            paddingX: ['1.5rem', '1.5rem', '0'],
-            borderColor: 'rgba(255, 255, 255, 0.06)',
-          }}
-        />
-        <Typography
-          variant="body1"
-          sx={{
-            lineHeight: 1.8,
-            marginBottom: '2rem',
-            paddingX: { xs: '0.5rem', sm: '1.5rem', md: 0 },
-            marginTop: '2rem',
-            fontSize: { xs: 16, md: 17 },
-            color: 'rgba(255, 255, 255, 0.6)',
-            fontFamily: lora.style.fontFamily,
-            letterSpacing: '.02rem',
-            textAlign: 'justify',
-          }}
-          dangerouslySetInnerHTML={{ __html: book?.description ?? '' }}
-        />
+
+            {/* Description */}
+            {book?.description && (
+              <Typography
+                sx={{
+                  fontFamily: lora.style.fontFamily,
+                  color: 'rgba(255,255,255,0.6)',
+                  fontSize: { xs: '0.95rem', md: '1rem' },
+                  lineHeight: 1.85,
+                  letterSpacing: '0.01em',
+                  textAlign: 'justify',
+                  mb: 4,
+                }}
+                dangerouslySetInnerHTML={{ __html: book.description }}
+              />
+            )}
+
+            {/* ── AUTHOR CARD ── */}
+            {authorId && (
+              <MotionBox
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: lora.style.fontFamily,
+                    fontWeight: 700,
+                    fontSize: '0.72rem',
+                    color: 'rgba(255,255,255,0.3)',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    mb: 1.5,
+                  }}
+                >
+                  About the author
+                </Typography>
+
+                <Box
+                  component={Link}
+                  href={`/authors/${authorId}`}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 2,
+                    alignItems: 'flex-start',
+                    p: { xs: 2, md: 2.5 },
+                    background: 'rgba(255,255,255,0.025)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: '16px',
+                    textDecoration: 'none',
+                    transition: 'border-color 0.2s, background 0.2s',
+                    '&:hover': {
+                      borderColor: 'rgba(147,51,234,0.3)',
+                      background: 'rgba(147,51,234,0.04)',
+                      '& .author-arrow': {
+                        opacity: 1,
+                        transform: 'translate(2px, -2px)',
+                      },
+                    },
+                    position: 'relative',
+                  }}
+                >
+                  {/* Avatar */}
+                  {authorImage ? (
+                    <Box
+                      sx={{
+                        width: { xs: 56, md: 64 },
+                        height: { xs: 56, md: 64 },
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        flexShrink: 0,
+                        border: '2px solid rgba(147,51,234,0.25)',
+                        position: 'relative',
+                      }}
+                    >
+                      <Image
+                        src={authorImage}
+                        alt={authorName}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                        sizes="64px"
+                      />
+                    </Box>
+                  ) : (
+                    <Avatar
+                      sx={{
+                        width: { xs: 56, md: 64 },
+                        height: { xs: 56, md: 64 },
+                        flexShrink: 0,
+                        border: '2px solid rgba(147,51,234,0.25)',
+                        background:
+                          'linear-gradient(135deg, rgba(147,51,234,0.2) 0%, rgba(129,140,248,0.15) 100%)',
+                        fontFamily: lora.style.fontFamily,
+                        fontSize: '1.5rem',
+                        fontWeight: 700,
+                        color: '#c084fc',
+                      }}
+                    >
+                      {authorName.charAt(0)}
+                    </Avatar>
+                  )}
+
+                  {/* Info */}
+                  <Box sx={{ flex: 1, minWidth: 0, pr: 3 }}>
+                    <Typography
+                      sx={{
+                        fontFamily: lora.style.fontFamily,
+                        fontWeight: 700,
+                        fontSize: { xs: '1rem', md: '1.1rem' },
+                        color: '#ffffff',
+                        mb: 0.6,
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {authorName}
+                    </Typography>
+
+                    {authorBio ? (
+                      <Typography
+                        sx={{
+                          fontFamily: lora.style.fontFamily,
+                          color: 'rgba(255,255,255,0.4)',
+                          fontSize: { xs: '0.82rem', md: '0.85rem' },
+                          lineHeight: 1.65,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {authorBio}
+                      </Typography>
+                    ) : (
+                      <Typography
+                        sx={{
+                          fontFamily: lora.style.fontFamily,
+                          color: 'rgba(255,255,255,0.22)',
+                          fontSize: '0.82rem',
+                          fontStyle: 'italic',
+                        }}
+                      >
+                        View full profile
+                      </Typography>
+                    )}
+                  </Box>
+
+                  {/* Arrow */}
+                  <NorthEastIcon
+                    className="author-arrow"
+                    sx={{
+                      position: 'absolute',
+                      top: { xs: 14, md: 18 },
+                      right: { xs: 14, md: 18 },
+                      fontSize: 16,
+                      color: '#c084fc',
+                      opacity: 0.35,
+                      transition: 'opacity 0.2s, transform 0.2s',
+                    }}
+                  />
+                </Box>
+              </MotionBox>
+            )}
+          </Box>
+        </MotionBox>
       </Box>
+
+      {/* Alerts */}
       <AnimatedAlert
         open={isUpdatedAddToHallOfFame}
         onClose={() => setIsUpdatedAddToHallOfFame(false)}
@@ -440,8 +659,6 @@ export default function BookDetails() {
         message="Error deleting book from Hall of Fame."
         severity={ESeverity.ERROR}
       />
-
-      {/* Nueva notificación para cambios de edición */}
       <AnimatedAlert
         open={editionNotification.open}
         onClose={() =>

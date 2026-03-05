@@ -1,15 +1,16 @@
 'use client';
 
 import { lora } from '@/utils/fonts/fonts';
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Suspense } from 'react';
 import { BooksEmptyState } from './components/BooksEmptyState/BooksEmptyState';
 import { BooksFilters } from './components/BooksFilters/BooksFilters';
 import { BooksGrid } from './components/BooksGrid/BooksGrid';
 import { BooksSearchBar } from './components/BooksSearchBar/BooksSearchBar';
+import { AuthorCard } from './components/AuthorCard/AuthorCard';
 import { useBooksFilters } from './hooks/useBooksFilters';
-import { useBooksSearch } from './hooks/useBooksSearch';
+import { SearchMode, useBooksSearch } from './hooks/useBooksSearch';
 
 const MotionBox = motion(Box);
 
@@ -23,9 +24,13 @@ const HERO_GLOW_SX = {
 function BooksHero({
   query,
   onQueryChange,
+  searchMode,
+  onSearchModeChange,
 }: {
   query: string;
   onQueryChange: (v: string) => void;
+  searchMode: SearchMode;
+  onSearchModeChange: (mode: SearchMode) => void;
 }) {
   return (
     <Box
@@ -112,14 +117,96 @@ function BooksHero({
         transition={{ duration: 0.5, delay: 0.2 }}
         sx={{ width: '100%', mt: { xs: 1, sm: 2 } }}
       >
-        <BooksSearchBar value={query} onChange={onQueryChange} />
+        <BooksSearchBar
+          value={query}
+          onChange={onQueryChange}
+          placeholder={
+            searchMode === 'books'
+              ? 'Search by title, series…'
+              : 'Search for an author…'
+          }
+        />
+      </MotionBox>
+
+      {/* Mode toggle */}
+      <MotionBox
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+        sx={{ display: 'flex', justifyContent: 'center' }}
+      >
+        <Box
+          sx={{
+            display: 'inline-flex',
+            borderRadius: '100px',
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            p: '3px',
+          }}
+        >
+          {(['books', 'authors'] as const).map((mode) => (
+            <Box
+              key={mode}
+              onClick={() => onSearchModeChange(mode)}
+              sx={{
+                position: 'relative',
+                px: { xs: 2, sm: 2.5 },
+                py: 0.875,
+                borderRadius: '100px',
+                cursor: 'pointer',
+                userSelect: 'none',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {searchMode === mode && (
+                <motion.div
+                  layoutId="search-mode-indicator"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '100px',
+                    background: 'rgba(147,51,234,0.18)',
+                    border: '1px solid rgba(147,51,234,0.35)',
+                  }}
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                />
+              )}
+              <Typography
+                sx={{
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                  fontWeight: searchMode === mode ? 700 : 400,
+                  color:
+                    searchMode === mode ? '#c084fc' : 'rgba(255,255,255,0.35)',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  transition: 'color 0.25s',
+                  position: 'relative',
+                  zIndex: 1,
+                }}
+              >
+                {mode === 'books' ? 'Books' : 'Authors'}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
       </MotionBox>
     </Box>
   );
 }
 
 function BooksContent() {
-  const { query, setQuery, books, isLoading, hasSearched } = useBooksSearch();
+  const {
+    query,
+    setQuery,
+    books,
+    authors,
+    searchMode,
+    setSearchMode,
+    isLoading,
+    hasSearched,
+  } = useBooksSearch();
   const {
     filters,
     filteredBooks,
@@ -131,8 +218,18 @@ function BooksContent() {
     resetFilters,
   } = useBooksFilters(books);
 
-  const showResults = isLoading || filteredBooks.length > 0;
-  const showEmpty = !isLoading && hasSearched && filteredBooks.length === 0;
+  const showBooksGrid =
+    searchMode === 'books' && (isLoading || filteredBooks.length > 0);
+  const showBooksEmpty =
+    searchMode === 'books' &&
+    !isLoading &&
+    hasSearched &&
+    filteredBooks.length === 0;
+  const showAuthorsEmpty =
+    searchMode === 'authors' &&
+    !isLoading &&
+    hasSearched &&
+    authors.length === 0;
 
   return (
     <Box
@@ -170,7 +267,12 @@ function BooksContent() {
             'radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 70%)',
         }}
       />
-      <BooksHero query={query} onQueryChange={setQuery} />
+      <BooksHero
+        query={query}
+        onQueryChange={setQuery}
+        searchMode={searchMode}
+        onSearchModeChange={setSearchMode}
+      />
 
       {/* Results section */}
       <Box
@@ -183,7 +285,7 @@ function BooksContent() {
           gap: 2,
         }}
       >
-        {(hasSearched || isLoading) && (
+        {searchMode === 'books' && (hasSearched || isLoading) && (
           <BooksFilters
             filters={filters}
             filterOptions={filterOptions}
@@ -196,13 +298,66 @@ function BooksContent() {
           />
         )}
 
-        {showResults && (
+        {showBooksGrid && (
           <BooksGrid books={filteredBooks} isLoading={isLoading} />
         )}
-        {showEmpty && (
+
+        {searchMode === 'authors' && isLoading && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: 'calc(50% - 6px)',
+                    lg: 'calc(33.333% - 8px)',
+                  },
+                }}
+              >
+                <Skeleton
+                  variant="rounded"
+                  height={72}
+                  sx={{
+                    borderRadius: '14px',
+                    bgcolor: 'rgba(255,255,255,0.05)',
+                  }}
+                />
+              </Box>
+            ))}
+          </Box>
+        )}
+
+        {searchMode === 'authors' && !isLoading && authors.length > 0 && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+            {authors.map((author) => (
+              <Box
+                key={author.id}
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: 'calc(50% - 6px)',
+                    lg: 'calc(33.333% - 8px)',
+                  },
+                }}
+              >
+                <AuthorCard author={author} />
+              </Box>
+            ))}
+          </Box>
+        )}
+
+        {showBooksEmpty && (
           <BooksEmptyState
-            hasSearched={hasSearched}
+            hasSearched={true}
             hasActiveFilters={activeFiltersCount > 0}
+            onResetFilters={resetFilters}
+          />
+        )}
+        {showAuthorsEmpty && (
+          <BooksEmptyState
+            hasSearched={true}
+            hasActiveFilters={false}
             onResetFilters={resetFilters}
           />
         )}

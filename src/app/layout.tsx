@@ -1,6 +1,12 @@
 import React from 'react';
 import ClientLayout from './ClientLayout';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
   title: 'WingWords',
@@ -21,11 +27,6 @@ export const metadata: Metadata = {
         alt: 'GY Books Logo',
       },
     ],
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
   },
   robots: {
     index: true,

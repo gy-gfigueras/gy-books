@@ -9,11 +9,13 @@ import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
 interface BooksSearchBarProps {
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
 }
 
 export const BooksSearchBar: React.FC<BooksSearchBarProps> = ({
   value,
   onChange,
+  placeholder = 'Search by title, author or series…',
 }) => (
   <Box
     sx={{
@@ -41,7 +43,7 @@ export const BooksSearchBar: React.FC<BooksSearchBarProps> = ({
       }}
     >
       <TextField
-        placeholder="Search by title, author or series…"
+        placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         variant="outlined"
