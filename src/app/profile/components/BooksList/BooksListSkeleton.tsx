@@ -4,56 +4,49 @@ import { Box, Skeleton } from '@mui/material';
 export const BooksListSkeleton: React.FC = () => (
   <Box
     sx={{
-      flex: 1,
-      display: {
-        xs: 'grid',
-        sm: 'grid',
-        md: 'flex',
-      },
+      display: 'grid',
       gridTemplateColumns: {
-        xs: '1fr 1fr',
-        sm: '1fr 1fr',
-        md: 'none',
+        xs: 'repeat(auto-fill, minmax(140px, 1fr))',
+        sm: 'repeat(auto-fill, minmax(160px, 1fr))',
+        md: 'repeat(auto-fill, minmax(180px, 1fr))',
       },
-      flexDirection: { xs: 'unset', md: 'unset' },
+      gap: { xs: 2, sm: 3, md: 4 },
       width: '100%',
-      flexWrap: { xs: 'unset', md: 'wrap' },
-      gap: { xs: 1, sm: 2 },
-      overflowY: 'hidden',
-      maxHeight: '70vh',
-      minHeight: 240,
-      alignItems: { xs: 'stretch', md: 'start' },
-      justifyContent: { xs: 'flex-start', md: 'center' },
-      py: { md: 1 },
-      background: 'transparent',
+      py: { xs: 1, md: 2 },
+      px: { xs: 0.5, md: 1 },
     }}
   >
-    {[...Array(8)].map((_, i) => (
-      <Box
-        key={i}
-        sx={{
-          minWidth: { xs: 'unset', md: 140 },
-          maxWidth: { xs: 'unset', md: 220 },
-          width: { xs: '100%', sm: '100%', md: 'auto' },
-          boxSizing: 'border-box',
-          display: 'flex',
-          justifyContent: { xs: 'center', md: 'center' },
-          alignItems: { xs: 'stretch', md: 'center' },
-          px: { xs: 0, sm: 1, md: 0 },
-          py: { xs: 0.5, md: 0 },
-          height: { xs: 'auto', md: '100%' },
-        }}
-      >
+    {Array.from({ length: 12 }).map((_, i) => (
+      <Box key={i} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Skeleton
           variant="rectangular"
+          animation="wave"
           sx={{
-            borderRadius: '16px',
+            borderRadius: '14px',
             width: '100%',
-            maxWidth: { xs: 'none', md: 140 },
-            height: { xs: '280px', md: 220 },
+            height: { xs: 210, sm: 240, md: 270 },
             bgcolor: 'rgba(255, 255, 255, 0.05)',
           }}
+        />
+        <Skeleton
+          variant="text"
           animation="wave"
+          sx={{
+            width: '80%',
+            height: 16,
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
+            borderRadius: '6px',
+          }}
+        />
+        <Skeleton
+          variant="text"
+          animation="wave"
+          sx={{
+            width: '50%',
+            height: 14,
+            bgcolor: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '6px',
+          }}
         />
       </Box>
     ))}

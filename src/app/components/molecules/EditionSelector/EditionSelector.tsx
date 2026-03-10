@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Edition } from '@/domain/book.model';
 import {
   Box,
   Dialog,
@@ -14,6 +13,7 @@ import { DEFAULT_COVER_IMAGE } from '@/utils/constants/constants';
 import { lora } from '@/utils/fonts/fonts';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { Edition } from '@/domain/HardcoverBook';
 
 interface EditionSelectorProps {
   editions: Edition[];

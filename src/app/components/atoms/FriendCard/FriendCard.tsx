@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
 
-const MotionBox = motion(Box);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MotionBox = motion(Box) as any;
 const MotionIconButton = motion(IconButton);
 
 interface FriendCardProps {

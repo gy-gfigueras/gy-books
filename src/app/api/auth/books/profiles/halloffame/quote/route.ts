@@ -30,6 +30,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    console.log(JSON.stringify({ quote }));
     const apiResponse = await fetch(
       `${baseUrl}/books/profiles/halloffame/quote`,
       {

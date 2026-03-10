@@ -29,6 +29,12 @@ export interface ProfileEditProps {
   onEditProfile: () => void;
 }
 
+export interface ProfileVisitorProps {
+  isFriend: boolean;
+  isAddingFriend: boolean;
+  onAddFriend: () => void;
+}
+
 interface ProfileLayoutProps {
   user: ProfileUser;
   basePath: string;
@@ -43,6 +49,7 @@ interface ProfileLayoutProps {
   tab: number;
   onTabChange: (tab: number) => void;
   editProps?: ProfileEditProps;
+  visitorProps?: ProfileVisitorProps;
 }
 
 const noop = () => {};
@@ -61,6 +68,7 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
   tab,
   onTabChange,
   editProps,
+  visitorProps,
 }) => {
   const isOwnProfile = !!editProps;
   const hallOfFameCount = books.filter(
@@ -109,6 +117,9 @@ export const ProfileLayout: React.FC<ProfileLayoutProps> = ({
           onBiographyChange={editProps?.onBiographyChange ?? noop}
           onBiographySave={editProps?.onBiographySave ?? noop}
           onBiographyCancel={editProps?.onBiographyCancel ?? noop}
+          isFriend={visitorProps?.isFriend}
+          isAddingFriend={visitorProps?.isAddingFriend}
+          onAddFriend={visitorProps?.onAddFriend}
         />
 
         <Box

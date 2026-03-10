@@ -21,7 +21,8 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { AuthorBook } from '@/domain/HardcoverAuthor';
 
-const MotionBox = motion(Box);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MotionBox = motion(Box) as any;
 
 const GLOW_SX = {
   position: 'absolute' as const,

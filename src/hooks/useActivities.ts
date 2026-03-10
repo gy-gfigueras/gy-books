@@ -16,8 +16,13 @@ interface useActivitiesProps {
 
 export function useActivities(id?: UUID): useActivitiesProps {
   const { data, isLoading, error } = useSWR(
-    `/api/public/books/activities?userId=${id}`,
-    () => fetchActivities(id!)
+    id ? `/api/public/books/activities?userId=${id}` : null,
+    () => fetchActivities(id!),
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+      keepPreviousData: true,
+    }
   );
 
   // Filtrar, ordenar y formatear las actividades

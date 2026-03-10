@@ -85,7 +85,7 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
         // Si tiene edición seleccionada, obtener datos de ella
         if (bookAsHardcover.userData?.editionId && bookAsHardcover.editions) {
           const selectedEdition = bookAsHardcover.editions.find(
-            (ed) => ed.id === bookAsHardcover.userData?.editionId
+            (ed) => String(ed.id) === bookAsHardcover.userData?.editionId
           );
           if (selectedEdition) {
             displayData.title = selectedEdition.title || displayData.title;
@@ -238,39 +238,36 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
             icon={<CheckCircleIcon />}
             label={`${timelineBooks.filter((b) => b.userData?.status === EBookStatus.READ).length} completed`}
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.1) 100%)',
-              color: '#a855f7',
-              border: '1px solid rgba(147, 51, 234, 0.2)',
+              background: 'rgba(52, 211, 153, 0.12)',
+              color: '#34d399',
+              border: '1px solid rgba(52, 211, 153, 0.25)',
               fontFamily: lora.style.fontFamily,
               fontWeight: 600,
-              '& .MuiChip-icon': { color: '#a855f7' },
+              '& .MuiChip-icon': { color: '#34d399', marginRight: '4px' },
             }}
           />
           <Chip
             icon={<AutoStoriesIcon />}
             label={`${timelineBooks.filter((b) => b.userData?.status === EBookStatus.READING).length} reading`}
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.1) 100%)',
-              color: '#a855f7',
-              border: '1px solid rgba(147, 51, 234, 0.2)',
+              background: 'rgba(96, 165, 250, 0.12)',
+              color: '#60a5fa',
+              border: '1px solid rgba(96, 165, 250, 0.25)',
               fontFamily: lora.style.fontFamily,
               fontWeight: 600,
-              '& .MuiChip-icon': { color: '#a855f7' },
+              '& .MuiChip-icon': { color: '#60a5fa', marginRight: '4px' },
             }}
           />
           <Chip
             icon={<SpeedIcon />}
             label={`${Math.round(timelineBooks.reduce((sum, b) => sum + b.pagesPerDay, 0) / timelineBooks.length)} pages/day avg`}
             sx={{
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%)',
-              color: '#a855f7',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
+              background: 'rgba(245, 158, 11, 0.12)',
+              color: '#f59e0b',
+              border: '1px solid rgba(245, 158, 11, 0.25)',
               fontFamily: lora.style.fontFamily,
               fontWeight: 600,
-              '& .MuiChip-icon': { color: '#a855f7' },
+              '& .MuiChip-icon': { color: '#f59e0b', marginRight: '4px' },
             }}
           />
         </Box>
@@ -383,59 +380,6 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                     zIndex: isHovered ? 10 : 1,
                   }}
                 >
-                  {/* Marcador en la línea */}
-                  <MotionBox
-                    animate={
-                      isReading
-                        ? {
-                            scale: [1, 1.15, 1],
-                            opacity: [0.8, 1, 0.8],
-                          }
-                        : {}
-                    }
-                    transition={
-                      isReading
-                        ? {
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                          }
-                        : {}
-                    }
-                    sx={{
-                      position: 'absolute',
-                      top: 108,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: 16,
-                      height: 16,
-                      borderRadius: '50%',
-                      background: isReading
-                        ? 'radial-gradient(circle, #a855f7 0%, #9333ea 100%)'
-                        : 'radial-gradient(circle, #9333ea 0%, #7e22ce 100%)',
-                      border: '3px solid rgba(0, 0, 0, 0.8)',
-                      boxShadow: 'rgba(147, 51, 234, 0.2) 0px 0px 6px',
-                      transition: 'all 0.3s ease',
-                      zIndex: 2,
-                    }}
-                  />
-
-                  {/* Conector vertical sutil */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 116,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: 1,
-                      height: 16,
-                      background: isReading
-                        ? 'linear-gradient(180deg, #a855f7 0%, transparent 100%)'
-                        : 'linear-gradient(180deg, #9333ea 0%, transparent 100%)',
-                      opacity: 0.5,
-                    }}
-                  />
-
                   {/* Card del libro - más compacta */}
                   <MotionPaper
                     elevation={isHovered ? 16 : 4}
@@ -481,26 +425,29 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                           transform: isHovered ? 'scale(1.05)' : 'scale(1)',
                         }}
                       />
-                      {/* Indicador de estado sutil en la esquina */}
-                      {isReading && (
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: 6,
-                            right: 6,
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            background: '#a855f7',
-                            boxShadow: '0 0 6px rgba(147, 51, 234, 0.3)',
+                      {/* Indicador de estado en la esquina */}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 6,
+                          right: 6,
+                          width: 9,
+                          height: 9,
+                          borderRadius: '50%',
+                          background: isReading ? '#60a5fa' : '#34d399',
+                          boxShadow: isReading
+                            ? '0 0 6px rgba(96, 165, 250, 0.6)'
+                            : '0 0 6px rgba(52, 211, 153, 0.5)',
+                          border: '1.5px solid rgba(0,0,0,0.5)',
+                          ...(isReading && {
                             animation: 'pulse 2s ease-in-out infinite',
                             '@keyframes pulse': {
                               '0%, 100%': { opacity: 1 },
-                              '50%': { opacity: 0.5 },
+                              '50%': { opacity: 0.4 },
                             },
-                          }}
-                        />
-                      )}
+                          }),
+                        }}
+                      />
                     </Box>
 
                     {/* Título compacto */}
@@ -565,9 +512,13 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                         sx={{
                           height: 20,
                           fontSize: 10,
-                          background: 'rgba(147, 51, 234, 0.15)',
-                          color: '#a855f7',
-                          border: '1px solid rgba(147, 51, 234, 0.2)',
+                          background: isReading
+                            ? 'rgba(96, 165, 250, 0.12)'
+                            : 'rgba(52, 211, 153, 0.12)',
+                          color: isReading ? '#60a5fa' : '#34d399',
+                          border: isReading
+                            ? '1px solid rgba(96, 165, 250, 0.2)'
+                            : '1px solid rgba(52, 211, 153, 0.2)',
                           fontFamily: lora.style.fontFamily,
                           '& .MuiChip-label': { px: 1 },
                         }}
@@ -579,9 +530,9 @@ export const ReadingTimeline: React.FC<ReadingTimelineProps> = ({ books }) => {
                           sx={{
                             height: 20,
                             fontSize: 10,
-                            background: 'rgba(168, 85, 247, 0.15)',
-                            color: '#c084fc',
-                            border: '1px solid rgba(168, 85, 247, 0.2)',
+                            background: 'rgba(245, 158, 11, 0.12)',
+                            color: '#f59e0b',
+                            border: '1px solid rgba(245, 158, 11, 0.2)',
                             fontFamily: lora.style.fontFamily,
                             '& .MuiChip-label': { px: 1 },
                           }}

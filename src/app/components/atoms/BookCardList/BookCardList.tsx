@@ -6,14 +6,16 @@ import { EBookStatus } from '@gycoding/nebula';
 import { Box, Chip, Rating, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
-const MotionBox = motion(Box);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MotionBox = motion(Box) as any;
 
 interface BookCardListProps {
   book: HardcoverBook;
 }
 
 export const BookCardList = ({ book }: BookCardListProps) => {
-  const { title, coverUrl } = useBookDisplay(book);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { title, coverUrl } = useBookDisplay(book)!;
 
   // Determinar color del badge según status
   const getStatusColor = (status?: EBookStatus) => {

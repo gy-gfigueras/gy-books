@@ -8,6 +8,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaunchIcon from '@mui/icons-material/Launch';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleIcon from '@mui/icons-material/People';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import CheckIcon from '@mui/icons-material/Check';
 import {
   Box,
   Chip,
@@ -35,6 +37,9 @@ interface ProfileHeaderProps {
   canEdit?: boolean;
   books?: UserProfileBook[];
   isLoadingBooks?: boolean;
+  isFriend?: boolean;
+  isAddingFriend?: boolean;
+  onAddFriend?: () => void;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -51,6 +56,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   canEdit = true,
   books = [],
   isLoadingBooks = false,
+  isFriend,
+  isAddingFriend = false,
+  onAddFriend,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -336,6 +344,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                     onChange={onBiographyChange}
                     onSave={onBiographySave}
                     onCancel={onBiographyCancel}
+                    onEdit={onEditProfile}
                     canEdit={canEdit}
                     compact
                   />
@@ -453,6 +462,64 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                       >
                         <LogoutIcon fontSize="small" />
                       </IconButton>
+                    </Tooltip>
+                  </Box>
+                )}
+                {!canEdit && onAddFriend && (
+                  <Box
+                    sx={{
+                      display: { xs: 'flex', sm: 'flex' },
+                      gap: 1,
+                      flexShrink: 0,
+                      position: { xs: 'static', md: 'absolute' },
+                      top: { md: 16 },
+                      right: { md: 0 },
+                      justifyContent: 'center',
+                      mt: { xs: 1, md: 0 },
+                    }}
+                  >
+                    <Tooltip
+                      title={isFriend ? 'Already friends' : 'Add friend'}
+                      placement="top"
+                    >
+                      <span>
+                        <IconButton
+                          onClick={onAddFriend}
+                          disabled={isFriend || isAddingFriend}
+                          sx={{
+                            background: isFriend
+                              ? 'rgba(52,211,153,0.1)'
+                              : 'rgba(255,255,255,0.05)',
+                            backdropFilter: 'blur(10px)',
+                            border: isFriend
+                              ? '1px solid rgba(52,211,153,0.35)'
+                              : '1px solid rgba(255,255,255,0.12)',
+                            color: isFriend
+                              ? '#34d399'
+                              : 'rgba(255,255,255,0.7)',
+                            transition: 'all 0.2s ease',
+                            '&:hover': !isFriend
+                              ? {
+                                  background: 'rgba(255,255,255,0.1)',
+                                  border: '1px solid rgba(255,255,255,0.25)',
+                                  color: '#fff',
+                                }
+                              : {},
+                            '&.Mui-disabled': {
+                              opacity: 1,
+                              color: isFriend
+                                ? '#34d399'
+                                : 'rgba(255,255,255,0.25)',
+                            },
+                          }}
+                        >
+                          {isFriend ? (
+                            <CheckIcon fontSize="small" />
+                          ) : (
+                            <PersonAddIcon fontSize="small" />
+                          )}
+                        </IconButton>
+                      </span>
                     </Tooltip>
                   </Box>
                 )}

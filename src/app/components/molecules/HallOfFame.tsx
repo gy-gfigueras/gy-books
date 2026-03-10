@@ -4,6 +4,8 @@
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUpdateHallOfFame } from '@/hooks/useUpdateHallOfFame';
+import { lora } from '@/utils/fonts/fonts';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
@@ -78,7 +80,7 @@ export default function HallOfFame({ userId }: { userId: string }) {
       sx={{
         background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
+        border: '1px solid rgba(245,158,11,0.14)',
         borderRadius: '20px',
         padding: '2rem',
         width: '100%',
@@ -87,11 +89,69 @@ export default function HallOfFame({ userId }: { userId: string }) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '2rem',
+        gap: '1.75rem',
         userSelect: 'none',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '-60px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '60%',
+          height: '120px',
+          background:
+            'radial-gradient(ellipse, rgba(245,158,11,0.07) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        },
       }}
     >
+      {/* Header */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 0.75,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <WorkspacePremiumIcon
+            sx={{ color: 'rgba(245,158,11,0.7)', fontSize: 22 }}
+          />
+          <Typography
+            sx={{
+              fontFamily: lora.style.fontFamily,
+              fontWeight: 700,
+              fontSize: { xs: '1.3rem', md: '1.6rem' },
+              background:
+                'linear-gradient(135deg, #ffffff 20%, #fcd34d 60%, #f59e0b 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Hall of Fame
+          </Typography>
+          <WorkspacePremiumIcon
+            sx={{ color: 'rgba(245,158,11,0.7)', fontSize: 22 }}
+          />
+        </Box>
+        <Typography
+          sx={{
+            fontFamily: lora.style.fontFamily,
+            fontSize: '0.72rem',
+            color: 'rgba(255,255,255,0.25)',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+          }}
+        >
+          {books.length} {books.length === 1 ? 'favourite' : 'favourites'}
+        </Typography>
+      </Box>
+
       <HallOfFameCarousel
         books={books}
         currentIndex={currentIndex}

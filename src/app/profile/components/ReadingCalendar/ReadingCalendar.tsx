@@ -14,14 +14,20 @@ import { enUS } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  Calendar,
-  dateFnsLocalizer,
-  Event,
-  ToolbarProps,
-  View,
-} from 'react-big-calendar';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { Calendar, dateFnsLocalizer } = require('react-big-calendar');
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+type View = string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ToolbarProps = any;
+interface CalendarEvent {
+  title?: string;
+  start?: Date;
+  end?: Date;
+  allDay?: boolean;
+  resource?: unknown;
+}
 
 const locales = {
   'en-US': enUS,
@@ -39,7 +45,7 @@ interface ReadingCalendarProps {
   books: UserProfileBook[];
 }
 
-interface BookEvent extends Event {
+interface BookEvent extends CalendarEvent {
   id: string;
   title: string;
   start: Date;
@@ -198,8 +204,8 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
               padding: '2px 4px',
               cursor: 'pointer',
               background: resource.isReading
-                ? 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)'
-                : 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+                ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
+                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               borderRadius: '4px',
               fontSize: '11px',
               fontWeight: 600,
@@ -209,7 +215,9 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
               gap: '4px',
               '&:hover': {
                 transform: 'scale(1.02)',
-                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+                boxShadow: resource.isReading
+                  ? '0 4px 12px rgba(59, 130, 246, 0.4)'
+                  : '0 4px 12px rgba(16, 185, 129, 0.4)',
               },
               transition: 'all 0.2s ease',
             }}
@@ -374,7 +382,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           <Box sx={{ textAlign: 'center' }}>
             <Typography
               sx={{
-                color: '#a855f7',
+                color: '#34d399',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 20, md: 24 },
                 fontWeight: 'bold',
@@ -385,7 +393,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             </Typography>
             <Typography
               sx={{
-                color: 'rgba(147, 51, 234, 0.8)',
+                color: 'rgba(52, 211, 153, 0.7)',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 10, md: 11 },
                 fontWeight: 500,
@@ -400,7 +408,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
           <Box sx={{ textAlign: 'center' }}>
             <Typography
               sx={{
-                color: '#a855f7',
+                color: '#f59e0b',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 20, md: 24 },
                 fontWeight: 'bold',
@@ -411,7 +419,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             </Typography>
             <Typography
               sx={{
-                color: 'rgba(147, 51, 234, 0.8)',
+                color: 'rgba(245, 158, 11, 0.7)',
                 fontFamily: lora.style.fontFamily,
                 fontSize: { xs: 10, md: 11 },
                 fontWeight: 500,
@@ -427,7 +435,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             <Box sx={{ textAlign: 'center' }}>
               <Typography
                 sx={{
-                  color: '#a855f7',
+                  color: '#60a5fa',
                   fontFamily: lora.style.fontFamily,
                   fontSize: { xs: 20, md: 24 },
                   fontWeight: 'bold',
@@ -438,7 +446,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
               </Typography>
               <Typography
                 sx={{
-                  color: 'rgba(147, 51, 234, 0.8)',
+                  color: 'rgba(96, 165, 250, 0.7)',
                   fontFamily: lora.style.fontFamily,
                   fontSize: { xs: 10, md: 11 },
                   fontWeight: 500,
@@ -480,10 +488,37 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             letterSpacing: '0.5px',
           },
           '& .rbc-today': {
-            background: 'rgba(147, 51, 234, 0.08)',
+            background: 'rgba(96, 165, 250, 0.07)',
+            boxShadow: 'inset 0 0 0 1px rgba(96, 165, 250, 0.12)',
+          },
+          '& .rbc-today .rbc-date-cell a': {
+            color: '#60a5fa !important',
+            fontWeight: '700 !important',
           },
           '& .rbc-off-range-bg': {
-            background: 'rgba(0, 0, 0, 0.3)',
+            background: 'rgba(0, 0, 0, 0.35)',
+          },
+          '& .rbc-off-range .rbc-date-cell a': {
+            color: 'rgba(255,255,255,0.2) !important',
+          },
+          '& .rbc-show-more': {
+            background: 'rgba(168, 85, 247, 0.15)',
+            color: '#c084fc',
+            border: '1px solid rgba(168, 85, 247, 0.3)',
+            borderRadius: '8px',
+            padding: '1px 7px',
+            fontSize: '10px',
+            fontWeight: 700,
+            fontFamily: lora.style.fontFamily,
+            textDecoration: 'none',
+            display: 'inline-block',
+            margin: '1px 2px',
+            letterSpacing: '0.02em',
+            '&:hover': {
+              background: 'rgba(168, 85, 247, 0.28)',
+              color: '#e879f9',
+              borderColor: 'rgba(232, 121, 249, 0.4)',
+            },
           },
           '& .rbc-month-view': {
             border: {
@@ -563,7 +598,7 @@ export const ReadingCalendar: React.FC<ReadingCalendarProps> = ({ books }) => {
             event: EventComponent,
             toolbar: CustomToolbar,
           }}
-          eventPropGetter={(event) => ({
+          eventPropGetter={(event: object) => ({
             style: {
               backgroundColor: 'transparent',
               border: 'none',

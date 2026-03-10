@@ -33,7 +33,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
           <CheckCircleIcon sx={{ fontSize: 14, color: '#6ee7b7' }} />
           <Typography
             sx={{
-              color: '#a855f7',
+              color: '#6ee7b7',
               fontSize: 13,
               fontWeight: 600,
             }}
@@ -45,7 +45,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
           <MenuBookIcon sx={{ fontSize: 14, color: '#818cf8' }} />
           <Typography
             sx={{
-              color: '#a855f7',
+              color: '#818cf8',
               fontSize: 13,
               fontWeight: 600,
             }}
@@ -57,7 +57,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
           <BookmarkIcon sx={{ fontSize: 14, color: '#fbbf24' }} />
           <Typography
             sx={{
-              color: '#a855f7',
+              color: '#fbbf24',
               fontSize: 13,
               fontWeight: 600,
             }}
@@ -92,7 +92,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
         </Typography>
         <Typography
           sx={{
-            color: '#a855f7',
+            color: '#6ee7b7',
             fontSize: 14,
             fontWeight: 700,
             fontFamily: lora.style.fontFamily,
@@ -117,7 +117,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
         </Typography>
         <Typography
           sx={{
-            color: '#a855f7',
+            color: '#818cf8',
             fontSize: 14,
             fontWeight: 700,
             fontFamily: lora.style.fontFamily,
@@ -142,7 +142,7 @@ export const BooksStatsDisplay: React.FC<BooksStatsDisplayProps> = ({
         </Typography>
         <Typography
           sx={{
-            color: '#a855f7',
+            color: '#fbbf24',
             fontSize: 14,
             fontWeight: 700,
             fontFamily: lora.style.fontFamily,

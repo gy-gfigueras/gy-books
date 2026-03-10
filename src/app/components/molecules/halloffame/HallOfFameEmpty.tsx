@@ -1,34 +1,50 @@
+'use client';
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { birthStone } from '@/utils/fonts/fonts';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import { lora } from '@/utils/fonts/fonts';
 
 export const HallOfFameEmpty: React.FC = () => (
   <Box
     sx={{
-      backgroundColor: '#1A1A1A',
-      borderRadius: '16px',
-      padding: '2rem',
+      background: 'rgba(255, 255, 255, 0.03)',
+      backdropFilter: 'blur(16px)',
+      border: '1px solid rgba(245,158,11,0.1)',
+      borderRadius: '20px',
+      padding: '3rem 2rem',
       width: '100%',
       maxWidth: '900px',
       margin: 'auto',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: '2rem',
+      gap: '1rem',
       userSelect: 'none',
-      color: 'white',
     }}
   >
+    <WorkspacePremiumIcon
+      sx={{ fontSize: 54, color: 'rgba(245,158,11,0.25)' }}
+    />
     <Typography
-      variant="body1"
       sx={{
-        fontStyle: 'normal',
-        fontSize: '50px',
+        fontFamily: lora.style.fontFamily,
+        fontStyle: 'italic',
+        fontSize: { xs: '1.1rem', md: '1.25rem' },
+        color: 'rgba(255,255,255,0.4)',
         textAlign: 'center',
-        fontFamily: birthStone.style.fontFamily,
       }}
     >
-      ✨ Add books to see them here! ✨
+      Your Hall of Fame is empty.
+    </Typography>
+    <Typography
+      sx={{
+        fontFamily: lora.style.fontFamily,
+        fontSize: '0.85rem',
+        color: 'rgba(255,255,255,0.2)',
+        textAlign: 'center',
+      }}
+    >
+      Add your favourite books to build your personal showcase.
     </Typography>
   </Box>
 );

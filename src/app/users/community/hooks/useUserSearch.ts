@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { User } from '@/domain/friend.model';
+import { Friend, User } from '@/domain/friend.model';
 import queryUsers from '@/app/actions/accounts/user/fetchUsers';
 import addFriend from '@/app/actions/accounts/user/friend/addFriend';
 import { Profile } from '@gycoding/nebula';
 
-function profileToUser(profile: Profile): User {
+function profileToUser(profile: Profile, friendIdSet: Set<string>): User {
   return {
     id: profile.id as User['id'],
     username: profile.username,
@@ -13,18 +13,22 @@ function profileToUser(profile: Profile): User {
     picture: profile.picture,
     email: profile.email,
     biography: profile.biography,
-    isFriend: false,
+    isFriend: friendIdSet.has(profile.id as string),
   };
 }
 
-export function useUserSearch(currentUserId?: string) {
+export function useUserSearch(currentUserId?: string, friends: Friend[] = []) {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [isAddingFriend, setIsAddingFriend] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
   const debouncedSearch = useDebounce(search, 250);
 
+  // Stable set of friend IDs to avoid infinite re-renders from array reference changes
+  const friendIds = friends.map((f) => f.id).join(',');
+
   useEffect(() => {
+    const friendIdSet = new Set(friendIds.split(',').filter(Boolean));
     const fetchUsers = async () => {
       if (debouncedSearch) {
         const formData = new FormData();
@@ -32,7 +36,7 @@ export function useUserSearch(currentUserId?: string) {
         const result = await queryUsers(formData);
         setUsers(
           result
-            .map(profileToUser)
+            .map((p) => profileToUser(p, friendIdSet))
             .filter((u) => !currentUserId || u.id !== currentUserId)
         );
       } else {
@@ -41,7 +45,7 @@ export function useUserSearch(currentUserId?: string) {
     };
 
     fetchUsers();
-  }, [debouncedSearch, currentUserId]);
+  }, [debouncedSearch, currentUserId, friendIds]);
 
   const handleAddFriend = async (userId: string) => {
     try {

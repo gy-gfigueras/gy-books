@@ -54,7 +54,7 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
       id: 0,
       label: 'Library',
       icon: <AutoStoriesIcon sx={{ fontSize: 20 }} />,
-      color: '#9333ea',
+      color: '#a855f7',
       gradient: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
       badge: booksCount,
     },
@@ -62,23 +62,23 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
       id: 1,
       label: 'Hall of Fame',
       icon: <WorkspacePremiumIcon sx={{ fontSize: 20 }} />,
-      color: '#a855f7',
-      gradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+      color: '#f59e0b',
+      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
       badge: hallOfFameCount,
     },
     {
       id: 2,
       label: 'Stats',
       icon: <BarChartIcon sx={{ fontSize: 20 }} />,
-      color: '#a855f7',
-      gradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+      color: '#60a5fa',
+      gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
     },
     {
       id: 3,
       label: 'Activity',
       icon: <TimelineIcon sx={{ fontSize: 20 }} />,
-      color: '#a855f7',
-      gradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
+      color: '#34d399',
+      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
     },
   ];
 
@@ -140,11 +140,18 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                     : 'rgba(255, 255, 255, 0.03)',
                   backdropFilter: 'blur(12px)',
                   border: isActive
-                    ? 'none'
-                    : '1px solid rgba(255, 255, 255, 0.06)',
-                  boxShadow: isActive ? `0 4px 12px ${item.color}30` : 'none',
+                    ? `1px solid transparent`
+                    : `1px solid ${item.color}25`,
+                  boxShadow: 'none',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   whiteSpace: 'nowrap',
+                  '&:hover': !isActive
+                    ? {
+                        background: `${item.color}0f`,
+                        borderColor: `${item.color}55`,
+                        boxShadow: `0 2px 8px ${item.color}20`,
+                      }
+                    : {},
                   '&::before': {
                     content: '""',
                     position: 'absolute',
@@ -166,6 +173,7 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: isActive ? '#fff' : item.color,
+                    opacity: isActive ? 1 : 0.8,
                     '& svg': {
                       filter: isActive
                         ? 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15))'
@@ -179,10 +187,10 @@ export const ProfileNavigation: React.FC<ProfileNavigationProps> = ({
                 {/* Label */}
                 <Typography
                   sx={{
-                    color: isActive ? '#fff' : 'rgba(255, 255, 255, 0.9)',
+                    color: isActive ? '#fff' : 'rgba(255, 255, 255, 0.75)',
                     fontFamily: lora.style.fontFamily,
                     fontSize: 15,
-                    fontWeight: isActive ? 700 : 600,
+                    fontWeight: isActive ? 700 : 500,
                     letterSpacing: '0.3px',
                   }}
                 >

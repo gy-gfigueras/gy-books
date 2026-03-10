@@ -6,7 +6,8 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-const MotionBox = motion(Box);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MotionBox = motion(Box) as any;
 
 interface AuthorCardProps {
   author: AuthorSearchResult;

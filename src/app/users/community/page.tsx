@@ -143,7 +143,7 @@ function FriendsPageContent() {
     successMessage,
     setSuccessMessage,
     handleAddFriend,
-  } = useUserSearch(currentUser?.id);
+  } = useUserSearch(currentUser?.id, data ?? []);
 
   return (
     <Box

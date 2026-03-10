@@ -5,6 +5,7 @@ import { lora } from '@/utils/fonts/fonts';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SearchIcon from '@mui/icons-material/Search';
 import {
+  Avatar,
   Box,
   IconButton,
   InputAdornment,
@@ -148,7 +149,7 @@ export function DiscoverTab({
         ) : (
           users.map((user) => (
             <MotionBox
-              key={user.username}
+              key={user.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.02, y: -4 }}
@@ -179,19 +180,38 @@ export function DiscoverTab({
                   },
                 }}
               >
-                <Image
-                  src={user.picture}
-                  style={{
-                    width: 'auto',
-                    height: '100%',
-                    aspectRatio: '1/1',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                  }}
-                  alt={user.username}
-                  width={100}
-                  height={100}
-                />
+                {user.picture ? (
+                  <Image
+                    src={user.picture}
+                    style={{
+                      width: 'auto',
+                      height: '100%',
+                      aspectRatio: '1/1',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                    }}
+                    alt={user.username}
+                    width={100}
+                    height={100}
+                  />
+                ) : (
+                  <Avatar
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      flexShrink: 0,
+                      background:
+                        'linear-gradient(135deg, rgba(147,51,234,0.25) 0%, rgba(129,140,248,0.2) 100%)',
+                      border: '1.5px solid rgba(147,51,234,0.25)',
+                      color: '#c084fc',
+                      fontFamily: lora.style.fontFamily,
+                      fontWeight: 700,
+                      fontSize: '1.4rem',
+                    }}
+                  >
+                    {user.username.charAt(0).toUpperCase()}
+                  </Avatar>
+                )}
                 <Typography
                   sx={{
                     fontSize: '22px',

@@ -28,7 +28,8 @@ interface BookCardProps {
 }
 
 export function BookCard({ book, compact = false }: BookCardProps) {
-  const { title, coverUrl } = useBookDisplay(book);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { title, coverUrl } = useBookDisplay(book)!;
   const { ref: titleRef, isTruncated } = useIsEllipsis();
   return (
     <Box
