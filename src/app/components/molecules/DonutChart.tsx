@@ -6,13 +6,13 @@ interface DonutChartProps {
   bookStatus?: Record<string, number>;
 }
 
-const COLORS = [
-  '#a855f7', // Morado claro para "Read"
-  '#c084fc', // Morado más claro para "Reading"
-  '#9333ea', // Morado principal para "Want to read"
-  '#7e22ce', // Morado oscuro adicional
-  '#6d28d9', // Morado medio adicional
-];
+const STATUS_COLORS: Record<string, string> = {
+  READ: '#34d399', // green
+  READING: '#60a5fa', // blue
+  WANT_TO_READ: '#f59e0b', // amber
+  DNF: '#f87171', // red
+};
+const FALLBACK_COLORS = ['#a855f7', '#c084fc', '#818cf8', '#e879f9'];
 
 export default function DonutChart({ bookStatus }: DonutChartProps) {
   // Guard clause: si no hay datos o está vacío
@@ -91,7 +91,8 @@ export default function DonutChart({ bookStatus }: DonutChartProps) {
   const data = statusKeys.map((status, idx) => ({
     label: formatStatusLabel(status),
     value: bookStatus[status],
-    color: COLORS[idx % COLORS.length],
+    color:
+      STATUS_COLORS[status] ?? FALLBACK_COLORS[idx % FALLBACK_COLORS.length],
     legend: {
       position: { vertical: 'bottom', horizontal: 'center' },
       color: 'white',

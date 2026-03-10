@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart } from '@mui/x-charts/BarChart';
+import { SparkLineChart } from '@mui/x-charts/SparkLineChart';
 import { Box, Typography } from '@mui/material';
 import { Star } from '@mui/icons-material';
 import { lora } from '@/utils/fonts/fonts';
@@ -13,7 +13,14 @@ interface RatingStatsProps {
   fontFamily: string;
 }
 
-const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
+// All levels 0, 0.5, 1, 1.5 ... 5
+const RATING_LEVELS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+// Only whole numbers shown as x-axis labels
+const WHOLE_LABELS = RATING_LEVELS.map((l) =>
+  Number.isInteger(l) ? String(l) : ''
+);
+
+const RatingStats: React.FC<RatingStatsProps> = ({ ratings, fontFamily }) => {
   // Guard clause
   if (!ratings || ratings.totalRatedBooks === 0) {
     return (
@@ -40,34 +47,9 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
     );
   }
 
-  // Crear array de ratings de 0.5 a 5 con incrementos de 0.5
-  const ratingLevels = [];
-  for (let i = 0.5; i <= 5; i += 0.5) {
-    ratingLevels.push(i);
-  }
-
-  // Preparar datos para el BarChart y ordenar por rating
-  const chartData = ratingLevels
-    .map((level) => ({
-      rating: `${level}★`,
-      count: ratings.distribution[level.toString()] || 0,
-      level,
-    }))
-    .sort((a, b) => a.level - b.level);
-
-  const labels = chartData.map((item) => item.rating);
-  const data = chartData.map((item) => item.count);
-
-  // Colores morados de la app
-  const colors = [
-    '#9333ea',
-    '#A855F7',
-    '#9333EA',
-    '#7C3AED',
-    '#6D28D9',
-    '#5B21B6',
-    '#4C1D95',
-  ];
+  const data = RATING_LEVELS.map(
+    (l) => ratings.distribution[l.toString()] || 0
+  );
 
   return (
     <Box
@@ -82,7 +64,7 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
         paddingTop: 2,
       }}
     >
-      {/* Average Rating Display */}
+      {/* Average rating header */}
       <Box sx={{ textAlign: 'center', mb: 0 }}>
         <Box
           sx={{
@@ -115,39 +97,48 @@ const RatingStats: React.FC<RatingStatsProps> = ({ ratings }) => {
         </Typography>
       </Box>
 
-      {/* Bar Chart */}
-      <Box sx={{ width: '100%', height: '240px' }}>
-        <BarChart
-          series={[{ data, color: '#9333ea' }]}
-          xAxis={[
-            {
-              data: labels,
-              scaleType: 'band',
-              labelStyle: { fill: 'white' },
-            },
-          ]}
-          yAxis={[
-            {
-              labelStyle: { fill: 'white' },
-            },
-          ]}
-          colors={colors}
-          height={220}
-          sx={{
-            '& .MuiChartsAxis-root .MuiChartsAxis-tick': {
-              stroke: 'white',
-            },
-            '& .MuiChartsAxis-root .MuiChartsAxis-line': {
-              stroke: 'white',
-            },
-            '& .MuiChartsAxis-root .MuiChartsAxis-tickLabel': {
-              fill: 'white',
-            },
-            '& .MuiChartsLegend-root': {
-              display: 'none',
-            },
+      {/* Sparkline */}
+      <Box sx={{ width: '100%' }}>
+        <SparkLineChart
+          data={data}
+          height={120}
+          plotType="line"
+          showTooltip
+          showHighlight
+          area
+          color="#9333ea"
+          valueFormatter={(v) => `${v} book${v !== 1 ? 's' : ''}`}
+          xAxis={{
+            scaleType: 'band',
+            data: RATING_LEVELS,
           }}
         />
+      </Box>
+
+      {/* X-axis labels: only whole numbers */}
+      <Box
+        sx={{
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'space-between',
+          px: 0.5,
+          mt: -1.5,
+        }}
+      >
+        {WHOLE_LABELS.map((label, i) => (
+          <Typography
+            key={i}
+            sx={{
+              color: label ? 'rgba(255,255,255,0.5)' : 'transparent',
+              fontFamily,
+              fontSize: '0.65rem',
+              flex: 1,
+              textAlign: 'center',
+            }}
+          >
+            {label || '·'}
+          </Typography>
+        ))}
       </Box>
     </Box>
   );

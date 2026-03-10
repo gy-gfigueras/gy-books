@@ -65,7 +65,6 @@ export const BookCardList = ({ book }: BookCardListProps) => {
         textDecoration: 'none',
         overflow: 'hidden',
         position: 'relative',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': {
           border: '1px solid rgba(255, 255, 255, 0.1)',
           background: 'rgba(255, 255, 255, 0.05)',

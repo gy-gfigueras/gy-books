@@ -5,15 +5,18 @@ import { RootState } from '@/store';
 import { lora } from '@/utils/fonts/fonts';
 import { Box, Typography } from '@mui/material';
 import { UUID } from 'crypto';
-import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
+import StatCard from '../atoms/StatCard/StatCard';
 import AuthorsBarChart from '../molecules/AuthorsBarChart';
+import AvgReadingDays from '../molecules/AvgReadingDays';
+import BooksReadThisYear from '../molecules/BooksReadThisYear';
 import DonutChart from '../molecules/DonutChart';
+import MonthlyActivitySparkline from '../molecules/MonthlyActivitySparkline';
 import PageCountKPI from '../molecules/PageCountKPI';
 import RatingStats from '../molecules/RatingStats';
+import ReadingHighlights from '../molecules/ReadingHighlights';
+import ReadingRadar from '../molecules/ReadingRadar';
 import StatsSkeleton from '../molecules/StatsSkeleton';
-
-const MotionBox = motion(Box);
 
 interface StatsComponentProps {
   id: UUID;
@@ -136,132 +139,14 @@ export default function StatsComponent({
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'row ',
+        flexDirection: 'row',
         gap: 2,
         flexWrap: 'wrap',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'stretch',
       }}
     >
-      {data.authors && Object.keys(data.authors).length > 0 && (
-        <MotionBox
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
-          sx={{
-            width: '500px',
-            height: '400px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            borderRadius: '20px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 2,
-            flexDirection: 'column',
-            gap: 1,
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-          }}
-        >
-          <Typography
-            sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
-            variant="h4"
-          >
-            Authors read
-          </Typography>
-          <AuthorsBarChart authors={data?.authors} />
-        </MotionBox>
-      )}
-      {data.bookStatus && Object.keys(data.bookStatus).length > 0 && (
-        <MotionBox
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-          sx={{
-            width: '500px',
-            height: '400px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            borderRadius: '20px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 2,
-            flexDirection: 'column',
-            gap: 1,
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-          }}
-        >
-          <Typography
-            sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
-            variant="h4"
-          >
-            Book status
-          </Typography>
-          <DonutChart bookStatus={data?.bookStatus} />
-        </MotionBox>
-      )}
-      <MotionBox
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        sx={{
-          width: '500px',
-          height: '400px',
-          background: 'rgba(255, 255, 255, 0.03)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
-          borderRadius: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 2,
-          flexDirection: 'column',
-          gap: 1,
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-        }}
-      >
-        <Typography
-          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
-          variant="h4"
-        >
-          Page Count
-        </Typography>
-        <PageCountKPI
-          totalPages={data?.totalPages || 0}
-          wantToReadPages={data?.wantToReadPages || 0}
-          bookStatus={data?.bookStatus || {}}
-          fontFamily={lora.style.fontFamily}
-        />
-      </MotionBox>
-      <MotionBox
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4, ease: [0.4, 0, 0.2, 1] }}
-        sx={{
-          width: '500px',
-          height: '400px',
-          background: 'rgba(255, 255, 255, 0.03)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
-          borderRadius: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 2,
-          flexDirection: 'column',
-          gap: 1,
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-        }}
-      >
-        <Typography
-          sx={{ color: 'white', fontFamily: lora.style.fontFamily }}
-          variant="h4"
-        >
-          Rating Stats
-        </Typography>
+      <StatCard title="Rating Stats" delay={0.1}>
         <RatingStats
           ratings={
             data?.ratings || {
@@ -272,7 +157,67 @@ export default function StatsComponent({
           }
           fontFamily={lora.style.fontFamily}
         />
-      </MotionBox>
+      </StatCard>
+      {data.bookStatus && Object.keys(data.bookStatus).length > 0 && (
+        <StatCard title="Book status" delay={0.2}>
+          <DonutChart bookStatus={data?.bookStatus} />
+        </StatCard>
+      )}
+      <StatCard title="Page Count" delay={0.3}>
+        <PageCountKPI
+          totalPages={data?.totalPages || 0}
+          wantToReadPages={data?.wantToReadPages || 0}
+          bookStatus={data?.bookStatus || {}}
+          fontFamily={lora.style.fontFamily}
+        />
+      </StatCard>
+      <StatCard title="Reader DNA" delay={0.4}>
+        <ReadingRadar
+          readingCompletionRate={data?.readingCompletionRate || 0}
+          reviewedBooks={data?.reviewedBooks || 0}
+          ratedBooks={data?.ratings?.totalRatedBooks || 0}
+          uniqueAuthors={Object.keys(data?.authors || {}).length}
+          seriesTracked={data?.seriesTracked || 0}
+          booksReadThisYear={data?.booksReadThisYear || 0}
+          readCount={data?.bookStatus?.['READ'] || 0}
+          fontFamily={lora.style.fontFamily}
+        />
+      </StatCard>
+      <StatCard title="Books this year" delay={0.5}>
+        <BooksReadThisYear
+          booksReadThisYear={data?.booksReadThisYear || 0}
+          booksReadLastYear={data?.booksReadLastYear || 0}
+          fontFamily={lora.style.fontFamily}
+        />
+      </StatCard>
+      <StatCard title="Monthly Activity" delay={0.6}>
+        <MonthlyActivitySparkline
+          monthlyBooksRead={data?.monthlyBooksRead || Array(12).fill(0)}
+          booksReadThisYear={data?.booksReadThisYear || 0}
+          fontFamily={lora.style.fontFamily}
+        />
+      </StatCard>
+      <StatCard title="Reading pace" delay={0.7}>
+        <AvgReadingDays
+          avgReadingDays={data?.avgReadingDays || 0}
+          fontFamily={lora.style.fontFamily}
+        />
+      </StatCard>
+      <StatCard title="Reading highlights" delay={0.8}>
+        <ReadingHighlights
+          readingCompletionRate={data?.readingCompletionRate || 0}
+          reviewedBooks={data?.reviewedBooks || 0}
+          seriesTracked={data?.seriesTracked || 0}
+          longestBook={data?.longestBook || null}
+          totalBooks={data?.totalBooks || 0}
+          fontFamily={lora.style.fontFamily}
+        />
+      </StatCard>
+      {data.authors && Object.keys(data.authors).length > 0 && (
+        <StatCard title="Authors read" delay={0.9}>
+          <AuthorsBarChart authors={data?.authors} />
+        </StatCard>
+      )}
     </Box>
   );
 }

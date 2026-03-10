@@ -1,24 +1,23 @@
 import type HardcoverBook from '@/domain/HardcoverBook';
+import { BookHelpers } from '@/domain/HardcoverBook';
 import { Stats } from '@/domain/stats.model';
 
 /**
+ * Returns the most accurate page count for a book:
+ * uses the selected edition's pages when available, falls back to book.pageCount.
+ */
+function resolvePageCount(book: HardcoverBook): number {
+  const edition = BookHelpers.getSelectedEdition(book);
+  return edition?.pages ?? book.pageCount ?? 0;
+}
+
+/**
  * Calcula las estadísticas de una colección de libros.
- *
- * Esta función procesa un array de libros y genera KPIs como:
- * - Total de libros y páginas
- * - Distribución de autores
- * - Distribución de estados (READ, READING, WANT_TO_READ)
- * - Estadísticas de ratings (distribución, promedio, total)
- *
- * @param books - Array de libros del usuario (con userData incluido)
- * @returns Stats - Objeto con todas las estadísticas calculadas
- *
- * @example
- * ```typescript
- * const stats = calculateStats(userBooks);
- * ```
  */
 export function calculateStats(books: HardcoverBook[]): Stats {
+  const currentYear = new Date().getFullYear();
+  const lastYear = currentYear - 1;
+
   const stats: Stats = {
     totalBooks: 0,
     totalPages: 0,
@@ -30,6 +29,14 @@ export function calculateStats(books: HardcoverBook[]): Stats {
       averageRating: 0,
       totalRatedBooks: 0,
     },
+    booksReadThisYear: 0,
+    booksReadLastYear: 0,
+    avgReadingDays: 0,
+    reviewedBooks: 0,
+    seriesTracked: 0,
+    longestBook: null,
+    readingCompletionRate: 0,
+    monthlyBooksRead: Array(12).fill(0),
   };
 
   if (!books || books.length === 0) {
@@ -38,40 +45,40 @@ export function calculateStats(books: HardcoverBook[]): Stats {
 
   let totalRatingSum = 0;
   let ratedBooksCount = 0;
+  let totalReadingDays = 0;
+  let booksWithDates = 0;
+  const seriesSet = new Set<string>();
 
   books.forEach((book) => {
-    const { userData, pageCount } = book;
+    const { userData } = book;
 
-    // Si no tiene userData, skip
     if (!userData) return;
 
-    const { status, rating } = userData;
+    const { status, rating, startDate, endDate, review } = userData;
+    const pageCount = resolvePageCount(book);
 
-    // Incrementar total de libros
     stats.totalBooks++;
 
-    // Acumular páginas totales (solo libros READ o READING)
+    // Pages
     if (status === 'READ' || status === 'READING') {
       stats.totalPages += pageCount || 0;
     }
-
-    // Acumular páginas de WANT_TO_READ
     if (status === 'WANT_TO_READ') {
       stats.wantToReadPages += pageCount || 0;
     }
 
-    // Distribución de autores (solo libros READ)
+    // Authors (only READ)
     const authorName = book.author?.name;
     if (authorName && status === 'READ') {
       stats.authors[authorName] = (stats.authors[authorName] || 0) + 1;
     }
 
-    // Distribución de estados
+    // Book status distribution
     if (status) {
       stats.bookStatus[status] = (stats.bookStatus[status] || 0) + 1;
     }
 
-    // Distribución de ratings
+    // Ratings
     if (rating && rating > 0) {
       const ratingKey = rating.toString();
       stats.ratings.distribution[ratingKey] =
@@ -79,13 +86,65 @@ export function calculateStats(books: HardcoverBook[]): Stats {
       totalRatingSum += rating;
       ratedBooksCount++;
     }
+
+    // Books read this/last year (by endDate)
+    if (status === 'READ' && endDate) {
+      const endDateObj = new Date(endDate);
+      const endYear = endDateObj.getFullYear();
+      if (endYear === currentYear) {
+        stats.booksReadThisYear++;
+        stats.monthlyBooksRead[endDateObj.getMonth()]++;
+      }
+      if (endYear === lastYear) stats.booksReadLastYear++;
+    }
+
+    // Avg reading days (READ books with both dates)
+    if (status === 'READ' && startDate && endDate) {
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate).getTime();
+      const days = Math.round((end - start) / (1000 * 60 * 60 * 24));
+      if (days >= 0) {
+        totalReadingDays += days;
+        booksWithDates++;
+      }
+    }
+
+    // Reviews
+    if (review && review.trim().length > 0) {
+      stats.reviewedBooks++;
+    }
+
+    // Series
+    if (book.series && book.series.length > 0) {
+      book.series.forEach((s) => seriesSet.add(s.name));
+    }
+
+    // Longest book (READ only)
+    if (status === 'READ' && pageCount) {
+      if (!stats.longestBook || pageCount > stats.longestBook.pages) {
+        stats.longestBook = { title: book.title, pages: pageCount };
+      }
+    }
   });
 
-  // Calcular rating promedio
+  // Derived calculations
   if (ratedBooksCount > 0) {
     stats.ratings.averageRating =
       Math.round((totalRatingSum / ratedBooksCount) * 10) / 10;
     stats.ratings.totalRatedBooks = ratedBooksCount;
+  }
+
+  if (booksWithDates > 0) {
+    stats.avgReadingDays = Math.round(totalReadingDays / booksWithDates);
+  }
+
+  stats.seriesTracked = seriesSet.size;
+
+  const readCount = stats.bookStatus['READ'] || 0;
+  if (stats.totalBooks > 0) {
+    stats.readingCompletionRate = Math.round(
+      (readCount / stats.totalBooks) * 100
+    );
   }
 
   return stats;
