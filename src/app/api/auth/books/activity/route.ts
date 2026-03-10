@@ -1,71 +1,73 @@
 import { feedActivity } from '@/domain/activity.model';
 import { auth0 } from '@/lib/auth0';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
-import { sendLog } from '@/utils/logs/logHelper';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const SESSION = await auth0.getSession();
+    const session = await auth0.getSession();
 
-    if (!SESSION) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.tokenSet?.idToken;
-
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
-    }
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    // Extraer page y size de la query
-    const { searchParams } = _req.nextUrl;
+    const { searchParams } = req.nextUrl;
     const page = searchParams.get('page') ?? '0';
     const size = searchParams.get('size') ?? '50';
 
     const apiUrl = `${baseUrl}/books/activity?page=${page}&size=${size}`;
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${ID_TOKEN}`,
+      Authorization: `Bearer ${session.tokenSet?.idToken}`,
     };
 
-    const gyCodingResponse = await fetch(apiUrl, { headers });
+    const apiResponse = await fetch(apiUrl, { headers });
 
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.ACTIVITY_FETCH_ERROR, {
-        error: errorText,
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_LIST_RETRIEVE_FAILED, {
+        additionalData: { status: apiResponse.status, error: errorText },
       });
       throw new Error(`GyCoding API Error: ${errorText}`);
     }
 
-    const activities = await gyCodingResponse.json();
-    // Leer el header X-Has-Next de la respuesta de la API
-    const hasNext = gyCodingResponse.headers.get('x-has-next');
-    console.log('Has next page:', hasNext);
-    // Crear respuesta y setear el header X-Has-Next
+    const activities = await apiResponse.json();
+    const hasNext = apiResponse.headers.get('x-has-next');
+
+    await sendLog(LogLevel.INFO, LogMessage.ACTIVITY_LIST_RETRIEVED, {
+      additionalData: { page, size, hasNext },
+    });
+
     const response = NextResponse.json(activities as feedActivity[]);
     if (hasNext !== null) {
       response.headers.set('X-Has-Next', hasNext);
     }
     return response;
   } catch (error) {
-    console.error('Error in /api/auth/books/activity:', error);
-    await sendLog(ELevel.ERROR, ELogs.ACTIVITY_FETCH_ERROR, {
-      error: error,
+    await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_LIST_RETRIEVE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
-
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -73,18 +75,19 @@ export async function GET(_req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const SESSION = await auth0.getSession();
+    const session = await auth0.getSession();
 
-    if (!SESSION) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.tokenSet?.idToken;
-
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
-    }
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
 
     const body = await req.json();
     const { message } = body;
@@ -97,43 +100,42 @@ export async function POST(req: NextRequest) {
     }
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    const apiUrl = `${baseUrl}/books/activity`;
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${ID_TOKEN}`,
-    };
-
-    const gyCodingResponse = await fetch(apiUrl, {
+    const apiResponse = await fetch(`${baseUrl}/books/activity`, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.tokenSet?.idToken}`,
+      },
       body: JSON.stringify({ message }),
     });
 
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.ACTIVITY_CREATE_ERROR, {
-        error: errorText,
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_CREATE_FAILED, {
+        additionalData: { status: apiResponse.status, error: errorText },
       });
       throw new Error(`GyCoding API Error: ${errorText}`);
     }
 
-    const activity = await gyCodingResponse.json();
-
+    const activity = await apiResponse.json();
+    await sendLog(LogLevel.INFO, LogMessage.ACTIVITY_CREATED);
     return NextResponse.json(activity as feedActivity);
   } catch (error) {
-    console.error('Error creating activity:', error);
-    await sendLog(ELevel.ERROR, ELogs.ACTIVITY_CREATE_ERROR, {
-      error: error,
+    await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_CREATE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
-
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

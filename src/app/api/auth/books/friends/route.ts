@@ -1,71 +1,62 @@
 import { auth0 } from '@/lib/auth0';
-import { NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { Profile } from '@gycoding/nebula';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const SESSION = await auth0.getSession();
+    const session = await auth0.getSession();
 
-    if (!SESSION || !SESSION.user) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
+
+    const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
+    if (!baseUrl) {
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
       return NextResponse.json(
-        { error: 'No authentication token available' },
-        { status: 401 }
+        { error: 'Server configuration error' },
+        { status: 500 }
       );
     }
 
-    // En Auth0 v4, el idToken está en tokenSet.idToken, no directamente en session.idToken
-    const ID_TOKEN = SESSION.tokenSet?.idToken;
+    const apiResponse = await fetch(`${baseUrl}/books/friends`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.tokenSet?.idToken}`,
+      },
+    });
 
-    let apiUrl: string | null = null;
-    let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
-    if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-    }
-
-    apiUrl = `${baseUrl}/books/friends`;
-    headers = {
-      ...headers,
-      Authorization: `Bearer ${ID_TOKEN}`,
-    };
-
-    if (!apiUrl) {
-      throw new Error(ELogs.API_URL_NOT_DEFINED);
-    }
-
-    const gyCodingResponse = await fetch(apiUrl, { headers });
-    console.log('GyCoding Response:', gyCodingResponse);
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-        error: errorText,
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.FRIEND_LIST_RETRIEVE_FAILED, {
+        additionalData: { status: apiResponse.status, error: errorText },
       });
-      throw new Error(`GyCoding API Error: ${errorText}`);
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
     }
 
-    const FRIENDS_DATA = await gyCodingResponse.json();
-
-    await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, {
-      FRIENDS_DATA,
-    });
-
-    return NextResponse.json(FRIENDS_DATA as Profile[]);
+    const friendsData = await apiResponse.json();
+    await sendLog(LogLevel.INFO, LogMessage.FRIEND_LIST_RETRIEVED);
+    return NextResponse.json(friendsData as Profile[]);
   } catch (error) {
-    console.error('Error in /api/auth/user:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error,
+    await sendLog(LogLevel.ERROR, LogMessage.FRIEND_LIST_RETRIEVE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
-
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

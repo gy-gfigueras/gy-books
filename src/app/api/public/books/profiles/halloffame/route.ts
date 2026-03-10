@@ -1,51 +1,50 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { HallOfFame } from '@gycoding/nebula';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (req: NextRequest) => {
   try {
-    const SEARCH_PARAMS = req.nextUrl.searchParams;
-    const PROFILE_ID = SEARCH_PARAMS.get('profileId');
-
-    let apiUrl: string | null = null;
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const profileId = req.nextUrl.searchParams.get('profileId');
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    apiUrl = `${baseUrl}/books/profiles/${PROFILE_ID}/halloffame`;
+    const apiResponse = await fetch(
+      `${baseUrl}/books/profiles/${profileId}/halloffame`,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
 
-    if (!apiUrl) {
-      throw new Error(ELogs.API_URL_NOT_DEFINED);
-    }
-
-    const gyCodingResponse = await fetch(apiUrl, { headers });
-
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-        error: errorText,
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.HALLOFFAME_RETRIEVE_FAILED, {
+        profileId: profileId ?? undefined,
+        additionalData: { status: apiResponse.status, error: errorText },
       });
-      throw new Error(`GyCoding API Error: ${errorText}`);
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
     }
-    const hallOfFame = await gyCodingResponse.json();
+
+    const hallOfFame = await apiResponse.json();
+    await sendLog(LogLevel.INFO, LogMessage.HALLOFFAME_RETRIEVED, {
+      profileId: profileId ?? undefined,
+    });
     return NextResponse.json(hallOfFame as HallOfFame);
   } catch (error) {
-    console.error('Error in /api/auth/user:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error instanceof Error ? error.message : error,
+    await sendLog(LogLevel.ERROR, LogMessage.HALLOFFAME_RETRIEVE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
-
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

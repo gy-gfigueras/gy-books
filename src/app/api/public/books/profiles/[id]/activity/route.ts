@@ -1,55 +1,49 @@
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { Activity } from '@/domain/activity.model';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
-import { sendLog } from '@/utils/logs/logHelper';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (req: NextRequest) => {
   try {
     const profileId = req.nextUrl.pathname.split('/')[5];
 
-    let apiUrl: string | null = null;
-    let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    apiUrl = `${baseUrl}/books/activity/${profileId}`;
-    headers = {
-      ...headers,
-    };
-
-    if (!apiUrl) {
-      throw new Error(ELogs.API_URL_NOT_DEFINED);
-    }
-
-    const gyCodingResponse = await fetch(apiUrl, { headers });
-
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-        error: errorText,
-      });
-      throw new Error(`GyCoding API Error: ${errorText}`);
-    }
-
-    const activity = await gyCodingResponse.json();
-
-    return NextResponse.json(activity as Activity[]);
-  } catch (error) {
-    console.error('Error in /api/auth/user:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error,
+    const apiResponse = await fetch(`${baseUrl}/books/activity/${profileId}`, {
+      headers: { 'Content-Type': 'application/json' },
     });
 
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_LIST_RETRIEVE_FAILED, {
+        profileId,
+        additionalData: { status: apiResponse.status, error: errorText },
+      });
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
+    }
+
+    const activity = await apiResponse.json();
+    await sendLog(LogLevel.INFO, LogMessage.ACTIVITY_LIST_RETRIEVED, {
+      profileId,
+    });
+    return NextResponse.json(activity as Activity[]);
+  } catch (error) {
+    await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_LIST_RETRIEVE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    });
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

@@ -1,22 +1,8 @@
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { NextRequest, NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
 
 const MAX_BATCH_SIZE = 50;
 
-/**
- * Endpoint batch para obtener múltiples perfiles en una sola petición.
- * Evita el problema N+1 al resolver varios profileIds de una vez.
- *
- * POST /api/public/books/profiles/batch
- * Body: { ids: string[] }
- *
- * Optimizaciones:
- * - Deduplica IDs antes de hacer fetch
- * - Promise.allSettled para tolerancia a fallos parciales
- * - Perfiles null para IDs que fallen (no rompe el batch entero)
- */
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const { ids } = await req.json();
@@ -29,16 +15,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
       return NextResponse.json(
-        { error: ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED },
+        { error: 'Server configuration error' },
         { status: 500 }
       );
     }
 
-    // Deduplicar IDs y limitar el tamaño del batch
     const uniqueIds = [...new Set<string>(ids)].slice(0, MAX_BATCH_SIZE);
 
     const results = await Promise.allSettled(
@@ -65,13 +49,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       }
     }
 
+    await sendLog(LogLevel.INFO, LogMessage.PROFILE_BATCH_RETRIEVED, {
+      additionalData: {
+        requestedCount: uniqueIds.length,
+        resolvedCount: Object.keys(profilesMap).length,
+      },
+    });
     return NextResponse.json(profilesMap);
   } catch (error) {
-    console.error('[profiles/batch] Error:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error instanceof Error ? error.message : String(error),
+    await sendLog(LogLevel.ERROR, LogMessage.PROFILE_BATCH_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
-
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

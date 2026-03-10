@@ -1,61 +1,68 @@
 import { auth0 } from '@/lib/auth0';
-import { NextResponse, NextRequest } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
-import { MongoClient } from 'mongodb';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { FriendRequest } from '@gycoding/nebula';
+import { MongoClient } from 'mongodb';
+import { NextRequest, NextResponse } from 'next/server';
 
 async function handler(req: NextRequest) {
   try {
-    const SESSION = await auth0.getSession();
+    const session = await auth0.getSession();
 
-    if (!SESSION) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const ID_TOKEN = SESSION?.tokenSet?.idToken;
-    const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-    const MONGO_URI = process.env.MONGO_URI;
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
 
+    const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
       return NextResponse.json(
-        { error: ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED },
+        { error: 'Server configuration error' },
         { status: 500 }
       );
     }
 
-    const apiUrl = `${baseUrl}/books/friends/request`;
-
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${ID_TOKEN}`,
+      Authorization: `Bearer ${session.tokenSet?.idToken}`,
     };
 
     if (req.method === 'POST') {
       const body = await req.json();
       const userId = body.userId;
 
-      const gyCodingResponse = await fetch(apiUrl, {
+      const apiResponse = await fetch(`${baseUrl}/books/friends/request`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ to: userId }),
       });
 
-      if (!gyCodingResponse.ok) {
-        const errorText = await gyCodingResponse.text();
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-          error: errorText,
+      if (!apiResponse.ok) {
+        const errorText = await apiResponse.text();
+        await sendLog(LogLevel.ERROR, LogMessage.FRIEND_REQUEST_SEND_FAILED, {
+          additionalData: {
+            userId,
+            status: apiResponse.status,
+            error: errorText,
+          },
         });
         return NextResponse.json(
           { error: errorText },
-          { status: gyCodingResponse.status }
+          { status: apiResponse.status }
         );
       }
 
-      const data = await gyCodingResponse.json();
-      await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, { data });
+      const data = await apiResponse.json();
+      await sendLog(LogLevel.INFO, LogMessage.FRIEND_REQUEST_SENT, {
+        additionalData: { userId },
+      });
       return NextResponse.json(data);
     }
 
@@ -66,32 +73,37 @@ async function handler(req: NextRequest) {
       );
       const profileId = url.searchParams.get('profileId');
 
-      if (!MONGO_URI) {
-        await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      const mongoUri = process.env.MONGO_URI;
+      if (!mongoUri) {
+        await sendLog(LogLevel.ERROR, LogMessage.CONFIG_MONGO_URI_MISSING);
         return NextResponse.json(
-          { error: ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED },
+          { error: 'Server configuration error' },
           { status: 500 }
         );
       }
-      const client = new MongoClient(MONGO_URI);
+
+      const client = new MongoClient(mongoUri);
 
       try {
         await client.connect();
-
         const db = client.db('GYBooks');
         const collection = db.collection('FriendRequest');
         const data = await collection.find({ to: profileId }).toArray();
-        await client.close();
+
+        await sendLog(LogLevel.INFO, LogMessage.FRIEND_REQUEST_LIST_RETRIEVED, {
+          profileId: profileId ?? undefined,
+          additionalData: { count: data.length },
+        });
         return NextResponse.json(data as unknown as FriendRequest[]);
       } catch (error) {
-        console.error('Error fetching friend requests:', error);
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-          error: error instanceof Error ? error.message : String(error),
+        await sendLog(LogLevel.ERROR, LogMessage.FRIEND_REQUEST_LIST_FAILED, {
+          profileId: profileId ?? undefined,
+          additionalData: {
+            error: error instanceof Error ? error.message : String(error),
+          },
         });
         return NextResponse.json(
-          {
-            error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR,
-          },
+          { error: error instanceof Error ? error.message : 'Unknown error' },
           { status: 500 }
         );
       } finally {
@@ -101,13 +113,13 @@ async function handler(req: NextRequest) {
 
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (error) {
-    console.error('Error in /api/auth/accounts/users/friends/request:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error instanceof Error ? error.message : String(error),
+    await sendLog(LogLevel.ERROR, LogMessage.FRIEND_REQUEST_SEND_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
-
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

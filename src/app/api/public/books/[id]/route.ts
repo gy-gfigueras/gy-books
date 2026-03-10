@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { Book } from '@gycoding/nebula';
+import { NextResponse } from 'next/server';
 
 async function handler(request: Request) {
   const url = new URL(request.url);
   const pathParts = url.pathname.split('/');
   const id = pathParts[pathParts.length - 1];
+
   if (!id) {
     return NextResponse.json({ error: 'Book ID is required' }, { status: 400 });
   }
@@ -16,46 +14,49 @@ async function handler(request: Request) {
   try {
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
     if (!baseUrl) {
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    const apiUrl = `${baseUrl}/books/${id}/public`;
-
-    if (request.method === 'GET') {
-      const gyCodingResponse = await fetch(apiUrl, {
-        method: 'GET',
-      });
-
-      if (!gyCodingResponse.ok) {
-        const errorText = await gyCodingResponse.text();
-        console.error('GET Error Response:', {
-          status: gyCodingResponse.status,
-          statusText: gyCodingResponse.statusText,
-          error: errorText,
-        });
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-          error: errorText,
-        });
-        throw new Error(`GyCoding API Error: ${errorText}`);
-      }
-
-      const apiBook = await gyCodingResponse.json();
-
-      await sendLog(ELevel.INFO, ELogs.PROFILE_HAS_BEEN_RECEIVED, {
-        bookId: id,
-      });
-      return NextResponse.json(apiBook as Book);
-    }
-
-    return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
-  } catch (error) {
-    console.error('Error in /api/auth/books/[id]:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error,
+    const apiResponse = await fetch(`${baseUrl}/books/${id}/public`, {
+      method: 'GET',
     });
 
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(
+        LogLevel.ERROR,
+        LogMessage.BOOK_RETRIEVE_FAILED,
+        {
+          additionalData: { status: apiResponse.status, error: errorText },
+        },
+        id
+      );
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
+    }
+
+    const apiBook = await apiResponse.json();
+    await sendLog(LogLevel.INFO, LogMessage.BOOK_RETRIEVED, {}, id);
+    return NextResponse.json(apiBook as Book);
+  } catch (error) {
+    await sendLog(
+      LogLevel.ERROR,
+      LogMessage.BOOK_RETRIEVE_FAILED,
+      {
+        additionalData: {
+          error: error instanceof Error ? error.message : String(error),
+        },
+      },
+      id
+    );
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

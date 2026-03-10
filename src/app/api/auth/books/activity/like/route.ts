@@ -1,7 +1,5 @@
 import { auth0 } from '@/lib/auth0';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
-import { sendLog } from '@/utils/logs/logHelper';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface LikeRequestBody {
@@ -9,29 +7,21 @@ interface LikeRequestBody {
   profileId: string;
 }
 
-/**
- * PATCH /api/auth/books/activity/like
- *
- * Toggles a like on an activity.
- * If the user hasn't liked it → adds like.
- * If the user already liked it → removes like.
- *
- * Body: { id: string (activityId); profileId: string (currentUserProfileId) }
- */
 export async function PATCH(req: NextRequest) {
   try {
-    const SESSION = await auth0.getSession();
+    const session = await auth0.getSession();
 
-    if (!SESSION) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.tokenSet?.idToken;
-
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
-    }
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
 
     const body = (await req.json()) as LikeRequestBody;
     const { id, profileId } = body;
@@ -44,45 +34,52 @@ export async function PATCH(req: NextRequest) {
     }
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    const apiUrl = `${baseUrl}/books/activity`;
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: `Bearer ${ID_TOKEN}`,
-    };
-
-    const response = await fetch(apiUrl, {
+    const apiResponse = await fetch(`${baseUrl}/books/activity`, {
       method: 'PATCH',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${session.tokenSet?.idToken}`,
+      },
       body: JSON.stringify({ id, profileId }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      await sendLog(
-        ELevel.ERROR,
-        `Activity like toggle failed: ${response.status} - ${errorText}`
-      );
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_LIKE_TOGGLE_FAILED, {
+        profileId,
+        additionalData: {
+          activityId: id,
+          status: apiResponse.status,
+          error: errorText,
+        },
+      });
       return NextResponse.json(
-        { error: `Failed to toggle like: ${response.status}` },
-        { status: response.status }
+        { error: `Failed to toggle like: ${apiResponse.status}` },
+        { status: apiResponse.status }
       );
     }
 
-    const data = await response.json();
+    const data = await apiResponse.json();
+    await sendLog(LogLevel.INFO, LogMessage.ACTIVITY_LIKE_TOGGLED, {
+      profileId,
+      additionalData: { activityId: id },
+    });
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error toggling activity like:', error);
-    await sendLog(
-      ELevel.ERROR,
-      `Activity like error: ${(error as Error).message}`
-    );
+    await sendLog(LogLevel.ERROR, LogMessage.ACTIVITY_LIKE_TOGGLE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

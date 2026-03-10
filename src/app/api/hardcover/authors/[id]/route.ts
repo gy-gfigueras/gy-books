@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextRequest, NextResponse } from 'next/server';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { GET_AUTHOR_BY_ID_QUERY } from '@/utils/constants/Query';
 import { mapRawAuthorToAuthor } from '@/mapper/mapHardcoverAuthorToAuthor';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   _req: NextRequest,
@@ -14,6 +15,10 @@ export async function GET(
     const apiKey = process.env.HARDCOVER_API_TOKEN;
 
     if (!apiUrl || !apiKey) {
+      await sendLog(
+        LogLevel.ERROR,
+        LogMessage.CONFIG_HARDCOVER_CREDENTIALS_MISSING
+      );
       return NextResponse.json(
         { error: 'Missing Hardcover API credentials' },
         { status: 500 }
@@ -38,7 +43,17 @@ export async function GET(
 
     if (!response.ok) {
       const text = await response.text();
-      console.error('Hardcover API Error (author by id):', text);
+      await sendLog(
+        LogLevel.ERROR,
+        LogMessage.HARDCOVER_AUTHOR_RETRIEVE_FAILED,
+        {
+          additionalData: {
+            authorId: id,
+            status: response.status,
+            error: text,
+          },
+        }
+      );
       throw new Error(`Hardcover API failed: ${response.statusText}`);
     }
 
@@ -52,11 +67,18 @@ export async function GET(
       return NextResponse.json({ error: 'Author not found' }, { status: 404 });
     }
 
+    await sendLog(LogLevel.INFO, LogMessage.HARDCOVER_AUTHOR_RETRIEVED, {
+      additionalData: { authorId: id },
+    });
     return NextResponse.json(mapRawAuthorToAuthor(rawAuthor));
   } catch (error) {
-    console.error('Error in /api/hardcover/authors/[id]:', error);
+    await sendLog(LogLevel.ERROR, LogMessage.HARDCOVER_AUTHOR_RETRIEVE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    });
     return NextResponse.json(
-      { error: (error as Error).message },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

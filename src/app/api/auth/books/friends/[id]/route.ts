@@ -1,69 +1,71 @@
 import { auth0 } from '@/lib/auth0';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { NextRequest, NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
 
 export async function DELETE(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const params = await context.params;
-    const SESSION = await auth0.getSession();
+    const { id: friendId } = await context.params;
+    const session = await auth0.getSession();
 
-    if (!SESSION) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.tokenSet?.idToken;
-    const FRIEND_ID = params.id;
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
-    }
-
-    let apiUrl: string | null = null;
-    let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    apiUrl = `${baseUrl}/books/friends/${FRIEND_ID}`;
-    headers = {
-      ...headers,
-      Authorization: `Bearer ${ID_TOKEN}`,
-    };
-
-    if (!apiUrl) {
-      throw new Error(ELogs.API_URL_NOT_DEFINED);
-    }
-
-    const gyCodingResponse = await fetch(apiUrl, { headers, method: 'DELETE' });
-
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-        error: errorText,
-      });
-      throw new Error(`GyCoding API Error: ${errorText}`);
-    }
-
-    return NextResponse.json(204);
-  } catch (error) {
-    console.error('Error in /api/auth/user:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error,
+    const apiResponse = await fetch(`${baseUrl}/books/friends/${friendId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.tokenSet?.idToken}`,
+      },
     });
 
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.FRIEND_DELETE_FAILED, {
+        additionalData: {
+          friendId,
+          status: apiResponse.status,
+          error: errorText,
+        },
+      });
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
+    }
+
+    await sendLog(LogLevel.INFO, LogMessage.FRIEND_DELETED, {
+      additionalData: { friendId },
+    });
+    return NextResponse.json(null, { status: 204 });
+  } catch (error) {
+    await sendLog(LogLevel.ERROR, LogMessage.FRIEND_DELETE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    });
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

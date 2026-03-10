@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { auth0 } from '@/lib/auth0';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
-import { sendLog } from '@/utils/logs/logHelper';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { Book, UserData } from '@gycoding/nebula';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -10,10 +7,9 @@ async function handler(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const params = await context.params;
-  const ID = params.id;
+  const { id: bookId } = await context.params;
 
-  if (!ID) {
+  if (!bookId) {
     return NextResponse.json({ error: 'Book ID is required' }, { status: 400 });
   }
 
@@ -22,113 +18,129 @@ async function handler(
     const idToken = session?.tokenSet?.idToken;
 
     if (!session || !idToken) {
-      await sendLog(ELevel.ERROR, ELogs.NO_ACTIVE_SESSION);
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND, {
+        additionalData: { bookId },
+      });
       return NextResponse.json(
         { error: 'No active session found' },
         { status: 401 }
       );
     }
 
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
+
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
     if (!baseUrl) {
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    const API_URL = `${baseUrl}/books/${ID}`;
-    const HEADERS = {
+    const apiUrl = `${baseUrl}/books/${bookId}`;
+    const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`,
     };
 
     if (request.method === 'GET') {
-      const gyCodingResponse = await fetch(API_URL, {
-        headers: HEADERS,
-        method: 'GET',
-      });
+      const response = await fetch(apiUrl, { headers, method: 'GET' });
 
-      if (!gyCodingResponse.ok) {
-        const errorText = await gyCodingResponse.text();
-        console.error('GET Error Response:', {
-          status: gyCodingResponse.status,
-          statusText: gyCodingResponse.statusText,
-          error: errorText,
-        });
-        await sendLog(ELevel.ERROR, ELogs.BOOK_ERROR, {
-          error: errorText,
-        });
+      if (!response.ok) {
+        const errorText = await response.text();
+        await sendLog(
+          LogLevel.ERROR,
+          LogMessage.BOOK_RETRIEVE_FAILED,
+          {
+            additionalData: { status: response.status, error: errorText },
+          },
+          bookId
+        );
         throw new Error(`GyCoding API Error: ${errorText}`);
       }
 
-      const book = await gyCodingResponse.json();
+      const book = await response.json();
+      await sendLog(LogLevel.INFO, LogMessage.BOOK_RETRIEVED, {}, bookId);
       return NextResponse.json(book as Book);
     }
 
     if (request.method === 'PATCH') {
-      const BODY = await request.json();
-      console.log('[DEBUG] /api/auth/books/[id] PATCH received BODY:', BODY);
+      const body = await request.json();
+      const userData: Partial<UserData> = { ...body.userData };
 
-      // El body ya viene con { userData: { ...campos cambiados } }
-      // Solo necesitamos parsear progress si existe
-      const USER_DATA: Partial<UserData> = { ...BODY.userData };
-
-      if (USER_DATA.progress !== undefined) {
-        USER_DATA.progress = parseFloat(USER_DATA.progress as any);
+      if (userData.progress !== undefined) {
+        userData.progress = parseFloat(userData.progress as unknown as string);
       }
 
-      console.log('[DEBUG] /api/auth/books/[id] PATCH sending to backend:', {
-        body: JSON.stringify(JSON.stringify({ userData: USER_DATA })),
-      });
-
-      const gyCodingResponse = await fetch(API_URL, {
-        headers: HEADERS,
+      const response = await fetch(apiUrl, {
+        headers,
         method: 'PATCH',
-        body: JSON.stringify({ userData: USER_DATA }),
+        body: JSON.stringify({ userData }),
       });
 
-      if (!gyCodingResponse.ok) {
-        await sendLog(ELevel.ERROR, 'BOOK CANNOT BE UPDATED');
+      if (!response.ok) {
+        await sendLog(
+          LogLevel.ERROR,
+          LogMessage.BOOK_UPDATE_FAILED,
+          {
+            additionalData: { status: response.status },
+          },
+          bookId
+        );
         return NextResponse.json(
-          { error: 'ERROR UPDATING BOOK DATA' },
+          { error: 'Error updating book data' },
           { status: 500 }
         );
       }
 
-      const BOOK_RATING_DATA = await gyCodingResponse.json();
-      console.log(
-        '[DEBUG] /api/auth/books/[id] PATCH received BOOK_RATING_DATA:',
-        BOOK_RATING_DATA
-      );
-      return NextResponse.json({
-        bookRatingData: BOOK_RATING_DATA as Book,
-      });
+      const bookRatingData = await response.json();
+      await sendLog(LogLevel.INFO, LogMessage.BOOK_UPDATED, {}, bookId);
+      return NextResponse.json({ bookRatingData: bookRatingData as Book });
     }
 
     if (request.method === 'DELETE') {
-      const gyCodingResponse = await fetch(API_URL, {
-        headers: HEADERS,
-        method: 'DELETE',
-      });
+      const response = await fetch(apiUrl, { headers, method: 'DELETE' });
 
-      if (!gyCodingResponse.ok) {
-        await sendLog(ELevel.ERROR, 'BOOK CANNOT BE DELETED');
+      if (!response.ok) {
+        await sendLog(
+          LogLevel.ERROR,
+          LogMessage.BOOK_DELETE_FAILED,
+          {
+            additionalData: { status: response.status },
+          },
+          bookId
+        );
         return NextResponse.json(
-          { error: 'ERROR DELETING BOOK' },
+          { error: 'Error deleting book' },
           { status: 500 }
         );
       }
 
+      await sendLog(LogLevel.INFO, LogMessage.BOOK_DELETED, {}, bookId);
       return NextResponse.json(204);
     }
 
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (error) {
-    console.error('Error in /api/auth/books/[id]:', error);
-    await sendLog(ELevel.ERROR, ELogs.BOOK_ERROR, {
-      error: error,
-    });
+    await sendLog(
+      LogLevel.ERROR,
+      LogMessage.BOOK_RETRIEVE_FAILED,
+      {
+        additionalData: {
+          error: error instanceof Error ? error.message : String(error),
+        },
+      },
+      bookId
+    );
 
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

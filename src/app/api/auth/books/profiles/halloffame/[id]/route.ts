@@ -1,99 +1,144 @@
 import { auth0 } from '@/lib/auth0';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { NextRequest, NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
 
-async function handler(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   try {
-    const SESSION = await auth0.getSession();
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.tokenSet?.idToken;
+    const session = await auth0.getSession();
 
-    if (!SESSION) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-    }
-
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${ID_TOKEN}`,
-    };
-
-    if (req.method === 'PATCH') {
-      const body = await req.json();
-      const apiUrl = `${baseUrl}/books/profiles/halloffame/book`;
-      const response = await fetch(apiUrl, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ bookId: body }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-          error: errorText,
-        });
-        throw new Error(`GyCoding API Error: ${errorText}`);
-      }
-
-      return new NextResponse(null, { status: 204 });
-    } else if (req.method === 'DELETE') {
-      const body = await req.json();
-
-      if (!body) {
-        return NextResponse.json(
-          { error: 'bookId is required' },
-          { status: 400 }
-        );
-      }
-
-      const apiUrl = `${baseUrl}/books/profiles/halloffame/book/${body}`;
-
-      const response = await fetch(apiUrl, {
-        method: 'DELETE',
-        headers,
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-          error: errorText,
-        });
-        throw new Error(`GyCoding API Error: ${errorText}`);
-      }
-
-      return new NextResponse(null, { status: 204 });
-    } else {
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
       return NextResponse.json(
-        { error: 'Method not allowed' },
-        { status: 405 }
+        { error: 'Server configuration error' },
+        { status: 500 }
       );
     }
-  } catch (error) {
-    console.error('Error in /api/auth/books/halloffame:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error instanceof Error ? error.message : String(error),
-    });
 
+    const body = await req.json();
+
+    const apiResponse = await fetch(
+      `${baseUrl}/books/profiles/halloffame/book`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.tokenSet?.idToken}`,
+        },
+        body: JSON.stringify({ bookId: body }),
+      }
+    );
+
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.HALLOFFAME_BOOK_ADD_FAILED, {
+        additionalData: { status: apiResponse.status, error: errorText },
+      });
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
+    }
+
+    await sendLog(LogLevel.INFO, LogMessage.HALLOFFAME_BOOK_ADDED);
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    await sendLog(LogLevel.ERROR, LogMessage.HALLOFFAME_BOOK_ADD_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    });
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
 }
 
-export async function PATCH(req: NextRequest) {
-  return handler(req);
-}
-
 export async function DELETE(req: NextRequest) {
-  return handler(req);
+  try {
+    const session = await auth0.getSession();
+
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
+
+    const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
+    if (!baseUrl) {
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
+    const body = await req.json();
+    if (!body) {
+      return NextResponse.json(
+        { error: 'bookId is required' },
+        { status: 400 }
+      );
+    }
+
+    const apiResponse = await fetch(
+      `${baseUrl}/books/profiles/halloffame/book/${body}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.tokenSet?.idToken}`,
+        },
+      }
+    );
+
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.HALLOFFAME_BOOK_REMOVE_FAILED, {
+        additionalData: {
+          bookId: body,
+          status: apiResponse.status,
+          error: errorText,
+        },
+      });
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
+    }
+
+    await sendLog(LogLevel.INFO, LogMessage.HALLOFFAME_BOOK_REMOVED, {
+      additionalData: { bookId: body },
+    });
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    await sendLog(LogLevel.ERROR, LogMessage.HALLOFFAME_BOOK_REMOVE_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
 }

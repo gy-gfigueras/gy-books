@@ -1,71 +1,73 @@
 import { auth0 } from '@/lib/auth0';
-import { NextRequest, NextResponse } from 'next/server';
-import { sendLog } from '@/utils/logs/logHelper';
-import { ELevel } from '@/utils/constants/ELevel';
-import { ELogs } from '@/utils/constants/ELogs';
+import { sendLog, LogLevel, LogMessage } from '@/utils/logs';
 import { Profile } from '@gycoding/nebula';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
-    const SESSION = await auth0.getSession();
+    const session = await auth0.getSession();
 
-    if (!SESSION) {
+    if (!session) {
+      await sendLog(LogLevel.ERROR, LogMessage.SESSION_NOT_FOUND);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const USER_ID = SESSION?.user.sub;
-    const ID_TOKEN = SESSION?.tokenSet?.idToken;
+    await sendLog(
+      LogLevel.DEBUG,
+      LogMessage.SESSION_RETRIEVED,
+      {},
+      session.user.sub
+    );
 
-    const searchParams = req.nextUrl.searchParams;
-    const queryParam = searchParams.get('query');
-
-    if (SESSION) {
-      await sendLog(ELevel.INFO, ELogs.SESSION_RECIVED, { user: USER_ID });
-    }
-
-    let apiUrl: string | null = null;
-    let headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const queryParam = req.nextUrl.searchParams.get('query');
 
     const baseUrl = process.env.GY_API?.replace(/['"]/g, '');
-
     if (!baseUrl) {
-      await sendLog(ELevel.ERROR, ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
-      throw new Error(ELogs.ENVIROMENT_VARIABLE_NOT_DEFINED);
+      await sendLog(LogLevel.ERROR, LogMessage.CONFIG_GY_API_MISSING);
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
     }
 
-    apiUrl = `${baseUrl}/books/profiles?query=${queryParam}`;
-    headers = {
-      ...headers,
-      Authorization: `Bearer ${ID_TOKEN}`,
-    };
+    const apiResponse = await fetch(
+      `${baseUrl}/books/profiles?query=${queryParam}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.tokenSet?.idToken}`,
+        },
+      }
+    );
 
-    if (!apiUrl) {
-      throw new Error(ELogs.API_URL_NOT_DEFINED);
-    }
-
-    const gyCodingResponse = await fetch(apiUrl, { headers });
-
-    if (!gyCodingResponse.ok) {
-      const errorText = await gyCodingResponse.text();
-      await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-        error: errorText,
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      await sendLog(LogLevel.ERROR, LogMessage.PROFILE_SEARCH_FAILED, {
+        additionalData: {
+          query: queryParam,
+          status: apiResponse.status,
+          error: errorText,
+        },
       });
-      throw new Error(`GyCoding API Error: ${errorText}`);
+      return NextResponse.json(
+        { error: `API error: ${apiResponse.status}` },
+        { status: apiResponse.status }
+      );
     }
 
-    const users = await gyCodingResponse.json();
-
+    const users = await apiResponse.json();
+    await sendLog(LogLevel.INFO, LogMessage.PROFILE_SEARCH_SUCCESS, {
+      additionalData: { query: queryParam },
+    });
     return NextResponse.json(users as Profile[]);
   } catch (error) {
-    console.error('Error in /api/auth/user:', error);
-    await sendLog(ELevel.ERROR, ELogs.PROFILE_COULD_NOT_BE_RECEIVED, {
-      error: error,
+    await sendLog(LogLevel.ERROR, LogMessage.PROFILE_SEARCH_FAILED, {
+      additionalData: {
+        error: error instanceof Error ? error.message : String(error),
+      },
     });
-
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : ELogs.UNKNOWN_ERROR },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
