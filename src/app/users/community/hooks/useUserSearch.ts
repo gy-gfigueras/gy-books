@@ -22,6 +22,7 @@ export function useUserSearch(currentUserId?: string, friends: Friend[] = []) {
   const [users, setUsers] = useState<User[]>([]);
   const [isAddingFriend, setIsAddingFriend] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
   const debouncedSearch = useDebounce(search, 250);
 
   // Stable set of friend IDs to avoid infinite re-renders from array reference changes
@@ -63,6 +64,7 @@ export function useUserSearch(currentUserId?: string, friends: Friend[] = []) {
       );
     } catch (error) {
       console.error('Error adding friend:', error);
+      setErrorMessage(true);
     } finally {
       setIsAddingFriend(false);
     }
@@ -75,6 +77,8 @@ export function useUserSearch(currentUserId?: string, friends: Friend[] = []) {
     isAddingFriend,
     successMessage,
     setSuccessMessage,
+    errorMessage,
+    setErrorMessage,
     handleAddFriend,
   };
 }

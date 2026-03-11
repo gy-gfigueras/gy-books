@@ -23,18 +23,22 @@ interface DiscoverTabProps {
   users: User[];
   isAddingFriend: boolean;
   successMessage: boolean;
+  errorMessage: boolean;
   onSearchChange: (search: string) => void;
   onAddFriend: (userId: string) => void;
   setSuccessMessage: (success: boolean) => void;
+  setErrorMessage: (error: boolean) => void;
 }
 
 export function DiscoverTab({
   search,
   users,
   successMessage,
+  errorMessage,
   onSearchChange,
   onAddFriend,
   setSuccessMessage,
+  setErrorMessage,
 }: DiscoverTabProps) {
   return (
     <MotionBox
@@ -283,6 +287,12 @@ export function DiscoverTab({
         message={'Friend request sent successfully!'}
         onClose={() => setSuccessMessage(false)}
         severity={ESeverity.SUCCESS}
+      />
+      <AnimatedAlert
+        open={errorMessage}
+        message={'Could not send friend request. Try again.'}
+        onClose={() => setErrorMessage(false)}
+        severity={ESeverity.ERROR}
       />
     </MotionBox>
   );

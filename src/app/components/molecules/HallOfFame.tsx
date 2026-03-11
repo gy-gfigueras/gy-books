@@ -1,10 +1,12 @@
 /* eslint-disable no-constant-binary-expression */
 'use client';
 
+import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
 import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import { useHallOfFame } from '@/hooks/useHallOfFame';
 import { useUpdateHallOfFame } from '@/hooks/useUpdateHallOfFame';
 import { lora } from '@/utils/fonts/fonts';
+import { ESeverity } from '@/utils/constants/ESeverity';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -19,7 +21,13 @@ const MotionBox = motion(Box);
 export default function HallOfFame({ userId }: { userId: string }) {
   const { user } = useGyCodingUser();
   const { isLoading, error, quote, books } = useHallOfFame(userId);
-  const { handleUpdateHallOfFame } = useUpdateHallOfFame(userId);
+  const {
+    handleUpdateHallOfFame,
+    isUpdated,
+    isError: isUpdateError,
+    setIsUpdated,
+    setIsError: setIsUpdateError,
+  } = useUpdateHallOfFame(userId);
 
   const [editedQuote, setEditedQuote] = useState(quote);
   const [isEditing, setIsEditing] = useState(false);
@@ -50,7 +58,6 @@ export default function HallOfFame({ userId }: { userId: string }) {
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update quote:', error);
-      // The error state is already set in the hook
     }
   };
 
@@ -67,6 +74,18 @@ export default function HallOfFame({ userId }: { userId: string }) {
           setIsEditing={setIsEditing}
           onSave={handleUpdate}
           disabled={userId !== user?.id}
+        />
+        <AnimatedAlert
+          open={isUpdated}
+          message="Quote updated successfully!"
+          severity={ESeverity.SUCCESS}
+          onClose={() => setIsUpdated(false)}
+        />
+        <AnimatedAlert
+          open={isUpdateError}
+          message="Failed to update quote. Please try again."
+          severity={ESeverity.ERROR}
+          onClose={() => setIsUpdateError(false)}
         />
       </>
     );
@@ -165,6 +184,18 @@ export default function HallOfFame({ userId }: { userId: string }) {
         setIsEditing={setIsEditing}
         onSave={handleUpdate}
         disabled={userId !== user?.id}
+      />
+      <AnimatedAlert
+        open={isUpdated}
+        message="Quote updated successfully!"
+        severity={ESeverity.SUCCESS}
+        onClose={() => setIsUpdated(false)}
+      />
+      <AnimatedAlert
+        open={isUpdateError}
+        message="Failed to update quote. Please try again."
+        severity={ESeverity.ERROR}
+        onClose={() => setIsUpdateError(false)}
       />
     </MotionBox>
   );

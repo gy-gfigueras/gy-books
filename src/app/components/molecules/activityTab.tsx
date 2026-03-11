@@ -383,7 +383,6 @@ const EmptyState: React.FC = React.memo(() => (
 // Main Component
 const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
   const { data: activities, isLoading } = useActivities(id);
-  console.log(activities?.map((a) => a.likes.length));
   const { data: books } = useHardcoverBatch(
     (activities?.map((a) => a.bookId).filter(Boolean) as string[]) || []
   );

@@ -142,6 +142,8 @@ function FriendsPageContent() {
     isAddingFriend,
     successMessage,
     setSuccessMessage,
+    errorMessage,
+    setErrorMessage,
     handleAddFriend,
   } = useUserSearch(currentUser?.id, data ?? []);
 
@@ -195,9 +197,11 @@ function FriendsPageContent() {
             users={users}
             isAddingFriend={isAddingFriend}
             successMessage={successMessage}
+            errorMessage={errorMessage}
             onSearchChange={setSearch}
             onAddFriend={handleAddFriend}
             setSuccessMessage={setSuccessMessage}
+            setErrorMessage={setErrorMessage}
           />
         )}
         {tab === 1 && (
