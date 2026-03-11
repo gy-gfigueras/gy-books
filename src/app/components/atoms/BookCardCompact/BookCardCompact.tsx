@@ -2,15 +2,10 @@ import HardcoverBook from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
-import AssistantIcon from '@mui/icons-material/Assistant';
 import {
   Box,
-  Button,
   Chip,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   LinearProgress,
   Rating,
   Skeleton,
@@ -21,7 +16,8 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-const MotionBox = motion(Box);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MotionBox = motion(Box) as any;
 
 interface BookCardCompactProps {
   book: HardcoverBook;
@@ -135,7 +131,8 @@ export const BookCardCompactSkeleton = () => {
 
 export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
   const router = useRouter();
-  const { title, coverUrl } = useBookDisplay(book);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { title, coverUrl } = useBookDisplay(book)!;
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_isHovered, setIsHovered] = useState(false);
@@ -165,17 +162,21 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
       color: '#fbbf24',
       bg: 'rgba(251, 191, 36, 0.7)',
     },
+    [EBookStatus.RATE]: {
+      label: 'Rated',
+      color: '#6ee7b7',
+      bg: 'rgba(110, 231, 183, 0.75)',
+    },
   };
 
   const currentStatus = book.userData?.status || EBookStatus.WANT_TO_READ;
-  const statusInfo = statusConfig[currentStatus];
+  const statusInfo =
+    statusConfig[currentStatus] ?? statusConfig[EBookStatus.WANT_TO_READ];
 
-  // Calculate progress if reading
+  // Calculate progress if reading (userData.progress is a 0–1 fraction)
   const progress =
-    currentStatus === EBookStatus.READING &&
-    book.userData?.pagesRead &&
-    book.totalPages
-      ? Math.round((book.userData.pagesRead / book.totalPages) * 100)
+    currentStatus === EBookStatus.READING && book.userData?.progress
+      ? Math.round(book.userData.progress * 100)
       : null;
 
   return (
@@ -329,7 +330,8 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                 textAlign: 'center',
               }}
             >
-              Page {book.userData?.pagesRead || 0} of {book.totalPages}
+              Page {Math.round((book.userData?.progress ?? 0) * book.pageCount)}{' '}
+              of {book.pageCount}
             </Typography>
           </Box>
         </Box>
@@ -390,14 +392,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
             {book.author.name}
           </Typography>
           {book.userData?.rating !== undefined && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                mt: 0.5,
-              }}
-            >
+            <Box sx={{ mt: 0.5 }}>
               <Rating
                 value={book.userData.rating}
                 precision={0.5}
@@ -405,7 +400,7 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                 size="small"
                 sx={{
                   '& .MuiRating-iconFilled': {
-                    color: book.userData?.review ? '#a855f7' : '#a855f7',
+                    color: '#a855f7',
                     filter: book.userData?.review
                       ? 'drop-shadow(0 0 6px rgba(168, 85, 247, 0.7))'
                       : 'drop-shadow(0 0 4px rgba(168, 85, 247, 0.5))',
@@ -423,24 +418,31 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                     setReviewModalOpen(true);
                   }}
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    background:
-                      'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                    mt: 0.5,
+                    pl: 1,
+                    borderLeft: '2px solid rgba(168, 85, 247, 0.4)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
                     '&:hover': {
-                      transform: 'scale(1.1)',
-                      boxShadow: '0 2px 8px rgba(147, 51, 234, 0.4)',
+                      borderLeftColor: 'rgba(168, 85, 247, 0.7)',
+                      background: 'rgba(147, 51, 234, 0.05)',
                     },
                   }}
                 >
-                  <AssistantIcon sx={{ fontSize: 12, color: '#fff' }} />
+                  <Typography
+                    sx={{
+                      color: 'rgba(255,255,255,0.38)',
+                      fontFamily: lora.style.fontFamily,
+                      fontStyle: 'italic',
+                      fontSize: '0.7rem',
+                      lineHeight: 1.4,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    &ldquo;{book.userData.review}&rdquo;
+                  </Typography>
                 </Box>
               )}
             </Box>
@@ -472,67 +474,153 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
         )}
       </Box>
 
-      {/* Modal para mostrar la review */}
+      {/* Modal de review */}
       <Dialog
         open={reviewModalOpen}
-        onClose={(e, reason) => {
-          if (reason !== 'backdropClick') {
-            setReviewModalOpen(false);
-          }
-        }}
-        maxWidth="sm"
-        fullWidth
+        onClose={() => setReviewModalOpen(false)}
         onClick={(e) => e.stopPropagation()}
+        maxWidth="xs"
+        fullWidth
+        sx={{
+          '& .MuiBackdrop-root': {
+            backdropFilter: 'blur(8px)',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          },
+          '& .MuiDialog-container': {
+            alignItems: { xs: 'flex-end', sm: 'center' },
+          },
+        }}
         PaperProps={{
           sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.66)',
-            color: '#FFFFFF',
-            borderRadius: '16px',
+            background: 'rgba(8, 4, 18, 0.27)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(168, 85, 247, 0.2)',
+            borderBottom: {
+              xs: 'none',
+              sm: '1px solid rgba(168, 85, 247, 0.2)',
+            },
+            borderRadius: { xs: '20px 20px 0 0', sm: '20px' },
+            m: { xs: 0, sm: 2 },
+            maxWidth: { xs: '100%', sm: 400 },
+            width: '100%',
           },
         }}
       >
-        <DialogTitle
-          sx={{
-            color: '#FFFFFF',
-            fontFamily: lora.style.fontFamily,
-            fontWeight: '800',
-            fontSize: '1.25rem',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
-        >
-          {title} review
-        </DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
-          <Typography
-            variant="body1"
+        <Box sx={{ p: { xs: 2.5, sm: 3 }, position: 'relative' }}>
+          {/* Drag handle — visible only on mobile */}
+          <Box
             sx={{
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontFamily: lora.style.fontFamily,
-              lineHeight: 1.6,
-              fontSize: '1rem',
+              display: { xs: 'flex', sm: 'none' },
+              justifyContent: 'center',
+              mb: 2,
             }}
           >
-            {book.userData?.review}
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 1 }}>
-          <Button
+            <Box
+              sx={{
+                width: 36,
+                height: 4,
+                borderRadius: 2,
+                background: 'rgba(255,255,255,0.15)',
+              }}
+            />
+          </Box>
+
+          {/* Close button */}
+          <Box
             onClick={(e) => {
               e.stopPropagation();
               setReviewModalOpen(false);
             }}
             sx={{
-              color: 'primary.main',
-              fontFamily: lora.style.fontFamily,
-              fontWeight: '600',
-              '&:hover': {
-                backgroundColor: 'rgba(147, 51, 234, 0.1)',
-              },
+              position: 'absolute',
+              top: { xs: 16, sm: 20 },
+              right: { xs: 16, sm: 20 },
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(255,255,255,0.07)',
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+              '&:hover': { background: 'rgba(255,255,255,0.12)' },
             }}
           >
-            Close
-          </Button>
-        </DialogActions>
+            <Typography
+              sx={{
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: '1.2rem',
+                lineHeight: 1,
+                userSelect: 'none',
+                mt: '-1px',
+              }}
+            >
+              &times;
+            </Typography>
+          </Box>
+
+          {/* Book title + author */}
+          <Typography
+            sx={{
+              fontFamily: lora.style.fontFamily,
+              fontWeight: 800,
+              fontSize: '1rem',
+              color: '#fff',
+              pr: 4,
+              mb: 0.25,
+            }}
+          >
+            {title}
+          </Typography>
+          <Typography
+            sx={{
+              fontFamily: lora.style.fontFamily,
+              fontSize: '0.78rem',
+              color: 'rgba(255,255,255,0.4)',
+              mb: 1.5,
+            }}
+          >
+            {book.author.name}
+          </Typography>
+
+          {/* Stars */}
+          {book.userData?.rating !== undefined && (
+            <Rating
+              value={book.userData.rating}
+              precision={0.5}
+              readOnly
+              size="small"
+              sx={{
+                display: 'flex',
+                mb: 2,
+                '& .MuiRating-iconFilled': {
+                  color: '#a855f7',
+                  filter: 'drop-shadow(0 0 4px rgba(168,85,247,0.6))',
+                },
+                '& .MuiRating-iconEmpty': { color: 'rgba(255,255,255,0.2)' },
+              }}
+            />
+          )}
+
+          {/* Review text */}
+          <Box
+            sx={{ pl: 1.5, borderLeft: '2px solid rgba(168, 85, 247, 0.4)' }}
+          >
+            <Typography
+              sx={{
+                fontFamily: lora.style.fontFamily,
+                fontStyle: 'italic',
+                fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                color: 'rgba(255,255,255,0.75)',
+                lineHeight: 1.75,
+              }}
+            >
+              &ldquo;{book.userData?.review}&rdquo;
+            </Typography>
+          </Box>
+        </Box>
       </Dialog>
     </MotionBox>
   );
