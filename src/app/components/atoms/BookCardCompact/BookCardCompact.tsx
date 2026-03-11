@@ -1,4 +1,4 @@
-import HardcoverBook from '@/domain/HardcoverBook';
+import HardcoverBook, { BookHelpers } from '@/domain/HardcoverBook';
 import { useBookDisplay } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
 import { EBookStatus } from '@gycoding/nebula';
@@ -179,6 +179,10 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
       ? Math.round(book.userData.progress * 100)
       : null;
 
+  const editionPages =
+    BookHelpers.getSelectedEdition(book)?.pages ??
+    (book.pageCount > 0 ? book.pageCount : null);
+
   return (
     <MotionBox
       component="a"
@@ -273,70 +277,6 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
         />
       </Box>
 
-      {/* Progress Bar (if reading) */}
-      {progress !== null && (
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '95px',
-            left: 0,
-            right: 0,
-            px: 2,
-            zIndex: 15,
-          }}
-        >
-          <Box
-            sx={{
-              background: 'rgba(0, 0, 0, 0.7)',
-
-              borderRadius: '8px',
-              p: 1,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}
-          >
-            <Typography
-              sx={{
-                color: '#fff',
-                fontFamily: lora.style.fontFamily,
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                mb: 0.5,
-                textAlign: 'center',
-              }}
-            >
-              {progress}% completed
-            </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={progress}
-              sx={{
-                height: 6,
-                borderRadius: 3,
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                '& .MuiLinearProgress-bar': {
-                  background:
-                    'linear-gradient(90deg, #9333ea 0%, #a855f7 100%)',
-                  borderRadius: 3,
-                  boxShadow: '0 0 8px rgba(147, 51, 234, 0.3)',
-                },
-              }}
-            />
-            <Typography
-              sx={{
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontFamily: lora.style.fontFamily,
-                fontSize: '0.65rem',
-                mt: 0.5,
-                textAlign: 'center',
-              }}
-            >
-              Page {Math.round((book.userData?.progress ?? 0) * book.pageCount)}{' '}
-              of {book.pageCount}
-            </Typography>
-          </Box>
-        </Box>
-      )}
-
       {/* Contenido */}
       <Box
         sx={{
@@ -410,41 +350,101 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                   },
                 }}
               />
-              {book.userData?.review && (
-                <Box
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setReviewModalOpen(true);
-                  }}
-                  sx={{
-                    mt: 0.5,
-                    pl: 1,
-                    borderLeft: '2px solid rgba(168, 85, 247, 0.4)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      borderLeftColor: 'rgba(168, 85, 247, 0.7)',
-                      background: 'rgba(147, 51, 234, 0.05)',
-                    },
-                  }}
-                >
-                  <Typography
+              <Box sx={{ mt: 0.5, minHeight: 22 }}>
+                {progress !== null ? (
+                  <>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        mb: 0.5,
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          color: '#818cf8',
+                          fontFamily: lora.style.fontFamily,
+                          fontSize: '0.65rem',
+                          fontWeight: 600,
+                          letterSpacing: '0.04em',
+                        }}
+                      >
+                        Reading
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: 'rgba(255,255,255,0.4)',
+                          fontFamily: lora.style.fontFamily,
+                          fontSize: '0.65rem',
+                        }}
+                      >
+                        {progress}%
+                      </Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={progress}
+                      sx={{
+                        height: 3,
+                        borderRadius: 2,
+                        backgroundColor: 'rgba(129, 140, 248, 0.15)',
+                        '& .MuiLinearProgress-bar': {
+                          background:
+                            'linear-gradient(90deg, #818cf8 0%, #a855f7 100%)',
+                          borderRadius: 2,
+                        },
+                      }}
+                    />
+                  </>
+                ) : book.userData?.review ? (
+                  <Box
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setReviewModalOpen(true);
+                    }}
                     sx={{
-                      color: 'rgba(255,255,255,0.38)',
-                      fontFamily: lora.style.fontFamily,
-                      fontStyle: 'italic',
-                      fontSize: '0.7rem',
-                      lineHeight: 1.4,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      pl: 1,
+                      borderLeft: '2px solid rgba(168, 85, 247, 0.4)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        borderLeftColor: 'rgba(168, 85, 247, 0.7)',
+                        background: 'rgba(147, 51, 234, 0.05)',
+                      },
                     }}
                   >
-                    &ldquo;{book.userData.review}&rdquo;
+                    <Typography
+                      sx={{
+                        color: 'rgba(255,255,255,0.38)',
+                        fontFamily: lora.style.fontFamily,
+                        fontStyle: 'italic',
+                        fontSize: '0.7rem',
+                        lineHeight: 1.4,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      &ldquo;{book.userData.review}&rdquo;
+                    </Typography>
+                  </Box>
+                ) : editionPages !== null ? (
+                  <Typography
+                    sx={{
+                      color: 'rgba(255, 255, 255, 0.39)',
+                      fontFamily: lora.style.fontFamily,
+                      fontSize: '0.65rem',
+                      lineHeight: '22px',
+                      letterSpacing: '0.04em',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {editionPages} pages
                   </Typography>
-                </Box>
-              )}
+                ) : null}
+              </Box>
             </Box>
           )}
         </Box>
