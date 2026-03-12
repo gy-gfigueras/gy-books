@@ -33,6 +33,7 @@ interface FriendActivityMobileItemProps {
   index: number;
   currentUserId?: string;
   onActivityClick: (bookId?: string) => void;
+  onUserClick: (userId: string) => void;
   onLikeToggle: (
     activityId: string,
     profileId: string
@@ -98,7 +99,14 @@ export const FriendActivityMobileItemSkeleton: React.FC = () => (
  */
 export const FriendActivityMobileItem =
   React.memo<FriendActivityMobileItemProps>(
-    ({ activity, index, currentUserId, onActivityClick, onLikeToggle }) => {
+    ({
+      activity,
+      index,
+      currentUserId,
+      onActivityClick,
+      onUserClick,
+      onLikeToggle,
+    }) => {
       const activityType = getActivityType(activity.message);
       const activityColor = getActivityColor(activityType);
       const activityLabel = ACTIVITY_LABELS[activityType] || 'Activity';
@@ -161,21 +169,11 @@ export const FriendActivityMobileItem =
             delay: index * 0.04,
             ease: [0.25, 0.1, 0.25, 1],
           }}
-          onClick={() => onActivityClick(activity.bookId)}
           sx={{
             p: 2,
             borderRadius: 3,
             background: 'rgba(255, 255, 255, 0.02)',
             border: '1px solid rgba(255, 255, 255, 0.05)',
-            cursor: activity.bookId ? 'pointer' : 'default',
-            transition: 'all 0.2s ease',
-            WebkitTapHighlightColor: 'transparent',
-            '&:active': activity.bookId
-              ? {
-                  transform: 'scale(0.98)',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                }
-              : {},
           }}
         >
           {/* Header: Avatar + Username + Time + Activity Icon */}
@@ -185,6 +183,22 @@ export const FriendActivityMobileItem =
               alignItems: 'center',
               gap: 1.25,
               mb: 1.25,
+              cursor:
+                activity.userId || activity.profileId ? 'pointer' : 'default',
+              WebkitTapHighlightColor: 'transparent',
+              borderRadius: 2,
+              p: 0.5,
+              mx: -0.5,
+              transition: 'background 0.15s ease',
+              '&:hover':
+                activity.userId || activity.profileId
+                  ? { background: 'rgba(255, 255, 255, 0.04)' }
+                  : {},
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              const id = activity.userId || activity.profileId;
+              if (id) onUserClick(id);
             }}
           >
             {activity.username === null ? (
@@ -272,6 +286,7 @@ export const FriendActivityMobileItem =
 
           {/* Message */}
           <Typography
+            onClick={() => onActivityClick(activity.bookId)}
             sx={{
               fontFamily: lora.style.fontFamily,
               fontSize: '0.82rem',
@@ -282,6 +297,11 @@ export const FriendActivityMobileItem =
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
+              cursor: activity.bookId ? 'pointer' : 'default',
+              WebkitTapHighlightColor: 'transparent',
+              transition: 'color 0.15s ease',
+              '&:hover': activity.bookId ? { color: '#c084fc' } : {},
+              '&:active': activity.bookId ? { color: '#c084fc' } : {},
             }}
           >
             {activity.message}

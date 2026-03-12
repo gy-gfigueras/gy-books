@@ -79,19 +79,28 @@ export function useFriendRequests(profileId: UUID): useFriendRequestsProps {
     setLoadingRequests((prev) => new Set(prev).add(requestId));
     setErrorManageRequest(false);
     setIsSuccessManageRequest(false);
+
+    // Optimistic: eliminar la solicitud de la lista de inmediato
+    await mutateRequests(
+      (current: FriendRequest[] | undefined) =>
+        current?.filter((r) => r.id !== requestId),
+      { revalidate: false }
+    );
+
     try {
       const formData = new FormData();
       formData.append('requestId', requestId);
       formData.append('command', command);
-      const response = await manageRequest(formData);
-      setErrorManageRequest(false);
+      await manageRequest(formData);
       setIsSuccessManageRequest(true);
-
+      // Sincronizar con el servidor
       await Promise.all([mutateRequests(), mutateUsers()]);
     } catch (error: any) {
       setErrorManageRequest(true);
       console.error(error);
       setIsSuccessManageRequest(false);
+      // Rollback: revalidar desde el servidor
+      await Promise.all([mutateRequests(), mutateUsers()]);
     } finally {
       setLoadingRequests((prev) => {
         const newSet = new Set(prev);

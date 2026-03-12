@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import updateHallOfFame from '@/app/actions/book/halloffame/updateHallOfFame';
 import { hallOfFame } from '@/domain/hallOfFame.model';
 import { useState } from 'react';
@@ -15,25 +14,44 @@ interface useUpdateHallOfFameProps {
   setIsError: (isError: boolean) => void;
 }
 
+const hallOfFameCacheKey = (userId: string) =>
+  `/api/public/accounts/halloffame/${userId}`;
+
 export function useUpdateHallOfFame(userId: string): useUpdateHallOfFameProps {
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const handleUpdateHallOfFame = async (formData: FormData) => {
+  const handleUpdateHallOfFame = async (
+    formData: FormData
+  ): Promise<hallOfFame | undefined> => {
+    const quote = formData.get('quote') as string;
+    const cacheKey = hallOfFameCacheKey(userId);
+
     setIsLoading(true);
     setIsError(false);
     setIsUpdated(false);
+
+    // Optimistic update: el usuario ve el cambio de inmediato
+    await mutate(
+      cacheKey,
+      (current: hallOfFame | undefined) =>
+        current ? { ...current, quote } : current,
+      { revalidate: false }
+    );
+
     try {
       const data = await updateHallOfFame(formData);
       setIsUpdated(true);
-      // Revalidate the hall of fame data for this specific user
-      await mutate(`/api/public/accounts/halloffame/${userId}`);
+      // Sincronizar con el servidor para asegurar consistencia
+      await mutate(cacheKey);
       return data as unknown as hallOfFame;
     } catch (error) {
       console.error('Error updating Hall of Fame quote:', error);
+      // Rollback: revertir al valor del servidor
+      await mutate(cacheKey);
       setIsError(true);
-      throw error; // Re-throw to allow component to handle
+      throw error;
     } finally {
       setIsLoading(false);
     }

@@ -90,7 +90,13 @@ async function fetchPage(key: string): Promise<PageResult> {
 }
 
 export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
-  // 1. Obtener actividades paginadas (SWR Infinite)
+  // 1. Actividades paginadas con SWR Infinite
+  // Nota: el waterfall activities → profiles es inherente (necesitamos los profileIds
+  // de las actividades para poder pedir los perfiles). La solución real requiere que
+  // el backend embeba los perfiles en la respuesta. Mientras tanto:
+  // - keepPreviousData: muestra datos cacheados instantáneamente en navegación
+  // - revalidateOnFocus + refreshInterval: sensación near-realtime sin WebSockets
+  // - profiles cache (120s dedup): el segundo paso es casi instantáneo en visitas repetidas
   const {
     data: pages,
     error,
@@ -101,11 +107,13 @@ export function useFriendsActivityFeed(): UseFriendsActivityFeedResult {
     (index) => `/api/auth/books/activity?page=${index}&size=${PAGE_SIZE}`,
     fetchPage,
     {
-      revalidateOnFocus: false,
+      revalidateOnFocus: true,
       revalidateOnReconnect: true,
       shouldRetryOnError: false,
-      dedupingInterval: 30000,
+      dedupingInterval: 10000,
       keepPreviousData: true,
+      refreshInterval: 60000, // polling pasivo: nuevas actividades cada 60s
+      revalidateFirstPage: true,
     }
   );
 

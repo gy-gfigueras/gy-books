@@ -53,16 +53,30 @@ export function useFriends(): useFriendsProps {
     ) => Promise<Friend[] | null | undefined>
   ) => {
     setIsLoadingDelete(true);
+
+    // Optimistic: eliminar el amigo de la lista de inmediato
+    if (mutateFn) {
+      await mutateFn(null, { revalidate: false });
+    } else {
+      await mutate(
+        '/api/auth/users/accounts/friends',
+        (current: Friend[] | undefined) =>
+          current?.filter((f) => f.id !== userId),
+        { revalidate: false }
+      );
+    }
+
     try {
       await deleteFriend(userId);
-      if (mutateFn) {
-        await mutateFn(null, { revalidate: false });
-      } else {
+      setIsSuccessDelete(true);
+      // Sincronizar con el servidor
+      if (!mutateFn) {
         await mutate('/api/auth/users/accounts/friends');
       }
-      setIsSuccessDelete(true);
     } catch (error) {
       setErrorDelete(error as Error);
+      // Rollback: revalidar desde el servidor
+      await mutate('/api/auth/users/accounts/friends');
     } finally {
       setIsLoadingDelete(false);
     }

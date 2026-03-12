@@ -53,250 +53,272 @@ const FriendActivityItem = React.memo<{
   index: number;
   currentUserId?: string;
   onActivityClick: (bookId?: string) => void;
+  onUserClick: (userId: string) => void;
   onLikeToggle: (
     activityId: string,
     profileId: string
   ) => Promise<string[] | null>;
-}>(({ activity, index, currentUserId, onActivityClick, onLikeToggle }) => {
-  const activityType = getActivityType(activity.message);
-  const activityColor = getActivityColor(activityType);
-  const activityLabel = getActivityLabel(activityType);
+}>(
+  ({
+    activity,
+    index,
+    currentUserId,
+    onActivityClick,
+    onUserClick,
+    onLikeToggle,
+  }) => {
+    const activityType = getActivityType(activity.message);
+    const activityColor = getActivityColor(activityType);
+    const activityLabel = getActivityLabel(activityType);
 
-  // Optimistic likes state — initialized from real server data
-  const [likes, setLikes] = useState<string[]>(activity.likes ?? []);
-  const [isLiking, setIsLiking] = useState(false);
+    // Optimistic likes state — initialized from real server data
+    const [likes, setLikes] = useState<string[]>(activity.likes ?? []);
+    const [isLiking, setIsLiking] = useState(false);
 
-  const isLiked = useMemo(
-    () => (currentUserId ? likes.includes(currentUserId) : false),
-    [likes, currentUserId]
-  );
+    const isLiked = useMemo(
+      () => (currentUserId ? likes.includes(currentUserId) : false),
+      [likes, currentUserId]
+    );
 
-  const handleLike = useCallback(
-    async (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (!currentUserId || !activity.activityId || isLiking) return;
+    const handleLike = useCallback(
+      async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!currentUserId || !activity.activityId || isLiking) return;
 
-      setIsLiking(true);
-      const previousLikes = [...likes];
+        setIsLiking(true);
+        const previousLikes = [...likes];
 
-      // Optimistic update
-      if (isLiked) {
-        setLikes((prev) => prev.filter((id) => id !== currentUserId));
-      } else {
-        setLikes((prev) => [...prev, currentUserId]);
-      }
+        // Optimistic update
+        if (isLiked) {
+          setLikes((prev) => prev.filter((id) => id !== currentUserId));
+        } else {
+          setLikes((prev) => [...prev, currentUserId]);
+        }
 
-      const result = await onLikeToggle(
+        const result = await onLikeToggle(
+          activity.activityId,
+          activity.profileId
+        );
+
+        if (result === null) {
+          setLikes(previousLikes);
+        } else {
+          setLikes(result);
+        }
+
+        setIsLiking(false);
+      },
+      [
+        currentUserId,
         activity.activityId,
-        activity.profileId
-      );
+        activity.profileId,
+        isLiking,
+        likes,
+        isLiked,
+        onLikeToggle,
+      ]
+    );
 
-      if (result === null) {
-        setLikes(previousLikes);
-      } else {
-        setLikes(result);
-      }
-
-      setIsLiking(false);
-    },
-    [
-      currentUserId,
-      activity.activityId,
-      activity.profileId,
-      isLiking,
-      likes,
-      isLiked,
-      onLikeToggle,
-    ]
-  );
-
-  return (
-    <MotionBox
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.05,
-        ease: [0.4, 0, 0.2, 1],
-      }}
-      onClick={() => onActivityClick(activity.bookId)}
-      sx={{
-        mb: 2,
-        p: 2,
-        borderRadius: 3,
-        background: 'rgba(255, 255, 255, 0.02)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
-        transition: 'all 0.3s ease',
-        cursor: 'pointer',
-        '&:hover': {
-          background: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-        },
-      }}
-    >
-      {/* Header: Friend Info + Activity Type */}
-      <Box
+    return (
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.4,
+          delay: index * 0.05,
+          ease: [0.4, 0, 0.2, 1],
+        }}
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          mb: 1.5,
+          mb: 2,
+          p: 2,
+          borderRadius: 3,
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
         }}
       >
-        {activity.username === null ? (
-          <Skeleton
-            variant="circular"
-            width={32}
-            height={32}
-            animation="wave"
-            sx={{
-              bgcolor: 'rgba(255, 255, 255, 0.04)',
-            }}
-          />
-        ) : (
-          <UserAvatar
-            src={activity.userPicture}
-            alt={activity.username}
-            size={32}
-            sx={{
-              border: '1.5px solid rgba(255, 255, 255, 0.1)',
-            }}
-          />
-        )}
-
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          {/* Username con skeleton si está cargando */}
-          {!activity.username ? (
+        {/* Header: Friend Info + Activity Type */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            mb: 1.5,
+            cursor:
+              activity.userId || activity.profileId ? 'pointer' : 'default',
+            borderRadius: 2,
+            p: 0.5,
+            mx: -0.5,
+            transition: 'background 0.15s ease',
+            '&:hover':
+              activity.userId || activity.profileId
+                ? { background: 'rgba(255, 255, 255, 0.04)' }
+                : {},
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            const id = activity.userId || activity.profileId;
+            if (id) onUserClick(id);
+          }}
+        >
+          {activity.username === null ? (
             <Skeleton
-              variant="text"
-              width="60%"
-              height={20}
+              variant="circular"
+              width={32}
+              height={32}
               animation="wave"
               sx={{
                 bgcolor: 'rgba(255, 255, 255, 0.04)',
-                mb: 0.3,
               }}
             />
           ) : (
-            <Typography
+            <UserAvatar
+              src={activity.userPicture}
+              alt={activity.username}
+              size={32}
               sx={{
-                fontFamily: lora.style.fontFamily,
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                color: '#fff',
-                lineHeight: 1.2,
+                border: '1.5px solid rgba(255, 255, 255, 0.1)',
               }}
-            >
-              {activity.username}
-            </Typography>
+            />
           )}
 
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            {/* Username con skeleton si está cargando */}
+            {!activity.username ? (
+              <Skeleton
+                variant="text"
+                width="60%"
+                height={20}
+                animation="wave"
+                sx={{
+                  bgcolor: 'rgba(255, 255, 255, 0.04)',
+                  mb: 0.3,
+                }}
+              />
+            ) : (
+              <Typography
+                sx={{
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: '#fff',
+                  lineHeight: 1.2,
+                }}
+              >
+                {activity.username}
+              </Typography>
+            )}
+
+            <Typography
+              sx={{
+                fontSize: '0.7rem',
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontFamily: lora.style.fontFamily,
+              }}
+            >
+              {activity.formattedDate}
+            </Typography>
+          </Box>
+
+          {/* Activity Type Icon */}
+          <ActivityIcon type={activityType} size={20} />
+        </Box>
+
+        {/* Activity Type Label */}
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 0.5,
+            px: 1,
+            py: 0.5,
+            borderRadius: 2,
+            background: `${activityColor}25`,
+            border: `1px solid ${activityColor}40`,
+            mb: 1,
+          }}
+        >
+          <ActivityIcon type={activityType} size={14} />
           <Typography
             sx={{
               fontSize: '0.7rem',
-              color: 'rgba(255, 255, 255, 0.5)',
+              fontWeight: 600,
+              color: activityColor,
               fontFamily: lora.style.fontFamily,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
             }}
           >
-            {activity.formattedDate}
+            {activityLabel}
           </Typography>
         </Box>
 
-        {/* Activity Type Icon */}
-        <ActivityIcon type={activityType} size={20} />
-      </Box>
-
-      {/* Activity Type Label */}
-      <Box
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 0.5,
-          px: 1,
-          py: 0.5,
-          borderRadius: 2,
-          background: `${activityColor}25`,
-          border: `1px solid ${activityColor}40`,
-          mb: 1,
-        }}
-      >
-        <ActivityIcon type={activityType} size={14} />
+        {/* Activity Message */}
         <Typography
+          onClick={() => onActivityClick(activity.bookId)}
           sx={{
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            color: activityColor,
             fontFamily: lora.style.fontFamily,
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
+            fontSize: '0.9rem',
+            color: 'rgba(255, 255, 255, 0.85)',
+            lineHeight: 1.6,
+            mb: 1.5,
+            cursor: activity.bookId ? 'pointer' : 'default',
+            transition: 'color 0.15s ease',
+            '&:hover': activity.bookId ? { color: '#c084fc' } : {},
           }}
         >
-          {activityLabel}
+          {activity.message}
         </Typography>
-      </Box>
 
-      {/* Activity Message */}
-      <Typography
-        sx={{
-          fontFamily: lora.style.fontFamily,
-          fontSize: '0.9rem',
-          color: 'rgba(255, 255, 255, 0.85)',
-          lineHeight: 1.6,
-          mb: 1.5,
-        }}
-      >
-        {activity.message}
-      </Typography>
+        {/* Activity Badges */}
+        <ActivityBadges activity={activity} />
 
-      {/* Activity Badges */}
-      <ActivityBadges activity={activity} />
-
-      {/* Like button */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.5,
-          mt: 1,
-        }}
-      >
-        <MotionIconButton
-          onClick={handleLike}
-          disabled={!currentUserId || isLiking}
-          whileTap={{ scale: 1.3 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+        {/* Like button */}
+        <Box
           sx={{
-            p: 0.5,
-            color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.25)',
-            '&:hover': {
-              background: 'rgba(231, 76, 111, 0.08)',
-              color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.5)',
-            },
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            mt: 1,
           }}
-          size="small"
         >
-          {isLiked ? (
-            <FavoriteRoundedIcon sx={{ fontSize: 16 }} />
-          ) : (
-            <FavoriteBorderRoundedIcon sx={{ fontSize: 16 }} />
-          )}
-        </MotionIconButton>
-
-        {likes.length > 0 && (
-          <Typography
+          <MotionIconButton
+            onClick={handleLike}
+            disabled={!currentUserId || isLiking}
+            whileTap={{ scale: 1.3 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             sx={{
-              fontSize: '0.7rem',
-              color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.35)',
-              fontWeight: 500,
+              p: 0.5,
+              color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.25)',
+              '&:hover': {
+                background: 'rgba(231, 76, 111, 0.08)',
+                color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.5)',
+              },
             }}
+            size="small"
           >
-            {likes.length}
-          </Typography>
-        )}
-      </Box>
-    </MotionBox>
-  );
-});
+            {isLiked ? (
+              <FavoriteRoundedIcon sx={{ fontSize: 16 }} />
+            ) : (
+              <FavoriteBorderRoundedIcon sx={{ fontSize: 16 }} />
+            )}
+          </MotionIconButton>
+
+          {likes.length > 0 && (
+            <Typography
+              sx={{
+                fontSize: '0.7rem',
+                color: isLiked ? '#e74c6f' : 'rgba(255, 255, 255, 0.35)',
+                fontWeight: 500,
+              }}
+            >
+              {likes.length}
+            </Typography>
+          )}
+        </Box>
+      </MotionBox>
+    );
+  }
+);
 
 FriendActivityItem.displayName = 'FriendActivityItem';
 
@@ -467,6 +489,13 @@ export const FriendsActivityFeed = React.memo<FriendsActivityFeedProps>(
       [router]
     );
 
+    const handleUserClick = React.useCallback(
+      (userId: string) => {
+        router.push(`/users/${userId}`);
+      },
+      [router]
+    );
+
     const handleLikeToggle = React.useCallback(
       async (
         activityId: string,
@@ -533,6 +562,7 @@ export const FriendsActivityFeed = React.memo<FriendsActivityFeedProps>(
               index={index}
               currentUserId={currentUserId}
               onActivityClick={handleActivityClick}
+              onUserClick={handleUserClick}
               onLikeToggle={handleLikeToggle}
             />
           ))}

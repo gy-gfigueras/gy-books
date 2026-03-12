@@ -92,6 +92,13 @@ export const FriendsActivityMobileFeed =
         [router]
       );
 
+      const handleUserClick = useCallback(
+        (userId: string) => {
+          router.push(`/users/${userId}`);
+        },
+        [router]
+      );
+
       const handleLikeToggle = useCallback(
         async (
           activityId: string,
@@ -135,6 +142,7 @@ export const FriendsActivityMobileFeed =
                 index={index}
                 currentUserId={currentUserId}
                 onActivityClick={handleActivityClick}
+                onUserClick={handleUserClick}
                 onLikeToggle={handleLikeToggle}
               />
             ))}

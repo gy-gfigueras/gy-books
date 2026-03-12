@@ -28,77 +28,99 @@ type Result = {
 
 /**
  * useMergedBooksIncremental
- * - Fetch summaries page-by-page (pageSize, default 5)
- * - For each page, POST ids to /api/hardcover and merge userData into returned HardcoverBook[]
- * - Uses SWR for caching and showing previous data immediately
+ *
+ * Estrategia optimizada en 3 fases:
+ * 1. Fase de resúmenes: recoge todas las páginas de summaries en paralelo
+ *    (batches de CONCURRENT_PAGES). Estas son peticiones ligeras.
+ * 2. Fase Hardcover: UNA sola petición batch con todos los IDs recogidos.
+ *    Elimina el patrón anterior de N peticiones Hardcover (una por página).
+ * 3. Merge: combina userData del backend con los datos ricos de Hardcover.
  */
 
-// Fetcher function que maneja todo el proceso incremental
+const CONCURRENT_PAGES = 5;
+const MAX_PAGES = 50; // guarda frente a bucles infinitos (~250 libros con pageSize 5)
+const HARDCOVER_CHUNK_SIZE = 150; // límite seguro por petición a Hardcover
+
+async function fetchSummaryPage(
+  profileId: string,
+  page: number,
+  pageSize: number
+): Promise<ProfileBookSummary[]> {
+  const res = await fetch(
+    `/api/public/books?profileId=${profileId}&page=${page}&size=${pageSize}`
+  );
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  const data = (await res.json()) as ProfileBookSummary[];
+  return Array.isArray(data) ? data : [];
+}
+
+async function fetchHardcoverChunk(ids: string[]): Promise<HardcoverBook[]> {
+  if (ids.length === 0) return [];
+  const res = await fetch('/api/hardcover', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  });
+  if (!res.ok) throw new Error(`Hardcover HTTP ${res.status}`);
+  return (await res.json()) as HardcoverBook[];
+}
+
 async function fetchAllMergedBooks(
   profileId: string,
   pageSize: number
 ): Promise<HardcoverBook[]> {
-  const allBooks: HardcoverBook[] = [];
-  let page = 0;
+  // Fase 1: recoger todos los summaries
+  const allSummaries: ProfileBookSummary[] = [];
 
-  while (true) {
-    const url = `/api/public/books?profileId=${profileId}&page=${page}&size=${pageSize}`;
+  const firstPage = await fetchSummaryPage(profileId, 0, pageSize);
+  if (firstPage.length === 0) return [];
+  allSummaries.push(...firstPage);
 
-    try {
-      const res = await fetch(url);
+  if (firstPage.length >= pageSize) {
+    let pageIndex = 1;
+    let hasMore = true;
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`HTTP ${res.status}: ${errorText}`);
-      }
+    while (hasMore && pageIndex < MAX_PAGES) {
+      const pageNumbers = Array.from(
+        { length: Math.min(CONCURRENT_PAGES, MAX_PAGES - pageIndex) },
+        (_, i) => pageIndex + i
+      );
 
-      const pageData = (await res.json()) as ProfileBookSummary[];
+      const pages = await Promise.all(
+        pageNumbers.map((p) => fetchSummaryPage(profileId, p, pageSize))
+      );
 
-      if (!Array.isArray(pageData) || pageData.length === 0) {
-        break;
-      }
-
-      // obtain ids and ask hardcover for this page
-      const ids = pageData.map((p) => p.id).filter(Boolean);
-
-      let hardcoverArr: HardcoverBook[] = [];
-      if (ids.length > 0) {
-        const hRes = await fetch('/api/hardcover', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ids }),
-        });
-
-        if (!hRes.ok) {
-          const errorText = await hRes.text();
-          throw new Error(`Hardcover HTTP ${hRes.status}: ${errorText}`);
+      for (const page of pages) {
+        allSummaries.push(...page);
+        if (page.length < pageSize) {
+          hasMore = false;
+          break;
         }
-
-        hardcoverArr = (await hRes.json()) as HardcoverBook[];
       }
 
-      // merge userData into hardcover results by id
-      const summaryById = new Map<string, ProfileUserData | undefined>();
-      pageData.forEach((s) => summaryById.set(s.id, s.userData));
-
-      const merged = hardcoverArr.map((hb) => ({
-        ...hb,
-        userData: summaryById.get(hb.id) || hb.userData,
-      }));
-
-      allBooks.push(...(merged as HardcoverBook[]));
-
-      // if the page returned less than pageSize, we've reached the end
-      if (pageData.length < pageSize) {
-        break;
-      }
-      page += 1;
-    } catch (error) {
-      throw error;
+      pageIndex += pageNumbers.length;
     }
   }
 
-  return allBooks;
+  // Fase 2: única llamada batch a Hardcover (en chunks si hay muchos ids)
+  const ids = allSummaries.map((s) => s.id).filter(Boolean);
+  if (ids.length === 0) return [];
+
+  const chunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += HARDCOVER_CHUNK_SIZE) {
+    chunks.push(ids.slice(i, i + HARDCOVER_CHUNK_SIZE));
+  }
+
+  const hardcoverBooks = (
+    await Promise.all(chunks.map(fetchHardcoverChunk))
+  ).flat();
+
+  // Fase 3: merge userData de summaries → datos Hardcover
+  const summaryById = new Map(allSummaries.map((s) => [s.id, s.userData]));
+  return hardcoverBooks.map((hb) => ({
+    ...hb,
+    userData: summaryById.get(hb.id) ?? hb.userData,
+  }));
 }
 
 export default function useMergedBooksIncremental(

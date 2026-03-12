@@ -67,23 +67,33 @@ export function useHallOfFame(userId: string): useHallOfFameProps {
     hardcoverData && hardcoverData.length > 0 ? hardcoverData : rawBooks
   ) as HardcoverBook[];
 
+  const cacheKey = `/api/public/accounts/halloffame/${userId}`;
+
   const handleAddBookToHallOfFame = async (bookId: string): Promise<void> => {
     setIsLoadingToAddHallOfFame(true);
     setIsUpdatedAddToHallOfFame(false);
     setIsErrorAddToHallOfFame(false);
 
+    // Optimistic: añadir el libro de inmediato a la lista
+    await mutate(
+      cacheKey,
+      (current: hallOfFame | undefined) =>
+        current
+          ? { ...current, books: [...(current.books ?? []), bookId as any] }
+          : current,
+      { revalidate: false }
+    );
+
     try {
       const formData = new FormData();
       formData.append('bookId', bookId);
-
-      // setHallOfFameBook debe devolver hallOfFame o null
       void (await setHallOfFameBook(formData));
-
       setIsUpdatedAddToHallOfFame(true);
-      await mutate(`/api/public/accounts/halloffame/${userId}`);
+      await mutate(cacheKey);
     } catch (error) {
       console.error('Error adding book to Hall of Fame:', error);
       setIsErrorAddToHallOfFame(true);
+      await mutate(cacheKey); // rollback
     } finally {
       setIsLoadingToAddHallOfFame(false);
     }
@@ -96,17 +106,31 @@ export function useHallOfFame(userId: string): useHallOfFameProps {
     setIsUpdatedDeleteToHallOfFame(false);
     setIsErrorDeleteToHallOfFame(false);
 
+    // Optimistic: eliminar el libro de inmediato de la lista
+    await mutate(
+      cacheKey,
+      (current: hallOfFame | undefined) =>
+        current
+          ? {
+              ...current,
+              books: (current.books ?? []).filter(
+                (b: any) => (typeof b === 'string' ? b : b?.id) !== bookId
+              ),
+            }
+          : current,
+      { revalidate: false }
+    );
+
     try {
       const formData = new FormData();
       formData.append('bookId', bookId);
-
       await deleteBookFromHallOfFame(formData);
-
       setIsUpdatedDeleteToHallOfFame(true);
-      await mutate(`/api/public/accounts/halloffame/${userId}`);
+      await mutate(cacheKey);
     } catch (error) {
       console.error('Error deleting book from Hall of Fame:', error);
       setIsErrorDeleteToHallOfFame(true);
+      await mutate(cacheKey); // rollback
     } finally {
       setIsLoadingToDeleteHallOfFame(false);
     }
