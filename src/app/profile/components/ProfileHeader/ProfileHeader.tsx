@@ -2,6 +2,8 @@ import { UserImage } from '@/app/components/atoms/UserAvatar/UserImage';
 import { UserProfileBook } from '@/domain/user.model';
 import { ProfileUser } from '../../utils/profileTypes';
 import { lora } from '@/utils/fonts/fonts';
+import CheckIcon from '@mui/icons-material/Check';
+import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,7 +11,6 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleIcon from '@mui/icons-material/People';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import CheckIcon from '@mui/icons-material/Check';
 import {
   Box,
   Chip,
@@ -61,6 +62,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   onAddFriend,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleShareProfile = () => {
+    const url = `https://wingwords.gycoding.com/users/${user.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    });
+  };
 
   return (
     <>
@@ -408,6 +418,39 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                       mt: { xs: 1, md: 0 },
                     }}
                   >
+                    <Tooltip
+                      title={isCopied ? 'Copied!' : 'Share Profile'}
+                      placement="top"
+                    >
+                      <IconButton
+                        onClick={handleShareProfile}
+                        sx={{
+                          background: isCopied
+                            ? 'rgba(52, 211, 153, 0.12)'
+                            : 'rgba(147, 51, 234, 0.12)',
+                          backdropFilter: 'blur(10px)',
+                          border: isCopied
+                            ? '1px solid rgba(52, 211, 153, 0.4)'
+                            : '1px solid rgba(147, 51, 234, 0.4)',
+                          color: isCopied ? '#34d399' : '#e9d5ff',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            background: isCopied
+                              ? 'rgba(52, 211, 153, 0.18)'
+                              : 'rgba(147, 51, 234, 0.18)',
+                            border: isCopied
+                              ? '1px solid rgba(52, 211, 153, 0.6)'
+                              : '1px solid rgba(147, 51, 234, 0.6)',
+                          },
+                        }}
+                      >
+                        {isCopied ? (
+                          <CheckIcon fontSize="small" />
+                        ) : (
+                          <ShareIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Edit Account" placement="top">
                       <IconButton
                         component="a"
@@ -444,7 +487,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         <EditIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Edit Account" placement="top">
+                    <Tooltip title="Log Out" placement="top">
                       <IconButton
                         component="a"
                         href={'/auth/logout?federated=true'}
@@ -478,6 +521,38 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                       mt: { xs: 1, md: 0 },
                     }}
                   >
+                    <Tooltip
+                      title={isCopied ? 'Copied!' : 'Share Profile'}
+                      placement="top"
+                    >
+                      <IconButton
+                        onClick={handleShareProfile}
+                        sx={{
+                          background: isCopied
+                            ? 'rgba(52, 211, 153, 0.12)'
+                            : 'rgba(255, 255, 255, 0.05)',
+                          backdropFilter: 'blur(10px)',
+                          border: isCopied
+                            ? '1px solid rgba(52, 211, 153, 0.4)'
+                            : '1px solid rgba(255, 255, 255, 0.12)',
+                          color: isCopied
+                            ? '#34d399'
+                            : 'rgba(255, 255, 255, 0.7)',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                            color: '#fff',
+                          },
+                        }}
+                      >
+                        {isCopied ? (
+                          <CheckIcon fontSize="small" />
+                        ) : (
+                          <ShareIcon fontSize="small" />
+                        )}
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip
                       title={isFriend ? 'Already friends' : 'Add friend'}
                       placement="top"
