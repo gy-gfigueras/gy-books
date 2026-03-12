@@ -1,3 +1,4 @@
+'use client';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/display-name */
 import {
@@ -18,14 +19,20 @@ import BookIcon from '@mui/icons-material/Book';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CircleIcon from '@mui/icons-material/Circle';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import StarIcon from '@mui/icons-material/Star';
-import { Box, Skeleton, Typography } from '@mui/material';
+import { Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { UUID } from 'crypto';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
+import { useActivityLike } from '@/hooks/activities/useActivityLike';
 
 const MotionBox = motion(Box);
+
+type ActivityEntry = Activity & { activityId?: string; likes?: string[] };
 
 interface ActivityTabProps {
   id: UUID;
@@ -154,147 +161,238 @@ const BookCover: React.FC<{
 
 // Activity Item Component
 const ActivityItem: React.FC<{
-  activity: Activity & { likes?: string[] };
+  activity: ActivityEntry;
   index: number;
   bookImage: string | null;
   onImageLoad: () => void;
-}> = React.memo(({ activity, index, bookImage, onImageLoad }) => {
-  const activityType = getActivityType(activity.message);
-  const ActivityIconComponent = getActivityIconComponent(activityType);
-  const activityColor = getActivityColor(activityType);
-  const progress = extractProgress(activity.message);
-  const rating = extractRating(activity.message);
-  const displayMessage = cleanMessage(activity.message);
-  const likesCount = activity.likes?.length ?? 0;
+  currentUserId?: string;
+  profileId: string;
+  onLikeToggle: (
+    activityId: string,
+    profileId: string
+  ) => Promise<string[] | null>;
+}> = React.memo(
+  ({
+    activity,
+    index,
+    bookImage,
+    onImageLoad,
+    currentUserId,
+    profileId,
+    onLikeToggle,
+  }) => {
+    const activityType = getActivityType(activity.message);
+    const ActivityIconComponent = getActivityIconComponent(activityType);
+    const activityColor = getActivityColor(activityType);
+    const progress = extractProgress(activity.message);
+    const rating = extractRating(activity.message);
+    const displayMessage = cleanMessage(activity.message);
 
-  return (
-    <MotionBox
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.05,
-        ease: [0.4, 0, 0.2, 1],
-      }}
-      component="a"
-      href={`/books/${activity.bookId}`}
-      role="link"
-      aria-label={`Go to book ${activity.bookId}`}
-      sx={{
-        p: 1.5,
-        mb: 2,
-        background: 'rgba(255, 255, 255, 0.03)',
-        backdropFilter: 'blur(16px)',
-        borderRadius: '16px',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 1.5,
-        textDecoration: 'none',
-        transition: 'all 0.2s',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-        '&:hover': {
-          background: 'rgba(255, 255, 255, 0.05)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          transform: 'translateY(-2px)',
-          boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
-        },
-      }}
-      tabIndex={0}
-    >
-      <BookCover
-        imageUrl={bookImage}
-        bookId={activity.bookId || ''}
-        onLoad={onImageLoad}
-      />
+    const router = useRouter();
+    const [likes, setLikes] = useState<string[]>(activity.likes ?? []);
+    const [isLiking, setIsLiking] = useState(false);
+    const isLiked = useMemo(
+      () => (currentUserId ? likes.includes(currentUserId) : false),
+      [likes, currentUserId]
+    );
 
-      <Box
+    const handleCardClick = useCallback(() => {
+      if (activity.bookId) router.push(`/books/${activity.bookId}`);
+    }, [activity.bookId, router]);
+
+    const handleLike = useCallback(
+      async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const activityId = activity.activityId;
+        if (!currentUserId || !activityId || isLiking) return;
+
+        setIsLiking(true);
+        const previousLikes = [...likes];
+
+        // Optimistic update
+        setLikes((prev) =>
+          isLiked
+            ? prev.filter((id) => id !== currentUserId)
+            : [...prev, currentUserId]
+        );
+
+        const result = await onLikeToggle(activityId, profileId);
+        if (result === null) {
+          setLikes(previousLikes);
+        } else {
+          setLikes(result);
+        }
+        setIsLiking(false);
+      },
+      [
+        currentUserId,
+        activity.activityId,
+        isLiking,
+        isLiked,
+        likes,
+        onLikeToggle,
+        profileId,
+      ]
+    );
+
+    return (
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.4,
+          delay: index * 0.05,
+          ease: [0.4, 0, 0.2, 1],
+        }}
+        role="article"
+        onClick={handleCardClick}
         sx={{
-          flex: 1,
+          p: 1.5,
+          mb: 2,
+          background: 'rgba(255, 255, 255, 0.03)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
           display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
           alignItems: 'flex-start',
-          textAlign: 'left',
-          justifyContent: 'center',
+          gap: 1.5,
+          cursor: activity.bookId ? 'pointer' : 'default',
+          transition: 'all 0.2s',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+          '&:hover': {
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
+          },
         }}
       >
+        <BookCover
+          imageUrl={bookImage}
+          bookId={activity.bookId || ''}
+          onLoad={onImageLoad}
+        />
+
         <Box
           sx={{
+            flex: 1,
             display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
             alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-            gap: 0.75,
+            textAlign: 'left',
+            justifyContent: 'center',
           }}
         >
-          <ActivityIconComponent
-            sx={{
-              fontSize: 14,
-              color: activityColor,
-            }}
-          />
-          {activity.formattedDate && (
-            <Typography
-              variant="body2"
-              sx={{
-                color: '#AAAAAA',
-                fontFamily: lora.style.fontFamily,
-                fontSize: 12,
-              }}
-            >
-              {activity.formattedDate}
-            </Typography>
-          )}
-        </Box>
-
-        <Typography
-          variant="body1"
-          sx={{
-            color: '#fff',
-            fontFamily: lora.style.fontFamily,
-            fontSize: 14,
-            lineHeight: 1.5,
-          }}
-        >
-          {displayMessage}
-        </Typography>
-
-        {/* Badges y likes en una fila */}
-        {(progress !== null || rating !== null || likesCount > 0) && (
           <Box
             sx={{
               display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              mt: 1,
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+              gap: 0.75,
             }}
           >
-            {progress !== null && <ProgressBadge progress={progress} />}
-            {rating !== null && <RatingBadge rating={rating} />}
-            {likesCount > 0 && (
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                aria-hidden
+            <ActivityIconComponent
+              sx={{
+                fontSize: 14,
+                color: activityColor,
+              }}
+            />
+            {activity.formattedDate && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#AAAAAA',
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: 12,
+                }}
               >
-                <FavoriteRoundedIcon sx={{ fontSize: 16, color: '#e74c6f' }} />
-                <Typography
-                  sx={{
-                    fontSize: 13,
-                    color: '#e74c6f',
-                    fontWeight: 600,
-                    fontFamily: lora.style.fontFamily,
-                  }}
-                >
-                  {likesCount}
-                </Typography>
-              </Box>
+                {activity.formattedDate}
+              </Typography>
             )}
           </Box>
-        )}
-      </Box>
-    </MotionBox>
-  );
-});
+
+          <Typography
+            variant="body1"
+            sx={{
+              color: '#fff',
+              fontFamily: lora.style.fontFamily,
+              fontSize: 14,
+              lineHeight: 1.5,
+            }}
+          >
+            {displayMessage}
+          </Typography>
+
+          {/* Badges y likes en una fila */}
+          {(progress !== null ||
+            rating !== null ||
+            likes.length > 0 ||
+            !!activity.activityId) && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                mt: 1,
+              }}
+            >
+              {progress !== null && <ProgressBadge progress={progress} />}
+              {rating !== null && <RatingBadge rating={rating} />}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.25,
+                  ml: 'auto',
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <IconButton
+                  size="small"
+                  onClick={handleLike}
+                  disabled={!currentUserId || !activity.activityId || isLiking}
+                  aria-label={isLiked ? 'Unlike activity' : 'Like activity'}
+                  sx={{
+                    p: 0.5,
+                    color: isLiked ? '#e74c6f' : 'rgba(255,255,255,0.35)',
+                    transition: 'color 0.15s ease, transform 0.15s ease',
+                    '&:hover': {
+                      color: '#e74c6f',
+                      transform: 'scale(1.15)',
+                      background: 'transparent',
+                    },
+                    '&.Mui-disabled': { color: 'rgba(255,255,255,0.2)' },
+                  }}
+                >
+                  {isLiked ? (
+                    <FavoriteRoundedIcon sx={{ fontSize: 16 }} />
+                  ) : (
+                    <FavoriteBorderRoundedIcon sx={{ fontSize: 16 }} />
+                  )}
+                </IconButton>
+                {likes.length > 0 && (
+                  <Typography
+                    sx={{
+                      fontSize: 12,
+                      color: isLiked ? '#e74c6f' : 'rgba(255,255,255,0.5)',
+                      fontWeight: 600,
+                      fontFamily: lora.style.fontFamily,
+                      transition: 'color 0.15s ease',
+                      minWidth: '1ch',
+                    }}
+                  >
+                    {likes.length}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </MotionBox>
+    );
+  }
+);
 
 // Skeleton Loading Component
 const SkeletonActivityItem: React.FC = React.memo(() => (
@@ -382,6 +480,8 @@ const EmptyState: React.FC = React.memo(() => (
 
 // Main Component
 const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
+  const { user } = useGyCodingUser();
+  const { toggleLike } = useActivityLike();
   const { data: activities, isLoading } = useActivities(id);
   const { data: books } = useHardcoverBatch(
     (activities?.map((a) => a.bookId).filter(Boolean) as string[]) || []
@@ -455,7 +555,7 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
                 },
               }}
             >
-              {activities.map((activity: Activity, index: number) => (
+              {activities.map((activity: ActivityEntry, index: number) => (
                 <ActivityItem
                   key={`${activity.bookId || 'activity'}-${index}-${activity.date ? new Date(activity.date).getTime() : Date.now()}`}
                   activity={activity}
@@ -466,6 +566,9 @@ const ActivityTab: React.FC<ActivityTabProps> = ({ id }) => {
                       : null
                   }
                   onImageLoad={handleImageLoad}
+                  currentUserId={user?.id !== String(id) ? user?.id : undefined}
+                  profileId={String(id)}
+                  onLikeToggle={toggleLike}
                 />
               ))}
             </Box>

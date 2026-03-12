@@ -35,6 +35,7 @@ export function useActivities(id?: UUID): useActivitiesProps {
         return dateB - dateA; // Ordenar de más reciente a más antigua
       })
       .map((activity: any) => ({
+        activityId: activity.id as string | undefined,
         bookId: activity.message.match(/\[(.*?)\]/)?.[1] || '', // Extraer el ID del mensaje
         message: activity.message.replace(/\[.*?\]\s*/, ''),
         date: activity.date,
