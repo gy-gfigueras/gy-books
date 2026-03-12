@@ -185,16 +185,14 @@ export default function DashboardPage() {
   // 🚀 PETICIÓN 3: Hall of Fame para obtener la quote
   const { quote } = useHallOfFame(user?.id || '');
 
-  // 📊 Calcular libro actualmente en lectura
-  const currentlyReadingBook = useMemo<HardcoverBook | undefined>(() => {
-    if (!books || books.length === 0) return undefined;
+  // 📊 Calcular libros actualmente en lectura
+  const currentlyReadingBooks = useMemo<HardcoverBook[]>(() => {
+    if (!books || books.length === 0) return [];
 
-    const readingBook = books.find((book) => {
+    return books.filter((book) => {
       const displayData = getBookDisplayData(book);
       return displayData?.status === EBookStatus.READING;
     });
-
-    return readingBook;
   }, [books]);
 
   // 📊 Calcular stats en memoria (evita peticiones adicionales)
@@ -286,7 +284,7 @@ export default function DashboardPage() {
           }}
         >
           <DashboardMobile
-            currentlyReadingBook={currentlyReadingBook}
+            currentlyReadingBooks={currentlyReadingBooks}
             booksLoading={booksLoading}
             activities={activities}
             activitiesLoading={activitiesLoading}
@@ -341,7 +339,7 @@ export default function DashboardPage() {
 
               {/* Currently Reading - Desktop */}
               <CurrentlyReadingSection
-                book={currentlyReadingBook}
+                books={currentlyReadingBooks}
                 isLoading={booksLoading}
               />
             </MotionBox>

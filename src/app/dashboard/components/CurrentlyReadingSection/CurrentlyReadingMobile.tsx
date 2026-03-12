@@ -4,32 +4,32 @@ import HardcoverBook from '@/domain/HardcoverBook';
 import { getBookDisplayData } from '@/hooks/useBookDisplay';
 import { lora } from '@/utils/fonts/fonts';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import { Box, LinearProgress, Skeleton, Typography } from '@mui/material';
-import { motion } from 'framer-motion';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import {
+  Box,
+  IconButton,
+  LinearProgress,
+  Skeleton,
+  Typography,
+} from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 
 const MotionBox = motion(Box);
 
 interface CurrentlyReadingMobileProps {
-  book?: HardcoverBook;
+  books: HardcoverBook[];
   isLoading: boolean;
 }
 
-/**
- * Calcula las páginas leídas basándose en el progreso
- */
 const calculatePagesRead = (progress: number, totalPages: number): number => {
-  if (progress <= 1) {
-    return Math.round(progress * totalPages);
-  }
+  if (progress <= 1) return Math.round(progress * totalPages);
   return progress;
 };
 
-/**
- * Skeleton estado de carga para mobile.
- */
 const CurrentlyReadingMobileSkeleton: React.FC = () => (
   <Box
     sx={{
@@ -81,20 +81,14 @@ const CurrentlyReadingMobileSkeleton: React.FC = () => (
   </Box>
 );
 
-/**
- * Card compacta horizontal de "Currently Reading" para mobile.
- * Diseño minimalista: cover pequeña + título + autor + progress bar.
- * Tap para navegar al libro.
- */
 export const CurrentlyReadingMobile = React.memo<CurrentlyReadingMobileProps>(
-  ({ book, isLoading }) => {
+  ({ books, isLoading }) => {
     const router = useRouter();
+    const [currentIndex, setCurrentIndex] = useState(0);
 
-    if (isLoading) {
-      return <CurrentlyReadingMobileSkeleton />;
-    }
+    if (isLoading) return <CurrentlyReadingMobileSkeleton />;
 
-    if (!book) {
+    if (!books || books.length === 0) {
       return (
         <Box
           sx={{
@@ -123,6 +117,7 @@ export const CurrentlyReadingMobile = React.memo<CurrentlyReadingMobileProps>(
       );
     }
 
+    const book = books[currentIndex];
     const displayData = getBookDisplayData(book);
     if (!displayData) return null;
 
@@ -132,134 +127,197 @@ export const CurrentlyReadingMobile = React.memo<CurrentlyReadingMobileProps>(
     );
     const progressPercentage =
       displayData.pageCount > 0 ? (pagesRead / displayData.pageCount) * 100 : 0;
+    const total = books.length;
+    const hasMultiple = total > 1;
 
     return (
-      <MotionBox
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        onClick={() => router.push(`/books/${book.id}`)}
+      <Box
         sx={{
-          display: 'flex',
-          gap: 1.5,
-          p: 1.5,
           borderRadius: 3,
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid rgba(255, 255, 255, 0.06)',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          WebkitTapHighlightColor: 'transparent',
-          '&:active': {
-            transform: 'scale(0.98)',
-            background: 'rgba(147, 51, 234, 0.06)',
-          },
+          overflow: 'hidden',
         }}
       >
-        {/* Cover */}
-        <Box
-          sx={{
-            position: 'relative',
-            width: 52,
-            height: 78,
-            flexShrink: 0,
-            borderRadius: '8px',
-            overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-          }}
-        >
-          <Image
-            src={displayData.coverUrl}
-            alt={displayData.title}
-            fill
-            sizes="52px"
-            style={{ objectFit: 'cover' }}
-          />
-        </Box>
-
-        {/* Info */}
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            minWidth: 0,
-            gap: 0.25,
-          }}
-        >
-          <Typography
+        <AnimatePresence mode="wait">
+          <MotionBox
+            key={book.id}
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -16 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => router.push(`/books/${book.id}`)}
             sx={{
-              fontFamily: lora.style.fontFamily,
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              color: 'rgba(255, 255, 255, 0.92)',
-              lineHeight: 1.3,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
+              display: 'flex',
+              gap: 1.5,
+              p: 1.5,
+              cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+              '&:active': { background: 'rgba(147, 51, 234, 0.06)' },
             }}
           >
-            {displayData.title}
-          </Typography>
-
-          <Typography
-            sx={{
-              fontFamily: lora.style.fontFamily,
-              fontSize: '0.72rem',
-              color: 'rgba(255, 255, 255, 0.45)',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {displayData.author}
-          </Typography>
-
-          {/* Progress */}
-          <Box sx={{ mt: 0.5 }}>
+            {/* Cover */}
             <Box
               sx={{
+                position: 'relative',
+                width: 52,
+                height: 78,
+                flexShrink: 0,
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <Image
+                src={displayData.coverUrl}
+                alt={displayData.title}
+                fill
+                sizes="52px"
+                style={{ objectFit: 'cover' }}
+              />
+            </Box>
+
+            {/* Info */}
+            <Box
+              sx={{
+                flex: 1,
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                mb: 0.25,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                minWidth: 0,
+                gap: 0.25,
               }}
             >
               <Typography
                 sx={{
-                  fontSize: '0.65rem',
-                  color: 'rgba(255, 255, 255, 0.35)',
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: 'rgba(255, 255, 255, 0.92)',
+                  lineHeight: 1.3,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                {Math.round(progressPercentage)}%
+                {displayData.title}
               </Typography>
               <Typography
                 sx={{
-                  fontSize: '0.65rem',
-                  color: '#c084fc',
-                  fontWeight: 500,
+                  fontFamily: lora.style.fontFamily,
+                  fontSize: '0.72rem',
+                  color: 'rgba(255, 255, 255, 0.45)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                {pagesRead}/{displayData.pageCount}
+                {displayData.author}
               </Typography>
+              <Box sx={{ mt: 0.5 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 0.25,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: '0.65rem',
+                      color: 'rgba(255, 255, 255, 0.35)',
+                    }}
+                  >
+                    {Math.round(progressPercentage)}%
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '0.65rem',
+                      color: '#c084fc',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {pagesRead}/{displayData.pageCount}
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={progressPercentage}
+                  sx={{
+                    height: 3,
+                    borderRadius: 2,
+                    backgroundColor: 'rgba(147, 51, 234, 0.12)',
+                    '& .MuiLinearProgress-bar': {
+                      borderRadius: 2,
+                      background:
+                        'linear-gradient(90deg, #9333ea 0%, #c084fc 100%)',
+                    },
+                  }}
+                />
+              </Box>
             </Box>
-            <LinearProgress
-              variant="determinate"
-              value={progressPercentage}
+          </MotionBox>
+        </AnimatePresence>
+
+        {/* Navigation bar — solo si hay más de 1 */}
+        {hasMultiple && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              px: 2,
+              pb: 1.5,
+            }}
+          >
+            <IconButton
+              size="small"
+              onClick={() => setCurrentIndex((i) => (i - 1 + total) % total)}
               sx={{
-                height: 3,
-                borderRadius: 2,
-                backgroundColor: 'rgba(147, 51, 234, 0.12)',
-                '& .MuiLinearProgress-bar': {
-                  borderRadius: 2,
-                  background:
-                    'linear-gradient(90deg, #9333ea 0%, #c084fc 100%)',
-                },
+                color: 'rgba(255,255,255,0.3)',
+                p: 0.25,
+                '&:hover': { color: '#c084fc' },
               }}
-            />
+            >
+              <ChevronLeftIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              {books.map((_, i) => (
+                <Box
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  sx={{
+                    width: i === currentIndex ? 12 : 5,
+                    height: 5,
+                    borderRadius: 3,
+                    background:
+                      i === currentIndex
+                        ? 'linear-gradient(90deg, #9333ea, #c084fc)'
+                        : 'rgba(255,255,255,0.15)',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                  }}
+                />
+              ))}
+            </Box>
+
+            <IconButton
+              size="small"
+              onClick={() => setCurrentIndex((i) => (i + 1) % total)}
+              sx={{
+                color: 'rgba(255,255,255,0.3)',
+                p: 0.25,
+                '&:hover': { color: '#c084fc' },
+              }}
+            >
+              <ChevronRightIcon sx={{ fontSize: 16 }} />
+            </IconButton>
           </Box>
-        </Box>
-      </MotionBox>
+        )}
+      </Box>
     );
   }
 );

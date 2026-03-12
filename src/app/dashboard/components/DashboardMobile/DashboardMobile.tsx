@@ -13,8 +13,8 @@ import { ReadingStatsMini } from '../ReadingStatsCards/ReadingStatsMini';
 const MotionBox = motion(Box);
 
 interface DashboardMobileProps {
-  /** Libro que el usuario está leyendo actualmente */
-  currentlyReadingBook?: HardcoverBook;
+  /** Libros que el usuario está leyendo actualmente */
+  currentlyReadingBooks: HardcoverBook[];
   booksLoading: boolean;
   /** Actividades de amigos */
   activities: FriendActivity[];
@@ -40,7 +40,7 @@ interface DashboardMobileProps {
  */
 export const DashboardMobile = React.memo<DashboardMobileProps>(
   ({
-    currentlyReadingBook,
+    currentlyReadingBooks,
     booksLoading,
     activities,
     activitiesLoading,
@@ -74,7 +74,7 @@ export const DashboardMobile = React.memo<DashboardMobileProps>(
         >
           <SectionHeader title="Currently Reading" />
           <CurrentlyReadingMobile
-            book={currentlyReadingBook}
+            books={currentlyReadingBooks}
             isLoading={booksLoading}
           />
         </MotionBox>
