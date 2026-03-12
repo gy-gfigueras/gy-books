@@ -331,8 +331,9 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
           >
             {book.author.name}
           </Typography>
-          {book.userData?.rating !== undefined && (
-            <Box sx={{ mt: 0.5 }}>
+          {/* Rating + info row — siempre presentes para igualar altura */}
+          <Box sx={{ mt: 0.5 }}>
+            {book.userData?.rating !== undefined ? (
               <Rating
                 value={book.userData.rating}
                 precision={0.5}
@@ -350,128 +351,130 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
                   },
                 }}
               />
-              <Box sx={{ mt: 0.5, minHeight: 22 }}>
-                {progress !== null ? (
-                  <>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        mb: 0.5,
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          color: '#818cf8',
-                          fontFamily: lora.style.fontFamily,
-                          fontSize: '0.65rem',
-                          fontWeight: 600,
-                          letterSpacing: '0.04em',
-                        }}
-                      >
-                        Reading
-                      </Typography>
-                      <Typography
-                        sx={{
-                          color: 'rgba(255,255,255,0.4)',
-                          fontFamily: lora.style.fontFamily,
-                          fontSize: '0.65rem',
-                        }}
-                      >
-                        {progress}%
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={progress}
-                      sx={{
-                        height: 3,
-                        borderRadius: 2,
-                        backgroundColor: 'rgba(129, 140, 248, 0.15)',
-                        '& .MuiLinearProgress-bar': {
-                          background:
-                            'linear-gradient(90deg, #818cf8 0%, #a855f7 100%)',
-                          borderRadius: 2,
-                        },
-                      }}
-                    />
-                  </>
-                ) : book.userData?.review ? (
+            ) : (
+              <Box sx={{ height: 20 }} />
+            )}
+            <Box sx={{ mt: 0.5, minHeight: 22 }}>
+              {progress !== null ? (
+                <>
                   <Box
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setReviewModalOpen(true);
-                    }}
                     sx={{
-                      pl: 1,
-                      borderLeft: '2px solid rgba(168, 85, 247, 0.4)',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        borderLeftColor: 'rgba(168, 85, 247, 0.7)',
-                        background: 'rgba(147, 51, 234, 0.05)',
-                      },
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      mb: 0.5,
                     }}
                   >
                     <Typography
                       sx={{
-                        color: 'rgba(255,255,255,0.38)',
+                        color: '#818cf8',
                         fontFamily: lora.style.fontFamily,
-                        fontStyle: 'italic',
-                        fontSize: '0.7rem',
-                        lineHeight: 1.4,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        fontSize: '0.65rem',
+                        fontWeight: 600,
+                        letterSpacing: '0.04em',
                       }}
                     >
-                      &ldquo;{book.userData.review}&rdquo;
+                      Reading
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color: 'rgba(255,255,255,0.4)',
+                        fontFamily: lora.style.fontFamily,
+                        fontSize: '0.65rem',
+                      }}
+                    >
+                      {progress}%
                     </Typography>
                   </Box>
-                ) : editionPages !== null ? (
+                  <LinearProgress
+                    variant="determinate"
+                    value={progress}
+                    sx={{
+                      height: 3,
+                      borderRadius: 2,
+                      backgroundColor: 'rgba(129, 140, 248, 0.15)',
+                      '& .MuiLinearProgress-bar': {
+                        background:
+                          'linear-gradient(90deg, #818cf8 0%, #a855f7 100%)',
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
+                </>
+              ) : book.userData?.review ? (
+                <Box
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setReviewModalOpen(true);
+                  }}
+                  sx={{
+                    pl: 1,
+                    borderLeft: '2px solid rgba(168, 85, 247, 0.4)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      borderLeftColor: 'rgba(168, 85, 247, 0.7)',
+                      background: 'rgba(147, 51, 234, 0.05)',
+                    },
+                  }}
+                >
                   <Typography
                     sx={{
-                      color: 'rgba(255, 255, 255, 0.39)',
+                      color: 'rgba(255,255,255,0.38)',
                       fontFamily: lora.style.fontFamily,
-                      fontSize: '0.65rem',
-                      lineHeight: '22px',
-                      letterSpacing: '0.04em',
-                      userSelect: 'none',
+                      fontStyle: 'italic',
+                      fontSize: '0.7rem',
+                      lineHeight: 1.4,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    {editionPages} pages
+                    &ldquo;{book.userData.review}&rdquo;
                   </Typography>
-                ) : null}
-              </Box>
+                </Box>
+              ) : editionPages !== null ? (
+                <Typography
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.39)',
+                    fontFamily: lora.style.fontFamily,
+                    fontSize: '0.65rem',
+                    lineHeight: '22px',
+                    letterSpacing: '0.04em',
+                    userSelect: 'none',
+                  }}
+                >
+                  {editionPages} pages
+                </Typography>
+              ) : null}
             </Box>
-          )}
+          </Box>
         </Box>
 
-        {/* Series */}
-        {book.series && book.series.length > 0 && book.series[0]?.name && (
-          <Chip
-            label={book.series[0].name}
-            size="small"
-            sx={{
-              alignSelf: 'flex-start',
-              mt: 0.5,
-              background:
-                'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
-
-              color: '#c084fc',
-              fontSize: { xs: '.75rem', sm: '.85rem' },
-              fontFamily: lora.style.fontFamily,
-              letterSpacing: '.05rem',
-              fontWeight: '700',
-              height: { xs: '22px', sm: '24px' },
-              borderRadius: '12px',
-              border: '1px solid rgba(147, 51, 234, 0.3)',
-              textShadow: 'none',
-            }}
-          />
-        )}
+        {/* Series — siempre reserva espacio para igualar altura */}
+        <Box sx={{ minHeight: { xs: 30, sm: 32 }, mt: 0.5 }}>
+          {book.series && book.series.length > 0 && book.series[0]?.name && (
+            <Chip
+              label={book.series[0].name}
+              size="small"
+              sx={{
+                alignSelf: 'flex-start',
+                background:
+                  'linear-gradient(135deg, rgba(147, 51, 234, 0.25) 0%, rgba(168, 85, 247, 0.2) 100%)',
+                color: '#c084fc',
+                fontSize: { xs: '.75rem', sm: '.85rem' },
+                fontFamily: lora.style.fontFamily,
+                letterSpacing: '.05rem',
+                fontWeight: '700',
+                height: { xs: '22px', sm: '24px' },
+                borderRadius: '12px',
+                border: '1px solid rgba(147, 51, 234, 0.3)',
+                textShadow: 'none',
+              }}
+            />
+          )}
+        </Box>
       </Box>
 
       {/* Modal de review */}
