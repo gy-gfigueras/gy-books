@@ -8,16 +8,21 @@ import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { Box, Container, Typography } from '@mui/material';
-import { useParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
 import { UserProfileSkeleton } from './components/UserProfileSkeleton/UserProfileSkeleton';
 import { useAddFriend } from './hooks/useAddFriend';
 
 function UserProfileContent() {
   const params = useParams();
   const userId = params.id as string;
+  const router = useRouter();
   const { user: currentUser } = useGyCodingUser();
   const isOwnProfile = !!currentUser?.id && currentUser.id === userId;
+
+  useEffect(() => {
+    if (isOwnProfile) router.replace('/profile');
+  }, [isOwnProfile, router]);
   const { data: user, isLoading } = useAccountsUser(userId);
   const profilePage = useProfilePage({ userId, basePath: `/users/${userId}` });
   const {
