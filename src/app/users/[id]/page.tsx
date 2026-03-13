@@ -4,6 +4,7 @@ import ProfileSkeleton from '@/app/components/atoms/ProfileSkeleton/ProfileSkele
 import { ProfileLayout } from '@/app/profile/components/ProfileLayout/ProfileLayout';
 import { useProfilePage } from '@/app/profile/hooks/useProfilePage';
 import { useAccountsUser } from '@/hooks/useAccountsUser';
+import { useGyCodingUser } from '@/contexts/GyCodingUserContext';
 import AnimatedAlert from '@/app/components/atoms/Alert/Alert';
 import { ESeverity } from '@/utils/constants/ESeverity';
 import { Box, Container, Typography } from '@mui/material';
@@ -15,6 +16,8 @@ import { useAddFriend } from './hooks/useAddFriend';
 function UserProfileContent() {
   const params = useParams();
   const userId = params.id as string;
+  const { user: currentUser } = useGyCodingUser();
+  const isOwnProfile = !!currentUser?.id && currentUser.id === userId;
   const { data: user, isLoading } = useAccountsUser(userId);
   const profilePage = useProfilePage({ userId, basePath: `/users/${userId}` });
   const {
@@ -45,11 +48,13 @@ function UserProfileContent() {
         user={user}
         basePath={`/users/${userId}`}
         {...profilePage}
-        visitorProps={{
-          isFriend,
-          isAddingFriend: isAdding,
-          onAddFriend: handleAddFriend,
-        }}
+        {...(!isOwnProfile && {
+          visitorProps: {
+            isFriend,
+            isAddingFriend: isAdding,
+            onAddFriend: handleAddFriend,
+          },
+        })}
       />
       <AnimatedAlert
         open={isSuccess}

@@ -34,15 +34,11 @@ export default function FriendCard({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'left',
-        gap: '1.5rem',
+        gap: '1rem',
         background: 'rgba(255, 255, 255, 0.03)',
         borderRadius: '16px',
-        padding: '1rem',
-        width: { xs: '90%', md: '25%' },
-        height: '100px',
-        minWidth: { xs: '200px', md: '400px' },
-        position: 'relative',
+        padding: '0.875rem 1rem',
+        width: '100%',
         textDecoration: 'none',
         border: '1px solid rgba(255, 255, 255, 0.06)',
         '&:hover': {
@@ -53,8 +49,9 @@ export default function FriendCard({
     >
       <Box
         sx={{
-          width: '80px',
-          height: '80px',
+          width: 48,
+          height: 48,
+          flexShrink: 0,
           borderRadius: '50%',
           border: '1.5px solid rgba(147, 51, 234, 0.3)',
           padding: '2px',
@@ -72,17 +69,22 @@ export default function FriendCard({
             objectFit: 'cover',
           }}
           alt={friend.username}
-          width={100}
-          height={100}
+          width={48}
+          height={48}
         />
       </Box>
       <Typography
         sx={{
-          fontSize: '20px',
+          flex: 1,
+          minWidth: 0,
+          fontSize: { xs: '1rem', sm: '1.1rem' },
           letterSpacing: '0.05rem',
-          fontWeight: '600',
+          fontWeight: 600,
           color: 'white',
           fontFamily: lora.style.fontFamily,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}
       >
         {friend.username}
@@ -92,7 +94,7 @@ export default function FriendCard({
         whileTap={{ scale: 0.9 }}
         loading={isDeleteLoading}
         sx={{
-          position: 'absolute',
+          flexShrink: 0,
           width: '44px',
           height: '44px',
           background:

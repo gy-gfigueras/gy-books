@@ -108,15 +108,11 @@ export function FriendsTab({
           display: 'grid',
           gridTemplateColumns: {
             xs: '1fr',
-            md: 'repeat(2, minmax(400px, 1fr))',
+            md: 'repeat(2, 1fr)',
           },
-          columnGap: 2,
-          rowGap: 1.5,
+          gap: '0.75rem',
           width: '100%',
           maxWidth: '900px',
-          justifyContent: 'center',
-          alignItems: 'center',
-          justifyItems: 'center',
         }}
       >
         {isLoading || !data ? (
@@ -130,7 +126,6 @@ export function FriendsTab({
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              justifyItems: 'center',
             }}
           >
             <Typography

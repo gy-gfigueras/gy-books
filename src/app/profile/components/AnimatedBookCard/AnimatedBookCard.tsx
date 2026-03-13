@@ -13,14 +13,18 @@ export const AnimatedBookCard: React.FC<AnimatedBookCardProps> = ({
   book,
   index,
 }) => {
+  // Only stagger the first 7 cards — after that animate immediately to avoid
+  // hiding LCP candidates behind a long accumulated delay.
+  const delay = Math.min(index, 6) * 0.04;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
+      viewport={{ once: true, margin: '-40px' }}
       transition={{
-        duration: 0.5,
-        delay: index * 0.05,
+        duration: 0.3,
+        delay,
         ease: [0.4, 0, 0.2, 1],
       }}
       style={{

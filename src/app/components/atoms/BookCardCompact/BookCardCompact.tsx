@@ -134,8 +134,6 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { title, coverUrl } = useBookDisplay(book)!;
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
     if (onClick) {
@@ -187,16 +185,9 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
     <MotionBox
       component="a"
       href={`/books/${book.id}`}
-      onClick={(e) => {
+      onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         handleClick();
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{
-        duration: 0.2,
       }}
       sx={{
         width: 'auto',
@@ -265,6 +256,8 @@ export const BookCardCompact = ({ book, onClick }: BookCardCompactProps) => {
           component="img"
           src={coverUrl}
           alt={title}
+          loading="lazy"
+          decoding="async"
           sx={{
             position: 'absolute',
             top: 0,

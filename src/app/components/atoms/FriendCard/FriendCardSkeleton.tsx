@@ -8,40 +8,39 @@ export default function FriendCardSkeleton() {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'left',
-        gap: '1.5rem',
+        gap: '1rem',
         background: 'rgba(255, 255, 255, 0.03)',
         backdropFilter: 'blur(10px)',
         border: '1px solid rgba(255, 255, 255, 0.06)',
         borderRadius: '16px',
-        padding: '1rem',
-        width: '25%',
-        height: '100px',
-        minWidth: '400px',
-        position: 'relative',
-        textDecoration: 'none',
+        padding: '0.875rem 1rem',
+        width: '100%',
       }}
     >
       <Skeleton
         variant="circular"
-        width={80}
-        height={80}
+        width={48}
+        height={48}
         sx={{ bgcolor: 'rgba(255,255,255,0.06)', flexShrink: 0 }}
       />
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
         <Skeleton
           variant="text"
-          width="60%"
-          height={32}
+          width="55%"
+          height={24}
           sx={{ bgcolor: 'rgba(255,255,255,0.06)' }}
         />
-        <Skeleton
-          variant="text"
-          width="40%"
-          height={20}
-          sx={{ bgcolor: 'rgba(255,255,255,0.04)' }}
-        />
       </Box>
+      <Skeleton
+        variant="rectangular"
+        width={44}
+        height={44}
+        sx={{
+          bgcolor: 'rgba(255,255,255,0.04)',
+          borderRadius: '12px',
+          flexShrink: 0,
+        }}
+      />
     </Box>
   );
 }

@@ -105,26 +105,10 @@ export function DiscoverTab({
       <Box
         sx={{
           width: '100%',
+          maxWidth: '600px',
           display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          overflowX: 'auto',
-          gap: '1rem',
-          justifyContent: 'center',
-          alignItems: 'center',
-          alignContent: 'start',
-          padding: '25px',
-          scrollbarColor: 'rgba(255,255,255,0.1) transparent',
-          '&::-webkit-scrollbar': {
-            width: '6px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'rgba(255, 255, 255, 0.02)',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '3px',
-          },
+          flexDirection: 'column',
+          gap: '0.75rem',
         }}
       >
         {users.length === 0 && search ? (
@@ -154,129 +138,119 @@ export function DiscoverTab({
           users.map((user) => (
             <MotionBox
               key={user.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.02, y: -4 }}
-              transition={{ duration: 0.3 }}
+              component="a"
+              href={`/users/${user.id}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '1rem',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                borderRadius: '16px',
+                padding: '0.875rem 1rem',
+                width: '100%',
+                textDecoration: 'none',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                },
+              }}
             >
-              <Box
-                component="a"
-                href={`/users/${user.id}`}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'left',
-                  gap: '1.5rem',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  borderRadius: '16px',
-                  padding: '1rem',
-                  width: { xs: '90%', md: '25%' },
-                  height: '100px',
-                  minWidth: { xs: '200px', md: '400px' },
-                  position: 'relative',
-                  textDecoration: 'none',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    background: 'rgba(255, 255, 255, 0.04)',
-                  },
-                }}
-              >
-                {user.picture ? (
-                  <Image
-                    src={user.picture}
-                    style={{
-                      width: 'auto',
-                      height: '100%',
-                      aspectRatio: '1/1',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                    }}
-                    alt={user.username}
-                    width={100}
-                    height={100}
-                  />
-                ) : (
-                  <Avatar
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      flexShrink: 0,
-                      background:
-                        'linear-gradient(135deg, rgba(147,51,234,0.25) 0%, rgba(129,140,248,0.2) 100%)',
-                      border: '1.5px solid rgba(147,51,234,0.25)',
-                      color: '#c084fc',
-                      fontFamily: lora.style.fontFamily,
-                      fontWeight: 700,
-                      fontSize: '1.4rem',
-                    }}
-                  >
-                    {user.username.charAt(0).toUpperCase()}
-                  </Avatar>
-                )}
-                <Typography
+              {user.picture ? (
+                <Image
+                  src={user.picture}
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    flexShrink: 0,
+                  }}
+                  alt={user.username}
+                  width={48}
+                  height={48}
+                />
+              ) : (
+                <Avatar
                   sx={{
-                    fontSize: '22px',
-                    letterSpacing: '0.1rem',
-                    fontWeight: 'bold',
-                    color: 'white',
+                    width: 48,
+                    height: 48,
+                    flexShrink: 0,
+                    background:
+                      'linear-gradient(135deg, rgba(147,51,234,0.25) 0%, rgba(129,140,248,0.2) 100%)',
+                    border: '1.5px solid rgba(147,51,234,0.25)',
+                    color: '#c084fc',
                     fontFamily: lora.style.fontFamily,
+                    fontWeight: 700,
+                    fontSize: '1.2rem',
                   }}
                 >
-                  {user.username}
-                </Typography>
-                {user.isFriend ? (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      right: '1rem',
-                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                      color: '#a855f7',
-                      border: '1px solid rgba(147, 51, 234, 0.2)',
-                      borderRadius: '12px',
-                      padding: '8px 16px',
-                      fontSize: '14px',
-                      fontFamily: lora.style.fontFamily,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Friend
-                  </Box>
-                ) : (
-                  <MotionIconButton
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      event.preventDefault();
-                      onAddFriend(user.id);
-                    }}
-                    sx={{
-                      width: '50px',
-                      height: '50px',
-                      borderRadius: '12px',
-                      backgroundColor: 'rgba(147, 51, 234, 0.1)',
-                      color: '#a855f7',
-                      border: '1px solid rgba(147, 51, 234, 0.2)',
-                      fontFamily: lora.style.fontFamily,
-                      fontSize: '16px',
-                      letterSpacing: '0.1rem',
-                      position: 'absolute',
-                      right: '1rem',
-                      zIndex: 1000,
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        backgroundColor: 'rgba(147, 51, 234, 0.2)',
-                        border: '1px solid rgba(147, 51, 234, 0.4)',
-                      },
-                    }}
-                  >
-                    <PersonAddIcon />
-                  </MotionIconButton>
-                )}
-              </Box>
+                  {user.username.charAt(0).toUpperCase()}
+                </Avatar>
+              )}
+              <Typography
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  fontSize: { xs: '1rem', sm: '1.1rem' },
+                  fontWeight: 700,
+                  color: 'white',
+                  fontFamily: lora.style.fontFamily,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user.username}
+              </Typography>
+              {user.isFriend ? (
+                <Box
+                  sx={{
+                    flexShrink: 0,
+                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                    color: '#a855f7',
+                    border: '1px solid rgba(147, 51, 234, 0.2)',
+                    borderRadius: '12px',
+                    padding: '6px 14px',
+                    fontSize: '13px',
+                    fontFamily: lora.style.fontFamily,
+                    fontWeight: 700,
+                  }}
+                >
+                  Friend
+                </Box>
+              ) : (
+                <MotionIconButton
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    onAddFriend(user.id);
+                  }}
+                  sx={{
+                    flexShrink: 0,
+                    width: 44,
+                    height: 44,
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                    color: '#a855f7',
+                    border: '1px solid rgba(147, 51, 234, 0.2)',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                      border: '1px solid rgba(147, 51, 234, 0.4)',
+                    },
+                  }}
+                >
+                  <PersonAddIcon sx={{ fontSize: 20 }} />
+                </MotionIconButton>
+              )}
             </MotionBox>
           ))
         )}
